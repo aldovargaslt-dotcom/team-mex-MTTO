@@ -216,8 +216,10 @@ textarea {
 }
 
 .btn:disabled {
-  opacity: 0.55;
   cursor: not-allowed;
+  background: #d8d8de;
+  color: #5c5c66;
+  border-color: #d8d8de;
 }
 
 .btn-primary {

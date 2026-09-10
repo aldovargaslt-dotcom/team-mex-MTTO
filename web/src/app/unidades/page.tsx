@@ -99,7 +99,7 @@ function UnidadesList() {
             id="numeroInterno"
             value={numeroInterno}
             onChange={(e) => setNumeroInterno(e.target.value)}
-            placeholder="U-101"
+            placeholder="Ej. U-101"
           />
         </div>
         <div className="field">
@@ -108,7 +108,7 @@ function UnidadesList() {
             id="placas"
             value={placas}
             onChange={(e) => setPlacas(e.target.value)}
-            placeholder="TMX-101-A"
+            placeholder="Ej. TMX-101-A"
           />
         </div>
         <div className="field">
