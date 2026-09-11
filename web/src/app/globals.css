@@ -652,6 +652,10 @@
     min-width: var(--tap);
   }
 
+  .wo-wizard {
+    min-width: 0;
+  }
+
   @media (max-width: 767px) {
     .check {
       min-height: var(--tap);
@@ -664,7 +668,16 @@
       border-top: 1px solid var(--border);
     }
 
+    .wo-wizard {
+      padding-bottom: calc(var(--tap-mobile) + 28px + env(safe-area-inset-bottom, 0px));
+    }
+
     .wizard-actions {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      margin: 0;
       min-height: calc(var(--tap-mobile) + 12px + env(safe-area-inset-bottom, 0px));
       padding: 6px 16px calc(6px + env(safe-area-inset-bottom, 0px));
     }

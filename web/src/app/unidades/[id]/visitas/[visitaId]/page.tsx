@@ -458,7 +458,7 @@ function VisitWizard({
     choferes.find((c) => c.id === choferId)?.nombre ?? visita.chofer?.nombre;
 
   return (
-    <>
+    <div className="wo-wizard">
       <PageHeader
         title={
           <span className="inline-flex items-center gap-2">
@@ -739,7 +739,7 @@ function VisitWizard({
           </Button>
         )}
       </div>
-    </>
+    </div>
   );
 }
 
