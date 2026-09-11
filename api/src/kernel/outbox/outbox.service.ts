@@ -30,6 +30,15 @@ export class OutboxService {
         ? payload.eventId
         : undefined;
 
+    if (eventId) {
+      const existing = await manager.findOne(OutboxEvent, {
+        where: { id: eventId },
+      });
+      if (existing?.processedAt) {
+        return existing;
+      }
+    }
+
     const event = manager.create(OutboxEvent, {
       ...(eventId ? { id: eventId } : {}),
       type,

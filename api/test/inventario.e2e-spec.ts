@@ -160,7 +160,7 @@ describe('Inventario v0 + piezas en visita (e2e)', () => {
     expect(skusVan.body[0].sku).toBe('FIL-CAB-01');
   });
 
-  it('cierre DESDE_STOCK descuenta stock con SALIDA_OT y no admite negativos', async () => {
+  it('I1/I4 cierre DESDE_STOCK descuenta stock; pieza opaca sin sku/stock', async () => {
     const u101 = await unidadPorNumero('U-101');
     const chofer = await choferPorNombre('Juan Pérez');
     const filtro = await itemPorSku('FIL-ACEITE-01');
@@ -215,7 +215,7 @@ describe('Inventario v0 + piezas en visita (e2e)', () => {
     });
   });
 
-  it('stock insuficiente bloquea el cierre salvo COMPRA_EXTERNA (pendiente, sin movimiento)', async () => {
+  it('I2/I3 stock insuficiente bloquea el cierre salvo COMPRA_EXTERNA (pendiente, sin movimiento)', async () => {
     const u101 = await unidadPorNumero('U-101');
     const chofer = await choferPorNombre('María López');
     const pastillas = await itemPorSku('PAST-FR-01');

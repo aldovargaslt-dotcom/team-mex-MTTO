@@ -1,8 +1,8 @@
 import { randomUUID } from 'crypto';
 import { OrigenConsumo, VISITA_CERRADA, buildVisitaCerrada } from './visita-cerrada';
 
-describe('VisitaCerrada envelope (ADR-001)', () => {
-  it('congela eventId, eventType, km, cerradoAt y occurredAt ISO-8601', () => {
+describe('VisitaCerrada envelope (ADR-001 / ADR-004 O1)', () => {
+  it('O1 congela eventId, visitaId, unidadId, tipoVehiculoId, km, cerradoAt y consumos', () => {
     const eventId = randomUUID();
     const cerradoAt = new Date('2026-09-11T12:00:00.000Z');
     const payload = buildVisitaCerrada({

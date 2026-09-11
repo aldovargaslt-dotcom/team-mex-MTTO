@@ -2,7 +2,7 @@ import { EstadoUnidad } from '../common/estado-unidad.enum';
 import { erroresCierre, mensajeKmInvalido } from './close-rules';
 import { EstadoVisita, TipoFirma, TipoVisita } from './enums';
 
-describe('close-rules', () => {
+describe('close-rules (ADR-004 C1/C2/C4)', () => {
   const base = {
     estadoVisita: EstadoVisita.BORRADOR,
     unidadEstado: EstadoUnidad.ACTIVA,
@@ -14,11 +14,11 @@ describe('close-rules', () => {
     firmas: [TipoFirma.CHOFER, TipoFirma.JEFE],
   };
 
-  it('acepta un cierre completo', () => {
+  it('C1 acepta un cierre completo', () => {
     expect(erroresCierre(base)).toEqual([]);
   });
 
-  it('exige unidad activa, chofer, km, tipo, trabajos y ambas firmas', () => {
+  it('C1 exige unidad activa, chofer, km, tipo, trabajos y ambas firmas', () => {
     expect(
       erroresCierre({ ...base, unidadEstado: EstadoUnidad.INACTIVA })[0],
     ).toMatch(/inactiva/i);
@@ -31,14 +31,14 @@ describe('close-rules', () => {
     );
   });
 
-  it('no permite km menor al último cerrado ni siquiera como valor suelto', () => {
+  it('C2 no permite km menor al último cerrado ni siquiera como valor suelto', () => {
     expect(mensajeKmInvalido(400, 500)).toMatch(/último km cerrado/i);
     expect(mensajeKmInvalido(500, 500)).toBeNull();
     expect(mensajeKmInvalido(0, null)).toBeNull();
     expect(mensajeKmInvalido(-1, null)).toMatch(/mayor o igual a 0/i);
   });
 
-  it('no reabre una visita ya cerrada', () => {
+  it('C4 no reabre una visita ya cerrada', () => {
     expect(
       erroresCierre({ ...base, estadoVisita: EstadoVisita.CERRADO })[0],
     ).toMatch(/ya está cerrada/i);

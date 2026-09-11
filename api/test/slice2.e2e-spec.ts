@@ -4,7 +4,7 @@ import request from 'supertest';
 import { App } from 'supertest/types';
 import { AppModule } from '../src/app.module';
 import { configureApp } from '../src/configure-app';
-import { assertVisitaCerradaOutbox } from './assert-visita-cerrada-outbox';
+import { assertVisitaCerradaOutbox, countVisitaCerradaOutbox } from './assert-visita-cerrada-outbox';
 
 const SUPERVISOR = { 'X-Role': 'SUPERVISOR', 'X-User-Id': 'sup-1' };
 const ADMIN = { 'X-Role': 'ADMIN_DIRECTIVO', 'X-User-Id': 'adm-1' };
@@ -193,7 +193,7 @@ describe('Slice 2 visitas y choferes (e2e)', () => {
     expect(res.body.message).toMatch(/inactiva/i);
   });
 
-  it('rechaza km menor al último cerrado incluso en borrador y chofer inexistente', async () => {
+  it('C2 rechaza km menor al último cerrado incluso en borrador y chofer inexistente', async () => {
     const u101 = await unidadPorNumero('U-101');
     const chofer = await choferPorNombre('Juan Pérez');
     const draft = await request(server)
@@ -249,7 +249,7 @@ describe('Slice 2 visitas y choferes (e2e)', () => {
     await request(server).delete(`/visitas/${segundo.body.id}`).set(SUPERVISOR);
   });
 
-  it('cierra solo con las 6 reglas y actualiza último km; permite varios borradores', async () => {
+  it('C1 cierra solo con las 6 reglas y actualiza último km; C3/C4 outbox solo en CERRADO', async () => {
     const u102 = await unidadPorNumero('U-102');
     const chofer = await choferPorNombre('María López');
     const a = await request(server)
@@ -310,6 +310,8 @@ describe('Slice 2 visitas y choferes (e2e)', () => {
       })
       .expect(200);
 
+    expect(await countVisitaCerradaOutbox(app, a.body.id)).toBe(0);
+
     const cerrado = await request(server)
       .post(`/visitas/${a.body.id}/cerrar`)
       .set(SUPERVISOR)
@@ -325,6 +327,14 @@ describe('Slice 2 visitas y choferes (e2e)', () => {
       km: 250,
       consumos: [],
     });
+    expect(await countVisitaCerradaOutbox(app, a.body.id)).toBe(1);
+
+    const recerrar = await request(server)
+      .post(`/visitas/${a.body.id}/cerrar`)
+      .set(SUPERVISOR)
+      .expect(400);
+    expect(recerrar.body.message).toMatch(/cerrada/i);
+    expect(await countVisitaCerradaOutbox(app, a.body.id)).toBe(1);
 
     const hub = await request(server)
       .get(`/unidades/${u102.id}/hub`)
