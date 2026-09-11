@@ -30,10 +30,12 @@ body `number` = group JID, `text` = aviso.
 
 Número throwaway / Baileys: **riesgo ToS**, no producción. Este PR: flag `evolution` → **noop**.
 
+## Don’t
+
 - Activar Twilio por el solo hecho de tener credenciales en env.
 - Prometer envío live / grupo WA en UI.
 - Bloquear MUST 1–3 o la apertura de aviso si un adapter HTTP falla.
-- Implementar Telegram/Discord hasta que Aldo elija.
+- Cablear Evolution HTTP en este PR (otro agente).
 
 ## Dónde
 
