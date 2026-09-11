@@ -1,5 +1,5 @@
 import { EstadoUnidad } from './estado-unidad.enum';
-import { mensajeVisita, puedeCrearVisita } from './hub-policy';
+import { mensajesHub, puedeCrearVisita } from './hub-policy';
 import { Rol } from '../auth/roles.enum';
 
 describe('hub-policy', () => {
@@ -14,12 +14,18 @@ describe('hub-policy', () => {
     );
   });
 
-  it('mensajes en español', () => {
-    expect(mensajeVisita(Rol.ADMIN_DIRECTIVO, EstadoUnidad.ACTIVA)).toMatch(
-      /administrador/i,
-    );
-    expect(mensajeVisita(Rol.SUPERVISOR, EstadoUnidad.INACTIVA)).toMatch(
-      /inactiva/i,
-    );
+  it('mensajes en español según rol, estado y catálogo de choferes', () => {
+    expect(
+      mensajesHub(Rol.ADMIN_DIRECTIVO, EstadoUnidad.ACTIVA, true)[0],
+    ).toMatch(/administrador/i);
+    expect(
+      mensajesHub(Rol.SUPERVISOR, EstadoUnidad.INACTIVA, true)[0],
+    ).toMatch(/inactiva/i);
+    expect(
+      mensajesHub(Rol.SUPERVISOR, EstadoUnidad.ACTIVA, false)[0],
+    ).toBe('No hay choferes. Pide alta a administración.');
+    expect(
+      mensajesHub(Rol.SUPERVISOR, EstadoUnidad.ACTIVA, true)[0],
+    ).toMatch(/nueva visita/i);
   });
 });

@@ -1,9 +1,11 @@
 'use client';
 
+import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { RoleGate } from '@/components/RoleGate';
 import { toPayload, UnidadForm } from '@/components/UnidadForm';
+import { Button } from '@/components/ui/button';
 import { api, HttpError } from '@/lib/api';
 import { useRole } from '@/lib/role';
 import type { Unidad } from '@/lib/types';
@@ -48,9 +50,9 @@ function EditarUnidadForm() {
       <div className="empty-state">
         <h2>No se encontró la unidad</h2>
         <p className="muted">No es posible editar un registro que no existe.</p>
-        <a className="btn btn-primary" href="/unidades">
-          Volver al listado
-        </a>
+        <Button asChild>
+          <Link href="/unidades">Volver al listado</Link>
+        </Button>
       </div>
     );
   }

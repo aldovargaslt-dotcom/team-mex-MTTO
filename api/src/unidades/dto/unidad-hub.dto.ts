@@ -1,5 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { EstadoUnidad } from '../../common/estado-unidad.enum';
+import { EstadoVisita, TipoVisita } from '../../visitas/enums';
 
 export class FichaCortaDto {
   @ApiProperty()
@@ -33,35 +34,58 @@ export class FichaCortaDto {
     nullable: true,
     type: Number,
     description:
-      'Kilometraje de la última visita de mantenimiento cerrada. Slice 1 no incluye visitas: siempre null hasta que exista ese dominio.',
+      'Kilometraje de la última visita de mantenimiento cerrada. Sin visitas cerradas: null.',
   })
   ultimoKm: number | null;
 }
 
-export class MantenimientoStubDto {
-  @ApiProperty({ example: 'sin_registros' })
-  estado: 'sin_registros';
+export class VisitaHubItemDto {
+  @ApiProperty()
+  id: string;
 
-  @ApiProperty({ nullable: true, type: String, example: null })
-  ultimaVisita: string | null;
+  @ApiProperty({ enum: EstadoVisita })
+  estado: EstadoVisita;
 
-  @ApiProperty({
-    example: 'Aún no hay visitas de mantenimiento registradas.',
-  })
-  mensajeHistorial: string;
+  @ApiProperty({ enum: TipoVisita, nullable: true, type: String })
+  tipo: TipoVisita | null;
 
-  @ApiProperty({
-    example: 'El historial de mantenimiento estará disponible en una siguiente entrega.',
-  })
-  mensajeResumen: string;
+  @ApiProperty({ nullable: true, type: Number })
+  km: number | null;
+
+  @ApiProperty({ nullable: true, type: String })
+  choferId: string | null;
+
+  @ApiProperty({ nullable: true, type: String })
+  choferNombre: string | null;
+
+  @ApiProperty({ nullable: true, type: String })
+  createdBy: string | null;
+
+  @ApiProperty()
+  createdAt: Date;
+
+  @ApiProperty()
+  updatedAt: Date;
+
+  @ApiProperty({ nullable: true, type: Date })
+  cerradoAt: Date | null;
+
+  @ApiProperty()
+  trabajosCount: number;
 }
 
 export class UnidadHubDto {
   @ApiProperty({ type: FichaCortaDto })
   fichaCorta: FichaCortaDto;
 
-  @ApiProperty({ type: MantenimientoStubDto })
-  mantenimiento: MantenimientoStubDto;
+  @ApiProperty({
+    type: [VisitaHubItemDto],
+    description: 'Borradores vivos. Vacío para administrador directivo.',
+  })
+  borradores: VisitaHubItemDto[];
+
+  @ApiProperty({ type: [VisitaHubItemDto] })
+  historialCerrado: VisitaHubItemDto[];
 
   @ApiProperty({
     description:
@@ -69,6 +93,6 @@ export class UnidadHubDto {
   })
   puedeCrearVisita: boolean;
 
-  @ApiProperty()
-  mensaje: string;
+  @ApiProperty({ type: [String] })
+  mensajes: string[];
 }
