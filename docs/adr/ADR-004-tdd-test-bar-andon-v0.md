@@ -34,10 +34,10 @@ TDD en `api/src/andon/andon-engine.spec.ts` (fakes en memoria; sin Postgres):
 - **A3** — abre si km desde la última cerrada ≥ `t_km` **o** días ≥ `t_dias`.
 - **A4** — unidad inactiva: no abre aviso nuevo.
 - **A5** — `VisitaCerrada` → `RESUELTO` + `visita_resolutoria_id` opaco.
-- **A6** — Enterado (Supervisor) detiene avisos a teléfonos ops; no resuelve.
+- **A6** — Enterado (Supervisor) es in-app; no resuelve.
 - **A7** — el handler ignora `consumos`; nunca escribe Visita ni stock.
 - **A8** — resolver es idempotente ante `eventId` duplicado.
 
 ## Outbound ops
 
-Puerto `AndonNotifier` (`WhatsAppPort`). Default: persistencia/log (stub) si faltan credenciales. Adaptador Twilio opcional (HTTP plano, **sin SDK**): fan-out a `ANDON_OPS_PHONES` (E.164), no a un grupo WhatsApp. `andon-engine` no importa Twilio. Sin ack inbound. Checklist: [andon-whatsapp-ops-checklist-v0](../../architecture/andon-whatsapp-ops-checklist-v0.md).
+Puerto `AndonNotifier` / `NotifyPort` (`WhatsAppPort`). **Default noop/log** (stub). Twilio aparcado: solo si `ANDON_NOTIFY_PROVIDER=twilio` y hay credenciales. Sin envío live en v0 demo. Sin grupo WhatsApp. `andon-engine` no importa Twilio. Sin ack inbound. Checklist: [andon-whatsapp-ops-checklist-v0](../../architecture/andon-whatsapp-ops-checklist-v0.md).

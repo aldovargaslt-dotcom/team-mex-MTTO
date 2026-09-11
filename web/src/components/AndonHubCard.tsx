@@ -119,8 +119,8 @@ export function AndonHubCard({
           </div>
           {aviso.estado === 'ENTERADO' ? (
             <Note>
-              Enterado: se detuvieron los avisos a teléfonos ops. La visita
-              cerrada resuelve.
+              Enterado: el aviso queda visto in-app. La visita cerrada
+              resuelve.
             </Note>
           ) : null}
         </>

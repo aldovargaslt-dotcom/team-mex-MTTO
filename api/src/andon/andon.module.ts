@@ -41,6 +41,7 @@ export const ANDON_ENTITIES = [
       useFactory: (config: ConfigService, stub: StubWhatsAppAdapter) =>
         createAndonNotifier(
           {
+            ANDON_NOTIFY_PROVIDER: config.get('ANDON_NOTIFY_PROVIDER'),
             TWILIO_ACCOUNT_SID: config.get('TWILIO_ACCOUNT_SID'),
             TWILIO_AUTH_TOKEN: config.get('TWILIO_AUTH_TOKEN'),
             TWILIO_WHATSAPP_FROM: config.get('TWILIO_WHATSAPP_FROM'),

@@ -40,7 +40,7 @@ export class AndonController {
   @Roles(Rol.SUPERVISOR)
   @ApiOperation({
     summary:
-      'Marcar enterado (supervisor). Detiene avisos a teléfonos ops; no resuelve.',
+      'Marcar enterado (supervisor). In-app; no resuelve.',
   })
   enterado(
     @Param('id', ParseUUIDPipe) id: string,

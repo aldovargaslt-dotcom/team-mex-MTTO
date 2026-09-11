@@ -101,7 +101,18 @@ describe('Twilio Andon notifier (ops phones, no grupo)', () => {
     expect(http).not.toHaveBeenCalled();
   });
 
-  it('factory con env completo persiste y fanea a ops', async () => {
+  it('env Twilio completo sin ANDON_NOTIFY_PROVIDER=twilio sigue en noop', async () => {
+    const http = jest.fn();
+    const stub = {
+      send: jest.fn(async () => undefined),
+    } as unknown as StubWhatsAppAdapter;
+    const notifier = createAndonNotifier(envComplete(), stub, http);
+    await notifier.send(MSG);
+    expect(stub.send).toHaveBeenCalledWith(MSG);
+    expect(http).not.toHaveBeenCalled();
+  });
+
+  it('factory con PROVIDER=twilio y env completo persiste y fanea a ops', async () => {
     const http = jest.fn(async () => ({
       ok: true,
       status: 201,
@@ -110,7 +121,11 @@ describe('Twilio Andon notifier (ops phones, no grupo)', () => {
     const stub = {
       send: jest.fn(async () => undefined),
     } as unknown as StubWhatsAppAdapter;
-    const notifier = createAndonNotifier(envComplete(), stub, http);
+    const notifier = createAndonNotifier(
+      envComplete({ ANDON_NOTIFY_PROVIDER: 'twilio' }),
+      stub,
+      http,
+    );
     await notifier.send(MSG);
     expect(stub.send).toHaveBeenCalledWith(MSG);
     expect(http).toHaveBeenCalledTimes(2);

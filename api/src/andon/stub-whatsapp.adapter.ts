@@ -5,7 +5,7 @@ import { WhatsAppMessage } from './andon-types';
 import { WhatsappSalidaEntity } from './entities/whatsapp-salida.entity';
 import { WhatsAppPort } from './ports';
 
-/** Adaptador stub: persiste en schema andon; no llama HTTP. Default si falta env Twilio. */
+/** Adaptador stub: persiste/log. Default de Andon outbound (noop HTTP). */
 @Injectable()
 export class StubWhatsAppAdapter implements WhatsAppPort {
   private readonly logger = new Logger(StubWhatsAppAdapter.name);

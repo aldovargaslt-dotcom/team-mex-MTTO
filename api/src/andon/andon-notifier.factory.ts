@@ -28,15 +28,19 @@ export function createAndonNotifier(
   stub: StubWhatsAppAdapter,
   http?: TwilioHttp,
 ): AndonNotifier {
-  const cfg = twilioConfigFromEnv(env);
-  if (!cfg) {
-    log.log(
-      'Andon notifier: noop/log (Twilio env incompleto). Avisos a teléfonos ops no se envían.',
+  const provider = (env.ANDON_NOTIFY_PROVIDER ?? 'noop').trim().toLowerCase();
+  if (provider === 'twilio') {
+    const cfg = twilioConfigFromEnv(env);
+    if (cfg) {
+      log.log(
+        `Andon notifier: Twilio opcional, fan-out a ${cfg.opsPhones.length} teléfono(s) ops.`,
+      );
+      return new PersistAndTwilio(stub, new TwilioWhatsAppAdapter(cfg, http));
+    }
+    log.warn(
+      'ANDON_NOTIFY_PROVIDER=twilio pero env incompleto; se usa noop/log.',
     );
-    return stub;
   }
-  log.log(
-    `Andon notifier: Twilio fan-out a ${cfg.opsPhones.length} teléfono(s) ops.`,
-  );
-  return new PersistAndTwilio(stub, new TwilioWhatsAppAdapter(cfg, http));
+  log.log('Andon notifier: noop/log (default). Enterado es in-app.');
+  return stub;
 }
