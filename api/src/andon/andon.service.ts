@@ -22,7 +22,7 @@ import { Aviso, LastClosedVisit } from './andon-types';
 import { AvisoDto, UmbralDto } from './dto/andon.dto';
 import { DEFAULT_T_DIAS, DEFAULT_T_KM, EstadoAviso } from './enums';
 import { NestUnidadCatalog } from './nest-unidad-catalog';
-import { NOTIFY_PORT, NotifyPort } from './ports';
+import { AVISO_INBOX_PORT, AvisoInboxPort, NOTIFY_PORT, NotifyPort } from './ports';
 import { TypeOrmAndonStore } from './typeorm-store';
 
 @Injectable()
@@ -31,6 +31,7 @@ export class AndonService implements OnModuleInit {
     private readonly store: TypeOrmAndonStore,
     private readonly catalog: NestUnidadCatalog,
     @Inject(NOTIFY_PORT) private readonly notifier: NotifyPort,
+    @Inject(AVISO_INBOX_PORT) private readonly inbox: AvisoInboxPort,
     private readonly outbox: OutboxService,
     private readonly tipos: TiposVehiculoService,
   ) {
@@ -52,6 +53,7 @@ export class AndonService implements OnModuleInit {
       store,
       catalog: this.catalog,
       whatsapp: this.notifier,
+      inbox: this.inbox,
     });
   }
 

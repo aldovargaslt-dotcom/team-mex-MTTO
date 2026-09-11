@@ -50,6 +50,19 @@ export function etiquetaEstadoAviso(estado: string) {
   return 'Abierto';
 }
 
+export function formatHace(value: string | null | undefined) {
+  if (!value) return '—';
+  const ms = Date.now() - new Date(value).getTime();
+  const min = Math.max(0, Math.floor(ms / 60000));
+  if (min < 1) return 'Ahora';
+  if (min < 60) return `Hace ${min} min`;
+  const h = Math.floor(min / 60);
+  if (h < 24) return `Hace ${h} h`;
+  const d = Math.floor(h / 24);
+  if (d < 7) return `Hace ${d} d`;
+  return formatFecha(value);
+}
+
 export function resumenOrigenPiezas(
   piezas: { origen: string }[],
 ) {

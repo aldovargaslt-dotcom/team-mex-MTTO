@@ -2,6 +2,8 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TiposVehiculoModule } from '../tipos-vehiculo/tipos-vehiculo.module';
 import { UnidadesModule } from '../unidades/unidades.module';
+import { NotificationsModule } from '../notifications/notifications.module';
+import { AndonInboxAdapter } from '../notifications/andon-inbox.adapter';
 import { AndonController } from './andon.controller';
 import { AndonService } from './andon.service';
 import { AvisoEntity } from './entities/aviso.entity';
@@ -11,6 +13,7 @@ import { UmbralEntity } from './entities/umbral.entity';
 import { WhatsappSalidaEntity } from './entities/whatsapp-salida.entity';
 import { NestUnidadCatalog } from './nest-unidad-catalog';
 import { andonNotifyProviders } from './notify/notify.providers';
+import { AVISO_INBOX_PORT } from './ports';
 import { StubWhatsAppAdapter } from './stub-whatsapp.adapter';
 import { TypeOrmAndonStore } from './typeorm-store';
 
@@ -27,6 +30,7 @@ export const ANDON_ENTITIES = [
     TypeOrmModule.forFeature(ANDON_ENTITIES),
     UnidadesModule,
     TiposVehiculoModule,
+    NotificationsModule,
   ],
   controllers: [AndonController],
   providers: [
@@ -34,6 +38,10 @@ export const ANDON_ENTITIES = [
     StubWhatsAppAdapter,
     NestUnidadCatalog,
     ...andonNotifyProviders,
+    {
+      provide: AVISO_INBOX_PORT,
+      useExisting: AndonInboxAdapter,
+    },
     AndonService,
   ],
   exports: [AndonService, TypeOrmModule],

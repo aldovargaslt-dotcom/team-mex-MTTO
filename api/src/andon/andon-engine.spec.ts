@@ -386,6 +386,7 @@ describe('Andon v0 (ADR-004 A1–A8)', () => {
     const src = readFileSync(join(__dirname, 'andon-engine.ts'), 'utf8');
     expect(src).not.toMatch(/visitas\//);
     expect(src).not.toMatch(/inventario\//);
+    expect(src).not.toMatch(/notifications\//);
     expect(src).not.toMatch(/twilio/i);
     const service = readFileSync(join(__dirname, 'andon.service.ts'), 'utf8');
     expect(service).not.toMatch(/twilio-whatsapp/);

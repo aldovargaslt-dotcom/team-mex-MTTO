@@ -9,7 +9,7 @@ import {
   EstadoAviso,
   WhatsAppKind,
 } from './enums';
-import { AndonStore, UnidadCatalog, WhatsAppPort } from './ports';
+import { AndonStore, AvisoInboxPort, UnidadCatalog, WhatsAppPort } from './ports';
 
 export class AndonForbiddenError extends Error {
   constructor(message: string) {
@@ -29,6 +29,7 @@ export type AndonEngineDeps = {
   store: AndonStore;
   catalog: UnidadCatalog;
   whatsapp: WhatsAppPort;
+  inbox?: AvisoInboxPort;
   now?: () => Date;
   newId?: () => string;
   visitaWriter?: VisitaWriter;
@@ -99,6 +100,7 @@ export class AndonEngine {
       unidadId: aviso.unidadId,
       kind: WhatsAppKind.AVISO,
     });
+    await this.deps.inbox?.onAbierto(aviso, unidad);
     return aviso;
   }
 
@@ -126,6 +128,7 @@ export class AndonEngine {
         visitaResolutoriaId: payload.visitaId,
       };
       await this.deps.store.updateAviso(resolved);
+      await this.deps.inbox?.onResuelto(resolved);
     }
 
     await this.deps.store.setLastClosed({

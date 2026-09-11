@@ -215,6 +215,29 @@ export type UmbralAndon = {
   tDias: number;
 };
 
+export type InboxItem = {
+  id: string;
+  sourceModule: SourceModule;
+  sourceEvent: string;
+  sourceRef: string;
+  subjectType: SubjectType;
+  subjectRef: string | null;
+  severity: Severity;
+  title: string;
+  body: string;
+  dedupeKey: string;
+  createdAt: string;
+  expiresAt: string | null;
+  readAt: string | null;
+  deeplinkPath: string;
+};
+
+export type SourceModule = 'ANDON' | 'INVENTARIO';
+
+export type SubjectType = 'UNIDAD' | 'ITEM' | 'NONE';
+
+export type Severity = 'LOW' | 'INFO' | 'WARNING' | 'CRITICAL';
+
 export type ApiError = {
   statusCode: number;
   message: string;
