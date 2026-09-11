@@ -15,7 +15,20 @@ MUST 1–3 no dependen de WhatsApp. Enterado es in-app.
 - [x] Sin inbound WhatsApp / sin ack. `POST /andon/avisos/:id/enterado`.
 - [x] Copy: Enterado in-app; no “grupo WhatsApp”, no “Twilio envía”.
 
-## Don’t
+## Evolution (lab, otro agente)
+
+Env (sin secretos en repo):
+
+- `ANDON_NOTIFY_PROVIDER=evolution|noop` (default **noop**)
+- `EVOLUTION_BASE_URL`
+- `EVOLUTION_API_KEY`
+- `EVOLUTION_INSTANCE`
+- `ANDON_WA_GROUP_JID` (`…@g.us`, ~3 ops)
+
+HTTP (cuando se cablee): `POST {EVOLUTION_BASE_URL}/message/sendText/{EVOLUTION_INSTANCE}`  
+body `number` = group JID, `text` = aviso.
+
+Número throwaway / Baileys: **riesgo ToS**, no producción. Este PR: flag `evolution` → **noop**.
 
 - Activar Twilio por el solo hecho de tener credenciales en env.
 - Prometer envío live / grupo WA en UI.
