@@ -1,16 +1,17 @@
 import { Injectable } from '@nestjs/common';
-import { StockBajoEmit, StockInboxPort } from '../inventario/ports';
+import { StockAlertPort } from '../inventario/ports';
+import { StockAlertEvent } from '../inventario/stock-alert.event';
 import { NotificationsService } from './notifications.service';
 
 @Injectable()
-export class InventarioInboxAdapter implements StockInboxPort {
+export class InventarioInboxAdapter implements StockAlertPort {
   constructor(private readonly notifications: NotificationsService) {}
 
-  async onStockBajo(input: StockBajoEmit) {
-    await this.notifications.ingestStockBajo(input);
+  async onStockBajo(event: StockAlertEvent) {
+    await this.notifications.ingestStockBajo(event);
   }
 
-  async onStockReabastecido(itemId: string) {
-    await this.notifications.ingestStockReabastecido(itemId);
+  async onStockReabastecido(event: StockAlertEvent) {
+    await this.notifications.clear(event.itemId);
   }
 }

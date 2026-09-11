@@ -22,15 +22,57 @@ Alias de brief (`stock_min`) **no** se persiste.
 - Quién edita `min_qty`: Supervisor y Admin.
 - Cruce a `qty <= min_qty` → emite `StockBajo`.
 - Cruce a `qty > min_qty` (o se quita el umbral) → emite `StockReabastecido` (no crea fila; expira el matching).
+- Seguir bajo no reemite, salvo WARNING → CRITICAL (`qty` a 0).
+
+## Eventos
+
+Envelope (Inventario → Notifications). Campos requeridos:
+
+```
+StockBajo | StockReabastecido {
+  eventId,
+  itemId,
+  sku,
+  qty,
+  minQty,
+  occurredAt
+}
+```
+
+`eventType` viaja en el envelope de puerto (`StockBajo` | `StockReabastecido`). `occurredAt` es ISO-8601. `qty` / `minQty` son los valores **después** del cruce.
+
+## Seam
+
+Inventario **no** escribe `notifications.*` ni `andon.*`.
+
+```
+Inventario  --StockAlertPort-->  Notifications adapter
+                 onStockBajo(event)     → ingestStockBajo(event)
+                 onStockReabastecido(event) → clear(itemId)
+```
+
+El adapter vive en Notifications (`InventarioInboxAdapter`). El módulo Inventario solo inyecta el port.
 
 ## Notifications (ADR-006)
 
-Inventario llama el ingest ya existente (`ingestStockBajo` / `ingestStockReabastecido`).
+Al ingerir `StockBajo`:
 
-- `dedupe_key`: `INV:stock-bajo:{itemId}` (unique upsert).
-- `source_module=INVENTARIO`, `source_event=StockBajo`, `subject_type=ITEM`.
-- Deeplink calculado: `/inventario/stock`.
-- Sin WhatsApp de Inventario. Cero escrituras en `andon.*`.
+- `source_module=INVENTARIO`
+- `source_event=StockBajo`
+- `source_ref=eventId`
+- `subject_type=ITEM`
+- `subject_ref=itemId`
+- `dedupe_key=INV:stock-bajo:{itemId}` (unique upsert)
+- Deeplink calculado: `/inventario/stock`
+- `WARNING` si `qty > 0`; `CRITICAL` si `qty = 0`
+
+`StockReabastecido` no crea fila; `clear(itemId)` expira el matching `dedupe_key`.
+
+Sin WhatsApp de Inventario. Cero escrituras en `andon.*`.
+
+## TDD (S1–S4)
+
+Ver ADR-004. Spec: `api/src/inventario/stock-alerta-rules.spec.ts`.
 
 ## Fuera de v0
 

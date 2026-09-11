@@ -7,6 +7,7 @@ import {
   OnModuleInit,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { randomUUID } from 'crypto';
 import { EntityManager, In, Repository } from 'typeorm';
 import { CurrentUser } from '../auth/current-user';
 import {
@@ -38,8 +39,9 @@ import { PendienteComprobante } from './entities/pendiente-comprobante.entity';
 import { Proveedor } from './entities/proveedor.entity';
 import { Stock } from './entities/stock.entity';
 import { EstadoPendiente, TipoMovimiento, UOM_PIEZA } from './enums';
-import { STOCK_INBOX_PORT, StockInboxPort } from './ports';
-import { estadoAlertaStock, eventoCruceUmbral } from './stock-alerta-rules';
+import { STOCK_ALERT_PORT, StockAlertPort } from './ports';
+import { publicarAlertaStock } from './stock-alert-emit';
+import { estadoAlertaStock } from './stock-alerta-rules';
 import { mensajeStockInsuficiente, stockTrasMovimiento } from './stock-rules';
 
 type StockCrossing = {
@@ -72,8 +74,8 @@ export class InventarioService implements OnModuleInit {
     private readonly tipos: TiposVehiculoService,
     private readonly outbox: OutboxService,
     @Optional()
-    @Inject(STOCK_INBOX_PORT)
-    private readonly stockInbox?: StockInboxPort,
+    @Inject(STOCK_ALERT_PORT)
+    private readonly stockAlerts?: StockAlertPort,
   ) {}
 
   onModuleInit() {
@@ -610,20 +612,16 @@ export class InventarioService implements OnModuleInit {
   }
 
   private async emitCruceUmbral(crossing: StockCrossing) {
-    const evento = eventoCruceUmbral(crossing);
-    if (!evento || !this.stockInbox) {
-      return;
-    }
-    if (evento === 'StockBajo') {
-      await this.stockInbox.onStockBajo({
-        itemId: crossing.item.id,
-        sku: crossing.item.sku,
-        nombre: crossing.item.nombre,
-        qty: crossing.nextQty,
-      });
-      return;
-    }
-    await this.stockInbox.onStockReabastecido(crossing.item.id);
+    await publicarAlertaStock(this.stockAlerts, {
+      eventId: randomUUID(),
+      occurredAt: new Date(),
+      itemId: crossing.item.id,
+      sku: crossing.item.sku,
+      prevQty: crossing.prevQty,
+      nextQty: crossing.nextQty,
+      prevMin: crossing.prevMin,
+      nextMin: crossing.nextMin,
+    });
   }
 
   private async replaceCompatibilidad(
@@ -710,7 +708,10 @@ export class InventarioService implements OnModuleInit {
       activo: item.activo,
       stock: item.stock?.qty ?? 0,
       minQty: item.stock?.minQty ?? null,
-      alerta: estadoAlertaStock(item.stock?.qty ?? 0, item.stock?.minQty ?? null),
+      alerta: estadoAlertaStock(
+        item.stock?.qty ?? 0,
+        item.stock?.minQty ?? null,
+      ),
       tipoVehiculoIds: (item.compatibilidades ?? []).map(
         (c) => c.tipoVehiculoId,
       ),

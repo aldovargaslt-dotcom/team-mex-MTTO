@@ -186,9 +186,23 @@ describe('Notifications inbox (ADR-004 N1–N4 / ADR-006)', () => {
       expect(cmd.sourceModule).toBe(SourceModule.INVENTARIO);
       expect(cmd.sourceEvent).toBe(SourceEvent.STOCK_BAJO);
       expect(cmd.subjectType).toBe(SubjectType.ITEM);
+      expect(cmd.subjectRef).toBe('item-opa');
+      expect(cmd.sourceRef).toBe('item-opa');
       expect(cmd.severity).toBe(Severity.WARNING);
       expect(cmd.dedupeKey).toBe(stockBajoDedupeKey('item-opa'));
       expect(cmd.dedupeKey).toBe('INV:stock-bajo:item-opa');
+
+      const full = stockBajoCommand({
+        eventId: 'evt-envelope',
+        itemId: 'item-opa',
+        sku: 'PAST-FR-01',
+        qty: 2,
+        minQty: 5,
+        occurredAt: '2026-09-11T16:00:00.000Z',
+      });
+      expect(full.sourceRef).toBe('evt-envelope');
+      expect(full.subjectRef).toBe('item-opa');
+      expect(full.createdAt?.toISOString()).toBe('2026-09-11T16:00:00.000Z');
 
       const avisoEntity = readFileSync(
         join(__dirname, '../andon/entities/aviso.entity.ts'),

@@ -93,7 +93,10 @@ describe('Notifications v0 (e2e)', () => {
       );
     }
 
-    await request(server).post('/notifications/read-all').set(SUPERVISOR).expect(201);
+    await request(server)
+      .post('/notifications/read-all')
+      .set(SUPERVISOR)
+      .expect(201);
     const zero = await request(server)
       .get('/notifications/badge')
       .set(SUPERVISOR)
@@ -116,6 +119,10 @@ describe('Notifications v0 (e2e)', () => {
     });
     expect(created.sourceModule).toBe('INVENTARIO');
     expect(created.subjectType).toBe('ITEM');
+    expect(created.subjectRef).toBe('aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa');
+    expect(created.dedupeKey).toBe(
+      'INV:stock-bajo:aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',
+    );
 
     const found = await request(server)
       .get('/notifications')

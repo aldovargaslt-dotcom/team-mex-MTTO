@@ -13,7 +13,7 @@ import { Proveedor } from './entities/proveedor.entity';
 import { Stock } from './entities/stock.entity';
 import { InventarioController } from './inventario.controller';
 import { InventarioService } from './inventario.service';
-import { STOCK_INBOX_PORT } from './ports';
+import { STOCK_ALERT_PORT } from './ports';
 
 export const INVENTARIO_ENTITIES = [
   Familia,
@@ -36,7 +36,7 @@ export const INVENTARIO_ENTITIES = [
   providers: [
     InventarioService,
     {
-      provide: STOCK_INBOX_PORT,
+      provide: STOCK_ALERT_PORT,
       useExisting: InventarioInboxAdapter,
     },
   ],

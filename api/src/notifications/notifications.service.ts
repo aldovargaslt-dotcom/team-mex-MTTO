@@ -21,14 +21,19 @@ export class NotificationsService {
     return this.engine().expireDedupe(dedupeKey);
   }
 
-  /** Inventario llama esto al cruzar a qty <= min_qty. */
+  /** Inventario (vía StockAlertPort) al cruzar a qty <= min_qty. */
   ingestStockBajo(input: StockBajoInput) {
     return this.engine().ingest(stockBajoCommand(input));
   }
 
-  /** Inventario llama esto al cruzar a qty > min_qty (expira el matching dedupe). */
-  ingestStockReabastecido(itemId: string) {
+  /** Expira el matching `INV:stock-bajo:{itemId}` (StockReabastecido). */
+  clear(itemId: string) {
     return this.engine().expireDedupe(stockBajoDedupeKey(itemId));
+  }
+
+  /** @deprecated usar `clear` (ADR-007). */
+  ingestStockReabastecido(itemId: string) {
+    return this.clear(itemId);
   }
 
   list(userId: string, filter: InboxFilter = 'unread') {

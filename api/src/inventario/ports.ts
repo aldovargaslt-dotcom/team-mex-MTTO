@@ -1,17 +1,12 @@
-export type StockBajoEmit = {
-  itemId: string;
-  sku: string;
-  nombre: string;
-  qty: number;
-};
+import { StockAlertEvent } from './stock-alert.event';
 
 /**
- * Inbox de Notifications (ADR-006). Inventario no escribe schema `notifications`.
- * IDs opacos; sin FK cruzada.
+ * Seam Inventario → Notifications (ADR-007).
+ * Inventario emite el envelope; no escribe `notifications.*` ni `andon.*`.
  */
-export interface StockInboxPort {
-  onStockBajo(input: StockBajoEmit): Promise<void>;
-  onStockReabastecido(itemId: string): Promise<void>;
+export interface StockAlertPort {
+  onStockBajo(event: StockAlertEvent): Promise<void>;
+  onStockReabastecido(event: StockAlertEvent): Promise<void>;
 }
 
-export const STOCK_INBOX_PORT = Symbol('StockInboxPort');
+export const STOCK_ALERT_PORT = Symbol('StockAlertPort');

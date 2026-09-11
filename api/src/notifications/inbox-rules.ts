@@ -54,13 +54,20 @@ export function avisoAbiertoCommand(input: AvisoAbiertoInput): IngestCommand {
   };
 }
 
-/** Inventario emite; Notifications solo ingiere. qty=0 → CRITICAL / agotado. */
+/** Inventario emite el envelope ADR-007; Notifications solo ingiere. qty=0 → CRITICAL. */
 export function stockBajoCommand(input: StockBajoInput): IngestCommand {
   const agotado = input.qty === 0;
+  const who = input.nombre?.trim()
+    ? `${input.nombre.trim()} (${input.sku})`
+    : input.sku;
+  const umbral =
+    input.qty != null && input.minQty != null
+      ? `hay ${input.qty}, mínimo ${input.minQty}`
+      : null;
   return {
     sourceModule: SourceModule.INVENTARIO,
     sourceEvent: SourceEvent.STOCK_BAJO,
-    sourceRef: input.itemId,
+    sourceRef: input.eventId ?? input.itemId,
     subjectType: SubjectType.ITEM,
     subjectRef: input.itemId,
     severity: agotado ? Severity.CRITICAL : Severity.WARNING,
@@ -68,9 +75,12 @@ export function stockBajoCommand(input: StockBajoInput): IngestCommand {
       ? `Stock agotado — ${input.sku}`
       : `Stock bajo — ${input.sku}`,
     body: agotado
-      ? `${input.nombre} (${input.sku}) está en 0. Requiere reabastecimiento.`
-      : `${input.nombre} (${input.sku}) requiere reabastecimiento.`,
+      ? `${who} está en 0${umbral ? ` (${umbral})` : ''}. Requiere reabastecimiento.`
+      : umbral
+        ? `${who}: ${umbral}. Requiere reabastecimiento.`
+        : `${who} requiere reabastecimiento.`,
     dedupeKey: stockBajoDedupeKey(input.itemId),
+    createdAt: input.occurredAt ? new Date(input.occurredAt) : undefined,
   };
 }
 

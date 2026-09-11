@@ -417,7 +417,7 @@ describe('Inventario v0 + piezas en visita (e2e)', () => {
     expect(piezaItemFk).toBeUndefined();
   });
 
-  it('S1/S2 min_qty: badge, inbox StockBajo, entrada expira; S3 sin andon stock', async () => {
+  it('S1–S4 min_qty: envelope StockBajo, inbox ITEM, entrada expira; sin andon', async () => {
     const familia = await request(server)
       .post('/inventario/familias')
       .set(SUPERVISOR)
@@ -482,7 +482,9 @@ describe('Inventario v0 + piezas en visita (e2e)', () => {
         severity: string;
         sourceModule: string;
         sourceEvent: string;
+        sourceRef: string;
         subjectType: string;
+        subjectRef: string | null;
         deeplinkPath: string;
         dedupeKey: string;
       }[]
@@ -491,6 +493,11 @@ describe('Inventario v0 + piezas en visita (e2e)', () => {
     expect(alert!.sourceModule).toBe('INVENTARIO');
     expect(alert!.sourceEvent).toBe('StockBajo');
     expect(alert!.subjectType).toBe('ITEM');
+    expect(alert!.subjectRef).toBe(item.body.id);
+    expect(alert!.sourceRef).toMatch(
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i,
+    );
+    expect(alert!.sourceRef).not.toBe(item.body.id);
     expect(alert!.severity).toBe('WARNING');
     expect(alert!.deeplinkPath).toBe('/inventario/stock');
     expect(alert!.dedupeKey).toBe(`INV:stock-bajo:${item.body.id}`);
