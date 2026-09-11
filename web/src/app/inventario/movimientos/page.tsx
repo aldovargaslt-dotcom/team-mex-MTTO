@@ -51,7 +51,7 @@ export default function MovimientosPage() {
       },
       {
         accessorKey: 'qty',
-        header: 'Qty',
+        header: 'Cant.',
         cell: ({ row }) => (
           <span className="mono">
             {row.original.qty} {etiquetaUom('pieza')}
@@ -60,7 +60,7 @@ export default function MovimientosPage() {
       },
       {
         accessorKey: 'delta',
-        header: 'Delta',
+        header: 'Cambio',
         cell: ({ row }) => (
           <span className="mono">
             {row.original.delta > 0 ? `+${row.original.delta}` : row.original.delta}
@@ -85,10 +85,7 @@ export default function MovimientosPage() {
 
   return (
     <>
-      <PageHeader
-        title="Movimientos"
-        lede="Entradas, salidas por OT y ajustes."
-      />
+      <PageHeader title="Movimientos" />
       <FormAlert>{error}</FormAlert>
       <DataTable columns={columns} data={rows} empty="Aún no hay movimientos." />
     </>

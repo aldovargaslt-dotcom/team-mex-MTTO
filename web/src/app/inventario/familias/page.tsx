@@ -4,6 +4,7 @@ import { FormEvent, useEffect, useState } from 'react';
 import { api, HttpError } from '@/lib/api';
 import { useRole } from '@/lib/role';
 import type { Familia } from '@/lib/types';
+import { PageHeader } from '@/components/ui/field';
 
 export default function FamiliasPage() {
   const { role, userId } = useRole();
@@ -57,12 +58,7 @@ export default function FamiliasPage() {
 
   return (
     <>
-      <div className="page-head">
-        <div>
-          <h1>Familias</h1>
-          <p className="lede">Agrupan los SKUs del almacén único.</p>
-        </div>
-      </div>
+      <PageHeader title="Familias" />
       <form className="card form-grid" onSubmit={crear}>
         <div className="field">
           <label htmlFor="famNombre">Nombre</label>
@@ -85,7 +81,7 @@ export default function FamiliasPage() {
         {familias.length === 0 ? (
           <div className="empty-state">
             <h2>No hay familias</h2>
-            <p className="muted">Cree la primera familia para poder dar de alta ítems.</p>
+            <p className="muted">Agregue la primera.</p>
           </div>
         ) : (
           familias.map((familia) => (

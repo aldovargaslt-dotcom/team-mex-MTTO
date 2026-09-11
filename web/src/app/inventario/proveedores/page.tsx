@@ -4,6 +4,7 @@ import { FormEvent, useEffect, useState } from 'react';
 import { api, HttpError } from '@/lib/api';
 import { useRole } from '@/lib/role';
 import type { Proveedor } from '@/lib/types';
+import { PageHeader } from '@/components/ui/field';
 
 export default function ProveedoresPage() {
   const { role, userId } = useRole();
@@ -61,14 +62,7 @@ export default function ProveedoresPage() {
 
   return (
     <>
-      <div className="page-head">
-        <div>
-          <h1>Proveedores</h1>
-          <p className="lede">
-            Catálogo liviano. El código de proveedor se vincula en cada ítem.
-          </p>
-        </div>
-      </div>
+      <PageHeader title="Proveedores" />
       <form className="card form-grid" onSubmit={crear}>
         <div className="field">
           <label htmlFor="provNombre">Nombre</label>
@@ -91,7 +85,7 @@ export default function ProveedoresPage() {
         {proveedores.length === 0 ? (
           <div className="empty-state">
             <h2>No hay proveedores</h2>
-            <p className="muted">Agregue el primero para ligar códigos a los SKUs.</p>
+            <p className="muted">Agregue el primero.</p>
           </div>
         ) : (
           proveedores.map((proveedor) => (

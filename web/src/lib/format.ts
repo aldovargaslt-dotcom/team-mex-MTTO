@@ -34,9 +34,13 @@ export function etiquetaOrigenPieza(origen: string) {
 }
 
 export function etiquetaMovimiento(tipo: string) {
-  if (tipo === 'SALIDA_OT') return 'Salida OT';
+  if (tipo === 'SALIDA_OT') return 'Salida';
   if (tipo === 'AJUSTE') return 'Ajuste';
   return 'Entrada';
+}
+
+export function etiquetaEstadoPendiente(estado: string) {
+  return estado === 'RECIBIDA' ? 'Recibida' : 'Pendiente';
 }
 
 export function etiquetaUom(uom?: string | null) {
