@@ -166,6 +166,7 @@ function ChoferesAdmin() {
               type="button"
               variant="secondary"
               size="compact"
+              className="md:min-h-11 md:min-w-11 md:h-11"
               onClick={() => abrirEdicion(row.original)}
             >
               Editar
@@ -175,6 +176,7 @@ function ChoferesAdmin() {
                 type="button"
                 variant="destructive"
                 size="compact"
+                className="md:min-h-11 md:min-w-11 md:h-11"
                 onClick={() => void cambiarEstado(row.original, 'INACTIVO')}
               >
                 Desactivar
@@ -184,6 +186,7 @@ function ChoferesAdmin() {
                 type="button"
                 variant="outline"
                 size="compact"
+                className="md:min-h-11 md:min-w-11 md:h-11"
                 onClick={() => void cambiarEstado(row.original, 'ACTIVO')}
               >
                 Reactivar
@@ -199,7 +202,7 @@ function ChoferesAdmin() {
     <>
       <PageHeader
         title="Choferes"
-        lede="Catálogo de visitas. El supervisor solo selecciona activos; no da de alta."
+        lede="Catálogo de choferes. El supervisor solo selecciona activos; no da de alta."
         actions={
           <Button type="button" onClick={abrirAlta}>
             Agregar chofer
