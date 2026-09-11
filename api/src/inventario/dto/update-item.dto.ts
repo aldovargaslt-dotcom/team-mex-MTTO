@@ -7,6 +7,7 @@ import {
   MaxLength,
 } from 'class-validator';
 import { OptionalTrimmed } from '../../common/trim';
+import { OptionalStockMin } from './optional-stock-min';
 
 export class UpdateItemDto {
   @ApiPropertyOptional()
@@ -42,4 +43,7 @@ export class UpdateItemDto {
   @IsArray()
   @IsUUID('4', { each: true, message: 'El tipo de vehículo no es válido.' })
   tipoVehiculoIds?: string[];
+
+  @OptionalStockMin()
+  stockMin?: number | null;
 }

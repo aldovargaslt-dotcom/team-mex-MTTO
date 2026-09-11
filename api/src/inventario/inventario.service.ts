@@ -1,7 +1,9 @@
 import {
   BadRequestException,
+  Inject,
   Injectable,
   NotFoundException,
+  Optional,
   OnModuleInit,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -36,10 +38,17 @@ import { PendienteComprobante } from './entities/pendiente-comprobante.entity';
 import { Proveedor } from './entities/proveedor.entity';
 import { Stock } from './entities/stock.entity';
 import { EstadoPendiente, TipoMovimiento, UOM_PIEZA } from './enums';
-import {
-  mensajeStockInsuficiente,
-  stockTrasMovimiento,
-} from './stock-rules';
+import { STOCK_INBOX_PORT, StockInboxPort } from './ports';
+import { estadoAlertaStock, eventoCruceUmbral } from './stock-alerta-rules';
+import { mensajeStockInsuficiente, stockTrasMovimiento } from './stock-rules';
+
+type StockCrossing = {
+  item: Item;
+  prevQty: number;
+  nextQty: number;
+  prevMin: number | null;
+  nextMin: number | null;
+};
 
 @Injectable()
 export class InventarioService implements OnModuleInit {
@@ -62,11 +71,17 @@ export class InventarioService implements OnModuleInit {
     private readonly pendientes: Repository<PendienteComprobante>,
     private readonly tipos: TiposVehiculoService,
     private readonly outbox: OutboxService,
+    @Optional()
+    @Inject(STOCK_INBOX_PORT)
+    private readonly stockInbox?: StockInboxPort,
   ) {}
 
   onModuleInit() {
     this.outbox.register(VISITA_CERRADA, async (payload, manager) => {
-      await this.applyVisitaCerrada(payload as unknown as VisitaCerradaPayload, manager);
+      await this.applyVisitaCerrada(
+        payload as unknown as VisitaCerradaPayload,
+        manager,
+      );
     });
   }
 
@@ -78,7 +93,10 @@ export class InventarioService implements OnModuleInit {
 
   async createFamilia(dto: CreateFamiliaDto) {
     const familia = this.familias.create({
-      nombre: requireTrimmed(dto.nombre, 'El nombre de la familia no puede estar vacío.'),
+      nombre: requireTrimmed(
+        dto.nombre,
+        'El nombre de la familia no puede estar vacío.',
+      ),
       activa: dto.activa ?? true,
     });
     return this.familias.save(familia);
@@ -138,7 +156,12 @@ export class InventarioService implements OnModuleInit {
       .filter(Boolean);
     const items = await this.items.find({
       where: ids?.length ? { id: In(ids) } : undefined,
-      relations: { familia: true, stock: true, compatibilidades: true, proveedores: true },
+      relations: {
+        familia: true,
+        stock: true,
+        compatibilidades: true,
+        proveedores: true,
+      },
       order: { sku: 'ASC' },
     });
     return items.map((item) => this.toItemDto(item));
@@ -147,7 +170,12 @@ export class InventarioService implements OnModuleInit {
   async findItem(id: string) {
     const item = await this.items.findOne({
       where: { id },
-      relations: { familia: true, stock: true, compatibilidades: true, proveedores: true },
+      relations: {
+        familia: true,
+        stock: true,
+        compatibilidades: true,
+        proveedores: true,
+      },
     });
     if (!item) {
       throw new NotFoundException('No se encontró el ítem.');
@@ -162,27 +190,42 @@ export class InventarioService implements OnModuleInit {
     }
     const item = this.items.create({
       sku: requireTrimmed(dto.sku, 'El SKU no puede estar vacío.'),
-      nombre: requireTrimmed(dto.nombre, 'El nombre del ítem no puede estar vacío.'),
+      nombre: requireTrimmed(
+        dto.nombre,
+        'El nombre del ítem no puede estar vacío.',
+      ),
       familia,
       oem: dto.oem?.trim() || null,
       uom: UOM_PIEZA,
       activo: dto.activo ?? true,
+      stockMin: dto.stockMin ?? null,
     });
     const saved = await this.items.save(item);
     await this.stock.save(this.stock.create({ itemId: saved.id, qty: 0 }));
     if (dto.tipoVehiculoIds?.length) {
       await this.replaceCompatibilidad(saved.id, dto.tipoVehiculoIds);
     }
+    await this.emitCruceUmbral({
+      item: saved,
+      prevQty: 0,
+      nextQty: 0,
+      prevMin: null,
+      nextMin: saved.stockMin,
+    });
     return this.findItem(saved.id);
   }
 
   async updateItem(id: string, dto: UpdateItemDto) {
     const item = await this.requireItemEntity(id);
+    const prevMin = item.stockMin ?? null;
     if (dto.sku !== undefined) {
       item.sku = requireTrimmed(dto.sku, 'El SKU no puede estar vacío.');
     }
     if (dto.nombre !== undefined) {
-      item.nombre = requireTrimmed(dto.nombre, 'El nombre del ítem no puede estar vacío.');
+      item.nombre = requireTrimmed(
+        dto.nombre,
+        'El nombre del ítem no puede estar vacío.',
+      );
     }
     if (dto.familiaId !== undefined) {
       item.familia = await this.requireFamilia(dto.familiaId);
@@ -193,9 +236,23 @@ export class InventarioService implements OnModuleInit {
     if (dto.activo !== undefined) {
       item.activo = dto.activo;
     }
+    if (dto.stockMin !== undefined) {
+      item.stockMin = dto.stockMin;
+    }
     await this.items.save(item);
     if (dto.tipoVehiculoIds) {
       await this.replaceCompatibilidad(id, dto.tipoVehiculoIds);
+    }
+    if (dto.stockMin !== undefined) {
+      const stock = await this.stock.findOne({ where: { itemId: id } });
+      const qty = stock?.qty ?? 0;
+      await this.emitCruceUmbral({
+        item,
+        prevQty: qty,
+        nextQty: qty,
+        prevMin,
+        nextMin: item.stockMin ?? null,
+      });
     }
     return this.findItem(id);
   }
@@ -251,7 +308,9 @@ export class InventarioService implements OnModuleInit {
       relations: { item: true },
     });
     if (!link) {
-      throw new NotFoundException('No se encontró el vínculo con el proveedor.');
+      throw new NotFoundException(
+        'No se encontró el vínculo con el proveedor.',
+      );
     }
     if (dto.codigoProveedor !== undefined) {
       link.codigoProveedor = requireTrimmed(
@@ -275,7 +334,9 @@ export class InventarioService implements OnModuleInit {
       relations: { item: true },
     });
     if (!link) {
-      throw new NotFoundException('No se encontró el vínculo con el proveedor.');
+      throw new NotFoundException(
+        'No se encontró el vínculo con el proveedor.',
+      );
     }
     const itemId = link.item.id;
     await this.itemProveedores.remove(link);
@@ -297,6 +358,8 @@ export class InventarioService implements OnModuleInit {
       activo: row.item.activo,
       uom: row.item.uom,
       qty: row.qty,
+      stockMin: row.item.stockMin ?? null,
+      alerta: estadoAlertaStock(row.qty, row.item.stockMin ?? null),
       updatedAt: row.updatedAt,
     }));
   }
@@ -330,10 +393,14 @@ export class InventarioService implements OnModuleInit {
   async adjuntarTicket(id: string, dto: TicketDto) {
     const row = await this.pendientes.findOne({ where: { id } });
     if (!row) {
-      throw new NotFoundException('No se encontró el pendiente de comprobante.');
+      throw new NotFoundException(
+        'No se encontró el pendiente de comprobante.',
+      );
     }
     if (row.estado !== EstadoPendiente.PENDIENTE) {
-      throw new BadRequestException('Solo se puede adjuntar ticket a un pendiente abierto.');
+      throw new BadRequestException(
+        'Solo se puede adjuntar ticket a un pendiente abierto.',
+      );
     }
     row.ticketDataUrl = dto.dataUrl;
     await this.pendientes.save(row);
@@ -343,10 +410,14 @@ export class InventarioService implements OnModuleInit {
   async marcarRecibida(id: string) {
     const row = await this.pendientes.findOne({ where: { id } });
     if (!row) {
-      throw new NotFoundException('No se encontró el pendiente de comprobante.');
+      throw new NotFoundException(
+        'No se encontró el pendiente de comprobante.',
+      );
     }
     if (row.estado !== EstadoPendiente.PENDIENTE) {
-      throw new BadRequestException('Este comprobante ya está marcado como recibido.');
+      throw new BadRequestException(
+        'Este comprobante ya está marcado como recibido.',
+      );
     }
     row.estado = EstadoPendiente.RECIBIDA;
     await this.pendientes.save(row);
@@ -354,8 +425,9 @@ export class InventarioService implements OnModuleInit {
   }
 
   async entrada(dto: EntradaDto, user: CurrentUser) {
+    let crossing: StockCrossing | null = null;
     await this.items.manager.transaction(async (manager) => {
-      await this.applyDelta(
+      crossing = await this.applyDelta(
         dto.itemId,
         dto.qty,
         TipoMovimiento.ENTRADA,
@@ -363,12 +435,16 @@ export class InventarioService implements OnModuleInit {
         manager,
       );
     });
+    if (crossing) {
+      await this.emitCruceUmbral(crossing);
+    }
     return this.findItem(dto.itemId);
   }
 
   async ajuste(dto: AjusteDto, user: CurrentUser) {
+    let crossing: StockCrossing | null = null;
     await this.items.manager.transaction(async (manager) => {
-      await this.applyDelta(
+      crossing = await this.applyDelta(
         dto.itemId,
         dto.qtyDelta,
         TipoMovimiento.AJUSTE,
@@ -376,6 +452,9 @@ export class InventarioService implements OnModuleInit {
         manager,
       );
     });
+    if (crossing) {
+      await this.emitCruceUmbral(crossing);
+    }
     return this.findItem(dto.itemId);
   }
 
@@ -385,17 +464,25 @@ export class InventarioService implements OnModuleInit {
       .createQueryBuilder('item')
       .innerJoinAndSelect('item.familia', 'familia')
       .leftJoinAndSelect('item.stock', 'stock')
-      .innerJoin('item.compatibilidades', 'compat', 'compat.tipoVehiculoId = :tipoId', {
-        tipoId: tipoVehiculoId,
-      })
+      .innerJoin(
+        'item.compatibilidades',
+        'compat',
+        'compat.tipoVehiculoId = :tipoId',
+        {
+          tipoId: tipoVehiculoId,
+        },
+      )
       .where('item.activo = true')
       .orderBy('item.sku', 'ASC');
 
     const query = q?.trim();
     if (query) {
-      qb.andWhere('(item.sku ILIKE :q OR item.nombre ILIKE :q OR COALESCE(item.oem, \'\') ILIKE :q)', {
-        q: `%${query}%`,
-      });
+      qb.andWhere(
+        "(item.sku ILIKE :q OR item.nombre ILIKE :q OR COALESCE(item.oem, '') ILIKE :q)",
+        {
+          q: `%${query}%`,
+        },
+      );
     }
 
     const items = await qb.getMany();
@@ -414,17 +501,22 @@ export class InventarioService implements OnModuleInit {
     payload: VisitaCerradaPayload,
     manager: EntityManager,
   ) {
+    const crossings: StockCrossing[] = [];
     for (const line of payload.consumos) {
       if (line.qty < 1) {
-        throw new BadRequestException('La cantidad de cada pieza debe ser al menos 1.');
+        throw new BadRequestException(
+          'La cantidad de cada pieza debe ser al menos 1.',
+        );
       }
       if (line.origen === OrigenConsumo.DESDE_STOCK) {
-        await this.applyDelta(
-          line.itemId,
-          -line.qty,
-          TipoMovimiento.SALIDA_OT,
-          { visitaId: payload.visitaId },
-          manager,
+        crossings.push(
+          await this.applyDelta(
+            line.itemId,
+            -line.qty,
+            TipoMovimiento.SALIDA_OT,
+            { visitaId: payload.visitaId },
+            manager,
+          ),
         );
       } else if (line.origen === OrigenConsumo.COMPRA_EXTERNA) {
         await this.requireItemEntity(line.itemId, manager);
@@ -439,6 +531,9 @@ export class InventarioService implements OnModuleInit {
         );
       }
     }
+    for (const crossing of crossings) {
+      await this.emitCruceUmbral(crossing);
+    }
   }
 
   /**
@@ -449,9 +544,13 @@ export class InventarioService implements OnModuleInit {
     itemId: string,
     delta: number,
     tipo: TipoMovimiento,
-    extra: { visitaId?: string | null; nota?: string | null; createdBy?: string | null },
+    extra: {
+      visitaId?: string | null;
+      nota?: string | null;
+      createdBy?: string | null;
+    },
     manager: EntityManager,
-  ) {
+  ): Promise<StockCrossing> {
     const itemRepo = manager.getRepository(Item);
     const stockRepo = manager.getRepository(Stock);
     const movRepo = manager.getRepository(Movimiento);
@@ -469,6 +568,7 @@ export class InventarioService implements OnModuleInit {
       stock = stockRepo.create({ itemId, qty: 0 });
     }
 
+    const prevQty = stock.qty;
     try {
       stock.qty = stockTrasMovimiento(stock.qty, delta);
     } catch {
@@ -494,9 +594,37 @@ export class InventarioService implements OnModuleInit {
         createdBy: extra.createdBy ?? null,
       }),
     );
+    const min = item.stockMin ?? null;
+    return {
+      item,
+      prevQty,
+      nextQty: stock.qty,
+      prevMin: min,
+      nextMin: min,
+    };
   }
 
-  private async replaceCompatibilidad(itemId: string, tipoVehiculoIds: string[]) {
+  private async emitCruceUmbral(crossing: StockCrossing) {
+    const evento = eventoCruceUmbral(crossing);
+    if (!evento || !this.stockInbox) {
+      return;
+    }
+    if (evento === 'StockBajo') {
+      await this.stockInbox.onStockBajo({
+        itemId: crossing.item.id,
+        sku: crossing.item.sku,
+        nombre: crossing.item.nombre,
+        qty: crossing.nextQty,
+      });
+      return;
+    }
+    await this.stockInbox.onStockReabastecido(crossing.item.id);
+  }
+
+  private async replaceCompatibilidad(
+    itemId: string,
+    tipoVehiculoIds: string[],
+  ) {
     const unique = [...new Set(tipoVehiculoIds)];
     for (const tipoId of unique) {
       await this.tipos.findOne(tipoId);
@@ -576,7 +704,11 @@ export class InventarioService implements OnModuleInit {
       uom: item.uom,
       activo: item.activo,
       stock: item.stock?.qty ?? 0,
-      tipoVehiculoIds: (item.compatibilidades ?? []).map((c) => c.tipoVehiculoId),
+      stockMin: item.stockMin ?? null,
+      alerta: estadoAlertaStock(item.stock?.qty ?? 0, item.stockMin ?? null),
+      tipoVehiculoIds: (item.compatibilidades ?? []).map(
+        (c) => c.tipoVehiculoId,
+      ),
       proveedores: (item.proveedores ?? []).map((link) => ({
         id: link.id,
         proveedorId: link.proveedor?.id,

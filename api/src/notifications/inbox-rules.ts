@@ -1,10 +1,5 @@
 import { randomUUID } from 'crypto';
-import {
-  Severity,
-  SourceEvent,
-  SourceModule,
-  SubjectType,
-} from './enums';
+import { Severity, SourceEvent, SourceModule, SubjectType } from './enums';
 import { InboxItem, IngestCommand, StockBajoInput } from './inbox-types';
 
 export type AvisoAbiertoInput = {
@@ -28,7 +23,9 @@ export function isExpired(item: InboxItem, now: Date) {
   return item.expiresAt != null && item.expiresAt.getTime() <= now.getTime();
 }
 
-export function deeplinkPath(item: Pick<InboxItem, 'subjectType' | 'subjectRef' | 'sourceModule'>) {
+export function deeplinkPath(
+  item: Pick<InboxItem, 'subjectType' | 'subjectRef' | 'sourceModule'>,
+) {
   if (item.subjectType === SubjectType.UNIDAD && item.subjectRef) {
     return `/unidades/${item.subjectRef}`;
   }
@@ -57,17 +54,22 @@ export function avisoAbiertoCommand(input: AvisoAbiertoInput): IngestCommand {
   };
 }
 
-/** Contract stub: Inventario emitirá esto; Notifications solo ingiere. */
+/** Inventario emite; Notifications solo ingiere. qty=0 → CRITICAL / agotado. */
 export function stockBajoCommand(input: StockBajoInput): IngestCommand {
+  const agotado = input.qty === 0;
   return {
     sourceModule: SourceModule.INVENTARIO,
     sourceEvent: SourceEvent.STOCK_BAJO,
     sourceRef: input.itemId,
     subjectType: SubjectType.ITEM,
     subjectRef: input.itemId,
-    severity: Severity.WARNING,
-    title: `Stock bajo — ${input.sku}`,
-    body: `${input.nombre} (${input.sku}) requiere reabastecimiento.`,
+    severity: agotado ? Severity.CRITICAL : Severity.WARNING,
+    title: agotado
+      ? `Stock agotado — ${input.sku}`
+      : `Stock bajo — ${input.sku}`,
+    body: agotado
+      ? `${input.nombre} (${input.sku}) está en 0. Requiere reabastecimiento.`
+      : `${input.nombre} (${input.sku}) requiere reabastecimiento.`,
     dedupeKey: stockBajoDedupeKey(input.itemId),
   };
 }

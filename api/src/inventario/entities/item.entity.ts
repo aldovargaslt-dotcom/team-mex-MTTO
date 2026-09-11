@@ -44,6 +44,10 @@ export class Item {
   @Column({ default: true })
   activo: boolean;
 
+  /** Umbral opt-in por SKU. null = sin alerta. Integer >= 0. */
+  @Column({ name: 'stock_min', type: 'int', nullable: true })
+  stockMin: number | null;
+
   @OneToOne(() => Stock, (stock) => stock.item, { cascade: true })
   stock: Stock;
 

@@ -43,6 +43,7 @@ export type StockBajoInput = {
   itemId: string;
   sku: string;
   nombre: string;
+  qty?: number;
 };
 
 export interface InboxStore {
