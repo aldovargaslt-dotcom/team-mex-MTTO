@@ -7,6 +7,7 @@ import { RolesGuard } from './auth/roles.guard';
 import { HealthController } from './health.controller';
 import { ChoferesModule } from './choferes/choferes.module';
 import { ensureModuleSchemas } from './db/ensure-schemas';
+import { typeormRootOptions } from './db/postgres-options';
 import { AndonModule } from './andon/andon.module';
 import { InventarioModule } from './inventario/inventario.module';
 import { NotificationsModule } from './notifications/notifications.module';
@@ -23,17 +24,7 @@ import { VisitasModule } from './visitas/visitas.module';
       inject: [ConfigService],
       useFactory: async (config: ConfigService) => {
         await ensureModuleSchemas(config);
-        return {
-          type: 'postgres' as const,
-          host: config.get<string>('DB_HOST', 'localhost'),
-          port: parseInt(config.get<string>('DB_PORT', '5432'), 10),
-          username: config.get<string>('DB_USER', 'team_mex'),
-          password: config.get<string>('DB_PASSWORD', 'team_mex'),
-          database: config.get<string>('DB_NAME', 'team_mex_mtto'),
-          autoLoadEntities: true,
-          synchronize: config.get<string>('DB_SYNCHRONIZE', 'true') === 'true',
-          dropSchema: config.get<string>('DB_DROP_SCHEMA', 'false') === 'true',
-        };
+        return typeormRootOptions(config);
       },
     }),
     OutboxModule,
