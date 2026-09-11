@@ -131,9 +131,9 @@ export function PiezasStep({
   }
 
   return (
-    <Card className="p-4">
-      <h2 className="text-[15px] font-semibold">Piezas</h2>
-      <p className="mt-1 text-sm text-muted-foreground">
+    <Card className="p-3">
+      <h2 className="text-[13px] font-semibold">Piezas</h2>
+      <p className="mt-1 text-xs text-muted-foreground">
         SKUs compatibles con {tipoVehiculoNombre ?? 'el tipo de la unidad'}. Opcional.
         Si la cantidad supera el stock, use compra externa o reduzca.
       </p>
@@ -148,13 +148,13 @@ export function PiezasStep({
               <div
                 key={linea.itemId}
                 className={cn(
-                  'grid gap-2 rounded-lg border border-border p-3',
+                  'grid gap-2 rounded-md border border-border p-2.5',
                   insuficiente && 'border-[#ead0b3] bg-[#fff4e8]',
                 )}
               >
                 <div className="flex flex-wrap items-start justify-between gap-2">
                   <div>
-                    <p className="font-mono font-bold">{linea.sku}</p>
+                    <p className="font-mono font-semibold">{linea.sku}</p>
                     <p className="text-sm">{linea.nombre}</p>
                     <p className="text-xs text-muted-foreground">
                       Stock {linea.stock} {etiquetaUom(linea.uom)}
@@ -218,6 +218,7 @@ export function PiezasStep({
                     </FormAlert>
                     <Button
                       type="button"
+                      variant="outline"
                       className="w-full sm:w-auto"
                       onClick={() =>
                         actualizar(linea.itemId, { origen: 'COMPRA_EXTERNA' })
@@ -287,15 +288,15 @@ export function PiezasStep({
 export function PiezasReadonly({ piezas }: { piezas: PiezaLinea[] }) {
   if (!piezas.length) {
     return (
-      <Card className="mt-3 p-4">
-        <h2 className="text-[15px] font-semibold">Piezas</h2>
-        <p className="mt-1 text-sm text-muted-foreground">Sin piezas.</p>
+      <Card className="mt-3 p-3">
+        <h2 className="text-[13px] font-semibold">Piezas</h2>
+        <p className="mt-1 text-xs text-muted-foreground">Sin piezas.</p>
       </Card>
     );
   }
   return (
-    <Card className="mt-3 p-4">
-      <h2 className="text-[15px] font-semibold">Piezas</h2>
+    <Card className="mt-3 p-3">
+      <h2 className="text-[13px] font-semibold">Piezas</h2>
       <ul className="plain-list mt-2">
         {piezas.map((pieza) => (
           <li key={pieza.itemId}>

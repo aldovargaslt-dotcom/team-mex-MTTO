@@ -21,8 +21,7 @@ export function RoleGate({
   if (!role) {
     return (
       <div className="empty-state">
-        <h2>Seleccione un rol</h2>
-        <p>Para consultar unidades necesita indicar si es supervisor o administrador.</p>
+        <h2>Seleccione un rol.</h2>
         <Button asChild>
           <Link href="/">Ir a selección de rol</Link>
         </Button>
@@ -33,11 +32,7 @@ export function RoleGate({
   if (adminOnly && !isAdmin) {
     return (
       <div className="empty-state">
-        <h2>Acceso restringido</h2>
-        <p>
-          Esta sección es exclusiva del administrador directivo. El supervisor
-          consulta unidades, registra visitas y opera el catálogo de inventario.
-        </p>
+        <h2>Acceso restringido al administrador directivo.</h2>
         <Button asChild variant="secondary">
           <Link href="/unidades">Volver a unidades</Link>
         </Button>

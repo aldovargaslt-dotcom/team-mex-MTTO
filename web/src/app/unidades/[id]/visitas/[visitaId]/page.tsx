@@ -15,9 +15,11 @@ import {
 import { api, HttpError } from '@/lib/api';
 import { ImageDropzone } from '@/components/ImageDropzone';
 import { VisitStepper } from '@/components/VisitStepper';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { FormAlert } from '@/components/ui/field';
 import {
+  etiquetaEstadoVisita,
   etiquetaTipoVisita,
   formatFecha,
   formatKm,
@@ -87,11 +89,8 @@ function VisitaContent() {
   if (notFound) {
     return (
       <div className="empty-state">
-        <h2>No se encontró la visita</h2>
-        <p className="muted">
-          El borrador pudo haberse eliminado o no está visible para este rol.
-        </p>
-        <Link className="btn btn-primary" href={`/unidades/${params.id}`}>
+        <h2>No se encontró la visita.</h2>
+        <Link className="btn btn-outline" href={`/unidades/${params.id}`}>
           Volver al hub
         </Link>
       </div>
@@ -145,11 +144,15 @@ function VisitaReadonly({
     <>
       <div className="page-head">
         <div>
-          <p className="muted">Visita {visita.estado === 'CERRADO' ? 'cerrada' : 'en borrador'}</p>
           <h1>
-            {visita.unidadNumeroInterno} · {etiquetaTipoVisita(visita.tipo)}
+            {visita.unidadNumeroInterno}
+            <Badge variant={visita.estado === 'CERRADO' ? 'success' : 'warning'}>
+              {etiquetaEstadoVisita(visita.estado)}
+            </Badge>
           </h1>
           <p className="lede">
+            {etiquetaTipoVisita(visita.tipo)}
+            {' · '}
             {formatKm(visita.km)}
             {visita.chofer ? ` · ${visita.chofer.nombre}` : ''}
             {visita.cerradoAt ? ` · ${formatFecha(visita.cerradoAt)}` : ''}
@@ -445,13 +448,25 @@ function VisitWizard({
     faltantes.push('Piezas con stock insuficiente (compra externa o reduzca qty)');
   }
 
+  const choferNombre =
+    choferes.find((c) => c.id === choferId)?.nombre ?? visita.chofer?.nombre;
+
   return (
     <>
       <div className="page-head">
         <div>
-          <p className="muted">Nueva visita · {visita.unidadNumeroInterno}</p>
-          <h1>Visita en borrador</h1>
+          <h1>
+            {visita.unidadNumeroInterno}
+            <Badge variant="warning">Borrador</Badge>
+          </h1>
           <p className="lede">
+            {etiquetaTipoVisita(tipo || visita.tipo)}
+            {' · '}
+            {km.trim()
+              ? `${Number(km).toLocaleString('es-MX')} km`
+              : formatKm(visita.km)}
+            {choferNombre ? ` · ${choferNombre}` : ''}
+            {' · '}
             Último km cerrado:{' '}
             {ultimoKm != null ? `${ultimoKm.toLocaleString('es-MX')} km` : 'Sin registro'}
           </p>

@@ -17,11 +17,10 @@ export default function HomePage() {
   return (
     <div className="home">
       <div className="home-card">
-        <p className="muted">TEAM MEX</p>
+        <p className="text-xs text-muted-foreground">TEAM MEX</p>
         <h1>Mantenimiento de unidades</h1>
         <p className="lede">
-          Seleccione un rol para continuar. Esta pantalla sustituye el inicio de
-          sesión mientras el acceso real se implementa.
+          Seleccione un rol para continuar.
         </p>
         {ready && role ? (
           <p className="note">

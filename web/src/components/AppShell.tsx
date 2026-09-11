@@ -4,7 +4,6 @@ import type { ReactNode } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { BrandPlate } from '@/components/BrandPlate';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { etiquetaRol, useRole } from '@/lib/role';
@@ -17,13 +16,13 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   return (
     <div className="app">
-      <header className="bg-navy text-[var(--shell-ink)]">
-        <div className="mx-auto flex min-h-14 max-w-[1040px] flex-wrap items-center gap-3 px-4 py-2 md:gap-5">
+      <header className="bg-shell text-[var(--shell-ink)]">
+        <div className="mx-auto flex min-h-12 max-w-[1040px] flex-wrap items-center gap-3 px-4 py-1.5 md:gap-5">
           <Link href={role ? '/unidades' : '/'} className="flex items-center py-1">
             <BrandPlate />
           </Link>
           {!isHome && ready && role ? (
-            <nav className="flex flex-1 flex-wrap gap-1" aria-label="Principal">
+            <nav className="flex flex-1 flex-wrap gap-0.5" aria-label="Principal">
               <NavLink href="/unidades" active={Boolean(pathname?.startsWith('/unidades'))}>
                 Unidades
               </NavLink>
@@ -45,9 +44,9 @@ export function AppShell({ children }: { children: ReactNode }) {
           <div className="ml-auto flex items-center gap-2">
             {ready && role && !isHome ? (
               <>
-                <Badge variant="navy" className="bg-white/10 font-normal">
+                <span className="text-[11px] font-medium uppercase tracking-[0.08em] text-white/45">
                   {etiquetaRol(role)}
-                </Badge>
+                </span>
                 <Button
                   type="button"
                   variant="ghost"
@@ -81,8 +80,9 @@ function NavLink({
     <Link
       href={href}
       className={cn(
-        'inline-flex min-h-11 items-center rounded-lg px-3 text-sm text-white/80 hover:bg-white/10 hover:text-white',
-        active && 'bg-white font-medium text-navy hover:bg-white hover:text-navy',
+        'inline-flex min-h-9 items-center rounded-none px-2.5 text-[13px] text-white/65 hover:text-white',
+        active &&
+          'font-medium text-white shadow-[inset_0_-2px_0_#ea7515]',
       )}
     >
       {children}

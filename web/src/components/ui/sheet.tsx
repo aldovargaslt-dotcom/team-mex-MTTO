@@ -57,11 +57,11 @@ function SheetContent({
       <DialogPrimitive.Content
         data-slot="sheet-content"
         className={cn(
-          'fixed z-50 flex flex-col gap-4 bg-card shadow-lg transition ease-in-out data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:duration-300 data-[state=open]:duration-300',
+          'fixed z-50 flex flex-col gap-3 bg-card shadow-none transition ease-in-out data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:duration-300 data-[state=open]:duration-300',
           side === 'right' &&
             'inset-y-0 right-0 h-full w-full border-l border-border sm:max-w-md data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right',
           side === 'bottom' &&
-            'inset-x-0 bottom-0 max-h-[90vh] rounded-t-[12px] border-t border-border data-[state=closed]:slide-out-to-bottom data-[state=open]:slide-in-from-bottom',
+            'inset-x-0 bottom-0 max-h-[90vh] rounded-t-md border-t border-border data-[state=closed]:slide-out-to-bottom data-[state=open]:slide-in-from-bottom',
           className,
         )}
         {...props}
@@ -93,7 +93,7 @@ function SheetTitle({
   return (
     <DialogPrimitive.Title
       data-slot="sheet-title"
-      className={cn('text-lg font-semibold text-navy', className)}
+      className={cn('text-[15px] font-semibold text-navy', className)}
       {...props}
     />
   );

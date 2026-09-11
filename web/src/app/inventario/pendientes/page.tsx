@@ -9,7 +9,6 @@ import { ImageDropzone } from '@/components/ImageDropzone';
 import { OtLink, useOtLabels } from '@/components/OtLink';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
 import { FormAlert, PageHeader } from '@/components/ui/field';
 
 function readFile(file: File): Promise<string> {
@@ -105,71 +104,70 @@ export default function PendientesPage() {
       />
       <FormAlert>{error}</FormAlert>
       {rows.length === 0 ? (
-        <Card className="p-6 text-center text-sm text-muted-foreground">
-          No hay compras externas pendientes.
-        </Card>
+        <p className="muted">No hay compras externas pendientes.</p>
       ) : (
-        <div className="grid gap-3">
+        <div className="card overflow-hidden">
           {rows.map((row) => {
             const abierto = row.estado === 'PENDIENTE';
             return (
-              <Card key={row.id} className="p-4">
-                <div className="flex flex-wrap items-start justify-between gap-2">
-                  <div>
-                    <p className="font-mono font-bold">{row.sku}</p>
-                    <p className="text-sm">
-                      {row.nombre} · {row.qty} {etiquetaUom('pieza')}
-                    </p>
-                    <p className="mt-1 text-xs text-muted-foreground">
-                      {formatFecha(row.createdAt)} · <OtLink visitaId={row.visitaId} labels={labels} />
-                    </p>
-                  </div>
+              <div key={row.id} className="queue-row">
+                <div>
+                  <p>
+                    <span className="mono">{row.sku}</span> {row.nombre} · {row.qty}{' '}
+                    {etiquetaUom('pieza')}
+                  </p>
+                  <p className="muted">
+                    {formatFecha(row.createdAt)} ·{' '}
+                    <OtLink visitaId={row.visitaId} labels={labels} />
+                  </p>
+                  {row.ticketDataUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={row.ticketDataUrl}
+                      alt={`Ticket ${row.sku}`}
+                      className="mt-1 max-h-16 rounded-md border border-border"
+                    />
+                  ) : null}
+                  {abierto && ticketFor === row.id ? (
+                    <div className="mt-2">
+                      <ImageDropzone
+                        label="Tomar o subir"
+                        hint="Foto del ticket o nota de compra"
+                        disabled={busyId === row.id}
+                        onFile={(file) => void adjuntar(row.id, file)}
+                      />
+                    </div>
+                  ) : null}
+                </div>
+                <div className="row-actions">
                   <Badge variant={abierto ? 'warning' : 'success'}>
                     {row.estado}
                   </Badge>
+                  {abierto ? (
+                    <>
+                      <Button
+                        type="button"
+                        size="compact"
+                        disabled={busyId === row.id}
+                        onClick={() =>
+                          setTicketFor(ticketFor === row.id ? null : row.id)
+                        }
+                      >
+                        Adjuntar ticket
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="compact"
+                        disabled={busyId === row.id}
+                        onClick={() => void recibir(row.id)}
+                      >
+                        Marcar recibida
+                      </Button>
+                    </>
+                  ) : null}
                 </div>
-                {row.ticketDataUrl ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={row.ticketDataUrl}
-                    alt={`Ticket ${row.sku}`}
-                    className="mt-3 max-h-28 rounded-lg border border-border"
-                  />
-                ) : null}
-                {abierto ? (
-                  <div className="mt-3 grid gap-2 sm:flex">
-                    <Button
-                      type="button"
-                      className="w-full sm:w-auto"
-                      disabled={busyId === row.id}
-                      onClick={() =>
-                        setTicketFor(ticketFor === row.id ? null : row.id)
-                      }
-                    >
-                      Adjuntar ticket
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="secondary"
-                      className="w-full sm:w-auto"
-                      disabled={busyId === row.id}
-                      onClick={() => void recibir(row.id)}
-                    >
-                      Marcar recibida
-                    </Button>
-                  </div>
-                ) : null}
-                {abierto && ticketFor === row.id ? (
-                  <div className="mt-3">
-                    <ImageDropzone
-                      label="Tomar o subir"
-                      hint="Foto del ticket o nota de compra"
-                      disabled={busyId === row.id}
-                      onFile={(file) => void adjuntar(row.id, file)}
-                    />
-                  </div>
-                ) : null}
-              </Card>
+              </div>
             );
           })}
         </div>

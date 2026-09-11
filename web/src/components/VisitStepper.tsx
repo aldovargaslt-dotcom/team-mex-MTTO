@@ -13,7 +13,7 @@ export function VisitStepper({
   return (
     <>
       <div className="stepper-mobile">
-        <p className="text-sm font-semibold text-navy">
+        <p className="text-[13px] font-medium text-navy">
           Paso {currentIndex + 1} de {steps.length} · {current.label}
         </p>
         <div className="stepper-dots" aria-hidden>

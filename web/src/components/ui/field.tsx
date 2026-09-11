@@ -44,7 +44,7 @@ export function Note({
     <div
       role={variant === 'warn' ? 'status' : undefined}
       className={cn(
-        'mt-3 rounded-lg px-3 py-2.5 text-[13px]',
+        'mt-3 rounded-md px-3 py-2 text-[13px]',
         variant === 'warn'
           ? 'bg-[#fff4e8] text-[#8a4b12]'
           : 'bg-muted text-muted-foreground',
@@ -67,14 +67,14 @@ export function PageHeader({
   actions?: ReactNode;
 }) {
   return (
-    <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+    <div className="mb-3 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
       <div>
         {kicker ? (
-          <p className="text-sm text-muted-foreground">{kicker}</p>
+          <p className="text-xs text-muted-foreground">{kicker}</p>
         ) : null}
-        <h1 className="text-[22px] font-bold text-navy">{title}</h1>
+        <h1 className="text-[20px] font-semibold text-navy">{title}</h1>
         {lede ? (
-          <p className="mt-1 text-sm text-muted-foreground">{lede}</p>
+          <p className="mt-0.5 text-xs text-muted-foreground">{lede}</p>
         ) : null}
       </div>
       {actions ? <div className="flex flex-wrap gap-2">{actions}</div> : null}

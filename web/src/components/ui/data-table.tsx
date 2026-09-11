@@ -79,7 +79,7 @@ export function DataTable<TData>({
             <TableRow>
               <TableCell
                 colSpan={columns.length}
-                className="h-20 text-center text-muted-foreground"
+                className="h-10 text-left text-muted-foreground"
               >
                 {empty ?? 'Sin registros.'}
               </TableCell>
