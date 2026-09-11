@@ -116,6 +116,33 @@ describe('Twilio Andon notifier (ops phones, no grupo)', () => {
     expect(http).toHaveBeenCalledTimes(2);
   });
 
+  it('opcional: StatusCallback y plantilla de aviso', async () => {
+    const calls: string[] = [];
+    const cfg = twilioConfigFromEnv(
+      envComplete({
+        TWILIO_STATUS_CALLBACK_URL: 'https://ops.example/twilio/status',
+        ANDON_WA_TEMPLATE_AVISO: 'Ops aviso {avisoId} unidad {unidadId}',
+      }),
+    )!;
+    const adapter = new TwilioWhatsAppAdapter(cfg, async (_url, init) => {
+      calls.push(init.body);
+      return { ok: true, status: 201, text: '{}' };
+    });
+    await adapter.send(MSG);
+    const params = new URLSearchParams(calls[0]);
+    expect(params.get('StatusCallback')).toBe(
+      'https://ops.example/twilio/status',
+    );
+    expect(params.get('Body')).toBe('Ops aviso aviso-1 unidad unidad-1');
+  });
+
+  it('sin ruta inbound: el controller Andon no expone webhook WA', () => {
+    const src = readFileSync(join(__dirname, 'andon.controller.ts'), 'utf8');
+    expect(src).not.toMatch(/webhook/i);
+    expect(src).not.toMatch(/inbound/i);
+    expect(src).toMatch(/enterado/);
+  });
+
   it('el adaptador no importa el SDK de Twilio (HTTP plano)', () => {
     const src = readFileSync(
       join(__dirname, 'twilio-whatsapp.adapter.ts'),

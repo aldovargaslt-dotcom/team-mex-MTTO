@@ -40,4 +40,4 @@ TDD en `api/src/andon/andon-engine.spec.ts` (fakes en memoria; sin Postgres):
 
 ## Outbound ops
 
-Puerto `AndonNotifier` (`WhatsAppPort`). Default: persistencia/log (stub) si faltan credenciales. Adaptador Twilio opcional (HTTP plano, **sin SDK**): fan-out a `ANDON_OPS_PHONES` (E.164), no a un grupo WhatsApp. `andon-engine` no importa Twilio. Sin ack inbound.
+Puerto `AndonNotifier` (`WhatsAppPort`). Default: persistencia/log (stub) si faltan credenciales. Adaptador Twilio opcional (HTTP plano, **sin SDK**): fan-out a `ANDON_OPS_PHONES` (E.164), no a un grupo WhatsApp. `andon-engine` no importa Twilio. Sin ack inbound. Checklist: [andon-whatsapp-ops-checklist-v0](../../architecture/andon-whatsapp-ops-checklist-v0.md).
