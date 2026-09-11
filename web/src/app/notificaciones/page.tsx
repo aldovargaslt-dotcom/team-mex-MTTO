@@ -110,7 +110,7 @@ function InboxContent() {
           unreadCount > 0 ? (
             <Button
               type="button"
-              variant="outline"
+              variant="quiet"
               disabled={busy}
               onClick={() => void marcarTodas()}
             >

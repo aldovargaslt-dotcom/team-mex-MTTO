@@ -18,6 +18,16 @@ const buttonVariants = cva(
         destructive:
           'bg-transparent text-destructive border border-[#f0c7c3] hover:bg-red-50',
         link: 'text-navy underline-offset-4 hover:underline h-auto min-h-0 min-w-0 px-0',
+        positive:
+          'bg-btn-positive text-btn-positive-foreground border border-btn-positive-border hover:bg-btn-positive-hover',
+        adjust:
+          'bg-btn-adjust text-btn-adjust-foreground border border-btn-adjust-border hover:bg-btn-adjust-hover',
+        linkish:
+          'bg-btn-linkish text-btn-linkish-foreground border border-btn-linkish-border hover:bg-btn-linkish-hover',
+        quiet:
+          'bg-btn-quiet text-btn-quiet-foreground border border-btn-quiet-border hover:bg-btn-quiet-hover',
+        dangerSoft:
+          'bg-btn-danger-soft text-btn-danger-soft-foreground border border-btn-danger-soft-border hover:bg-btn-danger-soft-hover',
       },
       size: {
         default: 'min-h-11 min-w-11 h-11 px-3.5 md:min-h-10 md:min-w-10 md:h-10',

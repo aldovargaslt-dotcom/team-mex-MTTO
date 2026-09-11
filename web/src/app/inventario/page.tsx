@@ -342,7 +342,7 @@ export default function ItemsPage() {
                 className="w-[7rem]"
               />
             </Field>
-            <Button type="submit" variant="secondary" size="compact">
+            <Button type="submit" variant="adjust" size="compact">
               Guardar mínimo
             </Button>
           </form>
@@ -409,7 +409,7 @@ export default function ItemsPage() {
               aria-label="Código proveedor"
               className="h-9 min-h-9 w-[180px]"
             />
-            <Button size="compact" type="submit">
+            <Button size="compact" type="submit" variant="linkish">
               Vincular
             </Button>
           </form>

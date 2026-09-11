@@ -194,7 +194,7 @@ export default function StockPage() {
           <div className="row-actions" onClick={(e) => e.stopPropagation()}>
             <Button
               type="button"
-              variant="secondary"
+              variant="positive"
               size="compact"
               onClick={() => abrir(row.original.itemId, 'entrada')}
             >
@@ -202,7 +202,7 @@ export default function StockPage() {
             </Button>
             <Button
               type="button"
-              variant="secondary"
+              variant="adjust"
               size="compact"
               onClick={() => abrir(row.original.itemId, 'ajuste')}
             >
