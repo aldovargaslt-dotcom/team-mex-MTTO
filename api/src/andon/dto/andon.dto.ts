@@ -70,4 +70,10 @@ export class AvisoDto {
 
   @ApiProperty()
   umbralDias: number;
+
+  @ApiPropertyOptional({ type: Number, nullable: true })
+  lastClosedKm: number | null;
+
+  @ApiPropertyOptional({ type: String, nullable: true })
+  lastClosedAt: string | null;
 }

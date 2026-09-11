@@ -5,11 +5,21 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Note } from '@/components/ui/field';
 import { api, HttpError } from '@/lib/api';
-import { etiquetaEstadoAviso } from '@/lib/format';
+import { etiquetaEstadoAviso, formatFecha } from '@/lib/format';
 import { useRole } from '@/lib/role';
 import type { AvisoAndon } from '@/lib/types';
 
-export function AndonHubCard({ unidadId }: { unidadId: string }) {
+export function AndonHubCard({
+  unidadId,
+  puedeCrearVisita,
+  onNuevaVisita,
+  creating,
+}: {
+  unidadId: string;
+  puedeCrearVisita?: boolean;
+  onNuevaVisita?: () => void;
+  creating?: boolean;
+}) {
   const { role, userId, isAdmin } = useRole();
   const [aviso, setAviso] = useState<AvisoAndon | null | undefined>(undefined);
   const [error, setError] = useState<string | null>(null);
@@ -75,11 +85,18 @@ export function AndonHubCard({ unidadId }: { unidadId: string }) {
             </span>
           </div>
           <p className="muted" style={{ marginTop: 6 }}>
+            Último cierre:{' '}
+            {aviso.lastClosedKm != null
+              ? `${aviso.lastClosedKm.toLocaleString('es-MX')} km`
+              : 'sin km'}
+            {aviso.lastClosedAt ? ` · ${formatFecha(aviso.lastClosedAt)}` : ''}
+          </p>
+          <p className="muted">
             Umbral {aviso.umbralKm.toLocaleString('es-MX')} km o {aviso.umbralDias}{' '}
             días · {aviso.tipoNombre}
           </p>
-          {aviso.estado === 'ABIERTO' && !isAdmin ? (
-            <div className="hub-actions">
+          <div className="hub-actions">
+            {aviso.estado === 'ABIERTO' && !isAdmin ? (
               <Button
                 type="button"
                 variant="outline"
@@ -88,10 +105,22 @@ export function AndonHubCard({ unidadId }: { unidadId: string }) {
               >
                 {busy ? 'Marcando…' : 'Enterado'}
               </Button>
-            </div>
-          ) : null}
+            ) : null}
+            {puedeCrearVisita && onNuevaVisita ? (
+              <Button
+                type="button"
+                disabled={creating}
+                onClick={() => onNuevaVisita()}
+              >
+                {creating ? 'Creando…' : 'Nueva visita'}
+              </Button>
+            ) : null}
+          </div>
           {aviso.estado === 'ENTERADO' ? (
-            <Note>Enterado: se detuvieron los recordatorios. La visita cerrada resuelve.</Note>
+            <Note>
+              Enterado: se detuvieron los recordatorios. La visita cerrada
+              resuelve.
+            </Note>
           ) : null}
         </>
       )}

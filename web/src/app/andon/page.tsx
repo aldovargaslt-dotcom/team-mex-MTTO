@@ -9,9 +9,16 @@ import { Button } from '@/components/ui/button';
 import { DataTable } from '@/components/ui/data-table';
 import { FormAlert, PageHeader } from '@/components/ui/field';
 import { api, HttpError } from '@/lib/api';
-import { etiquetaEstadoAviso, formatFecha } from '@/lib/format';
+import { etiquetaEstadoAviso, formatFecha, formatKm } from '@/lib/format';
 import { useRole } from '@/lib/role';
-import type { AvisoAndon } from '@/lib/types';
+import type { AvisoAndon, EstadoAviso } from '@/lib/types';
+
+const FILTROS: { id: 'pendiente' | 'enterado' | 'resuelto'; label: string; estado: EstadoAviso }[] =
+  [
+    { id: 'pendiente', label: 'Pendiente', estado: 'ABIERTO' },
+    { id: 'enterado', label: 'Enterado', estado: 'ENTERADO' },
+    { id: 'resuelto', label: 'Resuelto', estado: 'RESUELTO' },
+  ];
 
 export default function AndonPage() {
   return (
@@ -23,15 +30,18 @@ export default function AndonPage() {
 
 function AndonContent() {
   const { role, userId, isAdmin } = useRole();
+  const [filtro, setFiltro] = useState<(typeof FILTROS)[number]['id']>('pendiente');
   const [avisos, setAvisos] = useState<AvisoAndon[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
 
-  async function cargar() {
-    const data = await api<AvisoAndon[]>('/andon/avisos', {
-      role: role!,
-      userId,
-    });
+  const estado = FILTROS.find((f) => f.id === filtro)!.estado;
+
+  async function cargar(nextEstado = estado) {
+    const data = await api<AvisoAndon[]>(
+      `/andon/avisos?estado=${nextEstado}`,
+      { role: role!, userId },
+    );
     setAvisos(data);
   }
 
@@ -46,7 +56,7 @@ function AndonContent() {
       );
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [role, userId]);
+  }, [role, userId, filtro]);
 
   async function enterado(id: string) {
     setBusyId(id);
@@ -93,6 +103,16 @@ function AndonContent() {
           <Badge variant={row.original.estado === 'ABIERTO' ? 'warning' : 'muted'}>
             {etiquetaEstadoAviso(row.original.estado)}
           </Badge>
+        ),
+      },
+      {
+        header: 'Último cierre',
+        id: 'ultimo',
+        cell: ({ row }) => (
+          <span className="text-[12px] text-muted-foreground">
+            {formatKm(row.original.lastClosedKm)}
+            <span className="block">{formatFecha(row.original.lastClosedAt)}</span>
+          </span>
         ),
       },
       {
@@ -153,6 +173,18 @@ function AndonContent() {
           ) : null
         }
       />
+      <nav className="subnav" aria-label="Filtro Andon">
+        {FILTROS.map((f) => (
+          <button
+            key={f.id}
+            type="button"
+            className={filtro === f.id ? 'active' : ''}
+            onClick={() => setFiltro(f.id)}
+          >
+            {f.label}
+          </button>
+        ))}
+      </nav>
       <FormAlert>{error}</FormAlert>
       {avisos == null ? (
         <p className="muted">Cargando avisos…</p>
@@ -160,7 +192,7 @@ function AndonContent() {
         <DataTable
           columns={columns}
           data={avisos}
-          empty="No hay avisos de mantenimiento vencido."
+          empty="No hay avisos en este filtro."
         />
       )}
     </>

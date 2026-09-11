@@ -41,7 +41,7 @@ El cliente usa el rol stub `X-Role: SUPERVISOR | ADMIN_DIRECTIVO` (y `X-User-Id`
 
 | Número | Estado   | Uso previsto                                      |
 |--------|----------|---------------------------------------------------|
-| U-101  | ACTIVA   | Hub de supervisor: puede crear visita             |
+| U-101  | ACTIVA   | Hub: visita cerrada real (100 km, ~120 d) para Andon ABIERTO |
 | U-102  | ACTIVA   | Segunda unidad activa                             |
 | U-103  | INACTIVA | Hub bloqueado: no se puede crear visita           |
 

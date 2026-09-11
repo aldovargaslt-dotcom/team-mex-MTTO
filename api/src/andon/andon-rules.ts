@@ -35,7 +35,8 @@ export function evaluarApertura(
   input: EvaluarAperturaInput,
 ): EvaluarAperturaResult {
   const empty = { abrir: false, kmDesde: 0, diasDesde: 0 };
-  if (!input.lastClosed) {
+  // A1: sin VisitaCerrada previa (proyección lastClosed + visitaId opaco) no se abre.
+  if (!input.lastClosed?.visitaId?.trim()) {
     return empty;
   }
   const kmDesde = input.currentKm - input.lastClosed.km;

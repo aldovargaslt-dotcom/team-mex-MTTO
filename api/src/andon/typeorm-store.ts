@@ -102,11 +102,15 @@ export class TypeOrmAndonStore implements AndonStore {
   }
 
   async listNoResueltos(): Promise<Aviso[]> {
+    return this.listAvisos([EstadoAviso.ABIERTO, EstadoAviso.ENTERADO]);
+  }
+
+  async listAvisos(estados?: EstadoAviso[]): Promise<Aviso[]> {
+    const wanted = estados?.length
+      ? estados
+      : [EstadoAviso.ABIERTO, EstadoAviso.ENTERADO];
     const rows = await this.avisos().find({
-      where: [
-        { estado: EstadoAviso.ABIERTO },
-        { estado: EstadoAviso.ENTERADO },
-      ],
+      where: wanted.map((estado) => ({ estado })),
       order: { abiertaAt: 'DESC' },
     });
     return rows.map((row) => this.toAviso(row));

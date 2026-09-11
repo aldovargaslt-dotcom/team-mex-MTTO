@@ -41,8 +41,15 @@ export class InMemoryAndonStore implements AndonStore {
   }
 
   async listNoResueltos() {
+    return this.listAvisos([EstadoAviso.ABIERTO, EstadoAviso.ENTERADO]);
+  }
+
+  async listAvisos(estados?: EstadoAviso[]) {
+    const wanted = estados?.length
+      ? new Set(estados)
+      : new Set([EstadoAviso.ABIERTO, EstadoAviso.ENTERADO]);
     return this.avisos
-      .filter((a) => a.estado !== EstadoAviso.RESUELTO)
+      .filter((a) => wanted.has(a.estado))
       .map((a) => ({ ...a }));
   }
 

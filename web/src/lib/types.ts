@@ -201,6 +201,8 @@ export type AvisoAndon = {
   diasAlAbrir: number;
   umbralKm: number;
   umbralDias: number;
+  lastClosedKm: number | null;
+  lastClosedAt: string | null;
 };
 
 export type UmbralAndon = {

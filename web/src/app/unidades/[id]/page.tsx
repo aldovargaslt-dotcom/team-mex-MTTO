@@ -156,7 +156,12 @@ function HubContent() {
       {error ? <p className="alert" style={{ marginBottom: 12 }}>{error}</p> : null}
 
       <div style={{ marginBottom: 12 }}>
-        <AndonHubCard unidadId={ficha.id} />
+        <AndonHubCard
+          unidadId={ficha.id}
+          puedeCrearVisita={hub.puedeCrearVisita}
+          onNuevaVisita={() => void nuevaVisita()}
+          creating={creating}
+        />
       </div>
 
       <div className="hub-grid">

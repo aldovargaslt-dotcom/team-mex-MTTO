@@ -191,10 +191,12 @@ export class AndonEngine {
     const opened: Aviso[] = [];
     for (const unidad of unidades) {
       const last = await this.deps.store.getLastClosed(unidad.unidadId);
-      const currentKm = last?.km ?? 0;
+      if (!last?.visitaId?.trim()) {
+        continue;
+      }
       const aviso = await this.evaluarUnidad({
         unidadId: unidad.unidadId,
-        currentKm,
+        currentKm: last.km,
         now,
       });
       if (aviso) {

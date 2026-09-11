@@ -20,6 +20,8 @@ function TiposAdmin() {
   const [umbrales, setUmbrales] = useState<Record<string, UmbralAndon>>({});
   const [nombre, setNombre] = useState('');
   const [descripcion, setDescripcion] = useState('');
+  const [tKm, setTkm] = useState('10000');
+  const [tDias, setTdias] = useState('90');
   const [error, setError] = useState<string | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editNombre, setEditNombre] = useState('');
@@ -52,7 +54,7 @@ function TiposAdmin() {
     event.preventDefault();
     setError(null);
     try {
-      await api<TipoVehiculo>('/tipos-vehiculo', {
+      const created = await api<TipoVehiculo>('/tipos-vehiculo', {
         role: role!,
         userId,
         method: 'POST',
@@ -61,8 +63,19 @@ function TiposAdmin() {
           descripcion: descripcion.trim() || undefined,
         }),
       });
+      await api(`/andon/umbrales/${created.id}`, {
+        role: role!,
+        userId,
+        method: 'PATCH',
+        body: JSON.stringify({
+          tKm: Number(tKm),
+          tDias: Number(tDias),
+        }),
+      });
       setNombre('');
       setDescripcion('');
+      setTkm('10000');
+      setTdias('90');
       await cargar();
     } catch (err) {
       setError(
@@ -148,6 +161,28 @@ function TiposAdmin() {
             value={descripcion}
             onChange={(e) => setDescripcion(e.target.value)}
             placeholder="Opcional"
+          />
+        </div>
+        <div className="field">
+          <label htmlFor="tKm">t_km</label>
+          <input
+            id="tKm"
+            type="number"
+            min={1}
+            required
+            value={tKm}
+            onChange={(e) => setTkm(e.target.value)}
+          />
+        </div>
+        <div className="field">
+          <label htmlFor="tDias">t_días</label>
+          <input
+            id="tDias"
+            type="number"
+            min={1}
+            required
+            value={tDias}
+            onChange={(e) => setTdias(e.target.value)}
           />
         </div>
         <div className="form-actions">

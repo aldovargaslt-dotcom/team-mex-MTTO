@@ -74,6 +74,53 @@ describe('Andon v0 (ADR-004 A1–A8)', () => {
       expect(aviso).toBeNull();
       expect(await store.listNoResueltos()).toEqual([]);
     });
+
+    it('evaluarTodas no abre sin handleVisitaCerrada (no hay proyección last-closed)', async () => {
+      const { engine, store } = harness();
+      await store.setUmbral({ tipoVehiculoId: TIPO, tKm: 1, tDias: 1 });
+      const opened = await engine.evaluarTodas(new Date(DAY_90));
+      expect(opened).toEqual([]);
+      expect(await store.listNoResueltos()).toEqual([]);
+    });
+
+    it('proyección sin visitaId opaco no cuenta como visita cerrada previa', () => {
+      expect(
+        evaluarApertura({
+          lastClosed: {
+            unidadId: UNIDAD,
+            visitaId: '',
+            tipoVehiculoId: TIPO,
+            km: 10000,
+            cerradoAt: CERRADO_AT,
+          },
+          currentKm: 50000,
+          nowIso: DAY_90,
+          unidadActiva: true,
+          tieneNoResuelto: false,
+          tKm: 1,
+          tDias: 1,
+        }).abrir,
+      ).toBe(false);
+    });
+
+    it('evaluarUnidad no abre si el seed/eval metió lastClosed sin visitaId', async () => {
+      const { engine, store } = harness();
+      await store.setUmbral({ tipoVehiculoId: TIPO, tKm: 1, tDias: 1 });
+      await store.setLastClosed({
+        unidadId: UNIDAD,
+        visitaId: '   ',
+        tipoVehiculoId: TIPO,
+        km: 10000,
+        cerradoAt: CERRADO_AT,
+      });
+      const aviso = await engine.evaluarUnidad({
+        unidadId: UNIDAD,
+        currentKm: 50000,
+        now: new Date(DAY_90),
+      });
+      expect(aviso).toBeNull();
+      expect(await store.listNoResueltos()).toEqual([]);
+    });
   });
 
   describe('A2 at most 1 non-resolved per unidadId', () => {

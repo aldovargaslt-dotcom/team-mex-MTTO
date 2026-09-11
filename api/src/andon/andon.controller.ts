@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   Param,
+  ParseEnumPipe,
   ParseUUIDPipe,
   Patch,
   Post,
@@ -15,6 +16,7 @@ import { Roles } from '../auth/roles.decorator';
 import { Rol } from '../auth/roles.enum';
 import { AndonService } from './andon.service';
 import { UpdateUmbralDto } from './dto/andon.dto';
+import { EstadoAviso } from './enums';
 
 @ApiTags('andon')
 @Controller('andon')
@@ -23,10 +25,15 @@ export class AndonController {
 
   @Get('avisos')
   @ApiOperation({
-    summary: 'Listar avisos de mantenimiento no resueltos (Andon)',
+    summary:
+      'Listar avisos Andon. Default: no resueltos. `estado` = ABIERTO | ENTERADO | RESUELTO.',
   })
-  list(@Query('unidadId') unidadId?: string) {
-    return this.service.listAvisos(unidadId);
+  list(
+    @Query('unidadId') unidadId?: string,
+    @Query('estado', new ParseEnumPipe(EstadoAviso, { optional: true }))
+    estado?: EstadoAviso,
+  ) {
+    return this.service.listAvisos(unidadId, estado);
   }
 
   @Post('avisos/:id/enterado')

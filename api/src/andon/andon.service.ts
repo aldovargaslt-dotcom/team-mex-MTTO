@@ -17,9 +17,9 @@ import {
   AndonForbiddenError,
   AndonNotFoundError,
 } from './andon-engine';
-import { Aviso } from './andon-types';
+import { Aviso, LastClosedVisit } from './andon-types';
 import { AvisoDto, UmbralDto } from './dto/andon.dto';
-import { DEFAULT_T_DIAS, DEFAULT_T_KM } from './enums';
+import { DEFAULT_T_DIAS, DEFAULT_T_KM, EstadoAviso } from './enums';
 import { NestUnidadCatalog } from './nest-unidad-catalog';
 import { StubWhatsAppAdapter } from './stub-whatsapp.adapter';
 import { TypeOrmAndonStore } from './typeorm-store';
@@ -32,15 +32,18 @@ export class AndonService implements OnModuleInit {
     private readonly whatsapp: StubWhatsAppAdapter,
     private readonly outbox: OutboxService,
     private readonly tipos: TiposVehiculoService,
-  ) {}
-
-  onModuleInit() {
+  ) {
+    // Constructor: listo antes de Seed.onModuleInit (cierre de visita semilla).
     this.outbox.register(VISITA_CERRADA, async (payload, manager) => {
       await this.ingestVisitaCerrada(
         payload as unknown as VisitaCerradaPayload,
         manager,
       );
     });
+  }
+
+  async onModuleInit() {
+    await this.seedUmbrales();
   }
 
   private engine(store = this.store) {
@@ -59,9 +62,23 @@ export class AndonService implements OnModuleInit {
     return this.engine(store).handleVisitaCerrada(payload);
   }
 
-  async listAvisos(unidadId?: string): Promise<AvisoDto[]> {
+  async alignLastClosed(row: LastClosedVisit) {
+    await this.store.setLastClosed(row);
+  }
+
+  async evaluarPendientes() {
+    return this.engine().evaluarTodas();
+  }
+
+  async listAvisos(
+    unidadId?: string,
+    estado?: EstadoAviso,
+  ): Promise<AvisoDto[]> {
     await this.engine().evaluarTodas();
-    let avisos = await this.store.listNoResueltos();
+    const estados = estado
+      ? [estado]
+      : [EstadoAviso.ABIERTO, EstadoAviso.ENTERADO];
+    let avisos = await this.store.listAvisos(estados);
     if (unidadId) {
       avisos = avisos.filter((a) => a.unidadId === unidadId);
     }
@@ -113,7 +130,7 @@ export class AndonService implements OnModuleInit {
     };
   }
 
-  async seedDefaults() {
+  async seedUmbrales() {
     const tipos = await this.tipos.findAll();
     for (const tipo of tipos) {
       const existing = await this.store.getUmbral(tipo.id);
@@ -125,44 +142,18 @@ export class AndonService implements OnModuleInit {
         });
       }
     }
-    const unidades = await this.catalog.list();
-    const u101 = unidades.find((u) => u.numeroInterno === 'U-101');
-    const u103 = unidades.find((u) => u.numeroInterno === 'U-103');
-    if (u101 && !(await this.store.getLastClosed(u101.unidadId))) {
-      const cerradoAt = new Date();
-      cerradoAt.setUTCDate(cerradoAt.getUTCDate() - 120);
-      await this.ingestVisitaCerrada({
-        eventId: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1',
-        eventType: VISITA_CERRADA,
-        occurredAt: cerradoAt.toISOString(),
-        visitaId: 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbb1',
-        unidadId: u101.unidadId,
-        tipoVehiculoId: u101.tipoVehiculoId,
-        km: 10000,
-        cerradoAt: cerradoAt.toISOString(),
-        consumos: [],
-      });
-    }
-    if (u103 && !(await this.store.getLastClosed(u103.unidadId))) {
-      const cerradoAt = new Date();
-      cerradoAt.setUTCDate(cerradoAt.getUTCDate() - 200);
-      await this.ingestVisitaCerrada({
-        eventId: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa3',
-        eventType: VISITA_CERRADA,
-        occurredAt: cerradoAt.toISOString(),
-        visitaId: 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbb3',
-        unidadId: u103.unidadId,
-        tipoVehiculoId: u103.tipoVehiculoId,
-        km: 8000,
-        cerradoAt: cerradoAt.toISOString(),
-        consumos: [],
-      });
-    }
+  }
+
+  async seedDefaults() {
+    await this.seedUmbrales();
     await this.engine().evaluarTodas();
   }
 
   private async toDto(aviso: Aviso): Promise<AvisoDto> {
-    const unidad = await this.catalog.get(aviso.unidadId);
+    const [unidad, lastClosed] = await Promise.all([
+      this.catalog.get(aviso.unidadId),
+      this.store.getLastClosed(aviso.unidadId),
+    ]);
     return {
       id: aviso.id,
       unidadId: aviso.unidadId,
@@ -178,6 +169,8 @@ export class AndonService implements OnModuleInit {
       diasAlAbrir: aviso.diasAlAbrir,
       umbralKm: aviso.umbralKm,
       umbralDias: aviso.umbralDias,
+      lastClosedKm: lastClosed?.km ?? null,
+      lastClosedAt: lastClosed?.cerradoAt ?? null,
     };
   }
 }

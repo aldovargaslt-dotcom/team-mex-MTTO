@@ -5,6 +5,7 @@ import {
   UnidadVista,
   WhatsAppMessage,
 } from './andon-types';
+import { EstadoAviso } from './enums';
 
 export interface AndonStore {
   getLastClosed(unidadId: string): Promise<LastClosedVisit | null>;
@@ -14,6 +15,7 @@ export interface AndonStore {
   insertAviso(aviso: Aviso): Promise<void>;
   updateAviso(aviso: Aviso): Promise<void>;
   listNoResueltos(): Promise<Aviso[]>;
+  listAvisos(estados?: EstadoAviso[]): Promise<Aviso[]>;
   getUmbral(tipoVehiculoId: string): Promise<UmbralTipo | null>;
   setUmbral(umbral: UmbralTipo): Promise<void>;
   listUmbrales(): Promise<UmbralTipo[]>;
