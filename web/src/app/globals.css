@@ -593,6 +593,12 @@
     gap: 12px;
   }
 
+  @media (min-width: 768px) {
+    .firmas-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
   .signature-head {
     display: flex;
     justify-content: space-between;

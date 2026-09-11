@@ -89,7 +89,7 @@ export function SignaturePad({
       <div className="signature-head">
         <span>{label}</span>
         {!disabled ? (
-          <Button type="button" variant="secondary" onClick={clear}>
+          <Button type="button" variant="secondary" size="compact" onClick={clear}>
             Borrar
           </Button>
         ) : null}

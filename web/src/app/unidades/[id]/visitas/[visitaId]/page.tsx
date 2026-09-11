@@ -17,7 +17,9 @@ import { ImageDropzone } from '@/components/ImageDropzone';
 import { VisitStepper } from '@/components/VisitStepper';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { FormAlert } from '@/components/ui/field';
+import { Card } from '@/components/ui/card';
+import { Field, FormAlert, Note, PageHeader } from '@/components/ui/field';
+import { Input, NativeSelect, Textarea } from '@/components/ui/input';
 import {
   etiquetaEstadoVisita,
   etiquetaTipoVisita,
@@ -142,30 +144,34 @@ function VisitaReadonly({
 
   return (
     <>
-      <div className="page-head">
-        <div>
-          <h1>
+      <PageHeader
+        title={
+          <span className="inline-flex items-center gap-2">
             {visita.unidadNumeroInterno}
             <Badge variant={visita.estado === 'CERRADO' ? 'success' : 'warning'}>
               {etiquetaEstadoVisita(visita.estado)}
             </Badge>
-          </h1>
-          <p className="lede">
+          </span>
+        }
+        lede={
+          <>
             {etiquetaTipoVisita(visita.tipo)}
             {' · '}
             {formatKm(visita.km)}
             {visita.chofer ? ` · ${visita.chofer.nombre}` : ''}
             {visita.cerradoAt ? ` · ${formatFecha(visita.cerradoAt)}` : ''}
-          </p>
-        </div>
-        <Link className="btn btn-secondary" href={`/unidades/${unidadId}`}>
-          Volver al hub
-        </Link>
-      </div>
+          </>
+        }
+        actions={
+          <Button asChild variant="secondary">
+            <Link href={`/unidades/${unidadId}`}>Volver al hub</Link>
+          </Button>
+        }
+      />
 
-      <section className="card panel">
-        <h2>Datos</h2>
-        <dl className="dl">
+      <Card className="p-3">
+        <h2 className="text-[13px] font-semibold">Datos</h2>
+        <dl className="dl mt-2">
           <dt>Chofer</dt>
           <dd>{visita.chofer?.nombre ?? 'Sin chofer'}</dd>
           <dt>Kilometraje</dt>
@@ -173,14 +179,14 @@ function VisitaReadonly({
           <dt>Tipo</dt>
           <dd>{etiquetaTipoVisita(visita.tipo)}</dd>
         </dl>
-      </section>
+      </Card>
 
-      <section className="card panel" style={{ marginTop: 12 }}>
-        <h2>Trabajos</h2>
+      <Card className="mt-3 p-3">
+        <h2 className="text-[13px] font-semibold">Trabajos</h2>
         {visita.trabajos.length === 0 ? (
-          <p className="muted">No se registraron trabajos.</p>
+          <p className="muted mt-2">No se registraron trabajos.</p>
         ) : (
-          <ul className="plain-list">
+          <ul className="plain-list mt-2">
             {visita.trabajos.map((t) => (
               <li key={t.id}>
                 <span className="cat">{t.categoria}</span> {t.item}
@@ -188,17 +194,17 @@ function VisitaReadonly({
             ))}
           </ul>
         )}
-      </section>
+      </Card>
 
-      <section className="card panel" style={{ marginTop: 12 }}>
-        <h2>Observaciones</h2>
-        <p>{visita.observaciones || 'Sin observaciones.'}</p>
-      </section>
+      <Card className="mt-3 p-3">
+        <h2 className="text-[13px] font-semibold">Observaciones</h2>
+        <p className="mt-2">{visita.observaciones || 'Sin observaciones.'}</p>
+      </Card>
 
-      <section className="card panel" style={{ marginTop: 12 }}>
-        <h2>Fotos</h2>
+      <Card className="mt-3 p-3">
+        <h2 className="text-[13px] font-semibold">Fotos</h2>
         {visita.fotos.length === 0 ? (
-          <p className="muted">Sin fotos.</p>
+          <p className="muted mt-2">Sin fotos.</p>
         ) : (
           <div className="photo-grid">
             {visita.fotos.map((foto) => (
@@ -207,13 +213,13 @@ function VisitaReadonly({
             ))}
           </div>
         )}
-      </section>
+      </Card>
 
       <PiezasReadonly piezas={piezas} />
 
-      <section className="card panel" style={{ marginTop: 12 }}>
-        <h2>Firmas</h2>
-        <div className="firmas-grid">
+      <Card className="mt-3 p-3">
+        <h2 className="text-[13px] font-semibold">Firmas</h2>
+        <div className="firmas-grid mt-2">
           {(['CHOFER', 'JEFE'] as TipoFirma[]).map((tipo) => {
             const firma = visita.firmas.find((f) => f.tipo === tipo);
             return (
@@ -231,7 +237,7 @@ function VisitaReadonly({
             );
           })}
         </div>
-      </section>
+      </Card>
     </>
   );
 }
@@ -453,13 +459,15 @@ function VisitWizard({
 
   return (
     <>
-      <div className="page-head">
-        <div>
-          <h1>
+      <PageHeader
+        title={
+          <span className="inline-flex items-center gap-2">
             {visita.unidadNumeroInterno}
             <Badge variant="warning">Borrador</Badge>
-          </h1>
-          <p className="lede">
+          </span>
+        }
+        lede={
+          <>
             {etiquetaTipoVisita(tipo || visita.tipo)}
             {' · '}
             {km.trim()
@@ -468,22 +476,27 @@ function VisitWizard({
             {choferNombre ? ` · ${choferNombre}` : ''}
             {' · '}
             Último km cerrado:{' '}
-            {ultimoKm != null ? `${ultimoKm.toLocaleString('es-MX')} km` : 'Sin registro'}
-          </p>
-        </div>
-        <Button
-          type="button"
-          variant="secondary"
-          disabled={saving}
-          onClick={() =>
-            void persist().then((saved) => {
-              if (saved) router.push(`/unidades/${unidadId}`);
-            })
-          }
-        >
-          Guardar y salir
-        </Button>
-      </div>
+            {ultimoKm != null
+              ? `${ultimoKm.toLocaleString('es-MX')} km`
+              : 'Sin registro'}
+          </>
+        }
+        actions={
+          <Button
+            type="button"
+            variant="secondary"
+            size="compact"
+            disabled={saving}
+            onClick={() =>
+              void persist().then((saved) => {
+                if (saved) router.push(`/unidades/${unidadId}`);
+              })
+            }
+          >
+            Guardar y salir
+          </Button>
+        }
+      />
 
       {error ? <FormAlert>{error}</FormAlert> : null}
 
@@ -498,17 +511,14 @@ function VisitWizard({
       />
 
       {step === 'datos' ? (
-        <section className="card panel">
-          <h2>Datos</h2>
+        <Card className="p-3">
+          <h2 className="text-[13px] font-semibold">Datos</h2>
           {sinChoferes ? (
-            <p className="note note-warn">
-              No hay choferes. Pide alta a administración.
-            </p>
+            <Note variant="warn">No hay choferes. Pide alta a administración.</Note>
           ) : null}
-          <div className="form-grid" style={{ padding: 0 }}>
-            <div className="field">
-              <label htmlFor="choferId">Chofer</label>
-              <select
+          <div className="mt-3 grid gap-3 sm:grid-cols-3">
+            <Field label="Chofer" htmlFor="choferId">
+              <NativeSelect
                 id="choferId"
                 value={choferId}
                 onChange={(e) => setChoferId(e.target.value)}
@@ -520,11 +530,10 @@ function VisitWizard({
                     {c.nombre}
                   </option>
                 ))}
-              </select>
-            </div>
-            <div className="field">
-              <label htmlFor="km">Kilometraje</label>
-              <input
+              </NativeSelect>
+            </Field>
+            <Field label="Kilometraje" htmlFor="km">
+              <Input
                 id="km"
                 type="number"
                 min={ultimoKm ?? 0}
@@ -532,10 +541,9 @@ function VisitWizard({
                 onChange={(e) => setKm(e.target.value)}
                 placeholder={ultimoKm != null ? `Mínimo ${ultimoKm}` : '0'}
               />
-            </div>
-            <div className="field">
-              <label htmlFor="tipo">Tipo de visita</label>
-              <select
+            </Field>
+            <Field label="Tipo de visita" htmlFor="tipo">
+              <NativeSelect
                 id="tipo"
                 value={tipo}
                 onChange={(e) => setTipo(e.target.value as TipoVisita | '')}
@@ -543,17 +551,19 @@ function VisitWizard({
                 <option value="">Seleccione</option>
                 <option value="PREDICTIVO">Predictivo</option>
                 <option value="CORRECTIVO">Correctivo</option>
-              </select>
-            </div>
+              </NativeSelect>
+            </Field>
           </div>
-        </section>
+        </Card>
       ) : null}
 
       {step === 'trabajos' ? (
-        <section className="card panel">
-          <h2>Trabajos A–E</h2>
-          <p className="muted">Marque al menos un trabajo para poder cerrar.</p>
-          <div className="checklist">
+        <Card className="p-3">
+          <h2 className="text-[13px] font-semibold">Trabajos A–E</h2>
+          <p className="mt-1 text-xs text-muted-foreground">
+            Marque al menos un trabajo para poder cerrar.
+          </p>
+          <div className="checklist mt-3">
             {catalogo.map((cat) => (
               <fieldset key={cat.categoria}>
                 <legend>
@@ -575,39 +585,42 @@ function VisitWizard({
               </fieldset>
             ))}
           </div>
-        </section>
+        </Card>
       ) : null}
 
       {step === 'observaciones' ? (
-        <section className="card panel">
-          <h2>Observaciones</h2>
-          <p className="muted">Opcional.</p>
-          <div className="field">
-            <label htmlFor="observaciones">Notas de la visita</label>
-            <textarea
-              id="observaciones"
-              value={observaciones}
-              onChange={(e) => setObservaciones(e.target.value)}
-              placeholder="Hallazgos, refacciones o acuerdos con el chofer"
-            />
+        <Card className="p-3">
+          <h2 className="text-[13px] font-semibold">Observaciones</h2>
+          <p className="mt-1 text-xs text-muted-foreground">Opcional.</p>
+          <div className="mt-3">
+            <Field label="Notas de la visita" htmlFor="observaciones">
+              <Textarea
+                id="observaciones"
+                value={observaciones}
+                onChange={(e) => setObservaciones(e.target.value)}
+                placeholder="Hallazgos, refacciones o acuerdos con el chofer"
+              />
+            </Field>
           </div>
-        </section>
+        </Card>
       ) : null}
 
       {step === 'fotos' ? (
-        <section className="card panel">
-          <h2>Fotos</h2>
-          <p className="muted">Opcional. Hasta 8 imágenes.</p>
-          <ImageDropzone
-            label="Tomar o subir"
-            hint="Cámara o galería · máx. 8"
-            disabled={fotos.length >= 8}
-            onFile={(file) => void addFoto(file)}
-          />
+        <Card className="p-3">
+          <h2 className="text-[13px] font-semibold">Fotos</h2>
+          <p className="mt-1 text-xs text-muted-foreground">
+            Opcional. Hasta 8 imágenes.
+          </p>
+          <div className="mt-3">
+            <ImageDropzone
+              label="Tomar o subir"
+              hint="Cámara o galería · máx. 8"
+              disabled={fotos.length >= 8}
+              onFile={(file) => void addFoto(file)}
+            />
+          </div>
           {fotos.length === 0 ? (
-            <p className="muted" style={{ marginTop: 12 }}>
-              Sin fotos todavía.
-            </p>
+            <p className="muted mt-3">Sin fotos todavía.</p>
           ) : (
             <div className="photo-grid">
               {fotos.map((src, index) => (
@@ -617,6 +630,7 @@ function VisitWizard({
                   <Button
                     type="button"
                     variant="destructive"
+                    size="compact"
                     onClick={() =>
                       setFotos((current) => current.filter((_, i) => i !== index))
                     }
@@ -627,7 +641,7 @@ function VisitWizard({
               ))}
             </div>
           )}
-        </section>
+        </Card>
       ) : null}
 
       {step === 'piezas' ? (
@@ -642,10 +656,12 @@ function VisitWizard({
       ) : null}
 
       {step === 'firmas' ? (
-        <section className="card panel">
-          <h2>Firmas</h2>
-          <p className="muted">Se requieren las dos firmas para cerrar.</p>
-          <div className="firmas-grid">
+        <Card className="p-3">
+          <h2 className="text-[13px] font-semibold">Firmas</h2>
+          <p className="mt-1 text-xs text-muted-foreground">
+            Se requieren las dos firmas para cerrar.
+          </p>
+          <div className="firmas-grid mt-3">
             <SignaturePad
               label="Firma del chofer"
               value={firmaChofer || null}
@@ -657,13 +673,13 @@ function VisitWizard({
               onChange={setFirmaJefe}
             />
           </div>
-        </section>
+        </Card>
       ) : null}
 
       {step === 'confirmar' ? (
-        <section className="card panel">
-          <h2>Confirmar cierre</h2>
-          <dl className="dl">
+        <Card className="p-3">
+          <h2 className="text-[13px] font-semibold">Confirmar cierre</h2>
+          <dl className="dl mt-3">
             <dt>Chofer</dt>
             <dd>{choferes.find((c) => c.id === choferId)?.nombre ?? 'Sin chofer'}</dd>
             <dt>Kilometraje</dt>
@@ -676,19 +692,15 @@ function VisitWizard({
             <dd>{fotos.length}</dd>
             <dt>Piezas</dt>
             <dd>
-              {piezas.length === 0
-                ? 'Ninguna'
-                : resumenOrigenPiezas(piezas)}
+              {piezas.length === 0 ? 'Ninguna' : resumenOrigenPiezas(piezas)}
             </dd>
           </dl>
           {faltantes.length ? (
-            <p className="note note-warn">
-              Falta para cerrar: {faltantes.join('; ')}.
-            </p>
+            <Note variant="warn">Falta para cerrar: {faltantes.join('; ')}.</Note>
           ) : (
-            <p className="note">La visita está lista para cerrarse.</p>
+            <Note>La visita está lista para cerrarse.</Note>
           )}
-        </section>
+        </Card>
       ) : null}
 
       <div className="wizard-actions">

@@ -1,7 +1,20 @@
 'use client';
 
 import { FormEvent, useEffect, useState } from 'react';
+import { ColumnDef } from '@tanstack/react-table';
 import { RoleGate } from '@/components/RoleGate';
+import { Button } from '@/components/ui/button';
+import { DataTable } from '@/components/ui/data-table';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { Field, FormAlert, PageHeader } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
 import { api, HttpError } from '@/lib/api';
 import { useRole } from '@/lib/role';
 import type { Chofer } from '@/lib/types';
@@ -17,10 +30,11 @@ export default function ChoferesPage() {
 function ChoferesAdmin() {
   const { role, userId } = useRole();
   const [choferes, setChoferes] = useState<Chofer[]>([]);
-  const [nombre, setNombre] = useState('');
   const [error, setError] = useState<string | null>(null);
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [editNombre, setEditNombre] = useState('');
+  const [open, setOpen] = useState(false);
+  const [editing, setEditing] = useState<Chofer | null>(null);
+  const [nombre, setNombre] = useState('');
+  const [saving, setSaving] = useState(false);
 
   async function cargar() {
     setChoferes(await api<Chofer[]>('/choferes', { role: role!, userId }));
@@ -38,42 +52,54 @@ function ChoferesAdmin() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [role]);
 
-  async function crear(event: FormEvent) {
-    event.preventDefault();
+  function abrirAlta() {
+    setEditing(null);
+    setNombre('');
     setError(null);
-    try {
-      await api<Chofer>('/choferes', {
-        role: role!,
-        userId,
-        method: 'POST',
-        body: JSON.stringify({ nombre: nombre.trim() }),
-      });
-      setNombre('');
-      await cargar();
-    } catch (err) {
-      setError(
-        err instanceof HttpError ? err.message : 'No se pudo crear el chofer.',
-      );
-    }
+    setOpen(true);
   }
 
-  async function guardarEdicion(id: string) {
+  function abrirEdicion(chofer: Chofer) {
+    setEditing(chofer);
+    setNombre(chofer.nombre);
     setError(null);
+    setOpen(true);
+  }
+
+  async function guardar(event: FormEvent) {
+    event.preventDefault();
+    setError(null);
+    setSaving(true);
     try {
-      await api<Chofer>(`/choferes/${id}`, {
-        role: role!,
-        userId,
-        method: 'PATCH',
-        body: JSON.stringify({ nombre: editNombre.trim() }),
-      });
-      setEditingId(null);
+      if (editing) {
+        await api<Chofer>(`/choferes/${editing.id}`, {
+          role: role!,
+          userId,
+          method: 'PATCH',
+          body: JSON.stringify({ nombre: nombre.trim() }),
+        });
+      } else {
+        await api<Chofer>('/choferes', {
+          role: role!,
+          userId,
+          method: 'POST',
+          body: JSON.stringify({ nombre: nombre.trim() }),
+        });
+      }
+      setOpen(false);
+      setEditing(null);
+      setNombre('');
       await cargar();
     } catch (err) {
       setError(
         err instanceof HttpError
           ? err.message
-          : 'No se pudo actualizar el chofer.',
+          : editing
+            ? 'No se pudo actualizar el chofer.'
+            : 'No se pudo crear el chofer.',
       );
+    } finally {
+      setSaving(false);
     }
   }
 
@@ -96,102 +122,112 @@ function ChoferesAdmin() {
     }
   }
 
+  const columns: ColumnDef<Chofer, unknown>[] = [
+    {
+      accessorKey: 'nombre',
+      header: 'Nombre',
+      cell: ({ row }) => (
+        <span className="font-medium text-navy">{row.original.nombre}</span>
+      ),
+    },
+    {
+      id: 'acciones',
+      header: '',
+      cell: ({ row }) => (
+        <div className="row-actions">
+          <Button
+            type="button"
+            variant="secondary"
+            size="compact"
+            onClick={() => abrirEdicion(row.original)}
+          >
+            Editar
+          </Button>
+          <Button
+            type="button"
+            variant="destructive"
+            size="compact"
+            onClick={() => void eliminar(row.original.id)}
+          >
+            Eliminar
+          </Button>
+        </div>
+      ),
+    },
+  ];
+
   return (
     <>
-      <div className="page-head">
-        <div>
-          <h1>Choferes</h1>
-          <p className="lede">
-            Catálogo usado en las visitas de mantenimiento. El supervisor solo
-            puede seleccionar; no da de alta.
-          </p>
-        </div>
-      </div>
-
-      <form className="card form-grid" onSubmit={crear}>
-        <div className="field">
-          <label htmlFor="nombre">Nombre</label>
-          <input
-            id="nombre"
-            required
-            value={nombre}
-            onChange={(e) => setNombre(e.target.value)}
-            placeholder="Ej. Juan Pérez"
-          />
-        </div>
-        <div className="form-actions">
-          <button className="btn btn-primary" type="submit">
+      <PageHeader
+        title="Choferes"
+        lede="Catálogo de visitas. El supervisor solo selecciona; no da de alta."
+        actions={
+          <Button type="button" onClick={abrirAlta}>
             Agregar chofer
-          </button>
-        </div>
-      </form>
+          </Button>
+        }
+      />
 
-      {error ? <p className="alert" style={{ margin: '12px 0' }}>{error}</p> : null}
+      <FormAlert>{error && !open ? error : null}</FormAlert>
 
-      <div className="card list" style={{ marginTop: 12 }}>
-        {choferes.length === 0 ? (
-          <div className="empty-state">
-            <h2>No hay choferes registrados</h2>
-            <p className="muted">
-              Agregue el primer chofer. Sin catálogo el supervisor no puede
-              avanzar una visita.
-            </p>
-          </div>
-        ) : (
-          choferes.map((chofer) => (
-            <div key={chofer.id} className="tipo-row">
-              {editingId === chofer.id ? (
-                <>
-                  <div className="field">
-                    <input
-                      value={editNombre}
-                      onChange={(e) => setEditNombre(e.target.value)}
-                      aria-label="Nombre del chofer"
-                    />
-                  </div>
-                  <button
-                    type="button"
-                    className="btn btn-outline"
-                    onClick={() => void guardarEdicion(chofer.id)}
-                  >
-                    Guardar
-                  </button>
-                  <button
-                    type="button"
-                    className="btn btn-secondary"
-                    onClick={() => setEditingId(null)}
-                  >
-                    Cancelar
-                  </button>
-                </>
-              ) : (
-                <>
-                  <div>
-                    <strong>{chofer.nombre}</strong>
-                  </div>
-                  <button
-                    type="button"
-                    className="btn btn-secondary"
-                    onClick={() => {
-                      setEditingId(chofer.id);
-                      setEditNombre(chofer.nombre);
-                    }}
-                  >
-                    Editar
-                  </button>
-                  <button
-                    type="button"
-                    className="btn btn-danger"
-                    onClick={() => void eliminar(chofer.id)}
-                  >
-                    Eliminar
-                  </button>
-                </>
-              )}
+      <DataTable
+        columns={columns}
+        data={choferes}
+        empty="No hay choferes. Use Agregar chofer."
+      />
+
+      <Dialog
+        open={open}
+        onOpenChange={(next) => {
+          setOpen(next);
+          if (!next) {
+            setEditing(null);
+            setNombre('');
+          }
+        }}
+      >
+        <DialogContent>
+          <form onSubmit={guardar}>
+            <DialogHeader>
+              <DialogTitle className="text-[16px]">
+                {editing ? 'Editar chofer' : 'Agregar chofer'}
+              </DialogTitle>
+              <DialogDescription>
+                Nombre como aparece en la visita de mantenimiento.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="grid gap-3 py-3">
+              <Field label="Nombre" htmlFor="choferNombre">
+                <Input
+                  id="choferNombre"
+                  required
+                  value={nombre}
+                  onChange={(e) => setNombre(e.target.value)}
+                  placeholder="Ej. Juan Pérez"
+                  autoFocus
+                />
+              </Field>
+              <FormAlert>{open ? error : null}</FormAlert>
             </div>
-          ))
-        )}
-      </div>
+            <DialogFooter>
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={() => setOpen(false)}
+              >
+                Cancelar
+              </Button>
+              <Button type="submit" disabled={saving || !nombre.trim()}>
+                {saving
+                  ? 'Guardando…'
+                  : editing
+                    ? 'Guardar'
+                    : 'Agregar chofer'}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }
