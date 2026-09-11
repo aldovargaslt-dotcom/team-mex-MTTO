@@ -1,0 +1,43 @@
+import {
+  ArgumentsHost,
+  Catch,
+  ExceptionFilter,
+  HttpStatus,
+} from '@nestjs/common';
+import { Response } from 'express';
+import { QueryFailedError } from 'typeorm';
+
+@Catch(QueryFailedError)
+export class QueryFailedFilter implements ExceptionFilter {
+  catch(exception: QueryFailedError, host: ArgumentsHost) {
+    const response = host.switchToHttp().getResponse<Response>();
+    const driverError = exception.driverError as {
+      code?: string;
+      detail?: string;
+      constraint?: string;
+    };
+
+    if (driverError?.code === '23505') {
+      const constraint = `${driverError.constraint ?? ''} ${driverError.detail ?? ''}`.toLowerCase();
+      let message = 'Ya existe un registro con esos datos.';
+      if (constraint.includes('numero_interno') || constraint.includes('numerointerno')) {
+        message = 'Ya existe una unidad con ese número interno.';
+      } else if (constraint.includes('placas')) {
+        message = 'Ya existe una unidad con esas placas.';
+      } else if (constraint.includes('vin')) {
+        message = 'Ya existe una unidad con ese VIN.';
+      } else if (constraint.includes('nombre')) {
+        message = 'Ya existe un tipo de vehículo con ese nombre.';
+      }
+      return response.status(HttpStatus.CONFLICT).json({
+        statusCode: HttpStatus.CONFLICT,
+        message,
+      });
+    }
+
+    return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+      statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Ocurrió un error al procesar la solicitud.',
+    });
+  }
+}

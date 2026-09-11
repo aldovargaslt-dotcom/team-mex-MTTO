@@ -1,0 +1,22 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: team-mex-mtto-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: team_mex
+      POSTGRES_PASSWORD: team_mex
+      POSTGRES_DB: team_mex_mtto
+    ports:
+      - '5432:5432'
+    volumes:
+      - team_mex_pgdata:/var/lib/postgresql/data
+      - ./docker/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U team_mex -d team_mex_mtto']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  team_mex_pgdata:

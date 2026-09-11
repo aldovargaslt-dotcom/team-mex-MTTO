@@ -1,0 +1,148 @@
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { CurrentUser } from '../auth/current-user';
+import { mensajeVisita, puedeCrearVisita } from '../common/hub-policy';
+import { requireTrimmed } from '../common/require-trimmed';
+import { TiposVehiculoService } from '../tipos-vehiculo/tipos-vehiculo.service';
+import { CreateUnidadDto } from './dto/create-unidad.dto';
+import { FiltrarUnidadesDto } from './dto/filtrar-unidades.dto';
+import { UpdateUnidadDto } from './dto/update-unidad.dto';
+import { UnidadHubDto } from './dto/unidad-hub.dto';
+import { Unidad } from './unidad.entity';
+
+const UUID_RE =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+@Injectable()
+export class UnidadesService {
+  constructor(
+    @InjectRepository(Unidad)
+    private readonly repo: Repository<Unidad>,
+    private readonly tipos: TiposVehiculoService,
+  ) {}
+
+  async findAll(filtros: FiltrarUnidadesDto) {
+    const qb = this.repo
+      .createQueryBuilder('unidad')
+      .leftJoinAndSelect('unidad.tipo', 'tipo')
+      .orderBy('unidad.numeroInterno', 'ASC');
+
+    if (filtros.numeroInterno?.trim()) {
+      qb.andWhere('unidad.numeroInterno ILIKE :numeroInterno', {
+        numeroInterno: `%${filtros.numeroInterno.trim()}%`,
+      });
+    }
+    if (filtros.placas?.trim()) {
+      qb.andWhere('unidad.placas ILIKE :placas', {
+        placas: `%${filtros.placas.trim()}%`,
+      });
+    }
+    if (filtros.tipo?.trim()) {
+      const tipo = filtros.tipo.trim();
+      if (UUID_RE.test(tipo)) {
+        qb.andWhere('tipo.id = :tipoId', { tipoId: tipo });
+      } else {
+        qb.andWhere('tipo.nombre ILIKE :tipoNombre', {
+          tipoNombre: `%${tipo}%`,
+        });
+      }
+    }
+
+    return qb.getMany();
+  }
+
+  async findOne(id: string) {
+    const unidad = await this.repo.findOne({ where: { id } });
+    if (!unidad) {
+      throw new NotFoundException('No se encontró la unidad.');
+    }
+    return unidad;
+  }
+
+  async create(dto: CreateUnidadDto) {
+    const tipo = await this.tipos.findOne(dto.tipoId);
+    const unidad = this.repo.create({
+      numeroInterno: requireTrimmed(
+        dto.numeroInterno,
+        'El número interno no puede estar vacío.',
+      ),
+      placas: requireTrimmed(
+        dto.placas,
+        'Las placas no pueden estar vacías.',
+      ).toUpperCase(),
+      vin: this.normalizeVin(dto.vin),
+      tipo,
+      estado: dto.estado,
+      marcaModelo: dto.marcaModelo?.trim() || null,
+      anio: dto.anio ?? null,
+    });
+    return this.repo.save(unidad);
+  }
+
+  async update(id: string, dto: UpdateUnidadDto) {
+    const unidad = await this.findOne(id);
+    if (dto.tipoId) {
+      unidad.tipo = await this.tipos.findOne(dto.tipoId);
+    }
+    if (dto.numeroInterno !== undefined) {
+      unidad.numeroInterno = requireTrimmed(
+        dto.numeroInterno,
+        'El número interno no puede estar vacío.',
+      );
+    }
+    if (dto.placas !== undefined) {
+      unidad.placas = requireTrimmed(
+        dto.placas,
+        'Las placas no pueden estar vacías.',
+      ).toUpperCase();
+    }
+    if (dto.vin !== undefined) {
+      unidad.vin = this.normalizeVin(dto.vin);
+    }
+    if (dto.estado !== undefined) {
+      unidad.estado = dto.estado;
+    }
+    if (dto.marcaModelo !== undefined) {
+      unidad.marcaModelo = dto.marcaModelo.trim() || null;
+    }
+    if (dto.anio !== undefined) {
+      unidad.anio = dto.anio;
+    }
+    return this.repo.save(unidad);
+  }
+
+  async hub(id: string, user: CurrentUser): Promise<UnidadHubDto> {
+    const unidad = await this.findOne(id);
+    return {
+      fichaCorta: {
+        id: unidad.id,
+        numeroInterno: unidad.numeroInterno,
+        placas: unidad.placas,
+        vin: unidad.vin,
+        estado: unidad.estado,
+        tipoId: unidad.tipo.id,
+        tipoNombre: unidad.tipo.nombre,
+        marcaModelo: unidad.marcaModelo,
+        anio: unidad.anio,
+        // Slice 1: no hay visitas cerradas; el km se derivará de la última visita
+        // cerrada cuando exista ese dominio.
+        ultimoKm: null,
+      },
+      mantenimiento: {
+        estado: 'sin_registros',
+        ultimaVisita: null,
+        mensajeHistorial: 'Aún no hay visitas de mantenimiento registradas.',
+        mensajeResumen:
+          'El historial de mantenimiento estará disponible en una siguiente entrega.',
+      },
+      puedeCrearVisita: puedeCrearVisita(user.rol, unidad.estado),
+      mensaje: mensajeVisita(user.rol, unidad.estado),
+    };
+  }
+
+  private normalizeVin(vin?: string | null) {
+    const value = vin?.trim().toUpperCase() ?? '';
+    return value.length ? value : null;
+  }
+}
