@@ -1,6 +1,8 @@
 # Andon WhatsApp ops checklist v0
 
-Estado: **Twilio aparcado** (sin demo gratis). Default outbound = **noop/log**.
+Estado: default outbound = **noop/log**. `ANDON_NOTIFY_PROVIDER=evolution|noop`.
+Evolution sendText a grupo ops **no se implementa en este PR** (otro agente).
+Lab Baileys / API no oficial: **riesgo de ToS**, no prod. Meta/Twilio: no este PR.
 MUST 1–3 no dependen de WhatsApp. Enterado es in-app.
 
 ## Must

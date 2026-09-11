@@ -40,4 +40,4 @@ TDD en `api/src/andon/andon-engine.spec.ts` (fakes en memoria; sin Postgres):
 
 ## Outbound ops
 
-Puerto `NotifyPort` (`AndonNotifier` / `WhatsAppPort`). **Default noop/log**. Twilio aparcado (`ANDON_NOTIFY_PROVIDER=twilio`). Evolution API **no** en este PR (otro agente; lab no-oficial / riesgo ToS; no prod). Enterado in-app. Checklist: [andon-whatsapp-ops-checklist-v0](../../architecture/andon-whatsapp-ops-checklist-v0.md).
+Puerto `NotifyPort`. `ANDON_NOTIFY_PROVIDER=evolution|noop` (**default noop**). Evolution sendText (`ANDON_WA_GROUP_JID` @g.us) lo cablea **otro agente**. Lab: número throwaway / Baileys — **riesgo ToS, no prod**. Meta/Twilio no en este PR. Enterado in-app. Checklist: [andon-whatsapp-ops-checklist-v0](../../architecture/andon-whatsapp-ops-checklist-v0.md).

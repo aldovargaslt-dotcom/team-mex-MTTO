@@ -90,6 +90,21 @@ describe('Twilio Andon notifier (ops phones, no grupo)', () => {
     await expect(adapter.send(MSG)).resolves.toBeUndefined();
   });
 
+  it('ANDON_NOTIFY_PROVIDER=evolution queda noop en este PR', async () => {
+    const http = jest.fn();
+    const stub = {
+      send: jest.fn(async () => undefined),
+    } as unknown as StubWhatsAppAdapter;
+    const notifier = createAndonNotifier(
+      { ANDON_NOTIFY_PROVIDER: 'evolution' },
+      stub,
+      http,
+    );
+    await notifier.send(MSG);
+    expect(stub.send).toHaveBeenCalledWith(MSG);
+    expect(http).not.toHaveBeenCalled();
+  });
+
   it('factory usa stub si falta env; no pega HTTP', async () => {
     const http = jest.fn();
     const stub = {

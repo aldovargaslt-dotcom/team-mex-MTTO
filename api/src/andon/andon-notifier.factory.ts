@@ -29,6 +29,12 @@ export function createAndonNotifier(
   http?: TwilioHttp,
 ): AndonNotifier {
   const provider = (env.ANDON_NOTIFY_PROVIDER ?? 'noop').trim().toLowerCase();
+  if (provider === 'evolution') {
+    log.warn(
+      'ANDON_NOTIFY_PROVIDER=evolution: adapter no cableado en este PR (lab Baileys/ToS; otro agente). noop/log.',
+    );
+    return stub;
+  }
   if (provider === 'twilio') {
     const cfg = twilioConfigFromEnv(env);
     if (cfg) {
