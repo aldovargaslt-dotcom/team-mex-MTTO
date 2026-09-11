@@ -2,7 +2,7 @@ import Image from 'next/image';
 
 export function BrandPlate() {
   return (
-    <span className="inline-flex items-center">
+    <span className="brand-plate">
       <Image
         src="/brand/logo-team-mex-shell-white.png"
         alt="Team Mex"
@@ -10,7 +10,7 @@ export function BrandPlate() {
         height={378}
         priority
         unoptimized
-        className="h-9 w-auto max-h-9 object-contain object-left"
+        className="brand-plate__img"
       />
     </span>
   );

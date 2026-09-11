@@ -119,6 +119,53 @@
     flex-direction: column;
   }
 
+  /* Locked shell chrome — Unidades golden: 56px bar, 36px mark, 16px left pad */
+  .shell-header {
+    background: var(--shell);
+    color: var(--shell-ink);
+  }
+
+  .shell-header__bar {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    height: 56px;
+    max-width: 1040px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 16px;
+    gap: 12px;
+  }
+
+  @media (min-width: 768px) {
+    .shell-header__bar {
+      gap: 20px;
+    }
+  }
+
+  .shell-header__brand {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    height: 36px;
+  }
+
+  .brand-plate {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    height: 36px;
+  }
+
+  .brand-plate__img {
+    display: block;
+    height: 36px;
+    width: auto;
+    max-height: 36px;
+    object-fit: contain;
+    object-position: left center;
+  }
+
   .main {
     flex: 1;
     max-width: 1040px;

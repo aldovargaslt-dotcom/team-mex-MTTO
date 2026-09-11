@@ -17,9 +17,9 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   return (
     <div className="app">
-      <header className="bg-shell text-[var(--shell-ink)]">
-        <div className="mx-auto flex min-h-12 max-w-[1040px] flex-wrap items-center gap-3 px-4 py-1.5 md:gap-5">
-          <Link href={role ? '/unidades' : '/'} className="flex items-center py-1">
+      <header className="shell-header">
+        <div className="shell-header__bar">
+          <Link href={role ? '/unidades' : '/'} className="shell-header__brand">
             <BrandPlate />
           </Link>
           {!isHome && ready && role ? (
