@@ -4,6 +4,7 @@ import { FormEvent, useEffect, useState } from 'react';
 import { api, HttpError } from '@/lib/api';
 import { useRole } from '@/lib/role';
 import type { Familia } from '@/lib/types';
+import { PageHeader } from '@/components/ui/field';
 
 export default function FamiliasPage() {
   const { role, userId } = useRole();
@@ -57,12 +58,7 @@ export default function FamiliasPage() {
 
   return (
     <>
-      <div className="page-head">
-        <div>
-          <h1>Familias</h1>
-          <p className="lede">Agrupan los SKUs del almacén único.</p>
-        </div>
-      </div>
+      <PageHeader title="Familias" />
       <form className="card form-grid" onSubmit={crear}>
         <div className="field">
           <label htmlFor="famNombre">Nombre</label>
@@ -81,30 +77,32 @@ export default function FamiliasPage() {
         </div>
       </form>
       {error ? <p className="alert" style={{ margin: '12px 0' }}>{error}</p> : null}
+      {familias.length > 0 || !error ? (
       <div className="card list" style={{ marginTop: 12 }}>
-        {familias.length === 0 ? (
-          <div className="empty-state">
-            <h2>No hay familias</h2>
-            <p className="muted">Cree la primera familia para poder dar de alta ítems.</p>
-          </div>
-        ) : (
-          familias.map((familia) => (
-            <div key={familia.id} className="tipo-row">
-              <div>
-                <strong>{familia.nombre}</strong>
-                <div className="muted">{familia.activa ? 'Activa' : 'Inactiva'}</div>
+        {familias.length > 0
+          ? familias.map((familia) => (
+              <div key={familia.id} className="tipo-row">
+                <div>
+                  <strong>{familia.nombre}</strong>
+                  <div className="muted">{familia.activa ? 'Activa' : 'Inactiva'}</div>
+                </div>
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={() => void toggle(familia)}
+                >
+                  {familia.activa ? 'Inactivar' : 'Activar'}
+                </button>
               </div>
-              <button
-                type="button"
-                className="btn btn-secondary"
-                onClick={() => void toggle(familia)}
-              >
-                {familia.activa ? 'Inactivar' : 'Activar'}
-              </button>
-            </div>
-          ))
-        )}
+            ))
+          : (
+              <div className="empty-state">
+                <h2>No hay familias</h2>
+                <p className="muted">Agregue la primera.</p>
+              </div>
+            )}
       </div>
+      ) : null}
     </>
   );
 }

@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { Hint } from '@/components/ui/hint';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 
@@ -8,16 +9,25 @@ export function Field({
   children,
   className,
   hint,
+  help,
 }: {
   label: string;
   htmlFor?: string;
   children: ReactNode;
   className?: string;
   hint?: ReactNode;
+  help?: string;
 }) {
   return (
     <div className={cn('flex flex-col gap-1', className)}>
-      <Label htmlFor={htmlFor}>{label}</Label>
+      {help ? (
+        <div className="flex items-center gap-1">
+          <Label htmlFor={htmlFor}>{label}</Label>
+          <Hint label={help} />
+        </div>
+      ) : (
+        <Label htmlFor={htmlFor}>{label}</Label>
+      )}
       {children}
       {hint}
     </div>
@@ -58,11 +68,13 @@ export function Note({
 export function PageHeader({
   title,
   lede,
+  help,
   kicker,
   actions,
 }: {
   title: ReactNode;
   lede?: ReactNode;
+  help?: string;
   kicker?: ReactNode;
   actions?: ReactNode;
 }) {
@@ -72,7 +84,10 @@ export function PageHeader({
         {kicker ? (
           <p className="text-xs text-muted-foreground">{kicker}</p>
         ) : null}
-        <h1 className="text-[20px] font-semibold text-navy">{title}</h1>
+        <h1 className="inline-flex items-center gap-1.5 text-[20px] font-semibold text-navy">
+          {title}
+          {help ? <Hint label={help} /> : null}
+        </h1>
         {lede ? (
           <p className="mt-0.5 text-xs text-muted-foreground">{lede}</p>
         ) : null}

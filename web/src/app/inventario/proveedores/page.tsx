@@ -4,6 +4,7 @@ import { FormEvent, useEffect, useState } from 'react';
 import { api, HttpError } from '@/lib/api';
 import { useRole } from '@/lib/role';
 import type { Proveedor } from '@/lib/types';
+import { PageHeader } from '@/components/ui/field';
 
 export default function ProveedoresPage() {
   const { role, userId } = useRole();
@@ -61,14 +62,7 @@ export default function ProveedoresPage() {
 
   return (
     <>
-      <div className="page-head">
-        <div>
-          <h1>Proveedores</h1>
-          <p className="lede">
-            Catálogo liviano. El código de proveedor se vincula en cada ítem.
-          </p>
-        </div>
-      </div>
+      <PageHeader title="Proveedores" />
       <form className="card form-grid" onSubmit={crear}>
         <div className="field">
           <label htmlFor="provNombre">Nombre</label>
@@ -87,30 +81,32 @@ export default function ProveedoresPage() {
         </div>
       </form>
       {error ? <p className="alert" style={{ margin: '12px 0' }}>{error}</p> : null}
+      {proveedores.length > 0 || !error ? (
       <div className="card list" style={{ marginTop: 12 }}>
-        {proveedores.length === 0 ? (
-          <div className="empty-state">
-            <h2>No hay proveedores</h2>
-            <p className="muted">Agregue el primero para ligar códigos a los SKUs.</p>
-          </div>
-        ) : (
-          proveedores.map((proveedor) => (
-            <div key={proveedor.id} className="tipo-row">
-              <div>
-                <strong>{proveedor.nombre}</strong>
-                <div className="muted">{proveedor.activo ? 'Activo' : 'Inactivo'}</div>
+        {proveedores.length > 0
+          ? proveedores.map((proveedor) => (
+              <div key={proveedor.id} className="tipo-row">
+                <div>
+                  <strong>{proveedor.nombre}</strong>
+                  <div className="muted">{proveedor.activo ? 'Activo' : 'Inactivo'}</div>
+                </div>
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={() => void toggle(proveedor)}
+                >
+                  {proveedor.activo ? 'Inactivar' : 'Activar'}
+                </button>
               </div>
-              <button
-                type="button"
-                className="btn btn-secondary"
-                onClick={() => void toggle(proveedor)}
-              >
-                {proveedor.activo ? 'Inactivar' : 'Activar'}
-              </button>
-            </div>
-          ))
-        )}
+            ))
+          : (
+              <div className="empty-state">
+                <h2>No hay proveedores</h2>
+                <p className="muted">Agregue el primero.</p>
+              </div>
+            )}
       </div>
+      ) : null}
     </>
   );
 }

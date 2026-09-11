@@ -9,7 +9,7 @@ const LINKS = [
   { href: '/inventario/proveedores', label: 'Proveedores' },
   { href: '/inventario/stock', label: 'Stock' },
   { href: '/inventario/movimientos', label: 'Movimientos' },
-  { href: '/inventario/pendientes', label: 'Pendientes' },
+  { href: '/inventario/pendientes', label: 'Compras' },
 ];
 
 export function InventarioNav() {

@@ -14,12 +14,12 @@ import { DataTable } from '@/components/ui/data-table';
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Field, FormAlert, Note, PageHeader } from '@/components/ui/field';
+import { Hint } from '@/components/ui/hint';
 import { Input, NativeSelect } from '@/components/ui/input';
 import { ColumnDef } from '@tanstack/react-table';
 
@@ -103,7 +103,7 @@ export default function ItemsPage() {
   async function guardarMin(item: ItemInventario) {
     const next = minQty.trim() === '' ? null : Number(minQty);
     if (next !== null && (!Number.isInteger(next) || next < 0)) {
-      setError('El mínimo debe ser un entero ≥ 0, o vacío para no alertar.');
+      setError('Indique un número entero, o déjelo vacío.');
       return;
     }
     if (next === item.minQty) return;
@@ -156,7 +156,7 @@ export default function ItemsPage() {
       }
       await cargar();
     } catch (err) {
-      setError(err instanceof HttpError ? err.message : 'No se pudo guardar la compatibilidad.');
+      setError(err instanceof HttpError ? err.message : 'No se pudo guardar.');
     }
   }
 
@@ -178,7 +178,7 @@ export default function ItemsPage() {
       setCodigoProv('');
       await cargar();
     } catch (err) {
-      setError(err instanceof HttpError ? err.message : 'No se pudo vincular el proveedor.');
+      setError(err instanceof HttpError ? err.message : 'No se pudo agregar el proveedor.');
     }
   }
 
@@ -276,7 +276,6 @@ export default function ItemsPage() {
     <>
       <PageHeader
         title="Ítems"
-        lede="SKU único, familia y compatibilidad por tipo de vehículo. UoM: pza."
         actions={
           <Button type="button" onClick={() => setOpenNuevo(true)}>
             Nuevo ítem
@@ -290,18 +289,22 @@ export default function ItemsPage() {
             id="itemSearch"
             value={q}
             onChange={(e) => setQ(e.target.value)}
-            placeholder="SKU, nombre, OEM o familia"
+            placeholder="Nombre, código o familia"
           />
         </Field>
       </div>
 
       <FormAlert>{error}</FormAlert>
 
-      <DataTable
-        columns={columns}
-        data={filtered}
-        empty="No hay ítems que coincidan. Use Nuevo ítem para dar de alta un SKU."
-      />
+      {items.length > 0 || !error ? (
+        <DataTable
+          columns={columns}
+          data={filtered}
+          empty={
+            items.length === 0 ? 'Aún no hay ítems.' : 'Sin coincidencias.'
+          }
+        />
+      ) : null}
 
       {detalle ? (
         <Card className="mt-3 p-4">
@@ -324,11 +327,7 @@ export default function ItemsPage() {
             <Field
               label="Mínimo"
               htmlFor="fichaStockMin"
-              hint={
-                <span className="text-xs text-muted-foreground">
-                  Vacío = sin alerta. Supervisor y Admin.
-                </span>
-              }
+              help="Avisa si el stock baja de este número. Vacío: no avisa."
             >
               <Input
                 id="fichaStockMin"
@@ -343,11 +342,15 @@ export default function ItemsPage() {
               />
             </Field>
             <Button type="submit" variant="outline" size="compact">
-              Guardar mínimo
+              Guardar
             </Button>
           </form>
-          <p className="text-sm font-semibold text-navy" style={{ marginTop: 12 }}>
-            Compatibilidad
+          <p
+            className="text-sm font-semibold text-navy inline-flex items-center gap-1"
+            style={{ marginTop: 12 }}
+          >
+            Vehículos
+            <Hint label="En qué tipos de unidad se puede usar." />
           </p>
           <div className="chip-row">
             {tipos.map((tipo) => (
@@ -363,16 +366,14 @@ export default function ItemsPage() {
               </label>
             ))}
           </div>
-          {detalle.tipoVehiculoIds.length === 0 ? (
-            <Note variant="warn">
-              Sin compatibilidades este SKU no aparecerá en Piezas.
-            </Note>
+          {detalle.tipoVehiculoIds.length === 0 && tipos.length > 0 ? (
+            <Note variant="warn">Elija al menos un tipo de vehículo.</Note>
           ) : null}
           <p className="muted" style={{ marginTop: 10 }}>
             Proveedores
           </p>
           {detalle.proveedores.length === 0 ? (
-            <p className="muted">Sin código de proveedor.</p>
+            <p className="muted">Ninguno.</p>
           ) : (
             <ul className="plain-list">
               {detalle.proveedores.map((p) => (
@@ -404,13 +405,13 @@ export default function ItemsPage() {
             <Input
               value={codigoProv}
               onChange={(e) => setCodigoProv(e.target.value)}
-              placeholder="Código proveedor"
+              placeholder="Código"
               required
               aria-label="Código proveedor"
               className="h-9 min-h-9 w-[180px]"
             />
             <Button size="compact" type="submit" variant="outline">
-              Vincular
+              Agregar
             </Button>
           </form>
         </Card>
@@ -420,9 +421,6 @@ export default function ItemsPage() {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Nuevo ítem</DialogTitle>
-            <DialogDescription>
-              El SKU debe ser único. La compatibilidad determina si aparece en Piezas.
-            </DialogDescription>
           </DialogHeader>
           <form className="grid gap-3" onSubmit={crear}>
             <Field label="SKU" htmlFor="sku">
@@ -458,16 +456,22 @@ export default function ItemsPage() {
                 ))}
               </NativeSelect>
             </Field>
-            <Field label="OEM" htmlFor="oem">
+            <Field
+              label="OEM"
+              htmlFor="oem"
+              help="Código del fabricante. Opcional."
+            >
               <Input
                 id="oem"
                 value={oem}
                 onChange={(e) => setOem(e.target.value)}
-                placeholder="Opcional"
               />
             </Field>
             <div>
-              <p className="text-xs font-medium text-muted-foreground">Compatibilidad</p>
+              <p className="inline-flex items-center gap-1 text-xs font-medium text-muted-foreground">
+                Vehículos
+                <Hint label="En qué tipos de unidad se puede usar." />
+              </p>
               <div className="chip-row">
                 {tipos.map((tipo) => (
                   <label key={tipo.id} className="check">
@@ -480,10 +484,8 @@ export default function ItemsPage() {
                   </label>
                 ))}
               </div>
-              {tipoIds.size === 0 ? (
-                <Note variant="warn">
-                  Sin compatibilidades este SKU no aparecerá en Piezas.
-                </Note>
+              {tipoIds.size === 0 && tipos.length > 0 ? (
+                <Note variant="warn">Elija al menos un tipo de vehículo.</Note>
               ) : null}
             </div>
             <DialogFooter>
@@ -495,7 +497,7 @@ export default function ItemsPage() {
                 Cancelar
               </Button>
               <Button type="submit" disabled={!familiaId}>
-                Guardar ítem
+                Guardar
               </Button>
             </DialogFooter>
           </form>

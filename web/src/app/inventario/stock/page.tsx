@@ -68,7 +68,7 @@ export default function StockPage() {
     const raw = minDraft[row.itemId] ?? '';
     const next = raw.trim() === '' ? null : Number(raw);
     if (next !== null && (!Number.isInteger(next) || next < 0)) {
-      setError('El mínimo debe ser un entero ≥ 0, o vacío para no alertar.');
+      setError('Indique un número entero, o déjelo vacío.');
       return;
     }
     if (next === row.minQty) return;
@@ -132,7 +132,7 @@ export default function StockPage() {
   }, [rows, filtro]);
 
   const empty =
-    filtro === 'TODOS' ? 'No hay SKUs en stock.' : 'Sin items en stock bajo.';
+    filtro === 'TODOS' ? 'Aún no hay existencias.' : 'Nada en este filtro.';
 
   const columns: ColumnDef<StockRow, unknown>[] = useMemo(
     () => [
@@ -145,7 +145,7 @@ export default function StockPage() {
       { accessorKey: 'familia', header: 'Familia' },
       {
         accessorKey: 'qty',
-        header: 'Qty',
+        header: 'Cant.',
         cell: ({ row }) => (
           <span className="mono">
             {row.original.qty} {etiquetaUom(row.original.uom)}
@@ -154,7 +154,11 @@ export default function StockPage() {
       },
       {
         id: 'min',
-        header: 'Min',
+        header: () => (
+          <span title="Avisa si el stock baja de este número. Vacío: no avisa.">
+            Mín.
+          </span>
+        ),
         cell: ({ row }) => (
           <Input
             aria-label={`Mínimo ${row.original.sku}`}
@@ -219,7 +223,6 @@ export default function StockPage() {
     <>
       <PageHeader
         title="Stock"
-        lede="Almacén único. Mínimo opt-in por SKU: vacío = sin alerta. No se permiten existencias negativas."
         actions={
           <Button
             type="button"
@@ -230,7 +233,7 @@ export default function StockPage() {
           </Button>
         }
       />
-      <nav className="subnav" aria-label="Filtro de stock bajo">
+      <nav className="subnav" aria-label="Filtro de stock">
         {FILTROS.map((f) => (
           <button
             key={f.id}
@@ -243,7 +246,9 @@ export default function StockPage() {
         ))}
       </nav>
       <FormAlert>{error}</FormAlert>
-      <DataTable columns={columns} data={filtered} empty={empty} />
+      {rows.length > 0 || !error ? (
+        <DataTable columns={columns} data={filtered} empty={empty} />
+      ) : null}
 
       <Sheet
         open={mode !== null}
@@ -256,13 +261,11 @@ export default function StockPage() {
       >
         <SheetContent side="bottom" className="sm:max-w-none">
           <SheetHeader>
-            <SheetTitle>
-              {mode === 'ajuste' ? 'Ajuste de stock' : 'Registrar entrada'}
-            </SheetTitle>
+            <SheetTitle>{mode === 'ajuste' ? 'Ajuste' : 'Entrada'}</SheetTitle>
             <SheetDescription>
               {selected
                 ? `${selected.sku} · ${selected.nombre}`
-                : 'Elija el SKU, la cantidad y una nota opcional.'}
+                : 'Elija el ítem y la cantidad.'}
             </SheetDescription>
           </SheetHeader>
           <form className="grid gap-3 px-4 pb-4" onSubmit={aplicar}>
@@ -282,8 +285,13 @@ export default function StockPage() {
               </NativeSelect>
             </Field>
             <Field
-              label={mode === 'ajuste' ? 'Ajuste (con signo)' : 'Cantidad'}
+              label={mode === 'ajuste' ? 'Cambio' : 'Cantidad'}
               htmlFor="qty"
+              help={
+                mode === 'ajuste'
+                  ? 'Positivo suma. Negativo resta.'
+                  : undefined
+              }
             >
               <Input
                 id="qty"
@@ -308,7 +316,7 @@ export default function StockPage() {
                 type="submit"
                 variant={mode === 'ajuste' ? 'outline' : 'default'}
               >
-                {mode === 'entrada' ? 'Registrar entrada' : 'Aplicar ajuste'}
+                {mode === 'entrada' ? 'Registrar entrada' : 'Ajustar'}
               </Button>
               <Button
                 type="button"

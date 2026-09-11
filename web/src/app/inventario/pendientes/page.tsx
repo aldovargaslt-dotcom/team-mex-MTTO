@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { api, HttpError } from '@/lib/api';
-import { etiquetaUom, formatFecha } from '@/lib/format';
+import { etiquetaEstadoPendiente, etiquetaUom, formatFecha } from '@/lib/format';
 import { useRole } from '@/lib/role';
 import type { PendienteComprobante } from '@/lib/types';
 import { ImageDropzone } from '@/components/ImageDropzone';
@@ -99,13 +99,11 @@ export default function PendientesPage() {
   return (
     <>
       <PageHeader
-        title="Pendientes"
-        lede="Compras externas usadas en una visita. No mueven stock. Adjunte el ticket y marque cuando llegue."
+        title="Compras"
+        help="Compras fuera del almacén. No descuentan stock."
       />
       <FormAlert>{error}</FormAlert>
-      {rows.length === 0 ? (
-        <p className="muted">No hay compras externas pendientes.</p>
-      ) : (
+      {rows.length > 0 ? (
         <div className="card overflow-hidden">
           {rows.map((row) => {
             const abierto = row.estado === 'PENDIENTE';
@@ -132,7 +130,7 @@ export default function PendientesPage() {
                     <div className="mt-2">
                       <ImageDropzone
                         label="Tomar o subir"
-                        hint="Foto del ticket o nota de compra"
+                        hint="Foto del ticket"
                         disabled={busyId === row.id}
                         onFile={(file) => void adjuntar(row.id, file)}
                       />
@@ -141,7 +139,7 @@ export default function PendientesPage() {
                 </div>
                 <div className="row-actions">
                   <Badge variant={abierto ? 'warning' : 'success'}>
-                    {row.estado}
+                    {etiquetaEstadoPendiente(row.estado)}
                   </Badge>
                   {abierto ? (
                     <>
@@ -171,7 +169,14 @@ export default function PendientesPage() {
             );
           })}
         </div>
-      )}
+      ) : !error ? (
+        <div className="empty-state">
+          <h2>No hay compras</h2>
+          <p className="muted">
+            Las compras externas de una visita aparecen aquí.
+          </p>
+        </div>
+      ) : null}
     </>
   );
 }
