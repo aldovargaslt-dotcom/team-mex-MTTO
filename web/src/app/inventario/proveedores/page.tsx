@@ -81,6 +81,7 @@ export default function ProveedoresPage() {
         </div>
       </form>
       {error ? <p className="alert" style={{ margin: '12px 0' }}>{error}</p> : null}
+      {proveedores.length > 0 || !error ? (
       <div className="card list" style={{ marginTop: 12 }}>
         {proveedores.length > 0
           ? proveedores.map((proveedor) => (
@@ -98,13 +99,14 @@ export default function ProveedoresPage() {
                 </button>
               </div>
             ))
-          : !error && (
+          : (
               <div className="empty-state">
                 <h2>No hay proveedores</h2>
                 <p className="muted">Agregue el primero.</p>
               </div>
             )}
       </div>
+      ) : null}
     </>
   );
 }

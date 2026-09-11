@@ -296,17 +296,15 @@ export default function ItemsPage() {
 
       <FormAlert>{error}</FormAlert>
 
-      <DataTable
-        columns={columns}
-        data={filtered}
-        empty={
-          error
-            ? ''
-            : items.length === 0
-              ? 'Aún no hay ítems.'
-              : 'Sin coincidencias.'
-        }
-      />
+      {items.length > 0 || !error ? (
+        <DataTable
+          columns={columns}
+          data={filtered}
+          empty={
+            items.length === 0 ? 'Aún no hay ítems.' : 'Sin coincidencias.'
+          }
+        />
+      ) : null}
 
       {detalle ? (
         <Card className="mt-3 p-4">

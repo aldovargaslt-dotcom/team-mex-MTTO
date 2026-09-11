@@ -131,11 +131,8 @@ export default function StockPage() {
     return rows.filter((row) => row.alerta === filtro);
   }, [rows, filtro]);
 
-  const empty = error
-    ? ''
-    : filtro === 'TODOS'
-      ? 'Aún no hay existencias.'
-      : 'Nada en este filtro.';
+  const empty =
+    filtro === 'TODOS' ? 'Aún no hay existencias.' : 'Nada en este filtro.';
 
   const columns: ColumnDef<StockRow, unknown>[] = useMemo(
     () => [
@@ -249,7 +246,9 @@ export default function StockPage() {
         ))}
       </nav>
       <FormAlert>{error}</FormAlert>
-      <DataTable columns={columns} data={filtered} empty={empty} />
+      {rows.length > 0 || !error ? (
+        <DataTable columns={columns} data={filtered} empty={empty} />
+      ) : null}
 
       <Sheet
         open={mode !== null}

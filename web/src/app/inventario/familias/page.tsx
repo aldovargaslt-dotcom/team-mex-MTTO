@@ -77,6 +77,7 @@ export default function FamiliasPage() {
         </div>
       </form>
       {error ? <p className="alert" style={{ margin: '12px 0' }}>{error}</p> : null}
+      {familias.length > 0 || !error ? (
       <div className="card list" style={{ marginTop: 12 }}>
         {familias.length > 0
           ? familias.map((familia) => (
@@ -94,13 +95,14 @@ export default function FamiliasPage() {
                 </button>
               </div>
             ))
-          : !error && (
+          : (
               <div className="empty-state">
                 <h2>No hay familias</h2>
                 <p className="muted">Agregue la primera.</p>
               </div>
             )}
       </div>
+      ) : null}
     </>
   );
 }
