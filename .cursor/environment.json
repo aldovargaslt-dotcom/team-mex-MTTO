@@ -5,7 +5,7 @@
   "terminals": [
     {
       "name": "API",
-      "command": "cd api && npm run start:dev",
+      "command": "bash .cursor/wait-for-db.sh && cd api && npm run start:dev",
       "description": "NestJS API on http://localhost:3001 (Swagger at /docs)."
     },
     {
