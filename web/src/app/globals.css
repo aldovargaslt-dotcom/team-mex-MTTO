@@ -493,9 +493,9 @@ textarea {
 }
 
 .visit-list li {
-  display: flex;
-  justify-content: space-between;
-  gap: 8px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px 12px;
   align-items: center;
   padding: 8px 0;
   border-bottom: 1px solid var(--line);
