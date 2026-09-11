@@ -10,6 +10,7 @@ import { CurrentUser } from '../auth/current-user';
 import { Rol } from '../auth/roles.enum';
 import { EstadoUnidad } from '../common/estado-unidad.enum';
 import { ChoferesService } from '../choferes/choferes.service';
+import { puedeAsignarChoferAVisita } from '../choferes/estado-chofer.enum';
 import {
   OrigenConsumo,
   VISITA_CERRADA,
@@ -112,7 +113,7 @@ export class VisitasService {
     const visita = await this.requireDraft(id);
     if (dto.choferId !== undefined) {
       visita.chofer = dto.choferId
-        ? await this.choferes.findOne(dto.choferId)
+        ? await this.choferes.requireActivo(dto.choferId)
         : null;
     }
     if (dto.km !== undefined) {
@@ -217,6 +218,14 @@ export class VisitasService {
       });
       if (errores.length) {
         throw new BadRequestException(errores[0]);
+      }
+      if (
+        visita.chofer &&
+        !puedeAsignarChoferAVisita(visita.chofer.estado)
+      ) {
+        throw new BadRequestException(
+          'El chofer no está activo. Seleccione un chofer activo.',
+        );
       }
       visita.estado = EstadoVisita.CERRADO;
       visita.cerradoAt = new Date();
@@ -358,7 +367,11 @@ export class VisitasService {
       tipoVehiculoNombre: visita.unidad.tipo?.nombre ?? null,
       estado: visita.estado,
       chofer: visita.chofer
-        ? { id: visita.chofer.id, nombre: visita.chofer.nombre }
+        ? {
+            id: visita.chofer.id,
+            nombre: visita.chofer.nombre,
+            estado: visita.chofer.estado,
+          }
         : null,
       km: visita.km,
       tipo: visita.tipo,

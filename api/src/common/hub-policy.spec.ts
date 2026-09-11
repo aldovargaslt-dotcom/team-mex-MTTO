@@ -23,7 +23,9 @@ describe('hub-policy', () => {
     ).toMatch(/inactiva/i);
     expect(
       mensajesHub(Rol.SUPERVISOR, EstadoUnidad.ACTIVA, false)[0],
-    ).toBe('No hay choferes. Pide alta a administración.');
+    ).toBe(
+      'No hay choferes activos. Pide alta o reactivación a administración.',
+    );
     expect(
       mensajesHub(Rol.SUPERVISOR, EstadoUnidad.ACTIVA, true)[0],
     ).toMatch(/nueva visita/i);

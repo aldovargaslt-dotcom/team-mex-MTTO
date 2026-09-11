@@ -1,27 +1,31 @@
 import {
-  ConflictException,
+  BadRequestException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { requireTrimmed } from '../common/require-trimmed';
-import { Visita } from '../visitas/visita.entity';
 import { Chofer } from './chofer.entity';
 import { CreateChoferDto } from './dto/create-chofer.dto';
 import { UpdateChoferDto } from './dto/update-chofer.dto';
+import {
+  EstadoChofer,
+  puedeAsignarChoferAVisita,
+} from './estado-chofer.enum';
 
 @Injectable()
 export class ChoferesService {
   constructor(
     @InjectRepository(Chofer)
     private readonly repo: Repository<Chofer>,
-    @InjectRepository(Visita)
-    private readonly visitas: Repository<Visita>,
   ) {}
 
-  findAll() {
-    return this.repo.find({ order: { nombre: 'ASC' } });
+  findAll(estado?: EstadoChofer) {
+    return this.repo.find({
+      where: estado ? { estado } : {},
+      order: { nombre: 'ASC' },
+    });
   }
 
   async findOne(id: string) {
@@ -32,12 +36,23 @@ export class ChoferesService {
     return chofer;
   }
 
+  async requireActivo(id: string) {
+    const chofer = await this.findOne(id);
+    if (!puedeAsignarChoferAVisita(chofer.estado)) {
+      throw new BadRequestException(
+        'El chofer no está activo. Seleccione un chofer activo.',
+      );
+    }
+    return chofer;
+  }
+
   async create(dto: CreateChoferDto) {
     const chofer = this.repo.create({
       nombre: requireTrimmed(
         dto.nombre,
         'El nombre del chofer no puede estar vacío.',
       ),
+      estado: dto.estado ?? EstadoChofer.ACTIVO,
     });
     return this.repo.save(chofer);
   }
@@ -50,24 +65,9 @@ export class ChoferesService {
         'El nombre del chofer no puede estar vacío.',
       );
     }
-    return this.repo.save(chofer);
-  }
-
-  async remove(id: string) {
-    const chofer = await this.findOne(id);
-    const usadas = await this.visitas.count({
-      where: { chofer: { id } },
-    });
-    if (usadas > 0) {
-      throw new ConflictException(
-        'No se puede eliminar el chofer porque hay visitas asociadas.',
-      );
+    if (dto.estado !== undefined) {
+      chofer.estado = dto.estado;
     }
-    await this.repo.remove(chofer);
-    return { message: 'Chofer eliminado.' };
-  }
-
-  async count() {
-    return this.repo.count();
+    return this.repo.save(chofer);
   }
 }

@@ -1,4 +1,5 @@
 import { Rol } from '../auth/roles.enum';
+import { MENSAJE_SIN_CHOFERES_ACTIVOS } from '../choferes/estado-chofer.enum';
 import { EstadoUnidad } from './estado-unidad.enum';
 
 export function puedeCrearVisita(rol: Rol, estado: EstadoUnidad): boolean {
@@ -8,7 +9,7 @@ export function puedeCrearVisita(rol: Rol, estado: EstadoUnidad): boolean {
 export function mensajesHub(
   rol: Rol,
   estado: EstadoUnidad,
-  hayChoferes: boolean,
+  hayChoferesActivos: boolean,
 ): string[] {
   if (rol === Rol.ADMIN_DIRECTIVO) {
     return [
@@ -18,8 +19,8 @@ export function mensajesHub(
   if (estado !== EstadoUnidad.ACTIVA) {
     return ['No se puede crear una visita porque la unidad está inactiva.'];
   }
-  if (!hayChoferes) {
-    return ['No hay choferes. Pide alta a administración.'];
+  if (!hayChoferesActivos) {
+    return [MENSAJE_SIN_CHOFERES_ACTIVOS];
   }
   return ['Puede registrar una nueva visita de mantenimiento.'];
 }

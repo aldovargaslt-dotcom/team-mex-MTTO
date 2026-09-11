@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -7,12 +8,14 @@ import {
   ParseUUIDPipe,
   Patch,
   Post,
+  Query,
 } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Roles } from '../auth/roles.decorator';
 import { Rol } from '../auth/roles.enum';
 import { ChoferesService } from './choferes.service';
 import { CreateChoferDto } from './dto/create-chofer.dto';
+import { FiltrarChoferesDto } from './dto/filtrar-choferes.dto';
 import { UpdateChoferDto } from './dto/update-chofer.dto';
 
 @ApiTags('choferes')
@@ -21,9 +24,11 @@ export class ChoferesController {
   constructor(private readonly service: ChoferesService) {}
 
   @Get()
-  @ApiOperation({ summary: 'Listar choferes (ambos roles)' })
-  findAll() {
-    return this.service.findAll();
+  @ApiOperation({
+    summary: 'Listar choferes (ambos roles). Query estado=ACTIVO|INACTIVO.',
+  })
+  findAll(@Query() filtros: FiltrarChoferesDto) {
+    return this.service.findAll(filtros.estado);
   }
 
   @Get(':id')
@@ -34,14 +39,14 @@ export class ChoferesController {
 
   @Post()
   @Roles(Rol.ADMIN_DIRECTIVO)
-  @ApiOperation({ summary: 'Crear chofer (admin)' })
+  @ApiOperation({ summary: 'Crear chofer (admin). Default estado ACTIVO.' })
   create(@Body() dto: CreateChoferDto) {
     return this.service.create(dto);
   }
 
   @Patch(':id')
   @Roles(Rol.ADMIN_DIRECTIVO)
-  @ApiOperation({ summary: 'Actualizar chofer (admin)' })
+  @ApiOperation({ summary: 'Actualizar chofer o estado (admin)' })
   update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() dto: UpdateChoferDto,
@@ -51,8 +56,12 @@ export class ChoferesController {
 
   @Delete(':id')
   @Roles(Rol.ADMIN_DIRECTIVO)
-  @ApiOperation({ summary: 'Eliminar chofer (admin)' })
-  remove(@Param('id', ParseUUIDPipe) id: string) {
-    return this.service.remove(id);
+  @ApiOperation({
+    summary: 'v0 no hay baja física: use PATCH estado INACTIVO',
+  })
+  remove() {
+    throw new BadRequestException(
+      'No se elimina el chofer. Páselo a INACTIVO desde el catálogo.',
+    );
   }
 }

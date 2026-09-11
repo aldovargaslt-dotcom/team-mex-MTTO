@@ -2,6 +2,8 @@ export type Role = 'SUPERVISOR' | 'ADMIN_DIRECTIVO';
 
 export type EstadoUnidad = 'ACTIVA' | 'INACTIVA';
 
+export type EstadoChofer = 'ACTIVO' | 'INACTIVO';
+
 export type EstadoVisita = 'BORRADOR' | 'CERRADO';
 
 export type TipoVisita = 'PREDICTIVO' | 'CORRECTIVO';
@@ -27,6 +29,7 @@ export type TipoVehiculo = {
 export type Chofer = {
   id: string;
   nombre: string;
+  estado: EstadoChofer;
 };
 
 export type Unidad = {
