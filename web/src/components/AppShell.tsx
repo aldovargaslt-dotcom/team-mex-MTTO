@@ -50,7 +50,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             <BrandPlate />
           </Link>
           {showChrome ? (
-            <nav className="shell-header__nav" aria-label="Principal">
+            <nav className="shell-header__nav hidden md:flex" aria-label="Principal">
               {items.map((item) => (
                 <NavLink
                   key={item.href}
@@ -66,13 +66,13 @@ export function AppShell({ children }: { children: ReactNode }) {
             {showChrome ? (
               <>
                 <Campanita />
-                <span className="shell-header__role">
+                <span className="shell-header__role hidden md:inline">
                   {etiquetaRol(role!)}
                 </span>
                 <Button
                   type="button"
                   variant="ghost"
-                  className="shell-header__role-switch"
+                  className="shell-header__role-switch hidden md:inline-flex"
                   onClick={cambiarRol}
                 >
                   Cambiar rol
@@ -81,7 +81,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                   type="button"
                   variant="ghost"
                   size="icon"
-                  className="shell-header__menu"
+                  className="shell-header__menu md:hidden"
                   aria-label="Abrir menú"
                   aria-expanded={menuOpen}
                   aria-controls="shell-menu"
@@ -100,6 +100,17 @@ export function AppShell({ children }: { children: ReactNode }) {
             id="shell-menu"
             side="right"
             className="w-[min(100%,20rem)] sm:max-w-xs"
+            onOpenAutoFocus={(event) => {
+              const root = event.currentTarget as HTMLElement;
+              const current = root.querySelector<HTMLElement>(
+                '.shell-menu-link.active',
+              );
+              const first = root.querySelector<HTMLElement>('.shell-menu-link');
+              const target = current ?? first;
+              if (!target) return;
+              event.preventDefault();
+              target.focus();
+            }}
           >
             <SheetHeader>
               <SheetTitle>Menú</SheetTitle>

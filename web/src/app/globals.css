@@ -210,6 +210,11 @@
     font-weight: 500;
   }
 
+  .shell-menu-link:focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+
   @media (min-width: 768px) {
     .shell-header__bar {
       gap: 20px;
