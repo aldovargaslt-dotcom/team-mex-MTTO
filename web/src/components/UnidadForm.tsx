@@ -7,12 +7,11 @@ import type { EstadoUnidad, TipoVehiculo, Unidad } from '@/lib/types';
 export type UnidadFormValues = {
   numeroInterno: string;
   placas: string;
+  vin: string;
   tipoId: string;
   estado: EstadoUnidad;
-  marca: string;
-  modelo: string;
+  marcaModelo: string;
   anio: string;
-  kilometraje: string;
 };
 
 export function UnidadForm({
@@ -34,13 +33,11 @@ export function UnidadForm({
   const [values, setValues] = useState<UnidadFormValues>({
     numeroInterno: initial?.numeroInterno ?? '',
     placas: initial?.placas ?? '',
+    vin: initial?.vin ?? '',
     tipoId: initial?.tipo?.id ?? '',
     estado: initial?.estado ?? 'ACTIVA',
-    marca: initial?.marca ?? '',
-    modelo: initial?.modelo ?? '',
+    marcaModelo: initial?.marcaModelo ?? '',
     anio: initial?.anio != null ? String(initial.anio) : '',
-    kilometraje:
-      initial?.kilometraje != null ? String(initial.kilometraje) : '',
   });
   const [saving, setSaving] = useState(false);
 
@@ -55,13 +52,11 @@ export function UnidadForm({
     setValues({
       numeroInterno: initial.numeroInterno ?? '',
       placas: initial.placas ?? '',
+      vin: initial.vin ?? '',
       tipoId: initial.tipo?.id ?? '',
       estado: initial.estado ?? 'ACTIVA',
-      marca: initial.marca ?? '',
-      modelo: initial.modelo ?? '',
+      marcaModelo: initial.marcaModelo ?? '',
       anio: initial.anio != null ? String(initial.anio) : '',
-      kilometraje:
-        initial.kilometraje != null ? String(initial.kilometraje) : '',
     });
   }, [initial]);
 
@@ -103,6 +98,16 @@ export function UnidadForm({
         />
       </div>
       <div className="field">
+        <label htmlFor="vin">VIN</label>
+        <input
+          id="vin"
+          maxLength={32}
+          value={values.vin}
+          onChange={(e) => set('vin', e.target.value)}
+          placeholder="Opcional"
+        />
+      </div>
+      <div className="field">
         <label htmlFor="tipoId">Tipo</label>
         <select
           id="tipoId"
@@ -130,19 +135,12 @@ export function UnidadForm({
         </select>
       </div>
       <div className="field">
-        <label htmlFor="marca">Marca</label>
+        <label htmlFor="marcaModelo">Marca / modelo</label>
         <input
-          id="marca"
-          value={values.marca}
-          onChange={(e) => set('marca', e.target.value)}
-        />
-      </div>
-      <div className="field">
-        <label htmlFor="modelo">Modelo</label>
-        <input
-          id="modelo"
-          value={values.modelo}
-          onChange={(e) => set('modelo', e.target.value)}
+          id="marcaModelo"
+          value={values.marcaModelo}
+          onChange={(e) => set('marcaModelo', e.target.value)}
+          placeholder="Ej. International MV"
         />
       </div>
       <div className="field">
@@ -154,16 +152,6 @@ export function UnidadForm({
           max={2100}
           value={values.anio}
           onChange={(e) => set('anio', e.target.value)}
-        />
-      </div>
-      <div className="field">
-        <label htmlFor="kilometraje">Kilometraje</label>
-        <input
-          id="kilometraje"
-          type="number"
-          min={0}
-          value={values.kilometraje}
-          onChange={(e) => set('kilometraje', e.target.value)}
         />
       </div>
       {error ? <p className="alert">{error}</p> : null}
@@ -183,11 +171,10 @@ export function toPayload(values: UnidadFormValues) {
   return {
     numeroInterno: values.numeroInterno.trim(),
     placas: values.placas.trim(),
+    vin: values.vin.trim() || undefined,
     tipoId: values.tipoId,
     estado: values.estado,
-    marca: values.marca.trim() || undefined,
-    modelo: values.modelo.trim() || undefined,
+    marcaModelo: values.marcaModelo.trim() || undefined,
     anio: values.anio ? Number(values.anio) : undefined,
-    kilometraje: values.kilometraje ? Number(values.kilometraje) : undefined,
   };
 }

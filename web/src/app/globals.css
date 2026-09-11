@@ -24,8 +24,10 @@
 }
 
 html,
-body {
+body,
+.app {
   min-height: 100%;
+  background: #f3f3f3;
 }
 
 body {
@@ -70,22 +72,43 @@ textarea {
 
 .brand {
   display: flex;
-  flex-direction: column;
-  line-height: 1.1;
+  align-items: center;
   padding: 8px 0;
 }
 
-.brand-mark {
+.brand-plate {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #ffffff;
+  color: var(--shell);
+  border-radius: 10px;
+  padding: 4px 10px 4px 4px;
+  min-height: 40px;
+}
+
+.brand-logo {
+  display: block;
+  flex-shrink: 0;
+}
+
+.brand-copy {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+}
+
+.brand-name {
   font-weight: 700;
-  letter-spacing: 0.08em;
   font-size: 14px;
+  color: var(--shell);
+  letter-spacing: 0;
 }
 
 .brand-sub {
-  font-size: 11px;
-  opacity: 0.75;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+  font-size: 10px;
+  color: var(--muted);
+  letter-spacing: 0.02em;
 }
 
 .nav {
@@ -104,10 +127,15 @@ textarea {
   color: rgba(247, 247, 251, 0.82);
 }
 
-.nav a.active,
 .nav a:hover {
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.1);
   color: white;
+}
+
+.nav a.active {
+  background: #ffffff;
+  color: var(--shell);
+  font-weight: 500;
 }
 
 .shell-actions {
@@ -235,6 +263,16 @@ textarea {
   background: var(--white);
   color: var(--shell);
   border: 1px solid var(--line);
+}
+
+.btn-outline {
+  background: var(--white);
+  color: var(--shell);
+  border: 1.5px solid var(--shell);
+}
+
+.btn-outline:hover:not(:disabled) {
+  background: #ececf3;
 }
 
 .btn-ghost {

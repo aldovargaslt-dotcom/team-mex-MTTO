@@ -55,7 +55,9 @@ Autenticación stub: encabezado `X-Role`. Falta el encabezado → 401.
 | `GET /unidades/:id` y `/unidades/:id/hub` | sí | sí |
 | `POST/PATCH /unidades` | 403 | sí |
 
-Hub: `fichaCorta` + stubs de mantenimiento (mensajes en español, sin arreglos vacíos crudos). `puedeCrearVisita` es **true solo si el rol es SUPERVISOR y la unidad está ACTIVA**. El admin nunca obtiene `true`. Unicidad de número interno, placas y nombre de tipo → 409.
+Hub: `fichaCorta` + stubs de mantenimiento (mensajes en español, sin arreglos vacíos crudos). `puedeCrearVisita` es **true solo si el rol es SUPERVISOR y la unidad está ACTIVA**. El admin nunca obtiene `true`. Unicidad de número interno, placas, VIN (si viene informado) y nombre de tipo → 409.
+
+Campos maestros de unidad (alta/edición admin): `numeroInterno`, `placas`, `vin` (opcional), `tipo`, `estado`, `marcaModelo`, `anio`. El kilometraje **no** se edita en la unidad: `fichaCorta.ultimoKm` es el km de la última visita cerrada. En Slice 1 las visitas están fuera de alcance, así que `ultimoKm` siempre es `null` y la UI muestra «Sin registro».
 
 Documentación: [http://localhost:3001/docs](http://localhost:3001/docs).
 

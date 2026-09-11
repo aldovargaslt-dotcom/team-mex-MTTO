@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CurrentUser } from '../auth/current-user';
 import { mensajeVisita, puedeCrearVisita } from '../common/hub-policy';
+import { requireTrimmed } from '../common/require-trimmed';
 import { TiposVehiculoService } from '../tipos-vehiculo/tipos-vehiculo.service';
 import { CreateUnidadDto } from './dto/create-unidad.dto';
 import { FiltrarUnidadesDto } from './dto/filtrar-unidades.dto';
@@ -62,14 +63,19 @@ export class UnidadesService {
   async create(dto: CreateUnidadDto) {
     const tipo = await this.tipos.findOne(dto.tipoId);
     const unidad = this.repo.create({
-      numeroInterno: dto.numeroInterno.trim(),
-      placas: dto.placas.trim().toUpperCase(),
+      numeroInterno: requireTrimmed(
+        dto.numeroInterno,
+        'El número interno no puede estar vacío.',
+      ),
+      placas: requireTrimmed(
+        dto.placas,
+        'Las placas no pueden estar vacías.',
+      ).toUpperCase(),
+      vin: this.normalizeVin(dto.vin),
       tipo,
       estado: dto.estado,
-      marca: dto.marca?.trim() || null,
-      modelo: dto.modelo?.trim() || null,
+      marcaModelo: dto.marcaModelo?.trim() || null,
       anio: dto.anio ?? null,
-      kilometraje: dto.kilometraje ?? null,
     });
     return this.repo.save(unidad);
   }
@@ -80,25 +86,28 @@ export class UnidadesService {
       unidad.tipo = await this.tipos.findOne(dto.tipoId);
     }
     if (dto.numeroInterno !== undefined) {
-      unidad.numeroInterno = dto.numeroInterno.trim();
+      unidad.numeroInterno = requireTrimmed(
+        dto.numeroInterno,
+        'El número interno no puede estar vacío.',
+      );
     }
     if (dto.placas !== undefined) {
-      unidad.placas = dto.placas.trim().toUpperCase();
+      unidad.placas = requireTrimmed(
+        dto.placas,
+        'Las placas no pueden estar vacías.',
+      ).toUpperCase();
+    }
+    if (dto.vin !== undefined) {
+      unidad.vin = this.normalizeVin(dto.vin);
     }
     if (dto.estado !== undefined) {
       unidad.estado = dto.estado;
     }
-    if (dto.marca !== undefined) {
-      unidad.marca = dto.marca.trim() || null;
-    }
-    if (dto.modelo !== undefined) {
-      unidad.modelo = dto.modelo.trim() || null;
+    if (dto.marcaModelo !== undefined) {
+      unidad.marcaModelo = dto.marcaModelo.trim() || null;
     }
     if (dto.anio !== undefined) {
       unidad.anio = dto.anio;
-    }
-    if (dto.kilometraje !== undefined) {
-      unidad.kilometraje = dto.kilometraje;
     }
     return this.repo.save(unidad);
   }
@@ -110,13 +119,15 @@ export class UnidadesService {
         id: unidad.id,
         numeroInterno: unidad.numeroInterno,
         placas: unidad.placas,
+        vin: unidad.vin,
         estado: unidad.estado,
         tipoId: unidad.tipo.id,
         tipoNombre: unidad.tipo.nombre,
-        marca: unidad.marca,
-        modelo: unidad.modelo,
+        marcaModelo: unidad.marcaModelo,
         anio: unidad.anio,
-        kilometraje: unidad.kilometraje,
+        // Slice 1: no hay visitas cerradas; el km se derivará de la última visita
+        // cerrada cuando exista ese dominio.
+        ultimoKm: null,
       },
       mantenimiento: {
         estado: 'sin_registros',
@@ -128,5 +139,10 @@ export class UnidadesService {
       puedeCrearVisita: puedeCrearVisita(user.rol, unidad.estado),
       mensaje: mensajeVisita(user.rol, unidad.estado),
     };
+  }
+
+  private normalizeVin(vin?: string | null) {
+    const value = vin?.trim().toUpperCase() ?? '';
+    return value.length ? value : null;
   }
 }

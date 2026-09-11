@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
+import { BrandPlate } from '@/components/BrandPlate';
 import { etiquetaRol, useRole } from '@/lib/role';
 
 export function AppShell({ children }: { children: React.ReactNode }) {
@@ -15,8 +16,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <header className="shell">
         <div className="shell-inner">
           <Link href={role ? '/unidades' : '/'} className="brand">
-            <span className="brand-mark">TEAM MEX</span>
-            <span className="brand-sub">Mantenimiento</span>
+            <BrandPlate />
           </Link>
           {!isHome && ready && role ? (
             <nav className="nav">

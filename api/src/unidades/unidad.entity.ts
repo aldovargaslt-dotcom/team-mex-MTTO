@@ -23,6 +23,9 @@ export class Unidad {
   @Column({ unique: true })
   placas: string;
 
+  @Column({ type: 'varchar', length: 32, unique: true, nullable: true })
+  vin: string | null;
+
   @ManyToOne(() => TipoVehiculo, (tipo) => tipo.unidades, { eager: true })
   @JoinColumn({ name: 'tipo_id' })
   tipo: TipoVehiculo;
@@ -30,17 +33,11 @@ export class Unidad {
   @Column({ type: 'enum', enum: EstadoUnidad, default: EstadoUnidad.ACTIVA })
   estado: EstadoUnidad;
 
-  @Column({ type: 'varchar', nullable: true })
-  marca: string | null;
-
-  @Column({ type: 'varchar', nullable: true })
-  modelo: string | null;
+  @Column({ name: 'marca_modelo', type: 'varchar', nullable: true })
+  marcaModelo: string | null;
 
   @Column({ type: 'int', nullable: true })
   anio: number | null;
-
-  @Column({ type: 'int', nullable: true })
-  kilometraje: number | null;
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;

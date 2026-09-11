@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { requireTrimmed } from '../common/require-trimmed';
 import { CreateTipoVehiculoDto } from './dto/create-tipo-vehiculo.dto';
 import { UpdateTipoVehiculoDto } from './dto/update-tipo-vehiculo.dto';
 import { TipoVehiculo } from './tipo-vehiculo.entity';
@@ -30,7 +31,10 @@ export class TiposVehiculoService {
 
   async create(dto: CreateTipoVehiculoDto) {
     const tipo = this.repo.create({
-      nombre: dto.nombre.trim(),
+      nombre: requireTrimmed(
+        dto.nombre,
+        'El nombre del tipo no puede estar vacío.',
+      ),
       descripcion: dto.descripcion?.trim() || null,
     });
     return this.repo.save(tipo);
@@ -39,7 +43,10 @@ export class TiposVehiculoService {
   async update(id: string, dto: UpdateTipoVehiculoDto) {
     const tipo = await this.findOne(id);
     if (dto.nombre !== undefined) {
-      tipo.nombre = dto.nombre.trim();
+      tipo.nombre = requireTrimmed(
+        dto.nombre,
+        'El nombre del tipo no puede estar vacío.',
+      );
     }
     if (dto.descripcion !== undefined) {
       tipo.descripcion = dto.descripcion.trim() || null;

@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { EstadoUnidad } from '../../common/estado-unidad.enum';
 
 export class FichaCortaDto {
@@ -11,6 +11,9 @@ export class FichaCortaDto {
   @ApiProperty()
   placas: string;
 
+  @ApiProperty({ nullable: true, type: String })
+  vin: string | null;
+
   @ApiProperty({ enum: EstadoUnidad })
   estado: EstadoUnidad;
 
@@ -20,17 +23,19 @@ export class FichaCortaDto {
   @ApiProperty()
   tipoNombre: string;
 
-  @ApiProperty({ nullable: true })
-  marca: string | null;
+  @ApiProperty({ nullable: true, type: String })
+  marcaModelo: string | null;
 
-  @ApiProperty({ nullable: true })
-  modelo: string | null;
-
-  @ApiProperty({ nullable: true })
+  @ApiProperty({ nullable: true, type: Number })
   anio: number | null;
 
-  @ApiProperty({ nullable: true })
-  kilometraje: number | null;
+  @ApiPropertyOptional({
+    nullable: true,
+    type: Number,
+    description:
+      'Kilometraje de la última visita de mantenimiento cerrada. Slice 1 no incluye visitas: siempre null hasta que exista ese dominio.',
+  })
+  ultimoKm: number | null;
 }
 
 export class MantenimientoStubDto {

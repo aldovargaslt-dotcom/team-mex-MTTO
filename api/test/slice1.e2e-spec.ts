@@ -176,10 +176,13 @@ describe('Slice 1 (e2e)', () => {
         placas: 'TMX-104-D',
         tipoId,
         estado: EstadoUnidad.ACTIVA,
-        marca: 'Isuzu',
+        marcaModelo: 'Isuzu NPR',
+        anio: 2024,
       })
       .expect(201);
     expect(created.body.numeroInterno).toBe('U-104');
+    expect(created.body.vin).toBeNull();
+    expect(created.body.marcaModelo).toBe('Isuzu NPR');
 
     const updated = await request(server)
       .patch(`/unidades/${created.body.id}`)
@@ -233,6 +236,9 @@ describe('Slice 1 (e2e)', () => {
     expect(res.body.puedeCrearVisita).toBe(true);
     expect(res.body.fichaCorta.numeroInterno).toBe('U-101');
     expect(res.body.fichaCorta.estado).toBe(EstadoUnidad.ACTIVA);
+    expect(res.body.fichaCorta.vin).toBeTruthy();
+    expect(res.body.fichaCorta.marcaModelo).toMatch(/International/i);
+    expect(res.body.fichaCorta.ultimoKm).toBeNull();
     expect(res.body.mantenimiento.mensajeHistorial).toMatch(/visitas/i);
     expect(JSON.stringify(res.body)).not.toContain('[]');
   });
@@ -263,5 +269,98 @@ describe('Slice 1 (e2e)', () => {
       .set(SUPERVISOR)
       .expect(404);
     expect(res.body.message).toMatch(/no se encontró la unidad/i);
+  });
+
+  it('VIN es opcional y único si se informa', async () => {
+    const tipos = await request(server).get('/tipos-vehiculo').set(ADMIN);
+    const tipoId = tipos.body[0].id as string;
+
+    const sinVin = await request(server)
+      .post('/unidades')
+      .set(ADMIN)
+      .send({
+        numeroInterno: 'U-180',
+        placas: 'TMX-180-A',
+        tipoId,
+      })
+      .expect(201);
+    expect(sinVin.body.vin).toBeNull();
+
+    const otroSinVin = await request(server)
+      .post('/unidades')
+      .set(ADMIN)
+      .send({
+        numeroInterno: 'U-181',
+        placas: 'TMX-181-A',
+        tipoId,
+        vin: '   ',
+      })
+      .expect(201);
+    expect(otroSinVin.body.vin).toBeNull();
+
+    await request(server)
+      .post('/unidades')
+      .set(ADMIN)
+      .send({
+        numeroInterno: 'U-182',
+        placas: 'TMX-182-A',
+        tipoId,
+        vin: '3HSDZAPR5NN182182',
+      })
+      .expect(201);
+
+    const dupVin = await request(server)
+      .post('/unidades')
+      .set(ADMIN)
+      .send({
+        numeroInterno: 'U-183',
+        placas: 'TMX-183-A',
+        tipoId,
+        vin: '3HSDZAPR5NN182182',
+      })
+      .expect(409);
+    expect(dupVin.body.message).toMatch(/vin/i);
+  });
+
+  it('rechaza número interno, placas y nombre de tipo solo con espacios', async () => {
+    const tipos = await request(server).get('/tipos-vehiculo').set(ADMIN);
+    const tipoId = tipos.body[0].id as string;
+    const u101 = await unidadPorNumero('U-101');
+
+    const numeroVacio = await request(server)
+      .post('/unidades')
+      .set(ADMIN)
+      .send({
+        numeroInterno: '   ',
+        placas: 'TMX-190-A',
+        tipoId,
+      })
+      .expect(400);
+    expect(numeroVacio.body.message).toMatch(/número interno|vacío|válidos/i);
+
+    const placasVacias = await request(server)
+      .post('/unidades')
+      .set(ADMIN)
+      .send({
+        numeroInterno: 'U-191',
+        placas: '\t  ',
+        tipoId,
+      })
+      .expect(400);
+    expect(placasVacias.body.message).toMatch(/placas|vacío|válidos/i);
+
+    const patchNumero = await request(server)
+      .patch(`/unidades/${u101.id}`)
+      .set(ADMIN)
+      .send({ numeroInterno: '  ' })
+      .expect(400);
+    expect(patchNumero.body.message).toMatch(/número interno|vacío|válidos/i);
+
+    const tipoVacio = await request(server)
+      .post('/tipos-vehiculo')
+      .set(ADMIN)
+      .send({ nombre: '   ' })
+      .expect(400);
+    expect(tipoVacio.body.message).toMatch(/nombre|vacío|válidos/i);
   });
 });

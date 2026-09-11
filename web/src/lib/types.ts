@@ -12,12 +12,11 @@ export type Unidad = {
   id: string;
   numeroInterno: string;
   placas: string;
+  vin: string | null;
   estado: EstadoUnidad;
   tipo: TipoVehiculo;
-  marca: string | null;
-  modelo: string | null;
+  marcaModelo: string | null;
   anio: number | null;
-  kilometraje: number | null;
 };
 
 export type UnidadHub = {
@@ -25,13 +24,13 @@ export type UnidadHub = {
     id: string;
     numeroInterno: string;
     placas: string;
+    vin: string | null;
     estado: EstadoUnidad;
     tipoId: string;
     tipoNombre: string;
-    marca: string | null;
-    modelo: string | null;
+    marcaModelo: string | null;
     anio: number | null;
-    kilometraje: number | null;
+    ultimoKm: number | null;
   };
   mantenimiento: {
     estado: 'sin_registros';

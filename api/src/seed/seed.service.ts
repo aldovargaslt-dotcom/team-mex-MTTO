@@ -15,32 +15,29 @@ const UNIDADES_SEED = [
   {
     numeroInterno: 'U-101',
     placas: 'TMX-101-A',
+    vin: '3HSDZAPR5NN101001',
     tipoNombre: 'Camión',
     estado: EstadoUnidad.ACTIVA,
-    marca: 'International',
-    modelo: 'MV',
+    marcaModelo: 'International MV',
     anio: 2022,
-    kilometraje: 85400,
   },
   {
     numeroInterno: 'U-102',
     placas: 'TMX-102-B',
+    vin: '1FTER4EH5PL102002',
     tipoNombre: 'Camioneta',
     estado: EstadoUnidad.ACTIVA,
-    marca: 'Ford',
-    modelo: 'Ranger',
+    marcaModelo: 'Ford Ranger',
     anio: 2023,
-    kilometraje: 41200,
   },
   {
     numeroInterno: 'U-103',
     placas: 'TMX-103-C',
+    vin: 'WDB9066331N103003',
     tipoNombre: 'Van',
     estado: EstadoUnidad.INACTIVA,
-    marca: 'Mercedes-Benz',
-    modelo: 'Sprinter',
+    marcaModelo: 'Mercedes-Benz Sprinter',
     anio: 2019,
-    kilometraje: 162000,
   },
 ];
 
@@ -68,25 +65,31 @@ export class SeedService implements OnModuleInit {
     }
 
     for (const item of UNIDADES_SEED) {
+      const tipo = await this.tipos.findOneByOrFail({
+        nombre: item.tipoNombre,
+      });
       const exists = await this.unidades.findOne({
         where: { numeroInterno: item.numeroInterno },
       });
       if (exists) {
+        exists.placas = item.placas;
+        exists.vin = item.vin;
+        exists.tipo = tipo;
+        exists.estado = item.estado;
+        exists.marcaModelo = item.marcaModelo;
+        exists.anio = item.anio;
+        await this.unidades.save(exists);
         continue;
       }
-      const tipo = await this.tipos.findOneByOrFail({
-        nombre: item.tipoNombre,
-      });
       await this.unidades.save(
         this.unidades.create({
           numeroInterno: item.numeroInterno,
           placas: item.placas,
+          vin: item.vin,
           tipo,
           estado: item.estado,
-          marca: item.marca,
-          modelo: item.modelo,
+          marcaModelo: item.marcaModelo,
           anio: item.anio,
-          kilometraje: item.kilometraje,
         }),
       );
     }

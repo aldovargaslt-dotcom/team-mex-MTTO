@@ -4,7 +4,24 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { ValidationError } from 'class-validator';
 import { QueryFailedFilter } from './common/query-failed.filter';
+
+function firstValidationMessage(errors: ValidationError[]): string {
+  for (const error of errors) {
+    const messages = Object.values(error.constraints ?? {});
+    if (messages[0]) {
+      return messages[0];
+    }
+    if (error.children?.length) {
+      const nested = firstValidationMessage(error.children);
+      if (nested) {
+        return nested;
+      }
+    }
+  }
+  return 'Los datos enviados no son válidos.';
+}
 
 export function configureApp(app: INestApplication): void {
   app.enableCors({
@@ -22,8 +39,8 @@ export function configureApp(app: INestApplication): void {
       forbidNonWhitelisted: true,
       transform: true,
       transformOptions: { enableImplicitConversion: true },
-      exceptionFactory: () =>
-        new BadRequestException('Los datos enviados no son válidos.'),
+      exceptionFactory: (errors: ValidationError[]) =>
+        new BadRequestException(firstValidationMessage(errors)),
     }),
   );
   app.useGlobalFilters(new QueryFailedFilter());

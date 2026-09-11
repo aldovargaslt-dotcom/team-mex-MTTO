@@ -2,28 +2,30 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsEnum,
   IsInt,
-  IsNotEmpty,
   IsOptional,
-  IsString,
   IsUUID,
   Max,
   MaxLength,
   Min,
 } from 'class-validator';
+import { OptionalTrimmed, RequiredTrimmed } from '../../common/trim';
 import { EstadoUnidad } from '../../common/estado-unidad.enum';
 
 export class CreateUnidadDto {
   @ApiProperty({ example: 'U-104' })
-  @IsString()
-  @IsNotEmpty()
+  @RequiredTrimmed('El número interno no puede estar vacío.')
   @MaxLength(20)
   numeroInterno: string;
 
   @ApiProperty({ example: 'TMX-104-D' })
-  @IsString()
-  @IsNotEmpty()
+  @RequiredTrimmed('Las placas no pueden estar vacías.')
   @MaxLength(20)
   placas: string;
+
+  @ApiPropertyOptional({ example: '3HSDZAPR5NN104001' })
+  @OptionalTrimmed()
+  @MaxLength(32)
+  vin?: string;
 
   @ApiProperty({ format: 'uuid' })
   @IsUUID()
@@ -34,17 +36,10 @@ export class CreateUnidadDto {
   @IsEnum(EstadoUnidad)
   estado?: EstadoUnidad;
 
-  @ApiPropertyOptional({ example: 'International' })
-  @IsOptional()
-  @IsString()
-  @MaxLength(80)
-  marca?: string;
-
-  @ApiPropertyOptional({ example: 'MV' })
-  @IsOptional()
-  @IsString()
-  @MaxLength(80)
-  modelo?: string;
+  @ApiPropertyOptional({ example: 'International MV' })
+  @OptionalTrimmed()
+  @MaxLength(120)
+  marcaModelo?: string;
 
   @ApiPropertyOptional({ example: 2022 })
   @IsOptional()
@@ -52,10 +47,4 @@ export class CreateUnidadDto {
   @Min(1980)
   @Max(2100)
   anio?: number;
-
-  @ApiPropertyOptional({ example: 12000 })
-  @IsOptional()
-  @IsInt()
-  @Min(0)
-  kilometraje?: number;
 }

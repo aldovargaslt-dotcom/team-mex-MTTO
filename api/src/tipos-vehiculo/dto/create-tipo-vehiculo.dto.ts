@@ -1,16 +1,15 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsNotEmpty, IsOptional, IsString, MaxLength } from 'class-validator';
+import { MaxLength } from 'class-validator';
+import { OptionalTrimmed, RequiredTrimmed } from '../../common/trim';
 
 export class CreateTipoVehiculoDto {
   @ApiProperty({ example: 'Camión' })
-  @IsString()
-  @IsNotEmpty()
+  @RequiredTrimmed('El nombre del tipo no puede estar vacío.')
   @MaxLength(80)
   nombre: string;
 
   @ApiPropertyOptional({ example: 'Unidad de carga pesada' })
-  @IsOptional()
-  @IsString()
+  @OptionalTrimmed()
   @MaxLength(255)
   descripcion?: string;
 }

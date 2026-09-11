@@ -24,6 +24,8 @@ export class QueryFailedFilter implements ExceptionFilter {
         message = 'Ya existe una unidad con ese número interno.';
       } else if (constraint.includes('placas')) {
         message = 'Ya existe una unidad con esas placas.';
+      } else if (constraint.includes('vin')) {
+        message = 'Ya existe una unidad con ese VIN.';
       } else if (constraint.includes('nombre')) {
         message = 'Ya existe un tipo de vehículo con ese nombre.';
       }

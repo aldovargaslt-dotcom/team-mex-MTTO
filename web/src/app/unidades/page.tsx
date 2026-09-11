@@ -128,7 +128,7 @@ function UnidadesList() {
         </div>
         <div className="field">
           <label htmlFor="buscar">&nbsp;</label>
-          <button id="buscar" className="btn btn-primary" type="submit">
+          <button id="buscar" className="btn btn-outline" type="submit">
             Buscar
           </button>
         </div>
@@ -167,8 +167,7 @@ function UnidadesList() {
               <span className="mono">{unidad.numeroInterno}</span>
               <span>
                 {unidad.tipo.nombre}
-                {unidad.marca ? ` · ${unidad.marca}` : ''}
-                {unidad.modelo ? ` ${unidad.modelo}` : ''}
+                {unidad.marcaModelo ? ` · ${unidad.marcaModelo}` : ''}
               </span>
               <span>{unidad.placas}</span>
               <StatusBadge estado={unidad.estado} />

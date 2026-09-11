@@ -87,8 +87,7 @@ function HubContent() {
           </h1>
           <p className="lede">
             {ficha.tipoNombre}
-            {ficha.marca ? ` · ${ficha.marca}` : ''}
-            {ficha.modelo ? ` ${ficha.modelo}` : ''}
+            {ficha.marcaModelo ? ` · ${ficha.marcaModelo}` : ''}
           </p>
         </div>
         <Link className="btn btn-secondary" href="/unidades">
@@ -104,6 +103,12 @@ function HubContent() {
             <dd className="mono">{ficha.numeroInterno}</dd>
             <dt>Placas</dt>
             <dd>{ficha.placas}</dd>
+            {ficha.vin ? (
+              <>
+                <dt>VIN</dt>
+                <dd className="mono">{ficha.vin}</dd>
+              </>
+            ) : null}
             <dt>Tipo</dt>
             <dd>{ficha.tipoNombre}</dd>
             <dt>Estado</dt>
@@ -111,26 +116,39 @@ function HubContent() {
               <StatusBadge estado={ficha.estado} />
             </dd>
             <dt>Marca / modelo</dt>
-            <dd>
-              {ficha.marca || ficha.modelo
-                ? `${ficha.marca ?? ''} ${ficha.modelo ?? ''}`.trim()
-                : 'Sin dato de marca'}
-            </dd>
+            <dd>{ficha.marcaModelo || 'Sin marca / modelo'}</dd>
             <dt>Año</dt>
             <dd>{ficha.anio ?? 'Sin año registrado'}</dd>
-            <dt>Kilometraje</dt>
+            <dt>Último km (visita cerrada)</dt>
             <dd>
-              {ficha.kilometraje != null
-                ? `${ficha.kilometraje.toLocaleString('es-MX')} km`
-                : 'Sin kilometraje registrado'}
+              {ficha.ultimoKm != null
+                ? `${ficha.ultimoKm.toLocaleString('es-MX')} km`
+                : 'Sin registro'}
             </dd>
           </dl>
-          <div className="hub-actions">
-            {isAdmin ? (
-              <Link className="btn btn-secondary" href={`/unidades/${ficha.id}/editar`}>
+          {isAdmin ? (
+            <div className="hub-actions">
+              <Link
+                className="btn btn-secondary"
+                href={`/unidades/${ficha.id}/editar`}
+              >
                 Editar unidad
               </Link>
-            ) : null}
+            </div>
+          ) : null}
+        </section>
+
+        <section className="card panel">
+          <h2>Mantenimiento</h2>
+          <p>{hub.mantenimiento.mensajeHistorial}</p>
+          <p className="note">{hub.mantenimiento.mensajeResumen}</p>
+          <p className="muted" style={{ marginTop: 12 }}>
+            Última visita:{' '}
+            {hub.mantenimiento.ultimaVisita
+              ? hub.mantenimiento.ultimaVisita
+              : 'sin registros todavía'}
+          </p>
+          <div className="hub-actions">
             <button
               type="button"
               className="btn btn-primary"
@@ -151,18 +169,6 @@ function HubContent() {
               disponible en una siguiente entrega.
             </p>
           ) : null}
-        </section>
-
-        <section className="card panel">
-          <h2>Mantenimiento</h2>
-          <p>{hub.mantenimiento.mensajeHistorial}</p>
-          <p className="note">{hub.mantenimiento.mensajeResumen}</p>
-          <p className="muted" style={{ marginTop: 12 }}>
-            Última visita:{' '}
-            {hub.mantenimiento.ultimaVisita
-              ? hub.mantenimiento.ultimaVisita
-              : 'sin registros todavía'}
-          </p>
         </section>
       </div>
     </>
