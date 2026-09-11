@@ -10,7 +10,7 @@ export class TrabajoDto {
   })
   categoria: CategoriaTrabajo;
 
-  @ApiProperty({ example: 'Kit de tiempo' })
+  @ApiProperty({ example: 'Kit de tiempo / distribución' })
   @Trim()
   @IsString()
   @IsNotEmpty({ message: 'El trabajo no puede estar vacío.' })

@@ -9,56 +9,33 @@ export type CategoriaCatalogo = {
 export const CATALOGO_TRABAJOS: CategoriaCatalogo[] = [
   {
     categoria: CategoriaTrabajo.A,
-    nombre: 'Motor',
+    nombre: 'Motor y sistema de distribución / auxiliares',
     items: [
-      'Kit de tiempo',
-      'Bomba de agua',
-      'Aceite de motor',
-      'Filtro de aceite',
-      'Filtro de aire',
-      'Bandas y tensores',
+      'Kit de tiempo / distribución',
+      'Bomba de agua y refrigerante',
+      'Afinación / filtros de aceite',
+      'Bandas de accesorios / poleas',
     ],
   },
   {
     categoria: CategoriaTrabajo.B,
-    nombre: 'Combustible y enfriamiento',
-    items: [
-      'Filtro de combustible',
-      'Inyectores',
-      'Anticongelante',
-      'Mangueras y abrazaderas',
-      'Radiador',
-    ],
+    nombre: 'Sistema de frenos',
+    items: ['Balatas delanteras / traseras', 'Discos y líquido de frenos'],
   },
   {
     categoria: CategoriaTrabajo.C,
-    nombre: 'Frenos y dirección',
-    items: [
-      'Balatas o pastillas',
-      'Tambores o discos',
-      'Líquido de frenos',
-      'Dirección y terminales',
-    ],
+    nombre: 'Suspensión y dirección',
+    items: ['Amortiguadores y bujes', 'Alineación y balanceo'],
   },
   {
     categoria: CategoriaTrabajo.D,
-    nombre: 'Eléctrico y rodamiento',
-    items: [
-      'Batería',
-      'Luces y cableado',
-      'Amortiguadores',
-      'Llantas y presión',
-    ],
+    nombre: 'Llantas y neumáticos',
+    items: ['Calibración y rotación'],
   },
   {
     categoria: CategoriaTrabajo.E,
-    nombre: 'Carrocería',
-    items: [
-      'Carrocería',
-      'Espejos y cristales',
-      'Cabina e interiores',
-      'Limpieza general',
-    ],
+    nombre: 'Carrocería, luces e interiores',
+    items: ['Sistema eléctrico y luces', 'Carrocería e interiores'],
   },
 ];
 

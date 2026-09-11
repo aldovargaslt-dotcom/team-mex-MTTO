@@ -219,7 +219,7 @@ describe('Slice 2 visitas y choferes (e2e)', () => {
         choferId: chofer.id,
         km: 1000,
         tipo: 'PREDICTIVO',
-        trabajos: [{ categoria: 'A', item: 'Kit de tiempo' }],
+        trabajos: [{ categoria: 'A', item: 'Kit de tiempo / distribución' }],
         firmas: [
           { tipo: 'CHOFER', dataUrl: PNG },
           { tipo: 'JEFE', dataUrl: PNG },
@@ -282,8 +282,8 @@ describe('Slice 2 visitas y choferes (e2e)', () => {
       .set(SUPERVISOR)
       .send({
         trabajos: [
-          { categoria: 'A', item: 'Bomba de agua' },
-          { categoria: 'E', item: 'Carrocería' },
+          { categoria: 'A', item: 'Bomba de agua y refrigerante' },
+          { categoria: 'E', item: 'Carrocería e interiores' },
         ],
         observaciones: 'Cambio de kit y revisión de cabina',
         fotos: [{ dataUrl: PNG }],
