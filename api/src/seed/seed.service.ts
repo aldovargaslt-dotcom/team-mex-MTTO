@@ -4,15 +4,30 @@ import { Repository } from 'typeorm';
 import { Rol } from '../auth/roles.enum';
 import { Chofer } from '../choferes/chofer.entity';
 import { EstadoUnidad } from '../common/estado-unidad.enum';
+import { AndonService } from '../andon/andon.service';
 import { InventarioService } from '../inventario/inventario.service';
 import { TipoVehiculo } from '../tipos-vehiculo/tipo-vehiculo.entity';
 import { Unidad } from '../unidades/unidad.entity';
+import {
+  CategoriaTrabajo,
+  EstadoVisita,
+  TipoFirma,
+  TipoVisita,
+} from '../visitas/enums';
+import { Visita } from '../visitas/visita.entity';
+import { VisitasService } from '../visitas/visitas.service';
 
 const TIPOS_SEED = [
   { nombre: 'Camión', descripcion: 'Unidad de carga pesada' },
   { nombre: 'Camioneta', descripcion: 'Unidad ligera de apoyo' },
   { nombre: 'Van', descripcion: 'Unidad de pasajeros' },
 ];
+
+const SEED_ANDON_OBS = 'Semilla Andon';
+const SEED_ANDON_KM = 100;
+const SEED_ANDON_DAYS_AGO = 120;
+const SEED_FIRMA_PNG =
+  'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==';
 
 const CHOFERES_SEED = ['Juan Pérez', 'María López', 'Carlos Ruiz'];
 
@@ -57,7 +72,11 @@ export class SeedService implements OnModuleInit {
     private readonly unidades: Repository<Unidad>,
     @InjectRepository(Chofer)
     private readonly choferes: Repository<Chofer>,
+    @InjectRepository(Visita)
+    private readonly visitas: Repository<Visita>,
     private readonly inventario: InventarioService,
+    private readonly andon: AndonService,
+    private readonly visitasService: VisitasService,
   ) {}
 
   async onModuleInit() {
@@ -110,9 +129,10 @@ export class SeedService implements OnModuleInit {
     }
 
     await this.seedInventario();
+    await this.seedAndonDemo();
 
     this.logger.log(
-      'Semilla lista (unidades, choferes, inventario v0).',
+      'Semilla lista (unidades, choferes, inventario v0, andon v0).',
     );
   }
 
@@ -209,6 +229,82 @@ export class SeedService implements OnModuleInit {
       preferido: true,
     });
     return item;
+  }
+
+  /**
+   * Demo Andon: una VisitaCerrada real en U-101 (historial + último km),
+   * retrodatada para vencer t_dias. No se inventa proyección Andon sin visita.
+   */
+  private async seedAndonDemo() {
+    await this.andon.seedUmbrales();
+
+    const u101 = await this.unidades.findOne({
+      where: { numeroInterno: 'U-101' },
+      relations: { tipo: true },
+    });
+    if (!u101) {
+      await this.andon.evaluarPendientes();
+      return;
+    }
+
+    const latestClosed = await this.visitas.findOne({
+      where: { unidad: { id: u101.id }, estado: EstadoVisita.CERRADO },
+      order: { cerradoAt: 'DESC' },
+    });
+
+    let prior = latestClosed;
+    if (!prior) {
+      prior = await this.createAndCloseSeedVisit(u101);
+      const cerradoAt = new Date();
+      cerradoAt.setUTCDate(cerradoAt.getUTCDate() - SEED_ANDON_DAYS_AGO);
+      prior.cerradoAt = cerradoAt;
+      await this.visitas.save(prior);
+    } else if (prior.observaciones === SEED_ANDON_OBS) {
+      const cerradoAt = new Date();
+      cerradoAt.setUTCDate(cerradoAt.getUTCDate() - SEED_ANDON_DAYS_AGO);
+      prior.cerradoAt = cerradoAt;
+      await this.visitas.save(prior);
+    }
+
+    await this.andon.alignLastClosed({
+      unidadId: u101.id,
+      visitaId: prior.id,
+      tipoVehiculoId: u101.tipo.id,
+      km: prior.km ?? SEED_ANDON_KM,
+      cerradoAt: (prior.cerradoAt ?? new Date()).toISOString(),
+    });
+
+    await this.andon.evaluarPendientes();
+  }
+
+  private async createAndCloseSeedVisit(unidad: Unidad) {
+    const chofer = await this.choferes.findOneByOrFail({
+      nombre: CHOFERES_SEED[0],
+    });
+    const user = { rol: Rol.SUPERVISOR, userId: 'seed' };
+    const draft = await this.visitasService.createDraft(unidad.id, user);
+    await this.visitasService.updateDraft(
+      draft.id,
+      {
+        choferId: chofer.id,
+        km: SEED_ANDON_KM,
+        tipo: TipoVisita.PREDICTIVO,
+        observaciones: SEED_ANDON_OBS,
+        trabajos: [
+          {
+            categoria: CategoriaTrabajo.A,
+            item: 'Afinación / filtros de aceite',
+          },
+        ],
+        firmas: [
+          { tipo: TipoFirma.CHOFER, dataUrl: SEED_FIRMA_PNG },
+          { tipo: TipoFirma.JEFE, dataUrl: SEED_FIRMA_PNG },
+        ],
+      },
+      user,
+    );
+    await this.visitasService.close(draft.id, user);
+    return this.visitas.findOneByOrFail({ id: draft.id });
   }
 }
 

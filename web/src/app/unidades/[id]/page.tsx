@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { RoleGate } from '@/components/RoleGate';
 import { StatusBadge } from '@/components/StatusBadge';
+import { AndonHubCard } from '@/components/AndonHubCard';
 import { api, HttpError } from '@/lib/api';
 import {
   etiquetaEstadoVisita,
@@ -153,6 +154,15 @@ function HubContent() {
       </div>
 
       {error ? <p className="alert" style={{ marginBottom: 12 }}>{error}</p> : null}
+
+      <div style={{ marginBottom: 12 }}>
+        <AndonHubCard
+          unidadId={ficha.id}
+          puedeCrearVisita={hub.puedeCrearVisita}
+          onNuevaVisita={() => void nuevaVisita()}
+          creating={creating}
+        />
+      </div>
 
       <div className="hub-grid">
         <section className="card panel">

@@ -739,8 +739,10 @@
     margin: -4px 0 12px;
   }
 
-  .subnav a {
-    min-height: 32px;
+  .subnav a,
+  .subnav button {
+    min-height: var(--tap);
+    min-width: var(--tap);
     display: inline-flex;
     align-items: center;
     padding: 0 8px;
@@ -749,14 +751,18 @@
     color: var(--muted-foreground);
     border: 0;
     border-bottom: 2px solid transparent;
+    background: transparent;
+    cursor: pointer;
   }
 
-  .subnav a:hover {
+  .subnav a:hover,
+  .subnav button:hover {
     background: transparent;
     color: var(--navy);
   }
 
-  .subnav a.active {
+  .subnav a.active,
+  .subnav button.active {
     background: transparent;
     color: var(--navy);
     border-color: var(--primary);

@@ -238,9 +238,10 @@ describe('Slice 1 (e2e)', () => {
     expect(res.body.fichaCorta.estado).toBe(EstadoUnidad.ACTIVA);
     expect(res.body.fichaCorta.vin).toBeTruthy();
     expect(res.body.fichaCorta.marcaModelo).toMatch(/International/i);
-    expect(res.body.fichaCorta.ultimoKm).toBeNull();
+    expect(res.body.fichaCorta.ultimoKm).toBe(100);
     expect(res.body.borradores).toEqual([]);
-    expect(res.body.historialCerrado).toEqual([]);
+    expect(res.body.historialCerrado).toHaveLength(1);
+    expect(res.body.historialCerrado[0].km).toBe(100);
     expect(res.body.mensajes[0]).toMatch(/visita/i);
     expect(res.body.mantenimiento).toBeUndefined();
   });

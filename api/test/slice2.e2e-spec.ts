@@ -102,12 +102,20 @@ describe('Slice 2 visitas y choferes (e2e)', () => {
     expect(crear.body.message).toMatch(/supervisor/i);
   });
 
-  it('sin choferes el hub avisa y el wizard no tiene catálogo', async () => {
+  it('chofer con visita cerrada no se elimina; hub U-101 conserva último km', async () => {
     const list = await request(server).get('/choferes').set(ADMIN).expect(200);
-    const ids = (list.body as { id: string }[]).map((c) => c.id);
-    for (const id of ids) {
-      await request(server).delete(`/choferes/${id}`).set(ADMIN).expect(200);
+    const choferes = list.body as { id: string; nombre: string }[];
+    const borrados: string[] = [];
+    for (const c of choferes) {
+      const res = await request(server).delete(`/choferes/${c.id}`).set(ADMIN);
+      if (res.status === 409) {
+        expect(res.body.message).toMatch(/visitas asociadas/i);
+        continue;
+      }
+      expect(res.status).toBe(200);
+      borrados.push(c.nombre);
     }
+    expect(borrados.length).toBeGreaterThan(0);
 
     const u101 = await unidadPorNumero('U-101');
     const hub = await request(server)
@@ -115,25 +123,15 @@ describe('Slice 2 visitas y choferes (e2e)', () => {
       .set(SUPERVISOR)
       .expect(200);
     expect(hub.body.puedeCrearVisita).toBe(true);
-    expect(hub.body.mensajes).toContain(
-      'No hay choferes. Pide alta a administración.',
-    );
+    expect(hub.body.fichaCorta.ultimoKm).toBe(100);
 
-    await request(server)
-      .post('/choferes')
-      .set(ADMIN)
-      .send({ nombre: 'Juan Pérez' })
-      .expect(201);
-    await request(server)
-      .post('/choferes')
-      .set(ADMIN)
-      .send({ nombre: 'María López' })
-      .expect(201);
-    await request(server)
-      .post('/choferes')
-      .set(ADMIN)
-      .send({ nombre: 'Carlos Ruiz' })
-      .expect(201);
+    for (const nombre of borrados) {
+      await request(server)
+        .post('/choferes')
+        .set(ADMIN)
+        .send({ nombre })
+        .expect(201);
+    }
   });
 
   it('admin no puede crear ni cerrar visitas', async () => {

@@ -14,7 +14,7 @@ El cliente web usa un **design system de aplicación completa** (no un restyle d
 - **Supervisor:** mobile work-order / field-service first (CTAs grandes, Piezas / Pendientes / evidencia).
 - **Admin:** listado → ficha más denso (estilo Salesforce liviano).
 
-El mismo shell, botones, inputs y tablas se comparten en Unidades, Visitas, Inventario (y Andon cuando exista).
+El mismo shell, botones, inputs y tablas se comparten en Unidades, Visitas, Inventario y Andon.
 
 ## Rollout incremental
 
@@ -23,5 +23,6 @@ El mismo shell, botones, inputs y tablas se comparten en Unidades, Visitas, Inve
 3. Forms / buttons / inputs compartidos
 4. Tablas TanStack + shadcn en listados que se tocan
 5. Superficie Inventario + Piezas/Pendientes como primer feature sobre ese DS
+6. Andon list + hub card + umbrales por tipo
 
-Fuera: Andon, multi-almacén, OC formal, reabrir dominio.
+Fuera: multi-almacén, OC formal, reabrir dominio.

@@ -2,9 +2,7 @@
 
 Estado: aceptado (v0)
 
-Barra de pruebas para el kernel de cierre / outbox / inventario. **Andon (A1–A8) queda para TDD posterior**; no hay módulo Andon en este corte.
-
-Caracterización (no retro-TDD completo) en lo ya existente. TDD estricto hacia adelante en Andon y código nuevo.
+Barra de pruebas para el kernel de cierre / outbox / inventario / **Andon**. TDD estricto en Andon (A1–A8) con dominio puro e in-memory fakes. Caracterización (C/O/I) en lo ya existente.
 
 ## Cierre (C1–C4)
 
@@ -29,4 +27,17 @@ Solo si se toca el handler de apply (ADR-002). Si no se toca, se **conservan** l
 
 ## Andon (A1–A8)
 
-Fuera de alcance. TDD cuando exista el módulo.
+TDD en `api/src/andon/andon-engine.spec.ts` (fakes en memoria; sin Postgres):
+
+- **A1** — skip si no hay visita cerrada previa.
+- **A2** — a lo más 1 aviso no resuelto (`ABIERTO` | `ENTERADO`) por `unidadId`.
+- **A3** — abre si km desde la última cerrada ≥ `t_km` **o** días ≥ `t_dias`.
+- **A4** — unidad inactiva: no abre aviso nuevo.
+- **A5** — `VisitaCerrada` → `RESUELTO` + `visita_resolutoria_id` opaco.
+- **A6** — Enterado (Supervisor) es in-app; no resuelve.
+- **A7** — el handler ignora `consumos`; nunca escribe Visita ni stock.
+- **A8** — resolver es idempotente ante `eventId` duplicado.
+
+## Outbound ops
+
+Puerto `NotifyPort`. `ANDON_NOTIFY_PROVIDER=evolution|noop` (**default noop**). Contrato lab: `POST /message/sendText/{instance}` con `number=ANDON_WA_GROUP_JID` (`@g.us`). Cableado HTTP: **otro agente**. Throwaway Baileys — **riesgo ToS, no prod**. Meta/Twilio no en este PR. Enterado in-app. Checklist: [andon-whatsapp-ops-checklist-v0](../../architecture/andon-whatsapp-ops-checklist-v0.md).

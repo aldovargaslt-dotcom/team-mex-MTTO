@@ -13,6 +13,7 @@ export async function ensureModuleSchemas(config: ConfigService) {
   await ds.initialize();
   try {
     await ds.query('CREATE SCHEMA IF NOT EXISTS inventario');
+    await ds.query('CREATE SCHEMA IF NOT EXISTS andon');
   } finally {
     await ds.destroy();
   }

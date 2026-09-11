@@ -16,6 +16,8 @@ export type TipoMovimiento = 'ENTRADA' | 'SALIDA_OT' | 'AJUSTE';
 
 export type EstadoPendiente = 'PENDIENTE' | 'RECIBIDA';
 
+export type EstadoAviso = 'ABIERTO' | 'ENTERADO' | 'RESUELTO';
+
 export type TipoVehiculo = {
   id: string;
   nombre: string;
@@ -182,6 +184,32 @@ export type UnidadHub = {
   historialCerrado: VisitaResumen[];
   puedeCrearVisita: boolean;
   mensajes: string[];
+};
+
+export type AvisoAndon = {
+  id: string;
+  unidadId: string;
+  numeroInterno: string | null;
+  placas: string | null;
+  tipoNombre: string | null;
+  tipoVehiculoId: string;
+  estado: EstadoAviso;
+  abiertaAt: string;
+  enteradoAt: string | null;
+  visitaResolutoriaId: string | null;
+  kmAlAbrir: number;
+  diasAlAbrir: number;
+  umbralKm: number;
+  umbralDias: number;
+  lastClosedKm: number | null;
+  lastClosedAt: string | null;
+};
+
+export type UmbralAndon = {
+  tipoVehiculoId: string;
+  tipoNombre: string;
+  tKm: number;
+  tDias: number;
 };
 
 export type ApiError = {
