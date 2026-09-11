@@ -363,4 +363,34 @@ describe('Slice 2 visitas y choferes (e2e)', () => {
     expect(res.body.message).toMatch(/categoría/i);
     await request(server).delete(`/visitas/${draft.body.id}`).set(SUPERVISOR);
   });
+
+  it('GET /catalogo/trabajos es el brief: 5 categorías y 11 ítems', async () => {
+    const res = await request(server)
+      .get('/catalogo/trabajos')
+      .set(SUPERVISOR)
+      .expect(200);
+    const cats = res.body as { categoria: string; nombre: string; items: string[] }[];
+    expect(cats).toHaveLength(5);
+    expect(cats.flatMap((c) => c.items)).toHaveLength(11);
+    expect(cats.map((c) => c.nombre)).toEqual([
+      'Motor y sistema de distribución / auxiliares',
+      'Sistema de frenos',
+      'Suspensión y dirección',
+      'Llantas y neumáticos',
+      'Carrocería, luces e interiores',
+    ]);
+    expect(cats.map((c) => c.items)).toEqual([
+      [
+        'Kit de tiempo / distribución',
+        'Bomba de agua y refrigerante',
+        'Afinación / filtros de aceite',
+        'Bandas de accesorios / poleas',
+      ],
+      ['Balatas delanteras / traseras', 'Discos y líquido de frenos'],
+      ['Amortiguadores y bujes', 'Alineación y balanceo'],
+      ['Calibración y rotación'],
+      ['Sistema eléctrico y luces', 'Carrocería e interiores'],
+    ]);
+    expect(JSON.stringify(cats)).not.toMatch(/combustible/i);
+  });
 });

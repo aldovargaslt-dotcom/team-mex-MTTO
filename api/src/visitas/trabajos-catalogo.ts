@@ -6,6 +6,7 @@ export type CategoriaCatalogo = {
   items: string[];
 };
 
+/** Product brief — exactly 5 categories / 11 items. No extras. */
 export const CATALOGO_TRABAJOS: CategoriaCatalogo[] = [
   {
     categoria: CategoriaTrabajo.A,
@@ -20,22 +21,33 @@ export const CATALOGO_TRABAJOS: CategoriaCatalogo[] = [
   {
     categoria: CategoriaTrabajo.B,
     nombre: 'Sistema de frenos',
-    items: ['Balatas delanteras / traseras', 'Discos y líquido de frenos'],
+    items: [
+      'Balatas delanteras / traseras',
+      'Discos y líquido de frenos',
+    ],
   },
   {
     categoria: CategoriaTrabajo.C,
     nombre: 'Suspensión y dirección',
-    items: ['Amortiguadores y bujes', 'Alineación y balanceo'],
+    items: [
+      'Amortiguadores y bujes',
+      'Alineación y balanceo',
+    ],
   },
   {
     categoria: CategoriaTrabajo.D,
     nombre: 'Llantas y neumáticos',
-    items: ['Calibración y rotación'],
+    items: [
+      'Calibración y rotación',
+    ],
   },
   {
     categoria: CategoriaTrabajo.E,
     nombre: 'Carrocería, luces e interiores',
-    items: ['Sistema eléctrico y luces', 'Carrocería e interiores'],
+    items: [
+      'Sistema eléctrico y luces',
+      'Carrocería e interiores',
+    ],
   },
 ];
 
