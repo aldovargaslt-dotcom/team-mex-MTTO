@@ -243,7 +243,7 @@ export default function ItemsPage() {
         <div className="row-actions" onClick={(e) => e.stopPropagation()}>
           <Button
             type="button"
-            variant="secondary"
+            variant="linkish"
             size="compact"
             onClick={() => {
               const next = openId === row.original.id ? null : row.original.id;
@@ -259,7 +259,7 @@ export default function ItemsPage() {
           </Button>
           <Button
             type="button"
-            variant="secondary"
+            variant={row.original.activo ? 'dangerSoft' : 'positive'}
             size="compact"
             onClick={() => void toggleActivo(row.original)}
           >

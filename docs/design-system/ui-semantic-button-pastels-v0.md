@@ -14,9 +14,9 @@ Stack: CSS vars + variantes shadcn (`Button`). Dominio / Inventario apply / Ando
 |-------|------|-------|-------|-----|
 | `btn-positive` | `#D8F3DC` | `#1B5E20` | `#A5D6A7` | Entrada / confirmar stock |
 | `btn-adjust` | `#FFF3CD` | `#8A6D1D` | `#FFE082` | Ajuste / Guardar mínimo |
-| `btn-linkish` | `#D6EAF8` | `#1A5276` | `#AED6F1` | Vincular |
+| `btn-linkish` | `#D6EAF8` | `#1A5276` | `#AED6F1` | Vincular / Detalle |
 | `btn-quiet` | `#EEF2F6` | `#334155` | `#CBD5E1` | Marcar todas leídas |
-| `btn-danger-soft` | `#FDE2E1` | `#8B1E1E` | `#F5B5B3` | destructivo suave (token; no en este corte) |
+| `btn-danger-soft` | `#FDE2E1` | `#8B1E1E` | `#F5B5B3` | Inactivar |
 | Primary | `#EA7515` | blanco | — | **un** CTA sólido por vista |
 
 Hover: fill un tono más cerrado, sin neón ni gradiente. Disabled: gris existente (`#d8d8de`).
@@ -26,6 +26,7 @@ Variantes shadcn: `positive` | `adjust` | `linkish` | `quiet` | `dangerSoft`. Cl
 ## Apply first
 
 - **Stock:** header Registrar entrada → primary. Fila Entrada → `btn-positive`. Fila Ajuste → `btn-adjust`.
+- **Ítems lista:** fila Detalle → `btn-linkish`. Fila Inactivar → `btn-danger-soft`.
 - **Ficha ítem:** Guardar mínimo → `btn-adjust`. Vincular → `btn-linkish`. Nuevo ítem sigue siendo el único naranja.
 - **Inbox:** Marcar todas leídas → `btn-quiet`.
 
