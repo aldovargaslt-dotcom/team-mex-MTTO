@@ -33,6 +33,17 @@ export interface NotifyPort {
   send(message: WhatsAppMessage): Promise<void>;
 }
 
+/**
+ * Inbox de Notifications (ADR-006). No reemplaza NotifyPort/WA.
+ * IDs opacos; Andon no escribe schema `notifications`.
+ */
+export interface AvisoInboxPort {
+  onAbierto(aviso: Aviso, unidad: UnidadVista | null): Promise<void>;
+  onResuelto(aviso: Aviso): Promise<void>;
+}
+
+export const AVISO_INBOX_PORT = Symbol('AvisoInboxPort');
+
 export type AndonNotifier = NotifyPort;
 export type WhatsAppPort = NotifyPort;
 

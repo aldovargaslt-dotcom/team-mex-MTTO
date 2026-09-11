@@ -9,6 +9,7 @@ import { ChoferesModule } from './choferes/choferes.module';
 import { ensureModuleSchemas } from './db/ensure-schemas';
 import { AndonModule } from './andon/andon.module';
 import { InventarioModule } from './inventario/inventario.module';
+import { NotificationsModule } from './notifications/notifications.module';
 import { OutboxModule } from './kernel/outbox/outbox.module';
 import { SeedModule } from './seed/seed.module';
 import { TiposVehiculoModule } from './tipos-vehiculo/tipos-vehiculo.module';
@@ -40,6 +41,7 @@ import { VisitasModule } from './visitas/visitas.module';
     UnidadesModule,
     ChoferesModule,
     InventarioModule,
+    NotificationsModule,
     AndonModule,
     VisitasModule,
     SeedModule,

@@ -4,6 +4,7 @@ import type { ReactNode } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { BrandPlate } from '@/components/BrandPlate';
+import { Campanita } from '@/components/Campanita';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { etiquetaRol, useRole } from '@/lib/role';
@@ -47,6 +48,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           <div className="ml-auto flex items-center gap-2">
             {ready && role && !isHome ? (
               <>
+                <Campanita />
                 <span className="text-[11px] font-medium uppercase tracking-[0.08em] text-white/45">
                   {etiquetaRol(role)}
                 </span>

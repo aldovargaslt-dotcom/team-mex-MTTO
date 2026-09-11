@@ -6,6 +6,8 @@ Cada módulo persiste en su propio esquema (o frontera equivalente):
 
 - Kernel / Mantenimiento: esquema `public` (tablas ya existentes: `unidades`, `visitas`, `visita_piezas`, …)
 - Inventario: esquema PostgreSQL `inventario`
+- Andon: esquema PostgreSQL `andon` (ADR-005: sin stock)
+- Notifications: esquema PostgreSQL `notifications` (ADR-006: inbox; `source_ref` opaco, sin FK cruzada)
 
 Prohibido:
 
