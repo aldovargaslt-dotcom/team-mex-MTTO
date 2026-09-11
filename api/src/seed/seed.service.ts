@@ -1,8 +1,10 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { Rol } from '../auth/roles.enum';
 import { Chofer } from '../choferes/chofer.entity';
 import { EstadoUnidad } from '../common/estado-unidad.enum';
+import { InventarioService } from '../inventario/inventario.service';
 import { TipoVehiculo } from '../tipos-vehiculo/tipo-vehiculo.entity';
 import { Unidad } from '../unidades/unidad.entity';
 
@@ -55,6 +57,7 @@ export class SeedService implements OnModuleInit {
     private readonly unidades: Repository<Unidad>,
     @InjectRepository(Chofer)
     private readonly choferes: Repository<Chofer>,
+    private readonly inventario: InventarioService,
   ) {}
 
   async onModuleInit() {
@@ -106,8 +109,106 @@ export class SeedService implements OnModuleInit {
       );
     }
 
+    await this.seedInventario();
+
     this.logger.log(
-      'Semilla lista (U-101, U-102 ACTIVA; U-103 INACTIVA; choferes).',
+      'Semilla lista (unidades, choferes, inventario v0).',
     );
   }
+
+  private async seedInventario() {
+    const camion = await this.tipos.findOneByOrFail({ nombre: 'Camión' });
+    const camioneta = await this.tipos.findOneByOrFail({ nombre: 'Camioneta' });
+    const van = await this.tipos.findOneByOrFail({ nombre: 'Van' });
+
+    const familiaFiltros = await this.ensureFamilia('Filtros');
+    const familiaFrenos = await this.ensureFamilia('Frenos');
+    const proveedor = await this.ensureProveedor('Refacciones del Norte');
+    const seedUser = { rol: Rol.SUPERVISOR, userId: 'seed' };
+
+    await this.ensureItem({
+      sku: 'FIL-ACEITE-01',
+      nombre: 'Filtro de aceite',
+      familiaId: familiaFiltros.id,
+      oem: 'OEM-FIL-01',
+      tipos: [camion.id, camioneta.id],
+      stock: 10,
+      codigoProveedor: 'PN-FIL-100',
+      proveedorId: proveedor.id,
+      seedUser,
+    });
+    await this.ensureItem({
+      sku: 'PAST-FR-01',
+      nombre: 'Pastillas de freno',
+      familiaId: familiaFrenos.id,
+      oem: 'OEM-PAST-01',
+      tipos: [camion.id],
+      stock: 2,
+      codigoProveedor: 'PN-PAST-20',
+      proveedorId: proveedor.id,
+      seedUser,
+    });
+    await this.ensureItem({
+      sku: 'FIL-CAB-01',
+      nombre: 'Filtro de cabina',
+      familiaId: familiaFiltros.id,
+      oem: undefined,
+      tipos: [van.id],
+      stock: 5,
+      codigoProveedor: 'PN-CAB-05',
+      proveedorId: proveedor.id,
+      seedUser,
+    });
+  }
+
+  private async ensureFamilia(nombre: string) {
+    const exists = (await this.inventario.listFamilias()).find((f) => f.nombre === nombre);
+    if (exists) return exists;
+    return this.inventario.createFamilia({ nombre, activa: true });
+  }
+
+  private async ensureProveedor(nombre: string) {
+    const exists = (await this.inventario.listProveedores()).find(
+      (p) => p.nombre === nombre,
+    );
+    if (exists) return exists;
+    return this.inventario.createProveedor({ nombre, activo: true });
+  }
+
+  private async ensureItem(input: {
+    sku: string;
+    nombre: string;
+    familiaId: string;
+    oem?: string;
+    tipos: string[];
+    stock: number;
+    codigoProveedor: string;
+    proveedorId: string;
+    seedUser: { rol: Rol; userId: string };
+  }) {
+    const existing = (await this.inventario.listItems()).find((i) => i.sku === input.sku);
+    if (existing) {
+      return existing;
+    }
+    const item = await this.inventario.createItem({
+      sku: input.sku,
+      nombre: input.nombre,
+      familiaId: input.familiaId,
+      oem: input.oem,
+      tipoVehiculoIds: input.tipos,
+    });
+    if (input.stock > 0) {
+      await this.inventario.entrada(
+        { itemId: item.id, qty: input.stock, nota: 'Semilla inicial' },
+        input.seedUser,
+      );
+    }
+    await this.inventario.addItemProveedor(item.id, {
+      proveedorId: input.proveedorId,
+      codigoProveedor: input.codigoProveedor,
+      preferido: true,
+    });
+    return item;
+  }
 }
+

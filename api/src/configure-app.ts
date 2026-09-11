@@ -53,9 +53,9 @@ export function configureApp(app: INestApplication): void {
   const swaggerConfig = new DocumentBuilder()
     .setTitle('Team Mex — Mantenimiento')
     .setDescription(
-      'API Slice 2: tipos de vehículo, unidades, choferes, visitas de mantenimiento y hub. Autenticación stub por encabezado X-Role.',
+      'API: kernel (unidades, tipos, choferes, roles), visitas de mantenimiento y módulo Inventario (schema-per-module). Autenticación stub por encabezado X-Role.',
     )
-    .setVersion('2.0')
+    .setVersion('3.0')
     .addApiKey(
       { type: 'apiKey', name: 'X-Role', in: 'header' },
       'X-Role',

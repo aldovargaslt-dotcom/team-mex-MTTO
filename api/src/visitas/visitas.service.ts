@@ -4,11 +4,17 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { CurrentUser } from '../auth/current-user';
 import { Rol } from '../auth/roles.enum';
 import { EstadoUnidad } from '../common/estado-unidad.enum';
 import { ChoferesService } from '../choferes/choferes.service';
+import {
+  OrigenConsumo,
+  VISITA_CERRADA,
+  VisitaCerradaPayload,
+} from '../kernel/events/visita-cerrada';
+import { OutboxService } from '../kernel/outbox/outbox.service';
 import { UnidadesService } from '../unidades/unidades.service';
 import { erroresCierre, mensajeKmInvalido } from './close-rules';
 import { EstadoVisita, TipoFirma } from './enums';
@@ -17,6 +23,7 @@ import { esTrabajoCatalogo } from './trabajos-catalogo';
 import { Visita } from './visita.entity';
 import { VisitaFirma } from './visita-firma.entity';
 import { VisitaFoto } from './visita-foto.entity';
+import { VisitaPieza } from './visita-pieza.entity';
 import { VisitaTrabajo } from './visita-trabajo.entity';
 
 @Injectable()
@@ -30,8 +37,12 @@ export class VisitasService {
     private readonly fotos: Repository<VisitaFoto>,
     @InjectRepository(VisitaFirma)
     private readonly firmas: Repository<VisitaFirma>,
+    @InjectRepository(VisitaPieza)
+    private readonly piezas: Repository<VisitaPieza>,
     private readonly unidades: UnidadesService,
     private readonly choferes: ChoferesService,
+    private readonly outbox: OutboxService,
+    private readonly dataSource: DataSource,
   ) {}
 
   async createDraft(unidadId: string, user: CurrentUser) {
@@ -52,6 +63,7 @@ export class VisitasService {
       trabajos: [],
       fotos: [],
       firmas: [],
+      piezas: [],
     });
     const saved = await this.repo.save(visita);
     return this.findDetalle(saved.id, user);
@@ -60,7 +72,14 @@ export class VisitasService {
   async findDetalle(id: string, user: CurrentUser) {
     const visita = await this.repo.findOne({
       where: { id },
-      relations: { trabajos: true, fotos: true, firmas: true, chofer: true, unidad: true },
+      relations: {
+        trabajos: true,
+        fotos: true,
+        firmas: true,
+        piezas: true,
+        chofer: true,
+        unidad: { tipo: true },
+      },
     });
     if (!visita) {
       throw new NotFoundException('No se encontró la visita.');
@@ -152,6 +171,9 @@ export class VisitasService {
         );
       }
     }
+    if (dto.piezas) {
+      await this.replacePiezas(id, dto.piezas);
+    }
 
     return this.findDetalle(id, _user);
   }
@@ -161,30 +183,55 @@ export class VisitasService {
     await this.firmas.delete({ visita: { id } });
     await this.fotos.delete({ visita: { id } });
     await this.trabajos.delete({ visita: { id } });
+    await this.piezas.delete({ visita: { id } });
     await this.repo.remove(visita);
     return { message: 'Borrador eliminado.' };
   }
 
   async close(id: string, user: CurrentUser) {
-    const visita = await this.requireDraft(id);
-    const detalle = await this.loadWithChildren(id);
-    const ultimoKm = await this.ultimoKmCerrado(visita.unidad.id);
-    const errores = erroresCierre({
-      estadoVisita: visita.estado,
-      unidadEstado: visita.unidad.estado,
-      choferId: visita.chofer?.id ?? null,
-      km: visita.km,
-      ultimoKmCerrado: ultimoKm,
-      tipo: visita.tipo,
-      trabajos: detalle.trabajos.length,
-      firmas: detalle.firmas.map((firma) => firma.tipo),
+    await this.dataSource.transaction(async (manager) => {
+      const visita = await manager.findOne(Visita, {
+        where: { id },
+        relations: {
+          chofer: true,
+          unidad: { tipo: true },
+          trabajos: true,
+          firmas: true,
+          piezas: true,
+        },
+      });
+      if (!visita) {
+        throw new NotFoundException('No se encontró la visita.');
+      }
+      const ultimoKm = await this.ultimoKmCerrado(visita.unidad.id);
+      const errores = erroresCierre({
+        estadoVisita: visita.estado,
+        unidadEstado: visita.unidad.estado,
+        choferId: visita.chofer?.id ?? null,
+        km: visita.km,
+        ultimoKmCerrado: ultimoKm,
+        tipo: visita.tipo,
+        trabajos: visita.trabajos.length,
+        firmas: visita.firmas.map((firma) => firma.tipo),
+      });
+      if (errores.length) {
+        throw new BadRequestException(errores[0]);
+      }
+      visita.estado = EstadoVisita.CERRADO;
+      visita.cerradoAt = new Date();
+      await manager.save(visita);
+      const payload: VisitaCerradaPayload = {
+        visitaId: visita.id,
+        unidadId: visita.unidad.id,
+        tipoVehiculoId: visita.unidad.tipo.id,
+        consumos: (visita.piezas ?? []).map((pieza) => ({
+          itemId: pieza.itemId,
+          qty: pieza.qty,
+          origen: pieza.origen,
+        })),
+      };
+      await this.outbox.enqueueAndDispatch(manager, VISITA_CERRADA, payload);
     });
-    if (errores.length) {
-      throw new BadRequestException(errores[0]);
-    }
-    visita.estado = EstadoVisita.CERRADO;
-    visita.cerradoAt = new Date();
-    await this.repo.save(visita);
     return this.findDetalle(id, user);
   }
 
@@ -234,6 +281,37 @@ export class VisitasService {
     }
   }
 
+  private async replacePiezas(
+    visitaId: string,
+    piezas: { itemId: string; qty: number; origen: OrigenConsumo }[],
+  ) {
+    const seen = new Set<string>();
+    for (const pieza of piezas) {
+      if (seen.has(pieza.itemId)) {
+        throw new BadRequestException(
+          'No se puede repetir el mismo SKU en las piezas de la visita.',
+        );
+      }
+      seen.add(pieza.itemId);
+      if (pieza.qty < 1) {
+        throw new BadRequestException('La cantidad de cada pieza debe ser al menos 1.');
+      }
+    }
+    await this.piezas.delete({ visita: { id: visitaId } });
+    if (piezas.length) {
+      await this.piezas.save(
+        piezas.map((pieza) =>
+          this.piezas.create({
+            visita: { id: visitaId } as Visita,
+            itemId: pieza.itemId,
+            qty: pieza.qty,
+            origen: pieza.origen,
+          }),
+        ),
+      );
+    }
+  }
+
   private async requireDraft(id: string) {
     const visita = await this.repo.findOne({
       where: { id },
@@ -246,17 +324,6 @@ export class VisitasService {
       throw new BadRequestException(
         'La visita ya está cerrada y no se puede modificar.',
       );
-    }
-    return visita;
-  }
-
-  private async loadWithChildren(id: string) {
-    const visita = await this.repo.findOne({
-      where: { id },
-      relations: { trabajos: true, fotos: true, firmas: true, chofer: true, unidad: true },
-    });
-    if (!visita) {
-      throw new NotFoundException('No se encontró la visita.');
     }
     return visita;
   }
@@ -278,10 +345,13 @@ export class VisitasService {
   }
 
   toDetalle(visita: Visita) {
+    const piezas = visita.piezas ?? [];
     return {
       id: visita.id,
       unidadId: visita.unidad.id,
       unidadNumeroInterno: visita.unidad.numeroInterno,
+      tipoVehiculoId: visita.unidad.tipo?.id ?? null,
+      tipoVehiculoNombre: visita.unidad.tipo?.nombre ?? null,
       estado: visita.estado,
       chofer: visita.chofer
         ? { id: visita.chofer.id, nombre: visita.chofer.nombre }
@@ -315,6 +385,12 @@ export class VisitasService {
         tipo: firma.tipo as TipoFirma,
         dataUrl: firma.dataUrl,
         createdAt: firma.createdAt,
+      })),
+      piezas: piezas.map((pieza) => ({
+        id: pieza.id,
+        itemId: pieza.itemId,
+        qty: pieza.qty,
+        origen: pieza.origen,
       })),
     };
   }

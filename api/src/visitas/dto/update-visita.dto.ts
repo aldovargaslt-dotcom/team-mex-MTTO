@@ -15,6 +15,7 @@ import { OptionalTrimmed } from '../../common/trim';
 import { TipoVisita } from '../enums';
 import { FirmaDto } from './firma.dto';
 import { FotoDto } from './foto.dto';
+import { PiezaDto } from './pieza.dto';
 import { TrabajoDto } from './trabajo.dto';
 
 export class UpdateVisitaDto {
@@ -66,4 +67,11 @@ export class UpdateVisitaDto {
   @ValidateNested({ each: true })
   @Type(() => FirmaDto)
   firmas?: FirmaDto[];
+
+  @ApiPropertyOptional({ type: [PiezaDto] })
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => PiezaDto)
+  piezas?: PiezaDto[];
 }

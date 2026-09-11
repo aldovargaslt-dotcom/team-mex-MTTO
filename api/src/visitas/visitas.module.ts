@@ -5,6 +5,7 @@ import { UnidadesModule } from '../unidades/unidades.module';
 import { Visita } from './visita.entity';
 import { VisitaFirma } from './visita-firma.entity';
 import { VisitaFoto } from './visita-foto.entity';
+import { VisitaPieza } from './visita-pieza.entity';
 import { VisitaTrabajo } from './visita-trabajo.entity';
 import { VisitasController } from './visitas.controller';
 import { VisitasService } from './visitas.service';
@@ -16,6 +17,7 @@ import { VisitasService } from './visitas.service';
       VisitaTrabajo,
       VisitaFoto,
       VisitaFirma,
+      VisitaPieza,
     ]),
     UnidadesModule,
     ChoferesModule,

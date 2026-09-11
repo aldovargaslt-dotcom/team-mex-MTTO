@@ -5,16 +5,31 @@ import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 import { RoleGate } from '@/components/RoleGate';
 import { SignaturePad } from '@/components/SignaturePad';
-import { api, HttpError } from '@/lib/api';
 import {
+  PiezasReadonly,
+  PiezasStep,
+  hydratePiezasFromInventario,
+  piezasInsuficientes,
+  type PiezaLinea,
+} from '@/components/PiezasStep';
+import { api, HttpError } from '@/lib/api';
+import { ImageDropzone } from '@/components/ImageDropzone';
+import { VisitStepper } from '@/components/VisitStepper';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { FormAlert } from '@/components/ui/field';
+import {
+  etiquetaEstadoVisita,
   etiquetaTipoVisita,
   formatFecha,
   formatKm,
+  resumenOrigenPiezas,
 } from '@/lib/format';
 import { useRole } from '@/lib/role';
 import type {
   CatalogoCategoria,
   Chofer,
+  SkuCompatible,
   TipoFirma,
   TipoVisita,
   VisitaDetalle,
@@ -23,8 +38,9 @@ import type {
 const STEPS = [
   { id: 'datos', label: 'Datos' },
   { id: 'trabajos', label: 'Trabajos' },
-  { id: 'observaciones', label: 'Observaciones' },
+  { id: 'observaciones', label: 'Obs' },
   { id: 'fotos', label: 'Fotos' },
+  { id: 'piezas', label: 'Piezas' },
   { id: 'firmas', label: 'Firmas' },
   { id: 'confirmar', label: 'Confirmar' },
 ] as const;
@@ -73,11 +89,8 @@ function VisitaContent() {
   if (notFound) {
     return (
       <div className="empty-state">
-        <h2>No se encontró la visita</h2>
-        <p className="muted">
-          El borrador pudo haberse eliminado o no está visible para este rol.
-        </p>
-        <Link className="btn btn-primary" href={`/unidades/${params.id}`}>
+        <h2>No se encontró la visita.</h2>
+        <Link className="btn btn-outline" href={`/unidades/${params.id}`}>
           Volver al hub
         </Link>
       </div>
@@ -117,15 +130,29 @@ function VisitaReadonly({
   visita: VisitaDetalle;
   unidadId: string;
 }) {
+  const { role, userId } = useRole();
+  const [piezas, setPiezas] = useState<PiezaLinea[]>([]);
+
+  useEffect(() => {
+    if (!role) return;
+    void hydratePiezasFromInventario(visita.piezas ?? [], { role, userId })
+      .then(setPiezas)
+      .catch(() => setPiezas([]));
+  }, [role, userId, visita.piezas]);
+
   return (
     <>
       <div className="page-head">
         <div>
-          <p className="muted">Visita {visita.estado === 'CERRADO' ? 'cerrada' : 'en borrador'}</p>
           <h1>
-            {visita.unidadNumeroInterno} · {etiquetaTipoVisita(visita.tipo)}
+            {visita.unidadNumeroInterno}
+            <Badge variant={visita.estado === 'CERRADO' ? 'success' : 'warning'}>
+              {etiquetaEstadoVisita(visita.estado)}
+            </Badge>
           </h1>
           <p className="lede">
+            {etiquetaTipoVisita(visita.tipo)}
+            {' · '}
             {formatKm(visita.km)}
             {visita.chofer ? ` · ${visita.chofer.nombre}` : ''}
             {visita.cerradoAt ? ` · ${formatFecha(visita.cerradoAt)}` : ''}
@@ -182,6 +209,8 @@ function VisitaReadonly({
         )}
       </section>
 
+      <PiezasReadonly piezas={piezas} />
+
       <section className="card panel" style={{ marginTop: 12 }}>
         <h2>Firmas</h2>
         <div className="firmas-grid">
@@ -237,6 +266,7 @@ function VisitWizard({
   const [firmaJefe, setFirmaJefe] = useState(
     visita.firmas.find((f) => f.tipo === 'JEFE')?.dataUrl ?? '',
   );
+  const [piezas, setPiezas] = useState<PiezaLinea[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [ultimoKm, setUltimoKm] = useState<number | null>(null);
@@ -255,6 +285,12 @@ function VisitWizard({
         setChoferes(lista);
         setCatalogo(cats);
         setUltimoKm(hub.fichaCorta.ultimoKm);
+        setPiezas(
+          await hydratePiezasFromInventario(visita.piezas ?? [], {
+            role: role!,
+            userId,
+          }),
+        );
       } catch (err) {
         setError(
           err instanceof HttpError
@@ -263,7 +299,29 @@ function VisitWizard({
         );
       }
     })();
-  }, [role, userId, unidadId]);
+  }, [role, userId, unidadId, visita.piezas]);
+
+  useEffect(() => {
+    if (step !== 'piezas' || !visita.tipoVehiculoId || !role) return;
+    void (async () => {
+      try {
+        const data = await api<SkuCompatible[]>(
+          `/inventario/skus?tipoVehiculoId=${visita.tipoVehiculoId}`,
+          { role, userId },
+        );
+        const stockById = new Map(data.map((item) => [item.id, item.stock]));
+        setPiezas((current) =>
+          current.map((linea) =>
+            stockById.has(linea.itemId)
+              ? { ...linea, stock: stockById.get(linea.itemId)! }
+              : linea,
+          ),
+        );
+      } catch {
+        /* el paso Piezas muestra su propio error de búsqueda */
+      }
+    })();
+  }, [step, visita.tipoVehiculoId, role, userId]);
 
   const sinChoferes = choferes.length === 0;
   const stepIndex = STEPS.findIndex((s) => s.id === step);
@@ -297,6 +355,11 @@ function VisitWizard({
             ...(firmaChofer ? [{ tipo: 'CHOFER', dataUrl: firmaChofer }] : []),
             ...(firmaJefe ? [{ tipo: 'JEFE', dataUrl: firmaJefe }] : []),
           ],
+          piezas: piezas.map((linea) => ({
+            itemId: linea.itemId,
+            qty: linea.qty,
+            origen: linea.origen,
+          })),
           ...extra,
         }),
       });
@@ -318,6 +381,12 @@ function VisitWizard({
         setError('No hay choferes. Pide alta a administración.');
         return;
       }
+    }
+    if (step === 'piezas' && piezasInsuficientes(piezas).length) {
+      setError(
+        'Hay piezas que superan el stock. Use compra externa o reduzca la cantidad.',
+      );
+      return;
     }
     const saved = await persist();
     if (!saved) return;
@@ -374,21 +443,37 @@ function VisitWizard({
   if (!tipo) faltantes.push('Tipo predictivo o correctivo');
   if (trabajos.size < 1) faltantes.push('Al menos un trabajo');
   if (!firmaChofer || !firmaJefe) faltantes.push('Firmas de chofer y jefe de mecánicos / taller');
+  const bloqueoStock = piezasInsuficientes(piezas);
+  if (bloqueoStock.length) {
+    faltantes.push('Piezas con stock insuficiente (compra externa o reduzca qty)');
+  }
+
+  const choferNombre =
+    choferes.find((c) => c.id === choferId)?.nombre ?? visita.chofer?.nombre;
 
   return (
     <>
       <div className="page-head">
         <div>
-          <p className="muted">Nueva visita · {visita.unidadNumeroInterno}</p>
-          <h1>Visita en borrador</h1>
+          <h1>
+            {visita.unidadNumeroInterno}
+            <Badge variant="warning">Borrador</Badge>
+          </h1>
           <p className="lede">
+            {etiquetaTipoVisita(tipo || visita.tipo)}
+            {' · '}
+            {km.trim()
+              ? `${Number(km).toLocaleString('es-MX')} km`
+              : formatKm(visita.km)}
+            {choferNombre ? ` · ${choferNombre}` : ''}
+            {' · '}
             Último km cerrado:{' '}
             {ultimoKm != null ? `${ultimoKm.toLocaleString('es-MX')} km` : 'Sin registro'}
           </p>
         </div>
-        <button
+        <Button
           type="button"
-          className="btn btn-secondary"
+          variant="secondary"
           disabled={saving}
           onClick={() =>
             void persist().then((saved) => {
@@ -397,27 +482,20 @@ function VisitWizard({
           }
         >
           Guardar y salir
-        </button>
+        </Button>
       </div>
 
-      <ol className="steps">
-        {STEPS.map((item, index) => (
-          <li key={item.id} className={item.id === step ? 'active' : index < stepIndex ? 'done' : ''}>
-            <button
-              type="button"
-              onClick={() =>
-                void persist().then((saved) => {
-                  if (saved) setStep(item.id);
-                })
-              }
-            >
-              {index + 1}. {item.label}
-            </button>
-          </li>
-        ))}
-      </ol>
+      {error ? <FormAlert>{error}</FormAlert> : null}
 
-      {error ? <p className="alert" style={{ margin: '12px 0' }}>{error}</p> : null}
+      <VisitStepper
+        steps={STEPS}
+        currentIndex={stepIndex}
+        onSelect={(index) =>
+          void persist().then((saved) => {
+            if (saved) setStep(STEPS[index].id);
+          })
+        }
+      />
 
       {step === 'datos' ? (
         <section className="card panel">
@@ -520,14 +598,11 @@ function VisitWizard({
         <section className="card panel">
           <h2>Fotos</h2>
           <p className="muted">Opcional. Hasta 8 imágenes.</p>
-          <input
-            type="file"
-            accept="image/*"
-            onChange={(e) => {
-              const file = e.target.files?.[0];
-              if (file) void addFoto(file);
-              e.target.value = '';
-            }}
+          <ImageDropzone
+            label="Tomar o subir"
+            hint="Cámara o galería · máx. 8"
+            disabled={fotos.length >= 8}
+            onFile={(file) => void addFoto(file)}
           />
           {fotos.length === 0 ? (
             <p className="muted" style={{ marginTop: 12 }}>
@@ -539,20 +614,31 @@ function VisitWizard({
                 <div key={`${index}-${src.slice(0, 24)}`} className="photo-item">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={src} alt={`Foto ${index + 1}`} />
-                  <button
+                  <Button
                     type="button"
-                    className="btn btn-danger"
+                    variant="destructive"
                     onClick={() =>
                       setFotos((current) => current.filter((_, i) => i !== index))
                     }
                   >
                     Quitar
-                  </button>
+                  </Button>
                 </div>
               ))}
             </div>
           )}
         </section>
+      ) : null}
+
+      {step === 'piezas' ? (
+        <PiezasStep
+          role={role!}
+          userId={userId}
+          tipoVehiculoId={visita.tipoVehiculoId}
+          tipoVehiculoNombre={visita.tipoVehiculoNombre}
+          lineas={piezas}
+          onChange={setPiezas}
+        />
       ) : null}
 
       {step === 'firmas' ? (
@@ -588,6 +674,12 @@ function VisitWizard({
             <dd>{trabajos.size}</dd>
             <dt>Fotos</dt>
             <dd>{fotos.length}</dd>
+            <dt>Piezas</dt>
+            <dd>
+              {piezas.length === 0
+                ? 'Ninguna'
+                : resumenOrigenPiezas(piezas)}
+            </dd>
           </dl>
           {faltantes.length ? (
             <p className="note note-warn">
@@ -601,36 +693,38 @@ function VisitWizard({
 
       <div className="wizard-actions">
         {stepIndex > 0 ? (
-          <button
+          <Button
             type="button"
-            className="btn btn-secondary"
+            variant="secondary"
             onClick={() => setStep(STEPS[stepIndex - 1].id)}
           >
             Atrás
-          </button>
+          </Button>
         ) : (
-          <Link className="btn btn-secondary" href={`/unidades/${unidadId}`}>
-            Cancelar
-          </Link>
+          <Button asChild variant="secondary">
+            <Link href={`/unidades/${unidadId}`}>Cancelar</Link>
+          </Button>
         )}
         {step !== 'confirmar' ? (
-          <button
+          <Button
             type="button"
-            className="btn btn-primary"
-            disabled={saving || (step === 'datos' && sinChoferes)}
+            disabled={
+              saving ||
+              (step === 'datos' && sinChoferes) ||
+              (step === 'piezas' && bloqueoStock.length > 0)
+            }
             onClick={() => void continuar()}
           >
             {saving ? 'Guardando…' : 'Continuar'}
-          </button>
+          </Button>
         ) : (
-          <button
+          <Button
             type="button"
-            className="btn btn-primary"
             disabled={saving || faltantes.length > 0}
             onClick={() => void cerrar()}
           >
             {saving ? 'Cerrando…' : 'Cerrar visita'}
-          </button>
+          </Button>
         )}
       </div>
     </>

@@ -10,6 +10,12 @@ export type CategoriaTrabajo = 'A' | 'B' | 'C' | 'D' | 'E';
 
 export type TipoFirma = 'CHOFER' | 'JEFE';
 
+export type OrigenPieza = 'DESDE_STOCK' | 'COMPRA_EXTERNA';
+
+export type TipoMovimiento = 'ENTRADA' | 'SALIDA_OT' | 'AJUSTE';
+
+export type EstadoPendiente = 'PENDIENTE' | 'RECIBIDA';
+
 export type TipoVehiculo = {
   id: string;
   nombre: string;
@@ -59,9 +65,98 @@ export type VisitaDetalle = {
   createdAt: string;
   updatedAt: string;
   cerradoAt: string | null;
+  tipoVehiculoId: string | null;
+  tipoVehiculoNombre: string | null;
   trabajos: { id: string; categoria: CategoriaTrabajo; item: string }[];
   fotos: { id: string; dataUrl: string; createdAt: string }[];
   firmas: { id: string; tipo: TipoFirma; dataUrl: string; createdAt: string }[];
+  piezas: VisitaPieza[];
+};
+
+export type VisitaPieza = {
+  id: string;
+  itemId: string;
+  qty: number;
+  origen: OrigenPieza;
+};
+
+export type Familia = {
+  id: string;
+  nombre: string;
+  activa: boolean;
+};
+
+export type Proveedor = {
+  id: string;
+  nombre: string;
+  activo: boolean;
+};
+
+export type ItemInventario = {
+  id: string;
+  sku: string;
+  nombre: string;
+  familiaId: string | null;
+  familiaNombre: string | null;
+  oem: string | null;
+  uom: string;
+  activo: boolean;
+  stock: number;
+  tipoVehiculoIds: string[];
+  proveedores: {
+    id: string;
+    proveedorId: string;
+    proveedorNombre: string;
+    codigoProveedor: string;
+    preferido: boolean;
+  }[];
+};
+
+export type SkuCompatible = {
+  id: string;
+  sku: string;
+  nombre: string;
+  familia: string | null;
+  oem: string | null;
+  uom: string;
+  stock: number;
+};
+
+export type StockRow = {
+  itemId: string;
+  sku: string;
+  nombre: string;
+  familia: string | null;
+  activo: boolean;
+  uom: string;
+  qty: number;
+  updatedAt: string;
+};
+
+export type Movimiento = {
+  id: string;
+  tipo: TipoMovimiento;
+  itemId: string;
+  sku: string;
+  nombre: string;
+  qty: number;
+  delta: number;
+  visitaId: string | null;
+  nota: string | null;
+  createdBy: string | null;
+  createdAt: string;
+};
+
+export type PendienteComprobante = {
+  id: string;
+  visitaId: string;
+  itemId: string;
+  sku: string;
+  nombre: string;
+  qty: number;
+  estado: EstadoPendiente;
+  ticketDataUrl: string | null;
+  createdAt: string;
 };
 
 export type CatalogoCategoria = {

@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { etiquetaRol, useRole } from '@/lib/role';
 import type { Role } from '@/lib/types';
+import { Button } from '@/components/ui/button';
 
 export default function HomePage() {
   const { setRole, role, ready } = useRole();
@@ -16,11 +17,10 @@ export default function HomePage() {
   return (
     <div className="home">
       <div className="home-card">
-        <p className="muted">TEAM MEX</p>
+        <p className="text-xs text-muted-foreground">TEAM MEX</p>
         <h1>Mantenimiento de unidades</h1>
         <p className="lede">
-          Seleccione un rol para continuar. Esta pantalla sustituye el inicio de
-          sesión mientras el acceso real se implementa.
+          Seleccione un rol para continuar.
         </p>
         {ready && role ? (
           <p className="note">
@@ -28,20 +28,21 @@ export default function HomePage() {
           </p>
         ) : null}
         <div className="role-choices">
-          <button
+          <Button
             type="button"
-            className="btn btn-primary"
+            className="w-full"
             onClick={() => elegir('SUPERVISOR')}
           >
             Entrar como supervisor
-          </button>
-          <button
+          </Button>
+          <Button
             type="button"
-            className="btn btn-secondary"
+            variant="secondary"
+            className="w-full"
             onClick={() => elegir('ADMIN_DIRECTIVO')}
           >
             Entrar como administrador directivo
-          </button>
+          </Button>
         </div>
       </div>
     </div>

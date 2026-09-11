@@ -106,16 +106,12 @@ function HubContent() {
 
   if (notFound) {
     return (
-      <div className="empty-state">
-        <h2>No se encontró la unidad</h2>
-        <p className="muted">
-          Es posible que el identificador sea incorrecto o que la unidad ya no
-          exista en el catálogo.
-        </p>
-        <Link className="btn btn-primary" href="/unidades">
-          Volver al listado
-        </Link>
-      </div>
+        <div className="empty-state">
+          <h2>No se encontró la unidad.</h2>
+          <Link className="btn btn-outline" href="/unidades">
+            Volver al listado
+          </Link>
+        </div>
     );
   }
 
@@ -143,7 +139,6 @@ function HubContent() {
     <>
       <div className="page-head">
         <div>
-          <p className="muted">Hub de unidad</p>
           <h1>
             {ficha.numeroInterno} <StatusBadge estado={ficha.estado} />
           </h1>
@@ -211,7 +206,7 @@ function HubContent() {
                 <p className="muted">No hay visitas en borrador en esta unidad.</p>
               ) : (
                 <ul className="visit-list">
-                  {hub.borradores.map((visita) => (
+                  {hub.borradores.map((visita, index) => (
                     <li key={visita.id}>
                       <div>
                         <strong>{etiquetaTipoVisita(visita.tipo)}</strong>
@@ -224,7 +219,9 @@ function HubContent() {
                       </div>
                       <div className="hub-actions" style={{ marginTop: 0 }}>
                         <Link
-                          className="btn btn-primary"
+                          className={
+                            index === 0 ? 'btn btn-primary' : 'btn btn-outline'
+                          }
                           href={`/unidades/${ficha.id}/visitas/${visita.id}`}
                         >
                           Continuar
@@ -245,7 +242,9 @@ function HubContent() {
               <div className="hub-actions">
                 <button
                   type="button"
-                  className="btn btn-primary"
+                  className={
+                    hub.borradores.length > 0 ? 'btn btn-outline' : 'btn btn-primary'
+                  }
                   disabled={!hub.puedeCrearVisita || creating}
                   onClick={() => void nuevaVisita()}
                 >
