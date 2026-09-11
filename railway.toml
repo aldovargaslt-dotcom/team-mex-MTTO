@@ -1,0 +1,12 @@
+# Servicio API en Railway (monorepo). El Postgres se añade como plugin en el dashboard.
+# Si el servicio ya tiene Root Directory = api, use api/railway.toml en su lugar.
+
+[build]
+builder = "DOCKERFILE"
+dockerfilePath = "api/Dockerfile"
+watchPatterns = ["api/**"]
+
+[deploy]
+healthcheckPath = "/health"
+healthcheckTimeout = 300
+restartPolicyType = "ON_FAILURE"

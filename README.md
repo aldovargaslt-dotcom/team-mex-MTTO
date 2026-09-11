@@ -117,6 +117,13 @@ npm run test
 npm run test:e2e
 ```
 
+## Deploy (Railway + Vercel)
+
+Si GitHub ya está conectado a Railway y a Vercel, aún falta el **root directory**, el plugin **Postgres** y las variables. Guía paso a paso: [docs/deploy-railway-vercel.md](docs/deploy-railway-vercel.md).
+
+- Railway: Postgres + API (`api/`, `DATABASE_URL`, dominio público, health `/health`)
+- Vercel: UI (`web/`, `API_URL` = URL de Railway, `NEXT_PUBLIC_API_BASE=/backend`)
+
 ## Marca
 
 CTA `#EA7515`, shell `#24284D`, superficies `#F3F3F3` / blanco, tipografía Roboto.

@@ -8,3 +8,5 @@ npm run dev   # http://localhost:3000  (proxy /backend → API :3001)
 ```
 
 Stack Docker en la LAN (UI + API + Postgres): ver el [README raíz](../README.md#stack-completo-en-docker-red-local).
+
+Deploy Vercel (Root Directory `web`) + API en Railway: [docs/deploy-railway-vercel.md](../docs/deploy-railway-vercel.md).

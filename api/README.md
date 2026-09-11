@@ -9,3 +9,5 @@ npm run test:e2e
 ```
 
 Escucha en `0.0.0.0` (variable `HOST`) para Docker y acceso en LAN. Stack completo: ver el [README raíz](../README.md#stack-completo-en-docker-red-local).
+
+Deploy Railway (Postgres + `DATABASE_URL`) + UI en Vercel: [docs/deploy-railway-vercel.md](../docs/deploy-railway-vercel.md).
