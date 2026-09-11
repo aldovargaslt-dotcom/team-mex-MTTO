@@ -34,3 +34,16 @@ export function etiquetaMovimiento(tipo: string) {
   if (tipo === 'AJUSTE') return 'Ajuste';
   return 'Entrada';
 }
+
+export function etiquetaUom(uom?: string | null) {
+  if (!uom || uom === 'pieza' || uom === 'pza') return 'pza';
+  return uom;
+}
+
+export function resumenOrigenPiezas(
+  piezas: { origen: string }[],
+) {
+  const desdeStock = piezas.filter((p) => p.origen === 'DESDE_STOCK').length;
+  const compraExterna = piezas.filter((p) => p.origen === 'COMPRA_EXTERNA').length;
+  return `${desdeStock} desde stock · ${compraExterna} compra externa`;
+}

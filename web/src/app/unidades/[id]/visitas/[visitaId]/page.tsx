@@ -13,11 +13,15 @@ import {
   type PiezaLinea,
 } from '@/components/PiezasStep';
 import { api, HttpError } from '@/lib/api';
+import { ImageDropzone } from '@/components/ImageDropzone';
+import { VisitStepper } from '@/components/VisitStepper';
+import { Button } from '@/components/ui/button';
+import { FormAlert } from '@/components/ui/field';
 import {
-  etiquetaOrigenPieza,
   etiquetaTipoVisita,
   formatFecha,
   formatKm,
+  resumenOrigenPiezas,
 } from '@/lib/format';
 import { useRole } from '@/lib/role';
 import type {
@@ -452,9 +456,9 @@ function VisitWizard({
             {ultimoKm != null ? `${ultimoKm.toLocaleString('es-MX')} km` : 'Sin registro'}
           </p>
         </div>
-        <button
+        <Button
           type="button"
-          className="btn btn-secondary"
+          variant="secondary"
           disabled={saving}
           onClick={() =>
             void persist().then((saved) => {
@@ -463,27 +467,20 @@ function VisitWizard({
           }
         >
           Guardar y salir
-        </button>
+        </Button>
       </div>
 
-      <ol className="steps">
-        {STEPS.map((item, index) => (
-          <li key={item.id} className={item.id === step ? 'active' : index < stepIndex ? 'done' : ''}>
-            <button
-              type="button"
-              onClick={() =>
-                void persist().then((saved) => {
-                  if (saved) setStep(item.id);
-                })
-              }
-            >
-              {index + 1}. {item.label}
-            </button>
-          </li>
-        ))}
-      </ol>
+      {error ? <FormAlert>{error}</FormAlert> : null}
 
-      {error ? <p className="alert" style={{ margin: '12px 0' }}>{error}</p> : null}
+      <VisitStepper
+        steps={STEPS}
+        currentIndex={stepIndex}
+        onSelect={(index) =>
+          void persist().then((saved) => {
+            if (saved) setStep(STEPS[index].id);
+          })
+        }
+      />
 
       {step === 'datos' ? (
         <section className="card panel">
@@ -586,14 +583,11 @@ function VisitWizard({
         <section className="card panel">
           <h2>Fotos</h2>
           <p className="muted">Opcional. Hasta 8 imágenes.</p>
-          <input
-            type="file"
-            accept="image/*"
-            onChange={(e) => {
-              const file = e.target.files?.[0];
-              if (file) void addFoto(file);
-              e.target.value = '';
-            }}
+          <ImageDropzone
+            label="Tomar o subir"
+            hint="Cámara o galería · máx. 8"
+            disabled={fotos.length >= 8}
+            onFile={(file) => void addFoto(file)}
           />
           {fotos.length === 0 ? (
             <p className="muted" style={{ marginTop: 12 }}>
@@ -605,15 +599,15 @@ function VisitWizard({
                 <div key={`${index}-${src.slice(0, 24)}`} className="photo-item">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={src} alt={`Foto ${index + 1}`} />
-                  <button
+                  <Button
                     type="button"
-                    className="btn btn-danger"
+                    variant="destructive"
                     onClick={() =>
                       setFotos((current) => current.filter((_, i) => i !== index))
                     }
                   >
                     Quitar
-                  </button>
+                  </Button>
                 </div>
               ))}
             </div>
@@ -669,12 +663,7 @@ function VisitWizard({
             <dd>
               {piezas.length === 0
                 ? 'Ninguna'
-                : piezas
-                    .map(
-                      (p) =>
-                        `${p.sku} ×${p.qty} (${etiquetaOrigenPieza(p.origen)})`,
-                    )
-                    .join(', ')}
+                : resumenOrigenPiezas(piezas)}
             </dd>
           </dl>
           {faltantes.length ? (
@@ -689,22 +678,21 @@ function VisitWizard({
 
       <div className="wizard-actions">
         {stepIndex > 0 ? (
-          <button
+          <Button
             type="button"
-            className="btn btn-secondary"
+            variant="secondary"
             onClick={() => setStep(STEPS[stepIndex - 1].id)}
           >
             Atrás
-          </button>
+          </Button>
         ) : (
-          <Link className="btn btn-secondary" href={`/unidades/${unidadId}`}>
-            Cancelar
-          </Link>
+          <Button asChild variant="secondary">
+            <Link href={`/unidades/${unidadId}`}>Cancelar</Link>
+          </Button>
         )}
         {step !== 'confirmar' ? (
-          <button
+          <Button
             type="button"
-            className="btn btn-primary"
             disabled={
               saving ||
               (step === 'datos' && sinChoferes) ||
@@ -713,16 +701,15 @@ function VisitWizard({
             onClick={() => void continuar()}
           >
             {saving ? 'Guardando…' : 'Continuar'}
-          </button>
+          </Button>
         ) : (
-          <button
+          <Button
             type="button"
-            className="btn btn-primary"
             disabled={saving || faltantes.length > 0}
             onClick={() => void cerrar()}
           >
             {saving ? 'Cerrando…' : 'Cerrar visita'}
-          </button>
+          </Button>
         )}
       </div>
     </>

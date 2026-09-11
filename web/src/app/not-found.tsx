@@ -1,3 +1,6 @@
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
+
 export default function NotFound() {
   return (
     <div className="empty-state">
@@ -6,9 +9,9 @@ export default function NotFound() {
         El recurso no existe o ya no está disponible. Revise la dirección o
         vuelva al listado de unidades.
       </p>
-      <a className="btn btn-primary" href="/unidades">
-        Ir a unidades
-      </a>
+      <Button asChild>
+        <Link href="/unidades">Ir a unidades</Link>
+      </Button>
     </div>
   );
 }

@@ -1,8 +1,8 @@
 export function BrandPlate() {
   return (
-    <span className="brand-plate">
+    <span className="inline-flex min-h-10 items-center gap-2 rounded-[10px] bg-white py-1 pr-2.5 pl-1 text-navy">
       <svg
-        className="brand-logo"
+        className="block shrink-0"
         viewBox="0 0 32 32"
         width="28"
         height="28"
@@ -14,9 +14,11 @@ export function BrandPlate() {
           fill="#24284D"
         />
       </svg>
-      <span className="brand-copy">
-        <span className="brand-name">Team Mex</span>
-        <span className="brand-sub">Mantenimiento</span>
+      <span className="flex flex-col leading-[1.15]">
+        <span className="text-sm font-bold text-navy">Team Mex</span>
+        <span className="text-[10px] tracking-wide text-muted-foreground">
+          Mantenimiento
+        </span>
       </span>
     </span>
   );

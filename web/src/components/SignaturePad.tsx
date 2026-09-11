@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
+import { Button } from '@/components/ui/button';
 
 export function SignaturePad({
   value,
@@ -88,9 +89,9 @@ export function SignaturePad({
       <div className="signature-head">
         <span>{label}</span>
         {!disabled ? (
-          <button type="button" className="btn btn-secondary" onClick={clear}>
+          <Button type="button" variant="secondary" onClick={clear}>
             Borrar
-          </button>
+          </Button>
         ) : null}
       </div>
       {disabled && value ? (

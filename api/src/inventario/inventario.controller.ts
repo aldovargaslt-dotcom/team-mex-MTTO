@@ -19,6 +19,7 @@ import { CreateItemDto } from './dto/create-item.dto';
 import { CreateItemProveedorDto } from './dto/create-item-proveedor.dto';
 import { CreateProveedorDto } from './dto/create-proveedor.dto';
 import { EntradaDto } from './dto/entrada.dto';
+import { TicketDto } from './dto/ticket.dto';
 import { UpdateFamiliaDto } from './dto/update-familia.dto';
 import { UpdateItemDto } from './dto/update-item.dto';
 import { UpdateItemProveedorDto } from './dto/update-item-proveedor.dto';
@@ -180,5 +181,20 @@ export class InventarioController {
   @ApiOperation({ summary: 'Compras externas pendientes de comprobante' })
   listPendientes() {
     return this.service.listPendientes();
+  }
+
+  @Post('pendientes-comprobante/:id/ticket')
+  @ApiOperation({ summary: 'Adjuntar foto de ticket a un pendiente' })
+  adjuntarTicket(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: TicketDto,
+  ) {
+    return this.service.adjuntarTicket(id, dto);
+  }
+
+  @Post('pendientes-comprobante/:id/recibir')
+  @ApiOperation({ summary: 'Marcar pendiente de comprobante como recibido' })
+  marcarRecibida(@Param('id', ParseUUIDPipe) id: string) {
+    return this.service.marcarRecibida(id);
   }
 }

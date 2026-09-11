@@ -4,12 +4,12 @@ Team Mex — Mantenimiento + Inventario v0 (piezas en visita).
 
 Cubre el kernel delgado (unidades, tipos, choferes, roles), visitas de mantenimiento y el módulo Inventario (schema `inventario`) con el paso **Piezas** en el cierre. Quedan fuera: multi-almacén, lotes, costeo, OC formal, kardex pesado, ítem↔placa, Andon y reserva de stock en borrador.
 
-Arquitectura: [ADR-000](docs/adr/000-thin-kernel.md), [ADR-002](docs/adr/002-schema-per-module.md).
+Arquitectura: [ADR-000](docs/adr/000-thin-kernel.md), [ADR-002](docs/adr/002-schema-per-module.md), [ADR-003](docs/adr/003-shadcn-tailwind.md).
 
 ## Stack
 
 - API NestJS + TypeORM + PostgreSQL (sin SQLite)
-- Cliente delgado Next.js App Router en `web/`
+- Cliente delgado Next.js App Router en `web/` (shadcn/ui + Tailwind, tokens Team Mex)
 - PostgreSQL local vía `docker compose`
 
 ## Requisitos
@@ -77,7 +77,7 @@ Documentación: [http://localhost:3001/docs](http://localhost:3001/docs).
 
 Rol stub → Unidades / Inventario. Admin: CRUD de tipos y choferes; inventario; historial de visitas en solo lectura (sin Nueva visita). Supervisor: inventario (catálogo, entradas, ajustes) y visitas (Datos → Trabajos → Obs → Fotos → **Piezas** → Firmas → Confirmar).
 
-Inventario: Ítems, Familias, Proveedores, Stock, Movimientos, Pendientes comprobante.
+Inventario: Ítems (búsqueda + Nuevo ítem), Familias, Proveedores, Stock, Movimientos, Pendientes.
 
 ## Pruebas
 

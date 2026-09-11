@@ -22,6 +22,7 @@ import { CreateItemDto } from './dto/create-item.dto';
 import { CreateItemProveedorDto } from './dto/create-item-proveedor.dto';
 import { CreateProveedorDto } from './dto/create-proveedor.dto';
 import { EntradaDto } from './dto/entrada.dto';
+import { TicketDto } from './dto/ticket.dto';
 import { UpdateFamiliaDto } from './dto/update-familia.dto';
 import { UpdateItemDto } from './dto/update-item.dto';
 import { UpdateItemProveedorDto } from './dto/update-item-proveedor.dto';
@@ -323,16 +324,33 @@ export class InventarioService implements OnModuleInit {
     const rows = await this.pendientes.find({
       order: { createdAt: 'DESC' },
     });
-    return rows.map((row) => ({
-      id: row.id,
-      visitaId: row.visitaId,
-      itemId: row.item.id,
-      sku: row.item.sku,
-      nombre: row.item.nombre,
-      qty: row.qty,
-      estado: row.estado,
-      createdAt: row.createdAt,
-    }));
+    return rows.map((row) => this.toPendienteDto(row));
+  }
+
+  async adjuntarTicket(id: string, dto: TicketDto) {
+    const row = await this.pendientes.findOne({ where: { id } });
+    if (!row) {
+      throw new NotFoundException('No se encontró el pendiente de comprobante.');
+    }
+    if (row.estado !== EstadoPendiente.PENDIENTE) {
+      throw new BadRequestException('Solo se puede adjuntar ticket a un pendiente abierto.');
+    }
+    row.ticketDataUrl = dto.dataUrl;
+    await this.pendientes.save(row);
+    return this.toPendienteDto(row);
+  }
+
+  async marcarRecibida(id: string) {
+    const row = await this.pendientes.findOne({ where: { id } });
+    if (!row) {
+      throw new NotFoundException('No se encontró el pendiente de comprobante.');
+    }
+    if (row.estado !== EstadoPendiente.PENDIENTE) {
+      throw new BadRequestException('Este comprobante ya está marcado como recibido.');
+    }
+    row.estado = EstadoPendiente.RECIBIDA;
+    await this.pendientes.save(row);
+    return this.toPendienteDto(row);
   }
 
   async entrada(dto: EntradaDto, user: CurrentUser) {
@@ -531,6 +549,20 @@ export class InventarioService implements OnModuleInit {
       throw new NotFoundException('No se encontró el ítem.');
     }
     return item;
+  }
+
+  private toPendienteDto(row: PendienteComprobante) {
+    return {
+      id: row.id,
+      visitaId: row.visitaId,
+      itemId: row.item.id,
+      sku: row.item.sku,
+      nombre: row.item.nombre,
+      qty: row.qty,
+      estado: row.estado,
+      ticketDataUrl: row.ticketDataUrl ?? null,
+      createdAt: row.createdAt,
+    };
   }
 
   private toItemDto(item: Item) {

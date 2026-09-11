@@ -8,6 +8,7 @@ export enum TipoMovimiento {
 
 export enum EstadoPendiente {
   PENDIENTE = 'PENDIENTE',
+  RECIBIDA = 'RECIBIDA',
 }
 
 export const UOM_PIEZA = 'pieza';

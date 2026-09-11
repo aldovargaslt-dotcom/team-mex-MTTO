@@ -2,8 +2,15 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { api, HttpError } from '@/lib/api';
-import { etiquetaOrigenPieza } from '@/lib/format';
+import { etiquetaOrigenPieza, etiquetaUom } from '@/lib/format';
 import type { ItemInventario, OrigenPieza, SkuCompatible, VisitaPieza } from '@/lib/types';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { FormAlert, Note } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+import { NativeSelect } from '@/components/ui/input';
+import { cn } from '@/lib/utils';
 
 export type PiezaLinea = {
   itemId: string;
@@ -12,6 +19,7 @@ export type PiezaLinea = {
   qty: number;
   origen: OrigenPieza;
   stock: number;
+  uom?: string;
 };
 
 export function lineasDesdeVisita(piezas: VisitaPieza[]): PiezaLinea[] {
@@ -44,6 +52,7 @@ export async function hydratePiezasFromInventario(
       qty: p.qty,
       origen: p.origen,
       stock: item?.stock ?? 0,
+      uom: item?.uom,
     };
   });
 }
@@ -112,6 +121,7 @@ export function PiezasStep({
         qty: 1,
         origen: item.stock > 0 ? 'DESDE_STOCK' : 'COMPRA_EXTERNA',
         stock: item.stock,
+        uom: item.uom,
       },
     ]);
   }
@@ -121,88 +131,72 @@ export function PiezasStep({
   }
 
   return (
-    <section className="card panel">
-      <h2>Piezas</h2>
-      <p className="muted">
+    <Card className="p-4">
+      <h2 className="text-[15px] font-semibold">Piezas</h2>
+      <p className="mt-1 text-sm text-muted-foreground">
         SKUs compatibles con {tipoVehiculoNombre ?? 'el tipo de la unidad'}. Opcional.
         Si la cantidad supera el stock, use compra externa o reduzca.
       </p>
-      <div className="field">
-        <label htmlFor="skuSearch">Buscar SKU</label>
-        <input
-          id="skuSearch"
-          value={q}
-          onChange={(e) => setQ(e.target.value)}
-          placeholder="SKU, nombre u OEM"
-        />
-      </div>
-      {error ? <p className="alert" style={{ marginTop: 8 }}>{error}</p> : null}
-      <ul className="sku-results">
-        {resultados.slice(0, 8).map((item) => (
-          <li key={item.id}>
-            <div>
-              <strong className="mono">{item.sku}</strong> {item.nombre}
-              <div className="muted">Stock {item.stock} {item.uom}</div>
-            </div>
-            <button
-              type="button"
-              className="btn btn-primary btn-compact"
-              disabled={usados.has(item.id)}
-              onClick={() => agregar(item)}
-            >
-              {usados.has(item.id) ? 'Agregado' : 'Agregar'}
-            </button>
-          </li>
-        ))}
-      </ul>
-      {lineas.length === 0 ? (
-        <p className="muted" style={{ marginTop: 12 }}>
-          Sin piezas en esta visita.
-        </p>
-      ) : (
-        <table className="data-table" style={{ marginTop: 12 }}>
-          <thead>
-            <tr>
-              <th>SKU</th>
-              <th>Qty</th>
-              <th>Stock</th>
-              <th>Origen</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            {lineas.map((linea) => {
-              const insuficiente =
-                linea.origen === 'DESDE_STOCK' && linea.qty > linea.stock;
-              return (
-                <tr key={linea.itemId} className={insuficiente ? 'row-warn' : undefined}>
-                  <td>
-                    <span className="mono">{linea.sku}</span>
-                    <div className="muted">{linea.nombre}</div>
-                    {insuficiente ? (
-                      <p className="alert" style={{ marginTop: 4 }}>
-                        Stock insuficiente (hay {linea.stock}). Use Compra externa o
-                        reduzca la cantidad.
-                      </p>
+
+      {lineas.length > 0 ? (
+        <div className="mt-4 grid gap-2">
+          <h3 className="text-sm font-semibold text-navy">En esta OT</h3>
+          {lineas.map((linea) => {
+            const insuficiente =
+              linea.origen === 'DESDE_STOCK' && linea.qty > linea.stock;
+            return (
+              <div
+                key={linea.itemId}
+                className={cn(
+                  'grid gap-2 rounded-lg border border-border p-3',
+                  insuficiente && 'border-[#ead0b3] bg-[#fff4e8]',
+                )}
+              >
+                <div className="flex flex-wrap items-start justify-between gap-2">
+                  <div>
+                    <p className="font-mono font-bold">{linea.sku}</p>
+                    <p className="text-sm">{linea.nombre}</p>
+                    <p className="text-xs text-muted-foreground">
+                      Stock {linea.stock} {etiquetaUom(linea.uom)}
+                    </p>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-2">
+                    {linea.origen === 'COMPRA_EXTERNA' ? (
+                      <Badge variant="warning">Pendiente de comprobante</Badge>
                     ) : null}
-                  </td>
-                  <td>
-                    <input
-                      className="qty-input"
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="compact"
+                      onClick={() =>
+                        onChange(lineas.filter((l) => l.itemId !== linea.itemId))
+                      }
+                    >
+                      Quitar
+                    </Button>
+                  </div>
+                </div>
+                <div className="flex flex-wrap items-end gap-2">
+                  <label className="grid gap-1 text-xs font-medium text-muted-foreground">
+                    Qty
+                    <Input
+                      className="qty-input w-[72px]"
                       type="number"
                       min={1}
                       step={1}
                       value={linea.qty}
                       aria-label={`Cantidad ${linea.sku}`}
+                      aria-invalid={insuficiente || undefined}
                       onChange={(e) => {
                         const value = Math.max(1, Math.floor(Number(e.target.value) || 1));
                         actualizar(linea.itemId, { qty: value });
                       }}
                     />
-                  </td>
-                  <td className="mono">{linea.stock}</td>
-                  <td>
-                    <select
+                  </label>
+                  <label className="grid gap-1 text-xs font-medium text-muted-foreground">
+                    Origen
+                    <NativeSelect
+                      className="h-9 min-h-9 w-[160px]"
                       value={linea.origen}
                       aria-label={`Origen ${linea.sku}`}
                       onChange={(e) =>
@@ -213,56 +207,103 @@ export function PiezasStep({
                     >
                       <option value="DESDE_STOCK">Desde stock</option>
                       <option value="COMPRA_EXTERNA">Compra externa</option>
-                    </select>
-                  </td>
-                  <td>
-                    <button
+                    </NativeSelect>
+                  </label>
+                </div>
+                {insuficiente ? (
+                  <div className="grid gap-2">
+                    <FormAlert>
+                      Stock insuficiente (hay {linea.stock} {etiquetaUom(linea.uom)}).
+                      Use compra externa o reduzca la cantidad.
+                    </FormAlert>
+                    <Button
                       type="button"
-                      className="btn btn-danger btn-compact"
+                      className="w-full sm:w-auto"
                       onClick={() =>
-                        onChange(lineas.filter((l) => l.itemId !== linea.itemId))
+                        actualizar(linea.itemId, { origen: 'COMPRA_EXTERNA' })
                       }
                     >
-                      Quitar
-                    </button>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+                      Usar compra externa
+                    </Button>
+                  </div>
+                ) : null}
+              </div>
+            );
+          })}
+        </div>
+      ) : (
+        <p className="mt-3 text-sm text-muted-foreground">Sin piezas en esta visita.</p>
       )}
+
+      <div className="mt-4 grid gap-1">
+        <label htmlFor="skuSearch" className="text-xs font-medium text-muted-foreground">
+          Buscar SKU
+        </label>
+        <Input
+          id="skuSearch"
+          value={q}
+          onChange={(e) => setQ(e.target.value)}
+          placeholder="SKU, nombre u OEM"
+        />
+      </div>
+      {error ? <FormAlert>{error}</FormAlert> : null}
+      <ul className="sku-results">
+        {resultados.slice(0, 8).map((item) => {
+          const enOt = usados.has(item.id);
+          return (
+            <li key={item.id}>
+              <button
+                type="button"
+                className="flex w-full items-center justify-between gap-2 text-left"
+                disabled={enOt}
+                onClick={() => agregar(item)}
+              >
+                <div>
+                  <strong className="mono">{item.sku}</strong> {item.nombre}
+                  <div className="muted">
+                    Stock {item.stock} {etiquetaUom(item.uom)}
+                  </div>
+                </div>
+                {enOt ? (
+                  <Badge variant="navy">En la OT</Badge>
+                ) : (
+                  <span className="text-sm font-medium text-navy">Agregar</span>
+                )}
+              </button>
+            </li>
+          );
+        })}
+      </ul>
       {alertas.length ? (
-        <p className="note note-warn">
-          {alertas.length} línea(s) superan el stock. Solo puede continuar con
-          compra externa o reduciendo la cantidad. No se permiten existencias
-          negativas.
-        </p>
+        <Note variant="warn">
+          {alertas.length} línea(s) superan el stock. Use compra externa o reduzca
+          la cantidad para continuar. No se permiten existencias negativas.
+        </Note>
       ) : null}
-    </section>
+    </Card>
   );
 }
 
 export function PiezasReadonly({ piezas }: { piezas: PiezaLinea[] }) {
   if (!piezas.length) {
     return (
-      <section className="card panel" style={{ marginTop: 12 }}>
-        <h2>Piezas</h2>
-        <p className="muted">Sin piezas.</p>
-      </section>
+      <Card className="mt-3 p-4">
+        <h2 className="text-[15px] font-semibold">Piezas</h2>
+        <p className="mt-1 text-sm text-muted-foreground">Sin piezas.</p>
+      </Card>
     );
   }
   return (
-    <section className="card panel" style={{ marginTop: 12 }}>
-      <h2>Piezas</h2>
-      <ul className="plain-list">
+    <Card className="mt-3 p-4">
+      <h2 className="text-[15px] font-semibold">Piezas</h2>
+      <ul className="plain-list mt-2">
         {piezas.map((pieza) => (
           <li key={pieza.itemId}>
             <span className="mono">{pieza.sku}</span> {pieza.nombre} · {pieza.qty}{' '}
-            pza · {etiquetaOrigenPieza(pieza.origen)}
+            {etiquetaUom(pieza.uom)} · {etiquetaOrigenPieza(pieza.origen)}
           </li>
         ))}
       </ul>
-    </section>
+    </Card>
   );
 }

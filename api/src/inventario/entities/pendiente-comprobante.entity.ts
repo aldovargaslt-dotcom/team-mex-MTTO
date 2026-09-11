@@ -30,6 +30,9 @@ export class PendienteComprobante {
   @Column({ type: 'enum', enum: EstadoPendiente, default: EstadoPendiente.PENDIENTE })
   estado: EstadoPendiente;
 
+  @Column({ name: 'ticket_data_url', type: 'text', nullable: true })
+  ticketDataUrl: string | null;
+
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 

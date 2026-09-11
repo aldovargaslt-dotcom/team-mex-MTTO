@@ -1,8 +1,13 @@
 'use client';
 
 import { FormEvent, useEffect, useState } from 'react';
+import Link from 'next/link';
 import { api } from '@/lib/api';
 import type { EstadoUnidad, TipoVehiculo, Unidad } from '@/lib/types';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { Field, FormAlert } from '@/components/ui/field';
+import { Input, NativeSelect } from '@/components/ui/input';
 
 export type UnidadFormValues = {
   numeroInterno: string;
@@ -78,38 +83,35 @@ export function UnidadForm({
   }
 
   return (
-    <form className="card form-grid" onSubmit={handleSubmit}>
-      <div className="field">
-        <label htmlFor="numeroInterno">Número interno</label>
-        <input
+    <form className="grid gap-3 sm:grid-cols-2" onSubmit={handleSubmit}>
+      <Card className="grid gap-3 p-4 sm:col-span-2 sm:grid-cols-2">
+      <Field label="Número interno" htmlFor="numeroInterno">
+        <Input
           id="numeroInterno"
           required
           value={values.numeroInterno}
           onChange={(e) => set('numeroInterno', e.target.value)}
         />
-      </div>
-      <div className="field">
-        <label htmlFor="placas">Placas</label>
-        <input
+      </Field>
+      <Field label="Placas" htmlFor="placas">
+        <Input
           id="placas"
           required
           value={values.placas}
           onChange={(e) => set('placas', e.target.value)}
         />
-      </div>
-      <div className="field">
-        <label htmlFor="vin">VIN</label>
-        <input
+      </Field>
+      <Field label="VIN" htmlFor="vin">
+        <Input
           id="vin"
           maxLength={32}
           value={values.vin}
           onChange={(e) => set('vin', e.target.value)}
           placeholder="Opcional"
         />
-      </div>
-      <div className="field">
-        <label htmlFor="tipoId">Tipo</label>
-        <select
+      </Field>
+      <Field label="Tipo" htmlFor="tipoId">
+        <NativeSelect
           id="tipoId"
           required
           value={values.tipoId}
@@ -121,31 +123,28 @@ export function UnidadForm({
               {tipo.nombre}
             </option>
           ))}
-        </select>
-      </div>
-      <div className="field">
-        <label htmlFor="estado">Estado</label>
-        <select
+        </NativeSelect>
+      </Field>
+      <Field label="Estado" htmlFor="estado">
+        <NativeSelect
           id="estado"
           value={values.estado}
           onChange={(e) => set('estado', e.target.value as EstadoUnidad)}
         >
           <option value="ACTIVA">Activa</option>
           <option value="INACTIVA">Inactiva</option>
-        </select>
-      </div>
-      <div className="field">
-        <label htmlFor="marcaModelo">Marca / modelo</label>
-        <input
+        </NativeSelect>
+      </Field>
+      <Field label="Marca / modelo" htmlFor="marcaModelo">
+        <Input
           id="marcaModelo"
           value={values.marcaModelo}
           onChange={(e) => set('marcaModelo', e.target.value)}
           placeholder="Ej. International MV"
         />
-      </div>
-      <div className="field">
-        <label htmlFor="anio">Año</label>
-        <input
+      </Field>
+      <Field label="Año" htmlFor="anio">
+        <Input
           id="anio"
           type="number"
           min={1980}
@@ -153,16 +152,21 @@ export function UnidadForm({
           value={values.anio}
           onChange={(e) => set('anio', e.target.value)}
         />
-      </div>
-      {error ? <p className="alert">{error}</p> : null}
-      <div className="form-actions">
-        <button className="btn btn-primary" type="submit" disabled={saving}>
+      </Field>
+      {error ? (
+        <div className="sm:col-span-2">
+          <FormAlert>{error}</FormAlert>
+        </div>
+      ) : null}
+      <div className="flex gap-2 sm:col-span-2">
+        <Button type="submit" disabled={saving}>
           {saving ? 'Guardando…' : submitLabel}
-        </button>
-        <a className="btn btn-secondary" href="/unidades">
-          Cancelar
-        </a>
+        </Button>
+        <Button asChild variant="secondary">
+          <Link href="/unidades">Cancelar</Link>
+        </Button>
       </div>
+      </Card>
     </form>
   );
 }

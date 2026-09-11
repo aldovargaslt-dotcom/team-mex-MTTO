@@ -14,7 +14,7 @@ export type OrigenPieza = 'DESDE_STOCK' | 'COMPRA_EXTERNA';
 
 export type TipoMovimiento = 'ENTRADA' | 'SALIDA_OT' | 'AJUSTE';
 
-export type EstadoPendiente = 'PENDIENTE';
+export type EstadoPendiente = 'PENDIENTE' | 'RECIBIDA';
 
 export type TipoVehiculo = {
   id: string;
@@ -155,6 +155,7 @@ export type PendienteComprobante = {
   nombre: string;
   qty: number;
   estado: EstadoPendiente;
+  ticketDataUrl: string | null;
   createdAt: string;
 };
 

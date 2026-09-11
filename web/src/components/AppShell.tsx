@@ -1,11 +1,15 @@
 'use client';
 
+import type { ReactNode } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { BrandPlate } from '@/components/BrandPlate';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 import { etiquetaRol, useRole } from '@/lib/role';
 
-export function AppShell({ children }: { children: React.ReactNode }) {
+export function AppShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const { role, isAdmin, clearRole, ready } = useRole();
@@ -13,57 +17,47 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="app">
-      <header className="shell">
-        <div className="shell-inner">
-          <Link href={role ? '/unidades' : '/'} className="brand">
+      <header className="bg-navy text-[var(--shell-ink)]">
+        <div className="mx-auto flex min-h-14 max-w-[1040px] flex-wrap items-center gap-3 px-4 py-2 md:gap-5">
+          <Link href={role ? '/unidades' : '/'} className="flex items-center py-1">
             <BrandPlate />
           </Link>
           {!isHome && ready && role ? (
-            <nav className="nav">
-              <Link
-                className={pathname?.startsWith('/unidades') ? 'active' : ''}
-                href="/unidades"
-              >
+            <nav className="flex flex-1 flex-wrap gap-1" aria-label="Principal">
+              <NavLink href="/unidades" active={Boolean(pathname?.startsWith('/unidades'))}>
                 Unidades
-              </Link>
-              <Link
-                className={pathname?.startsWith('/inventario') ? 'active' : ''}
-                href="/inventario"
-              >
+              </NavLink>
+              <NavLink href="/inventario" active={Boolean(pathname?.startsWith('/inventario'))}>
                 Inventario
-              </Link>
+              </NavLink>
               {isAdmin ? (
                 <>
-                  <Link
-                    className={pathname?.startsWith('/tipos') ? 'active' : ''}
-                    href="/tipos"
-                  >
+                  <NavLink href="/tipos" active={Boolean(pathname?.startsWith('/tipos'))}>
                     Tipos
-                  </Link>
-                  <Link
-                    className={pathname?.startsWith('/choferes') ? 'active' : ''}
-                    href="/choferes"
-                  >
+                  </NavLink>
+                  <NavLink href="/choferes" active={Boolean(pathname?.startsWith('/choferes'))}>
                     Choferes
-                  </Link>
+                  </NavLink>
                 </>
               ) : null}
             </nav>
           ) : null}
-          <div className="shell-actions">
+          <div className="ml-auto flex items-center gap-2">
             {ready && role && !isHome ? (
               <>
-                <span className="role-pill">{etiquetaRol(role)}</span>
-                <button
+                <Badge variant="navy" className="bg-white/10 font-normal">
+                  {etiquetaRol(role)}
+                </Badge>
+                <Button
                   type="button"
-                  className="btn btn-ghost"
+                  variant="ghost"
                   onClick={() => {
                     clearRole();
                     router.push('/');
                   }}
                 >
                   Cambiar rol
-                </button>
+                </Button>
               </>
             ) : null}
           </div>
@@ -71,5 +65,27 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       </header>
       <main className={isHome ? 'main main-home' : 'main'}>{children}</main>
     </div>
+  );
+}
+
+function NavLink({
+  href,
+  active,
+  children,
+}: {
+  href: string;
+  active: boolean;
+  children: ReactNode;
+}) {
+  return (
+    <Link
+      href={href}
+      className={cn(
+        'inline-flex min-h-11 items-center rounded-lg px-3 text-sm text-white/80 hover:bg-white/10 hover:text-white',
+        active && 'bg-white font-medium text-navy hover:bg-white hover:text-navy',
+      )}
+    >
+      {children}
+    </Link>
   );
 }

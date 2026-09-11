@@ -264,11 +264,25 @@ describe('Inventario v0 + piezas en visita (e2e)', () => {
       .get('/inventario/pendientes-comprobante')
       .set(ADMIN)
       .expect(200);
-    const pend = (pendientes.body as { visitaId: string; sku: string; estado: string }[]).find(
+    const pend = (pendientes.body as { id: string; visitaId: string; sku: string; estado: string }[]).find(
       (p) => p.visitaId === draft.body.id,
     );
+    expect(pend).toBeTruthy();
     expect(pend?.sku).toBe('PAST-FR-01');
     expect(pend?.estado).toBe('PENDIENTE');
+
+    const conTicket = await request(server)
+      .post(`/inventario/pendientes-comprobante/${pend!.id}/ticket`)
+      .set(SUPERVISOR)
+      .send({ dataUrl: PNG })
+      .expect(201);
+    expect(conTicket.body.ticketDataUrl).toMatch(/^data:image\//);
+
+    const recibida = await request(server)
+      .post(`/inventario/pendientes-comprobante/${pend!.id}/recibir`)
+      .set(ADMIN)
+      .expect(201);
+    expect(recibida.body.estado).toBe('RECIBIDA');
 
     const movs = await request(server).get('/inventario/movimientos').set(ADMIN).expect(200);
     expect(

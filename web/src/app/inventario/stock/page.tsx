@@ -1,15 +1,29 @@
 'use client';
 
-import { FormEvent, useEffect, useState } from 'react';
+import { FormEvent, useEffect, useMemo, useState } from 'react';
+import { ColumnDef } from '@tanstack/react-table';
 import { api, HttpError } from '@/lib/api';
+import { etiquetaUom } from '@/lib/format';
 import { useRole } from '@/lib/role';
 import type { StockRow } from '@/lib/types';
+import { Button } from '@/components/ui/button';
+import { DataTable } from '@/components/ui/data-table';
+import { Field, FormAlert, PageHeader } from '@/components/ui/field';
+import { Input, NativeSelect, Textarea } from '@/components/ui/input';
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+} from '@/components/ui/sheet';
 
 export default function StockPage() {
   const { role, userId } = useRole();
   const [rows, setRows] = useState<StockRow[]>([]);
   const [error, setError] = useState<string | null>(null);
-  const [itemId, setItemId] = useState<string | null>(null);
+  const [itemId, setItemId] = useState('');
   const [mode, setMode] = useState<'entrada' | 'ajuste' | null>(null);
   const [qty, setQty] = useState('1');
   const [nota, setNota] = useState('');
@@ -62,7 +76,7 @@ export default function StockPage() {
           }),
         });
       }
-      setItemId(null);
+      setItemId('');
       setMode(null);
       await cargar();
     } catch (err) {
@@ -70,94 +84,148 @@ export default function StockPage() {
     }
   }
 
+  const selected = rows.find((row) => row.itemId === itemId);
+
+  const columns: ColumnDef<StockRow, unknown>[] = useMemo(
+    () => [
+      {
+        accessorKey: 'sku',
+        header: 'SKU',
+        cell: ({ row }) => <span className="mono">{row.original.sku}</span>,
+      },
+      { accessorKey: 'nombre', header: 'Nombre' },
+      { accessorKey: 'familia', header: 'Familia' },
+      {
+        accessorKey: 'qty',
+        header: 'Qty',
+        cell: ({ row }) => (
+          <span className="mono">
+            {row.original.qty} {etiquetaUom(row.original.uom)}
+          </span>
+        ),
+      },
+      {
+        id: 'acciones',
+        header: '',
+        cell: ({ row }) => (
+          <div className="row-actions" onClick={(e) => e.stopPropagation()}>
+            <Button
+              type="button"
+              variant="secondary"
+              size="compact"
+              onClick={() => abrir(row.original.itemId, 'entrada')}
+            >
+              Entrada
+            </Button>
+            <Button
+              type="button"
+              variant="secondary"
+              size="compact"
+              onClick={() => abrir(row.original.itemId, 'ajuste')}
+            >
+              Ajuste
+            </Button>
+          </div>
+        ),
+      },
+    ],
+    [],
+  );
+
   return (
     <>
-      <div className="page-head">
-        <div>
-          <h1>Stock</h1>
-          <p className="lede">Almacén único. No se permiten existencias negativas.</p>
-        </div>
-      </div>
-      {error ? <p className="alert" style={{ marginBottom: 12 }}>{error}</p> : null}
-      {mode && itemId ? (
-        <form className="card form-grid" onSubmit={aplicar} style={{ marginBottom: 12 }}>
-          <div className="field">
-            <label htmlFor="qty">{mode === 'entrada' ? 'Cantidad de entrada' : 'Ajuste (con signo)'}</label>
-            <input
-              id="qty"
-              type="number"
-              required
-              value={qty}
-              onChange={(e) => setQty(e.target.value)}
-              min={mode === 'entrada' ? 1 : undefined}
-              step={1}
-            />
-          </div>
-          <div className="field">
-            <label htmlFor="nota">Nota</label>
-            <input
-              id="nota"
-              value={nota}
-              onChange={(e) => setNota(e.target.value)}
-              placeholder="Opcional"
-            />
-          </div>
-          <div className="form-actions">
-            <button className="btn btn-primary" type="submit">
-              {mode === 'entrada' ? 'Registrar entrada' : 'Aplicar ajuste'}
-            </button>
-            <button
-              className="btn btn-secondary"
-              type="button"
-              onClick={() => {
-                setMode(null);
-                setItemId(null);
-              }}
+      <PageHeader
+        title="Stock"
+        lede="Almacén único. No se permiten existencias negativas."
+        actions={
+          <Button
+            type="button"
+            onClick={() => abrir(rows[0]?.itemId ?? '', 'entrada')}
+            disabled={rows.length === 0}
+          >
+            Registrar entrada
+          </Button>
+        }
+      />
+      <FormAlert>{error}</FormAlert>
+      <DataTable columns={columns} data={rows} empty="No hay SKUs en stock." />
+
+      <Sheet
+        open={mode !== null}
+        onOpenChange={(open) => {
+          if (!open) {
+            setMode(null);
+            setItemId('');
+          }
+        }}
+      >
+        <SheetContent side="bottom" className="sm:max-w-none">
+          <SheetHeader>
+            <SheetTitle>
+              {mode === 'ajuste' ? 'Ajuste de stock' : 'Registrar entrada'}
+            </SheetTitle>
+            <SheetDescription>
+              {selected
+                ? `${selected.sku} · ${selected.nombre}`
+                : 'Elija el SKU, la cantidad y una nota opcional.'}
+            </SheetDescription>
+          </SheetHeader>
+          <form className="grid gap-3 px-4 pb-4" onSubmit={aplicar}>
+            <Field label="SKU" htmlFor="stockItem">
+              <NativeSelect
+                id="stockItem"
+                required
+                value={itemId}
+                onChange={(e) => setItemId(e.target.value)}
+              >
+                <option value="">Seleccione</option>
+                {rows.map((row) => (
+                  <option key={row.itemId} value={row.itemId}>
+                    {row.sku} · {row.nombre} ({row.qty} {etiquetaUom(row.uom)})
+                  </option>
+                ))}
+              </NativeSelect>
+            </Field>
+            <Field
+              label={mode === 'ajuste' ? 'Ajuste (con signo)' : 'Cantidad'}
+              htmlFor="qty"
             >
-              Cancelar
-            </button>
-          </div>
-        </form>
-      ) : null}
-      <div className="card" style={{ overflowX: 'auto' }}>
-        <table className="data-table">
-          <thead>
-            <tr>
-              <th>SKU</th>
-              <th>Nombre</th>
-              <th>Familia</th>
-              <th>Qty</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((row) => (
-              <tr key={row.itemId}>
-                <td className="mono">{row.sku}</td>
-                <td>{row.nombre}</td>
-                <td>{row.familia}</td>
-                <td className="mono">{row.qty}</td>
-                <td className="row-actions">
-                  <button
-                    type="button"
-                    className="btn btn-primary btn-compact"
-                    onClick={() => abrir(row.itemId, 'entrada')}
-                  >
-                    Entrada
-                  </button>
-                  <button
-                    type="button"
-                    className="btn btn-secondary btn-compact"
-                    onClick={() => abrir(row.itemId, 'ajuste')}
-                  >
-                    Ajuste
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+              <Input
+                id="qty"
+                type="number"
+                required
+                value={qty}
+                onChange={(e) => setQty(e.target.value)}
+                min={mode === 'entrada' ? 1 : undefined}
+                step={1}
+              />
+            </Field>
+            <Field label="Nota" htmlFor="nota">
+              <Textarea
+                id="nota"
+                value={nota}
+                onChange={(e) => setNota(e.target.value)}
+                placeholder="Opcional"
+              />
+            </Field>
+            <SheetFooter className="p-0">
+              <Button type="submit">
+                {mode === 'entrada' ? 'Registrar entrada' : 'Aplicar ajuste'}
+              </Button>
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={() => {
+                  setMode(null);
+                  setItemId('');
+                }}
+              >
+                Cancelar
+              </Button>
+            </SheetFooter>
+          </form>
+        </SheetContent>
+      </Sheet>
     </>
   );
 }
