@@ -1,6 +1,7 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { Chofer } from '../choferes/chofer.entity';
 import { EstadoUnidad } from '../common/estado-unidad.enum';
 import { TipoVehiculo } from '../tipos-vehiculo/tipo-vehiculo.entity';
 import { Unidad } from '../unidades/unidad.entity';
@@ -10,6 +11,8 @@ const TIPOS_SEED = [
   { nombre: 'Camioneta', descripcion: 'Unidad ligera de apoyo' },
   { nombre: 'Van', descripcion: 'Unidad de pasajeros' },
 ];
+
+const CHOFERES_SEED = ['Juan Pérez', 'María López', 'Carlos Ruiz'];
 
 const UNIDADES_SEED = [
   {
@@ -50,6 +53,8 @@ export class SeedService implements OnModuleInit {
     private readonly tipos: Repository<TipoVehiculo>,
     @InjectRepository(Unidad)
     private readonly unidades: Repository<Unidad>,
+    @InjectRepository(Chofer)
+    private readonly choferes: Repository<Chofer>,
   ) {}
 
   async onModuleInit() {
@@ -61,6 +66,13 @@ export class SeedService implements OnModuleInit {
       const exists = await this.tipos.findOne({ where: { nombre: tipo.nombre } });
       if (!exists) {
         await this.tipos.save(this.tipos.create(tipo));
+      }
+    }
+
+    for (const nombre of CHOFERES_SEED) {
+      const exists = await this.choferes.findOne({ where: { nombre } });
+      if (!exists) {
+        await this.choferes.save(this.choferes.create({ nombre }));
       }
     }
 
@@ -94,6 +106,8 @@ export class SeedService implements OnModuleInit {
       );
     }
 
-    this.logger.log('Semilla Slice 1 lista (U-101, U-102 ACTIVA; U-103 INACTIVA).');
+    this.logger.log(
+      'Semilla lista (U-101, U-102 ACTIVA; U-103 INACTIVA; choferes).',
+    );
   }
 }

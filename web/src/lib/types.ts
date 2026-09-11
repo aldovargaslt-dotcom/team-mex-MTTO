@@ -2,10 +2,23 @@ export type Role = 'SUPERVISOR' | 'ADMIN_DIRECTIVO';
 
 export type EstadoUnidad = 'ACTIVA' | 'INACTIVA';
 
+export type EstadoVisita = 'BORRADOR' | 'CERRADO';
+
+export type TipoVisita = 'PREDICTIVO' | 'CORRECTIVO';
+
+export type CategoriaTrabajo = 'A' | 'B' | 'C' | 'D' | 'E';
+
+export type TipoFirma = 'CHOFER' | 'JEFE';
+
 export type TipoVehiculo = {
   id: string;
   nombre: string;
   descripcion: string | null;
+};
+
+export type Chofer = {
+  id: string;
+  nombre: string;
 };
 
 export type Unidad = {
@@ -17,6 +30,44 @@ export type Unidad = {
   tipo: TipoVehiculo;
   marcaModelo: string | null;
   anio: number | null;
+};
+
+export type VisitaResumen = {
+  id: string;
+  estado: EstadoVisita;
+  tipo: TipoVisita | null;
+  km: number | null;
+  choferId: string | null;
+  choferNombre: string | null;
+  createdBy: string | null;
+  createdAt: string;
+  updatedAt: string;
+  cerradoAt: string | null;
+  trabajosCount: number;
+};
+
+export type VisitaDetalle = {
+  id: string;
+  unidadId: string;
+  unidadNumeroInterno: string;
+  estado: EstadoVisita;
+  chofer: Chofer | null;
+  km: number | null;
+  tipo: TipoVisita | null;
+  observaciones: string | null;
+  createdBy: string | null;
+  createdAt: string;
+  updatedAt: string;
+  cerradoAt: string | null;
+  trabajos: { id: string; categoria: CategoriaTrabajo; item: string }[];
+  fotos: { id: string; dataUrl: string; createdAt: string }[];
+  firmas: { id: string; tipo: TipoFirma; dataUrl: string; createdAt: string }[];
+};
+
+export type CatalogoCategoria = {
+  categoria: CategoriaTrabajo;
+  nombre: string;
+  items: string[];
 };
 
 export type UnidadHub = {
@@ -32,14 +83,10 @@ export type UnidadHub = {
     anio: number | null;
     ultimoKm: number | null;
   };
-  mantenimiento: {
-    estado: 'sin_registros';
-    ultimaVisita: string | null;
-    mensajeHistorial: string;
-    mensajeResumen: string;
-  };
+  borradores: VisitaResumen[];
+  historialCerrado: VisitaResumen[];
   puedeCrearVisita: boolean;
-  mensaje: string;
+  mensajes: string[];
 };
 
 export type ApiError = {

@@ -5,9 +5,11 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthGuard } from './auth/auth.guard';
 import { RolesGuard } from './auth/roles.guard';
 import { HealthController } from './health.controller';
+import { ChoferesModule } from './choferes/choferes.module';
 import { SeedModule } from './seed/seed.module';
 import { TiposVehiculoModule } from './tipos-vehiculo/tipos-vehiculo.module';
 import { UnidadesModule } from './unidades/unidades.module';
+import { VisitasModule } from './visitas/visitas.module';
 
 @Module({
   imports: [
@@ -28,6 +30,8 @@ import { UnidadesModule } from './unidades/unidades.module';
     }),
     TiposVehiculoModule,
     UnidadesModule,
+    ChoferesModule,
+    VisitasModule,
     SeedModule,
   ],
   controllers: [HealthController],

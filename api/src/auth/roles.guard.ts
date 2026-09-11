@@ -28,7 +28,9 @@ export class RolesGuard implements CanActivate {
     const user = request.user;
     if (!user || !required.includes(user.rol)) {
       throw new ForbiddenException(
-        'El supervisor no tiene permiso para realizar esta acción.',
+        user?.rol === Rol.ADMIN_DIRECTIVO
+          ? 'El administrador directivo no tiene permiso para realizar esta acción.'
+          : 'El supervisor no tiene permiso para realizar esta acción.',
       );
     }
     return true;

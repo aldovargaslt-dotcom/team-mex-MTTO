@@ -1,8 +1,8 @@
 # team-mex-MTTO
 
-Team Mex — módulo Mantenimiento (Slice 1: Nest API + UI).
+Team Mex — módulo Mantenimiento (Slice 2: visitas + choferes).
 
-Slice 1 cubre el catálogo de tipos de vehículo, el ABM de unidades (alta/edición admin) y el hub de cada unidad, con un stub de roles. Quedan fuera de este corte: visitas reales, choferes, reportes y autenticación definitiva.
+Slice 2 cubre el catálogo admin de choferes y el flujo de visitas de mantenimiento (borrador, cierre y historial) sobre el catálogo de unidades de Slice 1. Quedan fuera: reportes/export, reapertura admin, E/S, Andon, autenticación real y costos.
 
 ## Stack
 
@@ -43,7 +43,9 @@ El cliente usa el rol stub `X-Role: SUPERVISOR | ADMIN_DIRECTIVO` (y `X-User-Id`
 | U-102  | ACTIVA   | Segunda unidad activa                             |
 | U-103  | INACTIVA | Hub bloqueado: no se puede crear visita           |
 
-## API (Slice 1)
+Choferes de semilla: Juan Pérez, María López, Carlos Ruiz.
+
+## API
 
 Autenticación stub: encabezado `X-Role`. Falta el encabezado → 401.
 
@@ -51,27 +53,30 @@ Autenticación stub: encabezado `X-Role`. Falta el encabezado → 401.
 |---------|------------|-----------------|
 | `GET /tipos-vehiculo` | sí | sí |
 | `POST/PATCH/DELETE /tipos-vehiculo` | 403 | sí |
+| `GET /choferes` | sí | sí |
+| `POST/PATCH/DELETE /choferes` | 403 | sí |
 | `GET /unidades` (filtros `numeroInterno`, `placas`, `tipo`) | sí | sí |
 | `GET /unidades/:id` y `/unidades/:id/hub` | sí | sí |
 | `POST/PATCH /unidades` | 403 | sí |
+| `POST /unidades/:id/visitas` (borrador) | sí | 403 |
+| `PATCH /visitas/:id`, `DELETE /visitas/:id`, `POST /visitas/:id/cerrar` | sí | 403 |
+| `GET /visitas/:id` y historial | sí (incluye borradores) | historial/detalle cerrado |
 
-Hub: `fichaCorta` + stubs de mantenimiento (mensajes en español, sin arreglos vacíos crudos). `puedeCrearVisita` es **true solo si el rol es SUPERVISOR y la unidad está ACTIVA**. El admin nunca obtiene `true`. Unicidad de número interno, placas, VIN (si viene informado) y nombre de tipo → 409.
+Hub: `fichaCorta` + `borradores[]` (vacío para admin) + `historialCerrado[]` + `puedeCrearVisita` + `mensajes[]`. `puedeCrearVisita` es **true solo si el rol es SUPERVISOR y la unidad está ACTIVA**. `fichaCorta.ultimoKm` es el km de la última visita cerrada.
 
-Campos maestros de unidad (alta/edición admin): `numeroInterno`, `placas`, `vin` (opcional), `tipo`, `estado`, `marcaModelo`, `anio`. El kilometraje **no** se edita en la unidad: `fichaCorta.ultimoKm` es el km de la última visita cerrada. En Slice 1 las visitas están fuera de alcance, así que `ultimoKm` siempre es `null` y la UI muestra «Sin registro».
+Cierre (todas obligatorias): unidad ACTIVA, chofer del catálogo, km ≥ último cerrado (o ≥ 0 si es la primera), tipo PREDICTIVO\|CORRECTIVO, ≥ 1 trabajo del checklist A–E, firmas de chofer y jefe. Observaciones y fotos son opcionales. Un km menor al último cerrado **no se persiste ni como borrador**.
 
 Documentación: [http://localhost:3001/docs](http://localhost:3001/docs).
 
 ## UI
 
-Rol stub → listado/búsqueda de unidades → hub. El admin ve alta/edición de unidades y CRUD de tipos; el supervisor no. **Nueva visita** se habilita según `puedeCrearVisita`; no hay formularios de visita (muestra *Próximamente*).
+Rol stub → listado de unidades → hub. Admin: CRUD de tipos y choferes, historial de visitas en solo lectura (sin Nueva visita ni borradores). Supervisor: crea/continúa/elimina borradores y cierra visitas (Datos → Trabajos A–E → Observaciones → Fotos → Firmas → confirmar).
 
 ## Pruebas
 
 ```bash
 cd api
-# requiere la base team_mex_mtto_test (el compose solo crea team_mex_mtto;
-# el script de e2e asume PostgreSQL local con usuario team_mex)
-createdb -U team_mex team_mex_mtto_test   # si aún no existe
+# requiere la base team_mex_mtto_test (el compose crea team_mex_mtto y team_mex_mtto_test)
 npm run test
 npm run test:e2e
 ```

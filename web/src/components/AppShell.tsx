@@ -27,12 +27,20 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 Unidades
               </Link>
               {isAdmin ? (
-                <Link
-                  className={pathname?.startsWith('/tipos') ? 'active' : ''}
-                  href="/tipos"
-                >
-                  Tipos de vehículo
-                </Link>
+                <>
+                  <Link
+                    className={pathname?.startsWith('/tipos') ? 'active' : ''}
+                    href="/tipos"
+                  >
+                    Tipos
+                  </Link>
+                  <Link
+                    className={pathname?.startsWith('/choferes') ? 'active' : ''}
+                    href="/choferes"
+                  >
+                    Choferes
+                  </Link>
+                </>
               ) : null}
             </nav>
           ) : null}

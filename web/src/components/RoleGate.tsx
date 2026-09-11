@@ -33,7 +33,7 @@ export function RoleGate({
         <h2>Acceso restringido</h2>
         <p>
           Esta sección es exclusiva del administrador directivo. El supervisor
-          solo puede consultar unidades y su hub.
+          solo puede consultar unidades, su hub y registrar visitas.
         </p>
         <a className="btn btn-secondary" href="/unidades">
           Volver a unidades

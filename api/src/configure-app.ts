@@ -24,6 +24,11 @@ function firstValidationMessage(errors: ValidationError[]): string {
 }
 
 export function configureApp(app: INestApplication): void {
+  const withParser = app as INestApplication & {
+    useBodyParser?: (type: string, options?: { limit?: string }) => void;
+  };
+  withParser.useBodyParser?.('json', { limit: '10mb' });
+
   app.enableCors({
     origin: process.env.CORS_ORIGIN?.split(',') ?? [
       'http://localhost:3000',
@@ -48,9 +53,9 @@ export function configureApp(app: INestApplication): void {
   const swaggerConfig = new DocumentBuilder()
     .setTitle('Team Mex — Mantenimiento')
     .setDescription(
-      'API Slice 1: catálogo de tipos de vehículo, unidades y hub de mantenimiento. Autenticación stub por encabezado X-Role.',
+      'API Slice 2: tipos de vehículo, unidades, choferes, visitas de mantenimiento y hub. Autenticación stub por encabezado X-Role.',
     )
-    .setVersion('1.0')
+    .setVersion('2.0')
     .addApiKey(
       { type: 'apiKey', name: 'X-Role', in: 'header' },
       'X-Role',
