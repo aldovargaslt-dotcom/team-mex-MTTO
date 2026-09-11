@@ -7,11 +7,13 @@ describe('InventarioInboxAdapter (ADR-007 seam)', () => {
     const ingested: StockAlertEvent[] = [];
     const cleared: string[] = [];
     const adapter = new InventarioInboxAdapter({
-      ingestStockBajo: async (event: StockAlertEvent) => {
+      ingestStockBajo: (event: StockAlertEvent) => {
         ingested.push(event);
+        return Promise.resolve();
       },
-      clear: async (itemId: string) => {
+      clear: (itemId: string) => {
         cleared.push(itemId);
+        return Promise.resolve();
       },
     } as unknown as NotificationsService);
 

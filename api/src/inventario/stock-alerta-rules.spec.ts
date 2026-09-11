@@ -18,11 +18,13 @@ function fakePort() {
   const bajo: StockAlertEvent[] = [];
   const reabastecido: StockAlertEvent[] = [];
   const port: StockAlertPort = {
-    onStockBajo: async (event) => {
+    onStockBajo: (event) => {
       bajo.push(event);
+      return Promise.resolve();
     },
-    onStockReabastecido: async (event) => {
+    onStockReabastecido: (event) => {
       reabastecido.push(event);
+      return Promise.resolve();
     },
   };
   return { port, bajo, reabastecido };
