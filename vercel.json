@@ -1,0 +1,6 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": null,
+  "installCommand": "echo 'ERROR: Vercel esta en la raiz del repo. Settings → General → Root Directory = web (Save). Luego Redeploy. La API va a Railway.' && exit 1",
+  "buildCommand": "exit 1"
+}
