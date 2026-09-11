@@ -29,4 +29,20 @@ describe('VisitaCerrada envelope (ADR-001)', () => {
       consumos: [{ itemId: 'item-1', qty: 2, origen: 'DESDE_STOCK' }],
     });
   });
+
+  it('permite consumos vacíos', () => {
+    const payload = buildVisitaCerrada({
+      eventId: randomUUID(),
+      visitaId: 'visita-2',
+      unidadId: 'unidad-1',
+      tipoVehiculoId: 'tipo-1',
+      km: 0,
+      cerradoAt: '2026-09-11T08:00:00.000Z',
+      consumos: [],
+    });
+    expect(payload.km).toBe(0);
+    expect(payload.consumos).toEqual([]);
+    expect(payload.eventType).toBe(VISITA_CERRADA);
+    expect(payload.cerradoAt).toBe(payload.occurredAt);
+  });
 });

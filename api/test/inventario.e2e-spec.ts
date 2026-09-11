@@ -5,7 +5,7 @@ import { App } from 'supertest/types';
 import { DataSource } from 'typeorm';
 import { AppModule } from '../src/app.module';
 import { configureApp } from '../src/configure-app';
-import { assertVisitaCerradaOutbox } from './assert-visita-cerrada-outbox';
+import { assertVisitaCerradaOutbox, countVisitaCerradaOutbox } from './assert-visita-cerrada-outbox';
 
 const SUPERVISOR = { 'X-Role': 'SUPERVISOR', 'X-User-Id': 'sup-inv' };
 const ADMIN = { 'X-Role': 'ADMIN_DIRECTIVO', 'X-User-Id': 'adm-inv' };
@@ -249,6 +249,7 @@ describe('Inventario v0 + piezas en visita (e2e)', () => {
     expect(sigueBorrador.body.estado).toBe('BORRADOR');
     const stockIgual = await itemPorSku('PAST-FR-01');
     expect(stockIgual.stock).toBe(pastillas.stock);
+    expect(await countVisitaCerradaOutbox(app, draft.body.id)).toBe(0);
 
     await request(server)
       .patch(`/visitas/${draft.body.id}`)
@@ -265,6 +266,20 @@ describe('Inventario v0 + piezas en visita (e2e)', () => {
       .set(SUPERVISOR)
       .expect(200);
     expect(cerrado.body.estado).toBe('CERRADO');
+
+    await assertVisitaCerradaOutbox(app, {
+      visitaId: draft.body.id,
+      unidadId: u101.id,
+      tipoVehiculoId: u101.tipo.id,
+      km: 1900,
+      consumos: [
+        {
+          itemId: pastillas.id,
+          qty: pastillas.stock + 5,
+          origen: 'COMPRA_EXTERNA',
+        },
+      ],
+    });
 
     const stockTrasCompra = await itemPorSku('PAST-FR-01');
     expect(stockTrasCompra.stock).toBe(pastillas.stock);
