@@ -35,7 +35,10 @@ export function configureApp(app: INestApplication): void {
       ? ['http://localhost:3000', 'http://127.0.0.1:3000']
       : corsRaw === '*'
         ? true
-        : corsRaw.split(',').map((origin) => origin.trim()).filter(Boolean),
+        : corsRaw
+            .split(',')
+            .map((origin) => origin.trim())
+            .filter(Boolean),
     credentials: true,
     allowedHeaders: ['Content-Type', 'X-Role', 'X-User-Id'],
   });
@@ -58,10 +61,7 @@ export function configureApp(app: INestApplication): void {
       'API: kernel (unidades, tipos, choferes, roles), visitas de mantenimiento y módulo Inventario (schema-per-module). Autenticación stub por encabezado X-Role.',
     )
     .setVersion('3.0')
-    .addApiKey(
-      { type: 'apiKey', name: 'X-Role', in: 'header' },
-      'X-Role',
-    )
+    .addApiKey({ type: 'apiKey', name: 'X-Role', in: 'header' }, 'X-Role')
     .addApiKey(
       {
         type: 'apiKey',
