@@ -3,7 +3,8 @@ import type { NextConfig } from 'next';
 const API_URL = process.env.API_URL ?? 'http://localhost:3001';
 
 const nextConfig: NextConfig = {
-  output: 'standalone',
+  // Docker/Compose uses standalone. Vercel builds its own output — do not set it there.
+  ...(process.env.VERCEL ? {} : { output: 'standalone' as const }),
   async rewrites() {
     return [
       {

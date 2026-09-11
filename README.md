@@ -59,6 +59,49 @@ Pare el stack con `docker compose --profile app down`. Si también desarrolla co
 
 El cliente usa el rol stub `X-Role: SUPERVISOR | ADMIN_DIRECTIVO` (y `X-User-Id` opcional). En la pantalla inicial elija el rol; sin encabezado la API responde 401.
 
+## Deploy (Vercel + Railway)
+
+Monorepo: **no** apunte Railway ni Vercel a la raíz del repo (no hay `package.json` ahí).
+
+### 1. Railway — Postgres + API
+
+1. En el proyecto de Railway, **New → Database → PostgreSQL**.
+2. **New → GitHub Repo** (este repo) → servicio `api`:
+   - **Root Directory:** `api`
+   - Builder: Dockerfile (`api/Dockerfile` + `api/railway.toml`)
+3. En Variables del servicio `api`, **Reference** el Postgres (`DATABASE_URL`). Railway lo inyecta solo.
+4. Variables extra:
+
+   | Variable | Valor |
+   |----------|--------|
+   | `CORS_ORIGIN` | `*` al primer deploy; luego `https://su-app.vercel.app` |
+   | `ANDON_NOTIFY_PROVIDER` | `noop` |
+
+   `PORT` lo pone Railway. No copie `DB_HOST` local.
+5. **Settings → Networking → Generate Domain.** Pruebe `https://<api>.up.railway.app/health` → `{"status":"ok",...}`.
+
+El boot crea schemas `inventario` / `andon` / `notifications`, sincroniza tablas y siembra U-101 / stock bajo.
+
+### 2. Vercel — UI
+
+1. Importar el mismo repo. **Root Directory:** `web`.
+2. Framework: Next.js. Env (Production y Preview):
+
+   | Variable | Valor |
+   |----------|--------|
+   | `API_URL` | `https://<api>.up.railway.app` (sin `/` final) |
+   | `NEXT_PUBLIC_API_BASE` | `/backend` |
+
+   `API_URL` entra en el **build** (rewrite `/backend` → API). Si la cambia, redespliegue la UI.
+3. Deploy. La UI queda en `https://<app>.vercel.app`.
+4. Vuelva a Railway y ponga `CORS_ORIGIN=https://<app>.vercel.app` (opcional; el browser usa el proxy `/backend`).
+
+Auth sigue siendo el stub `X-Role`. Use Protection de Vercel o no indexe la URL si es solo demo.
+
+### 3. Orden
+
+Postgres → API (health ok) → Vercel con esa `API_URL` → (opcional) endurecer CORS.
+
 ## Semilla
 
 | Número | Estado   | Uso previsto                                      |
