@@ -5,7 +5,7 @@ Estado: aceptado (v0)
 El cliente web usa un **design system de aplicación completa** (no un restyle de Inventario):
 
 - **shadcn/ui + Tailwind** como base de UI
-- Tokens: navy `#24284D`, naranja `#EA7515`, superficies `#F3F3F3` / blanco, tipografía **Roboto**
+- Tokens: navy `#24284D`, naranja `#EA7515` (un CTA primario por vista), superficies `#F3F3F3` / blanco, tipografía **Roboto**. Pasteles semánticos: [ui-semantic-button-pastels-v0](../design-system/ui-semantic-button-pastels-v0.md)
 - Tablas densas: **TanStack Table + shadcn Table**
 - Sin Mantine
 

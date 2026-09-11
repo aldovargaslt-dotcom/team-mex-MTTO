@@ -243,7 +243,7 @@ export default function ItemsPage() {
         <div className="row-actions" onClick={(e) => e.stopPropagation()}>
           <Button
             type="button"
-            variant="secondary"
+            variant="outline"
             size="compact"
             onClick={() => {
               const next = openId === row.original.id ? null : row.original.id;
@@ -259,7 +259,7 @@ export default function ItemsPage() {
           </Button>
           <Button
             type="button"
-            variant="secondary"
+            variant={row.original.activo ? 'dangerSoft' : 'outline'}
             size="compact"
             onClick={() => void toggleActivo(row.original)}
           >
@@ -342,7 +342,7 @@ export default function ItemsPage() {
                 className="w-[7rem]"
               />
             </Field>
-            <Button type="submit" variant="secondary" size="compact">
+            <Button type="submit" variant="outline" size="compact">
               Guardar mínimo
             </Button>
           </form>
@@ -409,7 +409,7 @@ export default function ItemsPage() {
               aria-label="Código proveedor"
               className="h-9 min-h-9 w-[180px]"
             />
-            <Button size="compact" type="submit">
+            <Button size="compact" type="submit" variant="outline">
               Vincular
             </Button>
           </form>

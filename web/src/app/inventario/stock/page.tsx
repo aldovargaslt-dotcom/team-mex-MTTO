@@ -194,7 +194,7 @@ export default function StockPage() {
           <div className="row-actions" onClick={(e) => e.stopPropagation()}>
             <Button
               type="button"
-              variant="secondary"
+              variant="entrada"
               size="compact"
               onClick={() => abrir(row.original.itemId, 'entrada')}
             >
@@ -202,7 +202,7 @@ export default function StockPage() {
             </Button>
             <Button
               type="button"
-              variant="secondary"
+              variant="outline"
               size="compact"
               onClick={() => abrir(row.original.itemId, 'ajuste')}
             >
@@ -304,7 +304,10 @@ export default function StockPage() {
               />
             </Field>
             <SheetFooter className="p-0">
-              <Button type="submit">
+              <Button
+                type="submit"
+                variant={mode === 'ajuste' ? 'outline' : 'default'}
+              >
                 {mode === 'entrada' ? 'Registrar entrada' : 'Aplicar ajuste'}
               </Button>
               <Button
