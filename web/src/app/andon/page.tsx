@@ -169,7 +169,7 @@ function AndonContent() {
     <>
       <PageHeader
         title="Andon"
-        lede="Avisos de mantenimiento vencido. Enterado detiene recordatorios; solo una visita cerrada resuelve."
+        lede="Avisos de mantenimiento vencido. Enterado detiene avisos a teléfonos ops; solo una visita cerrada resuelve."
         actions={
           isAdmin ? (
             <Button asChild variant="secondary">

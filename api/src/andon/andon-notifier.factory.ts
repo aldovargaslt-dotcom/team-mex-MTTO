@@ -1,0 +1,42 @@
+import { Logger } from '@nestjs/common';
+import { WhatsAppMessage } from './andon-types';
+import { AndonNotifier } from './ports';
+import { StubWhatsAppAdapter } from './stub-whatsapp.adapter';
+import {
+  TwilioHttp,
+  TwilioWhatsAppAdapter,
+  twilioConfigFromEnv,
+} from './twilio-whatsapp.adapter';
+
+const log = new Logger('AndonNotifier');
+
+/** Persistencia local + Twilio HTTP. El stub solo persiste. */
+class PersistAndTwilio implements AndonNotifier {
+  constructor(
+    private readonly persist: AndonNotifier,
+    private readonly twilio: AndonNotifier,
+  ) {}
+
+  async send(message: WhatsAppMessage): Promise<void> {
+    await this.persist.send(message);
+    await this.twilio.send(message);
+  }
+}
+
+export function createAndonNotifier(
+  env: Record<string, string | undefined>,
+  stub: StubWhatsAppAdapter,
+  http?: TwilioHttp,
+): AndonNotifier {
+  const cfg = twilioConfigFromEnv(env);
+  if (!cfg) {
+    log.log(
+      'Andon notifier: noop/log (Twilio env incompleto). Avisos a teléfonos ops no se envían.',
+    );
+    return stub;
+  }
+  log.log(
+    `Andon notifier: Twilio fan-out a ${cfg.opsPhones.length} teléfono(s) ops.`,
+  );
+  return new PersistAndTwilio(stub, new TwilioWhatsAppAdapter(cfg, http));
+}

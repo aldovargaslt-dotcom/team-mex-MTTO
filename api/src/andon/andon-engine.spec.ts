@@ -382,9 +382,10 @@ describe('Andon v0 (ADR-004 A1–A8)', () => {
     });
   });
 
-  it('A7/ADR-005 el módulo Andon no importa Visita ni Inventario', () => {
+  it('A7/ADR-005 el motor Andon no importa Visita, Inventario ni Twilio', () => {
     const src = readFileSync(join(__dirname, 'andon-engine.ts'), 'utf8');
     expect(src).not.toMatch(/visitas\//);
     expect(src).not.toMatch(/inventario\//);
+    expect(src).not.toMatch(/twilio/i);
   });
 });

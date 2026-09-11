@@ -28,6 +28,12 @@ export interface UnidadCatalog {
   list(): Promise<UnidadVista[]>;
 }
 
-export interface WhatsAppPort {
+/** Outbound Andon avisos a teléfonos ops (Twilio u otro adaptador). */
+export interface AndonNotifier {
   send(message: WhatsAppMessage): Promise<void>;
 }
+
+/** @deprecated alias de AndonNotifier */
+export type WhatsAppPort = AndonNotifier;
+
+export const ANDON_NOTIFIER = Symbol('AndonNotifier');

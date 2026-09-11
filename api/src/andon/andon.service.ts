@@ -1,5 +1,6 @@
 import {
   ForbiddenException,
+  Inject,
   Injectable,
   NotFoundException,
   OnModuleInit,
@@ -21,7 +22,7 @@ import { Aviso, LastClosedVisit } from './andon-types';
 import { AvisoDto, UmbralDto } from './dto/andon.dto';
 import { DEFAULT_T_DIAS, DEFAULT_T_KM, EstadoAviso } from './enums';
 import { NestUnidadCatalog } from './nest-unidad-catalog';
-import { StubWhatsAppAdapter } from './stub-whatsapp.adapter';
+import { ANDON_NOTIFIER, AndonNotifier } from './ports';
 import { TypeOrmAndonStore } from './typeorm-store';
 
 @Injectable()
@@ -29,7 +30,7 @@ export class AndonService implements OnModuleInit {
   constructor(
     private readonly store: TypeOrmAndonStore,
     private readonly catalog: NestUnidadCatalog,
-    private readonly whatsapp: StubWhatsAppAdapter,
+    @Inject(ANDON_NOTIFIER) private readonly notifier: AndonNotifier,
     private readonly outbox: OutboxService,
     private readonly tipos: TiposVehiculoService,
   ) {
@@ -50,7 +51,7 @@ export class AndonService implements OnModuleInit {
     return new AndonEngine({
       store,
       catalog: this.catalog,
-      whatsapp: this.whatsapp,
+      whatsapp: this.notifier,
     });
   }
 

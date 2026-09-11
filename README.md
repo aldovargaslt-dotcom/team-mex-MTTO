@@ -74,7 +74,7 @@ Hub: `fichaCorta` + `borradores[]` (vacío para admin) + `historialCerrado[]` + 
 
 Cierre (reglas existentes + piezas): unidad ACTIVA, chofer, km ≥ último cerrado, tipo, ≥ 1 trabajo A–E, firmas chofer y jefe. Piezas opcionales. Al cerrar se publica `VisitaCerrada` (ADR-001: `eventId` = outbox id, `eventType`, `occurredAt`/`cerradoAt`, `km`, `consumos`) en la misma transacción. Handler in-process (ADR-002): `DESDE_STOCK` → `SALIDA_OT` si stock ≥ qty (si no, 400 y la visita sigue en borrador); `COMPRA_EXTERNA` → pendiente de comprobante, sin movimiento de stock. Visita **no** guarda campos de stock; `itemId` es opaco.
 
-Andon (schema `andon`): aviso de mantenimiento vencido si km desde la última visita **cerrada** ≥ `t_km` o días ≥ `t_dias` (umbrales por tipo). Sin visita cerrada previa no abre. Máximo un aviso no resuelto por unidad. Unidades inactivas: no avisos nuevos. Enterado (Supervisor) detiene recordatorios WhatsApp (adaptador stub). Resolver solo con `VisitaCerrada`. Las alertas de stock **no** viven en Andon (ADR-005).
+Andon (schema `andon`): aviso de mantenimiento vencido si km desde la última visita **cerrada** ≥ `t_km` o días ≥ `t_dias` (umbrales por tipo). Sin visita cerrada previa no abre. Máximo un aviso no resuelto por unidad. Unidades inactivas: no avisos nuevos. Enterado (Supervisor) detiene avisos a **teléfonos ops** (adaptador stub/noop si faltan credenciales; Twilio opcional vía env). Resolver solo con `VisitaCerrada`. Las alertas de stock **no** viven en Andon (ADR-005).
 
 Documentación: [http://localhost:3001/docs](http://localhost:3001/docs).
 
