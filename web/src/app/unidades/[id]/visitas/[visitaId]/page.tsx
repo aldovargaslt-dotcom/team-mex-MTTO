@@ -484,7 +484,7 @@ function VisitWizard({
         actions={
           <Button
             type="button"
-            variant="secondary"
+            variant="outline"
             size="compact"
             disabled={saving}
             onClick={() =>
@@ -578,7 +578,7 @@ function VisitWizard({
                         checked={trabajos.has(key)}
                         onChange={() => toggleTrabajo(cat.categoria, item)}
                       />
-                      {item}
+                      <span>{item}</span>
                     </label>
                   );
                 })}

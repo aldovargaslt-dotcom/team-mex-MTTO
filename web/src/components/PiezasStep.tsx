@@ -196,7 +196,7 @@ export function PiezasStep({
                   <label className="grid gap-1 text-xs font-medium text-muted-foreground">
                     Origen
                     <NativeSelect
-                      className="h-9 min-h-9 w-[160px]"
+                      className="h-11 min-h-11 w-[160px] md:h-9 md:min-h-9"
                       value={linea.origen}
                       aria-label={`Origen ${linea.sku}`}
                       onChange={(e) =>
@@ -255,7 +255,7 @@ export function PiezasStep({
             <li key={item.id}>
               <button
                 type="button"
-                className="flex w-full items-center justify-between gap-2 text-left"
+                className="sku-result-hit"
                 disabled={enOt}
                 onClick={() => agregar(item)}
               >

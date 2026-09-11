@@ -89,8 +89,14 @@ export function SignaturePad({
       <div className="signature-head">
         <span>{label}</span>
         {!disabled ? (
-          <Button type="button" variant="secondary" size="compact" onClick={clear}>
-            Borrar
+          <Button
+            type="button"
+            variant="outline"
+            size="compact"
+            onClick={clear}
+            aria-label="Borrar firma"
+          >
+            Borrar firma
           </Button>
         ) : null}
       </div>

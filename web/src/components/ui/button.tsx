@@ -4,7 +4,7 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 
 const buttonVariants = cva(
-  'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:cursor-not-allowed disabled:bg-[#d8d8de] disabled:text-[#5c5c66] disabled:border-[#d8d8de] [&_svg]:pointer-events-none [&_svg]:size-4 shrink-0',
+  'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors touch-manipulation focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:cursor-not-allowed disabled:bg-[#d8d8de] disabled:text-[#5c5c66] disabled:border-[#d8d8de] [&_svg]:pointer-events-none [&_svg]:size-4 shrink-0',
   {
     variants: {
       variant: {
@@ -20,10 +20,10 @@ const buttonVariants = cva(
         link: 'text-navy underline-offset-4 hover:underline h-auto min-h-0 min-w-0 px-0',
       },
       size: {
-        default: 'min-h-10 min-w-10 h-10 px-3.5',
-        compact: 'min-h-8 min-w-0 h-8 px-2.5 text-[13px]',
-        lg: 'min-h-10 h-10 px-5',
-        icon: 'size-10',
+        default: 'min-h-11 min-w-11 h-11 px-3.5 md:min-h-10 md:min-w-10 md:h-10',
+        compact: 'min-h-11 min-w-11 h-11 px-3 text-[13px] md:min-h-8 md:min-w-0 md:h-8 md:px-2.5',
+        lg: 'min-h-11 h-11 px-5 md:min-h-10 md:h-10',
+        icon: 'size-11 md:size-10',
       },
     },
     defaultVariants: {
