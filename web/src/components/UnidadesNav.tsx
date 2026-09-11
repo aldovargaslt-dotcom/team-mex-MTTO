@@ -4,10 +4,10 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useRole } from '@/lib/role';
 
-const LINKS = [
+const LINKS: { href: string; label: string; exact?: boolean }[] = [
   { href: '/unidades', label: 'Unidades', exact: true },
   { href: '/unidades/configuracion', label: 'Configuración' },
-] as const;
+];
 
 export function UnidadesNav() {
   const pathname = usePathname();
