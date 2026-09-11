@@ -36,6 +36,15 @@ Variantes shadcn: `positive` | `adjust` | `linkish` | `quiet` | `dangerSoft`. Cl
 3. Hit ≥44 en viewport `<768` (compact mobile ya 44; no bajar).
 4. Bordes 1px, radio 6, sin sombra, sin gradiente. Anti-generic Team Mex.
 
+## Evidencia
+
+- `docs/screenshots/pasteles_stock_lista.png`
+- `docs/screenshots/pasteles_stock_ficha.png`
+- `docs/screenshots/pasteles_stock_ficha_mobile.png`
+- `docs/screenshots/pasteles_stock_mobile.png`
+- `docs/screenshots/pasteles_inbox_unread.png`
+- `docs/screenshots/pasteles_inbox_mobile.png`
+
 ## Don’t
 
 Dos naranjas sólidos; neón / gradientes; blanco sobre pastel; tocar BrandPlate/logo o dominio Andon.
