@@ -8,7 +8,7 @@ import { SignaturePad } from '@/components/SignaturePad';
 import {
   PiezasReadonly,
   PiezasStep,
-  lineasDesdeVisita,
+  hydratePiezasFromInventario,
   piezasInsuficientes,
   type PiezaLinea,
 } from '@/components/PiezasStep';
@@ -127,6 +127,16 @@ function VisitaReadonly({
   visita: VisitaDetalle;
   unidadId: string;
 }) {
+  const { role, userId } = useRole();
+  const [piezas, setPiezas] = useState<PiezaLinea[]>([]);
+
+  useEffect(() => {
+    if (!role) return;
+    void hydratePiezasFromInventario(visita.piezas ?? [], { role, userId })
+      .then(setPiezas)
+      .catch(() => setPiezas([]));
+  }, [role, userId, visita.piezas]);
+
   return (
     <>
       <div className="page-head">
@@ -192,7 +202,7 @@ function VisitaReadonly({
         )}
       </section>
 
-      <PiezasReadonly piezas={visita.piezas ?? []} />
+      <PiezasReadonly piezas={piezas} />
 
       <section className="card panel" style={{ marginTop: 12 }}>
         <h2>Firmas</h2>
@@ -249,9 +259,7 @@ function VisitWizard({
   const [firmaJefe, setFirmaJefe] = useState(
     visita.firmas.find((f) => f.tipo === 'JEFE')?.dataUrl ?? '',
   );
-  const [piezas, setPiezas] = useState<PiezaLinea[]>(() =>
-    lineasDesdeVisita(visita.piezas ?? []),
-  );
+  const [piezas, setPiezas] = useState<PiezaLinea[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [ultimoKm, setUltimoKm] = useState<number | null>(null);
@@ -270,6 +278,12 @@ function VisitWizard({
         setChoferes(lista);
         setCatalogo(cats);
         setUltimoKm(hub.fichaCorta.ultimoKm);
+        setPiezas(
+          await hydratePiezasFromInventario(visita.piezas ?? [], {
+            role: role!,
+            userId,
+          }),
+        );
       } catch (err) {
         setError(
           err instanceof HttpError
@@ -278,7 +292,7 @@ function VisitWizard({
         );
       }
     })();
-  }, [role, userId, unidadId]);
+  }, [role, userId, unidadId, visita.piezas]);
 
   useEffect(() => {
     if (step !== 'piezas' || !visita.tipoVehiculoId || !role) return;

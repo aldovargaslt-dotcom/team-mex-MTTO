@@ -78,9 +78,6 @@ export type VisitaPieza = {
   itemId: string;
   qty: number;
   origen: OrigenPieza;
-  sku: string;
-  nombre: string;
-  stock: number;
 };
 
 export type Familia = {

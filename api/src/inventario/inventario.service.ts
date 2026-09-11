@@ -130,8 +130,13 @@ export class InventarioService implements OnModuleInit {
 
   // --- Ítems ---
 
-  async listItems() {
+  async listItems(idsCsv?: string) {
+    const ids = idsCsv
+      ?.split(',')
+      .map((id) => id.trim())
+      .filter(Boolean);
     const items = await this.items.find({
+      where: ids?.length ? { id: In(ids) } : undefined,
       relations: { familia: true, stock: true, compatibilidades: true, proveedores: true },
       order: { sku: 'ASC' },
     });
@@ -387,31 +392,6 @@ export class InventarioService implements OnModuleInit {
     }));
   }
 
-  async describirItems(ids: string[]) {
-    if (!ids.length) {
-      return new Map<
-        string,
-        { sku: string; nombre: string; stock: number; activo: boolean }
-      >();
-    }
-    const unique = [...new Set(ids)];
-    const items = await this.items.find({
-      where: { id: In(unique) },
-      relations: { stock: true },
-    });
-    return new Map(
-      items.map((item) => [
-        item.id,
-        {
-          sku: item.sku,
-          nombre: item.nombre,
-          stock: item.stock?.qty ?? 0,
-          activo: item.activo,
-        },
-      ]),
-    );
-  }
-
   async applyVisitaCerrada(
     payload: VisitaCerradaPayload,
     manager: EntityManager,
@@ -443,6 +423,10 @@ export class InventarioService implements OnModuleInit {
     }
   }
 
+  /**
+   * Único escritor de stock. Salida OT / entrada / ajuste pasan por aquí.
+   * `visitaId` se guarda opaco; no hay FK hacia mantenimiento.
+   */
   private async applyDelta(
     itemId: string,
     delta: number,

@@ -4,7 +4,7 @@ Estado: aceptado (v0)
 
 Cada módulo persiste en su propio esquema (o frontera equivalente):
 
-- Kernel / Mantenimiento: esquema `public` (tablas ya existentes: `unidades`, `visitas`, …)
+- Kernel / Mantenimiento: esquema `public` (tablas ya existentes: `unidades`, `visitas`, `visita_piezas`, …)
 - Inventario: esquema PostgreSQL `inventario`
 
 Prohibido:
@@ -12,13 +12,16 @@ Prohibido:
 - FK de `inventario.*` hacia `visitas` / `unidades` / `tipos_vehiculo`
 - FK de `visita_piezas.item_id` hacia `inventario.items`
 - JOINs SQL entre módulos
+- Que Mantenimiento escriba stock o hidrate SKU/stock en el DTO de Visita
 
-Se usan IDs opacos (`itemId`, `tipoVehiculoId`, `visitaId`). La UI y los servicios componen datos con consultas al puerto del otro módulo, nunca con un JOIN.
+Se usan IDs opacos (`itemId`, `tipoVehiculoId`, `visitaId`).
 
-Integración en el cierre de visita:
+Líneas de pieza: viven en Visita (`visita_piezas.item_id` opaco, sin FK). Inventario es el único escritor de stock/movimientos; `movimientos.visita_id` es opaco.
 
-1. Mantenimiento persiste las líneas de pieza (sin campos de stock).
-2. Al cerrar, publica `VisitaCerrada` (outbox) con `consumos[]`.
-3. Inventario aplica `SALIDA_OT` solo a líneas `DESDE_STOCK` y crea pendiente de comprobante para `COMPRA_EXTERNA`.
+SKU search y stock: lecturas síncronas de la API de Inventario (`GET /inventario/skus`, `GET /inventario/items?ids=`, `GET /inventario/stock`). La UI compone; Visita no hace JOIN ni llama al servicio de Inventario.
 
-v0: el outbox se despacha en el mismo proceso y en la misma transacción (si el handler falla, no cierra la visita).
+Integración en el cierre (misma transacción + fila de outbox en el monolito modular):
+
+1. Mantenimiento persiste las líneas de pieza (sin campos de stock) y marca la visita cerrada.
+2. Escribe `outbox_events` con `VisitaCerrada { visitaId, unidadId, tipoVehiculoId, consumos: [{ itemId, qty, origen }] }`.
+3. Handler de Inventario (mismo txn): `DESDE_STOCK` → `SALIDA_OT` si stock ≥ qty (si no, falla y no cierra); `COMPRA_EXTERNA` → pendiente de comprobante, sin movimiento de stock.

@@ -9,10 +9,10 @@ import { CurrentUser } from '../auth/current-user';
 import { Rol } from '../auth/roles.enum';
 import { EstadoUnidad } from '../common/estado-unidad.enum';
 import { ChoferesService } from '../choferes/choferes.service';
-import { InventarioService } from '../inventario/inventario.service';
 import {
   OrigenConsumo,
   VISITA_CERRADA,
+  VisitaCerradaPayload,
 } from '../kernel/events/visita-cerrada';
 import { OutboxService } from '../kernel/outbox/outbox.service';
 import { UnidadesService } from '../unidades/unidades.service';
@@ -41,7 +41,6 @@ export class VisitasService {
     private readonly piezas: Repository<VisitaPieza>,
     private readonly unidades: UnidadesService,
     private readonly choferes: ChoferesService,
-    private readonly inventario: InventarioService,
     private readonly outbox: OutboxService,
     private readonly dataSource: DataSource,
   ) {}
@@ -221,7 +220,7 @@ export class VisitasService {
       visita.estado = EstadoVisita.CERRADO;
       visita.cerradoAt = new Date();
       await manager.save(visita);
-      await this.outbox.enqueueAndDispatch(manager, VISITA_CERRADA, {
+      const payload: VisitaCerradaPayload = {
         visitaId: visita.id,
         unidadId: visita.unidad.id,
         tipoVehiculoId: visita.unidad.tipo.id,
@@ -230,7 +229,8 @@ export class VisitasService {
           qty: pieza.qty,
           origen: pieza.origen,
         })),
-      });
+      };
+      await this.outbox.enqueueAndDispatch(manager, VISITA_CERRADA, payload);
     });
     return this.findDetalle(id, user);
   }
@@ -297,14 +297,6 @@ export class VisitasService {
         throw new BadRequestException('La cantidad de cada pieza debe ser al menos 1.');
       }
     }
-    const descripciones = await this.inventario.describirItems(
-      piezas.map((p) => p.itemId),
-    );
-    for (const pieza of piezas) {
-      if (!descripciones.has(pieza.itemId)) {
-        throw new BadRequestException('Uno de los ítems de pieza no existe en inventario.');
-      }
-    }
     await this.piezas.delete({ visita: { id: visitaId } });
     if (piezas.length) {
       await this.piezas.save(
@@ -352,11 +344,8 @@ export class VisitasService {
     };
   }
 
-  async toDetalle(visita: Visita) {
+  toDetalle(visita: Visita) {
     const piezas = visita.piezas ?? [];
-    const descripciones = await this.inventario.describirItems(
-      piezas.map((p) => p.itemId),
-    );
     return {
       id: visita.id,
       unidadId: visita.unidad.id,
@@ -397,18 +386,12 @@ export class VisitasService {
         dataUrl: firma.dataUrl,
         createdAt: firma.createdAt,
       })),
-      piezas: piezas.map((pieza) => {
-        const info = descripciones.get(pieza.itemId);
-        return {
-          id: pieza.id,
-          itemId: pieza.itemId,
-          qty: pieza.qty,
-          origen: pieza.origen,
-          sku: info?.sku ?? pieza.itemId,
-          nombre: info?.nombre ?? 'Ítem',
-          stock: info?.stock ?? 0,
-        };
-      }),
+      piezas: piezas.map((pieza) => ({
+        id: pieza.id,
+        itemId: pieza.itemId,
+        qty: pieza.qty,
+        origen: pieza.origen,
+      })),
     };
   }
 }

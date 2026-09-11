@@ -1,16 +1,10 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { Rol } from '../auth/roles.enum';
 import { Chofer } from '../choferes/chofer.entity';
 import { EstadoUnidad } from '../common/estado-unidad.enum';
-import { Compatibilidad } from '../inventario/entities/compatibilidad.entity';
-import { Familia } from '../inventario/entities/familia.entity';
-import { Item } from '../inventario/entities/item.entity';
-import { ItemProveedor } from '../inventario/entities/item-proveedor.entity';
-import { Movimiento } from '../inventario/entities/movimiento.entity';
-import { Proveedor } from '../inventario/entities/proveedor.entity';
-import { Stock } from '../inventario/entities/stock.entity';
-import { TipoMovimiento, UOM_PIEZA } from '../inventario/enums';
+import { InventarioService } from '../inventario/inventario.service';
 import { TipoVehiculo } from '../tipos-vehiculo/tipo-vehiculo.entity';
 import { Unidad } from '../unidades/unidad.entity';
 
@@ -63,20 +57,7 @@ export class SeedService implements OnModuleInit {
     private readonly unidades: Repository<Unidad>,
     @InjectRepository(Chofer)
     private readonly choferes: Repository<Chofer>,
-    @InjectRepository(Familia)
-    private readonly familias: Repository<Familia>,
-    @InjectRepository(Item)
-    private readonly items: Repository<Item>,
-    @InjectRepository(Proveedor)
-    private readonly proveedores: Repository<Proveedor>,
-    @InjectRepository(ItemProveedor)
-    private readonly itemProveedores: Repository<ItemProveedor>,
-    @InjectRepository(Compatibilidad)
-    private readonly compatibilidades: Repository<Compatibilidad>,
-    @InjectRepository(Stock)
-    private readonly stock: Repository<Stock>,
-    @InjectRepository(Movimiento)
-    private readonly movimientos: Repository<Movimiento>,
+    private readonly inventario: InventarioService,
   ) {}
 
   async onModuleInit() {
@@ -143,122 +124,91 @@ export class SeedService implements OnModuleInit {
     const familiaFiltros = await this.ensureFamilia('Filtros');
     const familiaFrenos = await this.ensureFamilia('Frenos');
     const proveedor = await this.ensureProveedor('Refacciones del Norte');
+    const seedUser = { rol: Rol.SUPERVISOR, userId: 'seed' };
 
     await this.ensureItem({
       sku: 'FIL-ACEITE-01',
       nombre: 'Filtro de aceite',
-      familia: familiaFiltros,
+      familiaId: familiaFiltros.id,
       oem: 'OEM-FIL-01',
       tipos: [camion.id, camioneta.id],
       stock: 10,
       codigoProveedor: 'PN-FIL-100',
-      proveedor,
+      proveedorId: proveedor.id,
+      seedUser,
     });
     await this.ensureItem({
       sku: 'PAST-FR-01',
       nombre: 'Pastillas de freno',
-      familia: familiaFrenos,
+      familiaId: familiaFrenos.id,
       oem: 'OEM-PAST-01',
       tipos: [camion.id],
       stock: 2,
       codigoProveedor: 'PN-PAST-20',
-      proveedor,
+      proveedorId: proveedor.id,
+      seedUser,
     });
     await this.ensureItem({
       sku: 'FIL-CAB-01',
       nombre: 'Filtro de cabina',
-      familia: familiaFiltros,
-      oem: null,
+      familiaId: familiaFiltros.id,
+      oem: undefined,
       tipos: [van.id],
       stock: 5,
       codigoProveedor: 'PN-CAB-05',
-      proveedor,
+      proveedorId: proveedor.id,
+      seedUser,
     });
   }
 
   private async ensureFamilia(nombre: string) {
-    const exists = await this.familias.findOne({ where: { nombre } });
+    const exists = (await this.inventario.listFamilias()).find((f) => f.nombre === nombre);
     if (exists) return exists;
-    return this.familias.save(this.familias.create({ nombre, activa: true }));
+    return this.inventario.createFamilia({ nombre, activa: true });
   }
 
   private async ensureProveedor(nombre: string) {
-    const exists = await this.proveedores.findOne({ where: { nombre } });
-    if (exists) return exists;
-    return this.proveedores.save(
-      this.proveedores.create({ nombre, activo: true }),
+    const exists = (await this.inventario.listProveedores()).find(
+      (p) => p.nombre === nombre,
     );
+    if (exists) return exists;
+    return this.inventario.createProveedor({ nombre, activo: true });
   }
 
   private async ensureItem(input: {
     sku: string;
     nombre: string;
-    familia: Familia;
-    oem: string | null;
+    familiaId: string;
+    oem?: string;
     tipos: string[];
     stock: number;
     codigoProveedor: string;
-    proveedor: Proveedor;
+    proveedorId: string;
+    seedUser: { rol: Rol; userId: string };
   }) {
-    let item = await this.items.findOne({
-      where: { sku: input.sku },
-      relations: { stock: true, compatibilidades: true, proveedores: true },
+    const existing = (await this.inventario.listItems()).find((i) => i.sku === input.sku);
+    if (existing) {
+      return existing;
+    }
+    const item = await this.inventario.createItem({
+      sku: input.sku,
+      nombre: input.nombre,
+      familiaId: input.familiaId,
+      oem: input.oem,
+      tipoVehiculoIds: input.tipos,
     });
-    if (!item) {
-      item = await this.items.save(
-        this.items.create({
-          sku: input.sku,
-          nombre: input.nombre,
-          familia: input.familia,
-          oem: input.oem,
-          uom: UOM_PIEZA,
-          activo: true,
-        }),
+    if (input.stock > 0) {
+      await this.inventario.entrada(
+        { itemId: item.id, qty: input.stock, nota: 'Semilla inicial' },
+        input.seedUser,
       );
     }
-    const stock = await this.stock.findOne({ where: { itemId: item.id } });
-    if (!stock) {
-      await this.stock.save(this.stock.create({ itemId: item.id, qty: input.stock }));
-      if (input.stock > 0) {
-        await this.movimientos.save(
-          this.movimientos.create({
-            tipo: TipoMovimiento.ENTRADA,
-            item: { id: item.id } as Item,
-            qty: input.stock,
-            delta: input.stock,
-            visitaId: null,
-            nota: 'Semilla inicial',
-            createdBy: 'seed',
-          }),
-        );
-      }
-    }
-    for (const tipoVehiculoId of input.tipos) {
-      const exists = await this.compatibilidades.findOne({
-        where: { item: { id: item.id }, tipoVehiculoId },
-      });
-      if (!exists) {
-        await this.compatibilidades.save(
-          this.compatibilidades.create({
-            item: { id: item.id } as Item,
-            tipoVehiculoId,
-          }),
-        );
-      }
-    }
-    const link = await this.itemProveedores.findOne({
-      where: { item: { id: item.id }, proveedor: { id: input.proveedor.id } },
+    await this.inventario.addItemProveedor(item.id, {
+      proveedorId: input.proveedorId,
+      codigoProveedor: input.codigoProveedor,
+      preferido: true,
     });
-    if (!link) {
-      await this.itemProveedores.save(
-        this.itemProveedores.create({
-          item: { id: item.id } as Item,
-          proveedor: input.proveedor,
-          codigoProveedor: input.codigoProveedor,
-          preferido: true,
-        }),
-      );
-    }
     return item;
   }
 }
+

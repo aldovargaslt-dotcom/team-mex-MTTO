@@ -2,6 +2,7 @@ import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import request from 'supertest';
 import { App } from 'supertest/types';
+import { DataSource } from 'typeorm';
 import { AppModule } from '../src/app.module';
 import { configureApp } from '../src/configure-app';
 
@@ -186,7 +187,11 @@ describe('Inventario v0 + piezas en visita (e2e)', () => {
       .expect(200);
     expect(cerrado.body.estado).toBe('CERRADO');
     expect(cerrado.body.piezas).toHaveLength(1);
-    expect(cerrado.body.piezas[0].sku).toBe('FIL-ACEITE-01');
+    expect(cerrado.body.piezas[0].itemId).toBe(filtro.id);
+    expect(cerrado.body.piezas[0].qty).toBe(2);
+    expect(cerrado.body.piezas[0].origen).toBe('DESDE_STOCK');
+    expect(cerrado.body.piezas[0]).not.toHaveProperty('sku');
+    expect(cerrado.body.piezas[0]).not.toHaveProperty('stock');
 
     const despues = await itemPorSku('FIL-ACEITE-01');
     expect(despues.stock).toBe(stockAntes - 2);
@@ -290,5 +295,44 @@ describe('Inventario v0 + piezas en visita (e2e)', () => {
     expect(draft.body.piezas).toEqual([]);
     expect(draft.body).not.toHaveProperty('stockQty');
     await request(server).delete(`/visitas/${draft.body.id}`).set(SUPERVISOR);
+  });
+
+  it('ADR-002: esquema inventario y sin FKs cruzadas con visitas', async () => {
+    const ds = app.get(DataSource);
+    const schemas = await ds.query(
+      `SELECT schema_name FROM information_schema.schemata WHERE schema_name = 'inventario'`,
+    );
+    expect(schemas).toHaveLength(1);
+
+    const fks = (await ds.query(`
+      SELECT
+        src_ns.nspname AS src_schema,
+        src_rel.relname AS src_table,
+        dst_ns.nspname AS dst_schema,
+        dst_rel.relname AS dst_table
+      FROM pg_constraint con
+      JOIN pg_class src_rel ON src_rel.oid = con.conrelid
+      JOIN pg_namespace src_ns ON src_ns.oid = src_rel.relnamespace
+      JOIN pg_class dst_rel ON dst_rel.oid = con.confrelid
+      JOIN pg_namespace dst_ns ON dst_ns.oid = dst_rel.relnamespace
+      WHERE con.contype = 'f'
+    `)) as {
+      src_schema: string;
+      src_table: string;
+      dst_schema: string;
+      dst_table: string;
+    }[];
+
+    const cruzadas = fks.filter(
+      (fk) =>
+        (fk.src_schema === 'inventario' && fk.dst_schema !== 'inventario') ||
+        (fk.dst_schema === 'inventario' && fk.src_schema !== 'inventario'),
+    );
+    expect(cruzadas).toEqual([]);
+
+    const piezaItemFk = fks.find(
+      (fk) => fk.src_table === 'visita_piezas' && fk.dst_table === 'items',
+    );
+    expect(piezaItemFk).toBeUndefined();
   });
 });

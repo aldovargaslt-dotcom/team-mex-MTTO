@@ -73,9 +73,9 @@ export class InventarioController {
   }
 
   @Get('items')
-  @ApiOperation({ summary: 'Listar ítems / SKUs' })
-  listItems() {
-    return this.service.listItems();
+  @ApiOperation({ summary: 'Listar ítems / SKUs. `ids` filtra por IDs opacos (lectura para Piezas).' })
+  listItems(@Query('ids') ids?: string) {
+    return this.service.listItems(ids);
   }
 
   @Get('skus')

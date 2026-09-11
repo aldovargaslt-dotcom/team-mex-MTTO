@@ -1,5 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { EntityManager } from 'typeorm';
+import { VisitaCerradaPayload } from '../events/visita-cerrada';
 import { OutboxEvent } from './outbox-event.entity';
 
 export type OutboxHandler = (
@@ -19,11 +20,11 @@ export class OutboxService {
   async enqueueAndDispatch(
     manager: EntityManager,
     type: string,
-    payload: Record<string, unknown>,
+    payload: Record<string, unknown> | VisitaCerradaPayload,
   ) {
     const event = manager.create(OutboxEvent, {
       type,
-      payload,
+      payload: payload as unknown as Record<string, unknown>,
       processedAt: null,
     });
     await manager.save(event);

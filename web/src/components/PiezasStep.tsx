@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { api, HttpError } from '@/lib/api';
 import { etiquetaOrigenPieza } from '@/lib/format';
-import type { OrigenPieza, SkuCompatible, VisitaPieza } from '@/lib/types';
+import type { ItemInventario, OrigenPieza, SkuCompatible, VisitaPieza } from '@/lib/types';
 
 export type PiezaLinea = {
   itemId: string;
@@ -17,12 +17,35 @@ export type PiezaLinea = {
 export function lineasDesdeVisita(piezas: VisitaPieza[]): PiezaLinea[] {
   return piezas.map((p) => ({
     itemId: p.itemId,
-    sku: p.sku,
-    nombre: p.nombre,
+    sku: p.itemId,
+    nombre: 'Ítem',
     qty: p.qty,
     origen: p.origen,
-    stock: p.stock,
+    stock: 0,
   }));
+}
+
+export async function hydratePiezasFromInventario(
+  piezas: VisitaPieza[],
+  opts: { role: string; userId?: string },
+): Promise<PiezaLinea[]> {
+  if (!piezas.length) {
+    return [];
+  }
+  const ids = [...new Set(piezas.map((p) => p.itemId))].join(',');
+  const items = await api<ItemInventario[]>(`/inventario/items?ids=${ids}`, opts);
+  const byId = new Map(items.map((item) => [item.id, item]));
+  return piezas.map((p) => {
+    const item = byId.get(p.itemId);
+    return {
+      itemId: p.itemId,
+      sku: item?.sku ?? p.itemId,
+      nombre: item?.nombre ?? 'Ítem',
+      qty: p.qty,
+      origen: p.origen,
+      stock: item?.stock ?? 0,
+    };
+  });
 }
 
 export function piezasInsuficientes(lineas: PiezaLinea[]) {
@@ -220,7 +243,7 @@ export function PiezasStep({
   );
 }
 
-export function PiezasReadonly({ piezas }: { piezas: VisitaPieza[] }) {
+export function PiezasReadonly({ piezas }: { piezas: PiezaLinea[] }) {
   if (!piezas.length) {
     return (
       <section className="card panel" style={{ marginTop: 12 }}>
@@ -234,7 +257,7 @@ export function PiezasReadonly({ piezas }: { piezas: VisitaPieza[] }) {
       <h2>Piezas</h2>
       <ul className="plain-list">
         {piezas.map((pieza) => (
-          <li key={pieza.id}>
+          <li key={pieza.itemId}>
             <span className="mono">{pieza.sku}</span> {pieza.nombre} · {pieza.qty}{' '}
             pza · {etiquetaOrigenPieza(pieza.origen)}
           </li>
