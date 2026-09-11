@@ -16,7 +16,7 @@ export function avisoAbiertoDedupeKey(unidadId: string) {
 }
 
 export function stockBajoDedupeKey(itemId: string) {
-  return `INVENTARIO:StockBajo:${itemId}`;
+  return `INV:stock-bajo:${itemId}`;
 }
 
 export function isExpired(item: InboxItem, now: Date) {

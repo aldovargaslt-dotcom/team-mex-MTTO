@@ -9,13 +9,13 @@ import {
 
 describe('stock umbral (S1–S3)', () => {
   describe('S1 umbral opt-in y badge', () => {
-    it('null stock_min no alerta aunque qty sea 0', () => {
+    it('null min_qty no alerta aunque qty sea 0', () => {
       expect(estadoAlertaStock(0, null)).toBeNull();
       expect(estadoAlertaStock(4, undefined)).toBeNull();
       expect(esStockBajo(0, null)).toBe(false);
     });
 
-    it('qty <= stock_min es bajo; qty = 0 es agotado CRITICAL; qty > 0 WARNING', () => {
+    it('qty <= min_qty es bajo; qty = 0 es agotado CRITICAL; qty > 0 WARNING', () => {
       expect(estadoAlertaStock(5, 5)).toBe('BAJO');
       expect(estadoAlertaStock(1, 5)).toBe('BAJO');
       expect(estadoAlertaStock(6, 5)).toBe('OK');
@@ -47,7 +47,7 @@ describe('stock umbral (S1–S3)', () => {
       ).toBe('StockReabastecido');
     });
 
-    it('fijar stock_min con qty ya baja emite StockBajo; quitar min expira', () => {
+    it('fijar min_qty con qty ya baja emite StockBajo; quitar min expira', () => {
       expect(
         eventoCruceUmbral({
           prevQty: 2,
@@ -110,6 +110,7 @@ describe('stock umbral (S1–S3)', () => {
       for (const path of sqlish) {
         if (path.endsWith('.spec.ts')) continue;
         const src = readFileSync(path, 'utf8');
+        expect(src).not.toMatch(/min_qty/i);
         expect(src).not.toMatch(/stock_min/i);
         expect(src).not.toMatch(/StockBajo/);
       }

@@ -43,7 +43,7 @@ export default function StockPage() {
     setRows(data);
     setMinDraft(
       Object.fromEntries(
-        data.map((row) => [row.itemId, row.stockMin == null ? '' : String(row.stockMin)]),
+        data.map((row) => [row.itemId, row.minQty == null ? '' : String(row.minQty)]),
       ),
     );
   }
@@ -71,14 +71,14 @@ export default function StockPage() {
       setError('El mínimo debe ser un entero ≥ 0, o vacío para no alertar.');
       return;
     }
-    if (next === row.stockMin) return;
+    if (next === row.minQty) return;
     setError(null);
     try {
       await api(`/inventario/items/${row.itemId}`, {
         role: role!,
         userId,
         method: 'PATCH',
-        body: JSON.stringify({ stockMin: next }),
+        body: JSON.stringify({ minQty: next }),
       });
       notifyInboxChanged();
       await cargar();

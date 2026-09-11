@@ -21,12 +21,12 @@ export class NotificationsService {
     return this.engine().expireDedupe(dedupeKey);
   }
 
-  /** Inventario llama esto al cruzar a qty <= stock_min. */
+  /** Inventario llama esto al cruzar a qty <= min_qty. */
   ingestStockBajo(input: StockBajoInput) {
     return this.engine().ingest(stockBajoCommand(input));
   }
 
-  /** Inventario llama esto al cruzar a qty > stock_min (expira el matching dedupe). */
+  /** Inventario llama esto al cruzar a qty > min_qty (expira el matching dedupe). */
   ingestStockReabastecido(itemId: string) {
     return this.engine().expireDedupe(stockBajoDedupeKey(itemId));
   }

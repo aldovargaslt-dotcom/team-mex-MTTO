@@ -3,14 +3,14 @@ import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 import { IsInt, IsOptional, Min, ValidateIf } from 'class-validator';
 
-/** Entero >= 0, o null para quitar el umbral (opt-in). */
-export function OptionalStockMin() {
+/** Entero >= 0, o null para quitar el umbral (opt-in). ADR-007 `min_qty`. */
+export function OptionalMinQty() {
   return applyDecorators(
     ApiPropertyOptional({
       nullable: true,
       type: Number,
       example: 5,
-      description: 'Umbral de stock bajo. null = sin alerta.',
+      description: 'Umbral de stock bajo (min_qty). null = sin alerta.',
     }),
     Transform(({ value }: { value: unknown }) => {
       if (value === null || value === undefined || value === '') {

@@ -4,12 +4,12 @@ export type EventoUmbralStock = 'StockBajo' | 'StockReabastecido';
 
 export function estadoAlertaStock(
   qty: number,
-  stockMin: number | null | undefined,
+  minQty: number | null | undefined,
 ): AlertaStock | null {
-  if (stockMin == null) {
+  if (minQty == null) {
     return null;
   }
-  if (qty > stockMin) {
+  if (qty > minQty) {
     return 'OK';
   }
   return qty === 0 ? 'AGOTADO' : 'BAJO';
@@ -17,9 +17,9 @@ export function estadoAlertaStock(
 
 export function esStockBajo(
   qty: number,
-  stockMin: number | null | undefined,
+  minQty: number | null | undefined,
 ): boolean {
-  return stockMin != null && qty <= stockMin;
+  return minQty != null && qty <= minQty;
 }
 
 export function severidadAlertaStock(qty: number): 'WARNING' | 'CRITICAL' {
@@ -27,7 +27,7 @@ export function severidadAlertaStock(qty: number): 'WARNING' | 'CRITICAL' {
 }
 
 /**
- * Cruce de umbral (opt-in). `stockMin` null nunca alerta.
+ * Cruce de umbral (opt-in). `minQty` null nunca alerta.
  * Sigue bajo: solo reemite StockBajo si cambia WARNING ↔ CRITICAL.
  */
 export function eventoCruceUmbral(input: {

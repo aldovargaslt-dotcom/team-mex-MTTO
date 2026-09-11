@@ -51,8 +51,8 @@ TDD en `api/src/notifications/inbox-engine.spec.ts` (fakes en memoria; sin Postg
 
 TDD en `api/src/inventario/stock-alerta-rules.spec.ts` (puro) + e2e de cruce.
 
-- **S1** — `stock_min` null = sin alerta (opt-in). `qty <= stock_min` → Bajo; `qty = 0` → Agotado / `CRITICAL`; `qty > 0` → `WARNING`.
-- **S2** — cruce a `qty <= min` emite `StockBajo` (`dedupe_key` del stub Notifications); cruce a `qty > min` emite `StockReabastecido` (expira el matching).
+- **S1** — `min_qty` null = sin alerta (opt-in). `qty <= min_qty` → Bajo; `qty = 0` → Agotado / `CRITICAL`; `qty > 0` → `WARNING`.
+- **S2** — cruce a `qty <= min_qty` emite `StockBajo` (`dedupe_key=INV:stock-bajo:{itemId}`); cruce a `qty > min_qty` emite `StockReabastecido` (expira el matching).
 - **S3** — cero escrituras en `andon.*` (ADR-005). WhatsApp Inventario fuera.
 
 ## Outbound ops

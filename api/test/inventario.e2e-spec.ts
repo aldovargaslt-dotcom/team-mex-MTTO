@@ -417,7 +417,7 @@ describe('Inventario v0 + piezas en visita (e2e)', () => {
     expect(piezaItemFk).toBeUndefined();
   });
 
-  it('S1/S2 stock_min: badge, inbox StockBajo, entrada expira; S3 sin andon stock', async () => {
+  it('S1/S2 min_qty: badge, inbox StockBajo, entrada expira; S3 sin andon stock', async () => {
     const familia = await request(server)
       .post('/inventario/familias')
       .set(SUPERVISOR)
@@ -432,7 +432,7 @@ describe('Inventario v0 + piezas en visita (e2e)', () => {
         familiaId: familia.body.id,
       })
       .expect(201);
-    expect(item.body.stockMin).toBeNull();
+    expect(item.body.minQty).toBeNull();
     expect(item.body.alerta).toBeNull();
 
     await request(server)
@@ -444,16 +444,16 @@ describe('Inventario v0 + piezas en visita (e2e)', () => {
     const neg = await request(server)
       .patch(`/inventario/items/${item.body.id}`)
       .set(SUPERVISOR)
-      .send({ stockMin: -1 })
+      .send({ minQty: -1 })
       .expect(400);
     expect(neg.body.message).toMatch(/mínimo|negativo/i);
 
     const conMin = await request(server)
       .patch(`/inventario/items/${item.body.id}`)
       .set(ADMIN)
-      .send({ stockMin: 5 })
+      .send({ minQty: 5 })
       .expect(200);
-    expect(conMin.body.stockMin).toBe(5);
+    expect(conMin.body.minQty).toBe(5);
     expect(conMin.body.stock).toBe(4);
     expect(conMin.body.alerta).toBe('BAJO');
 
@@ -465,11 +465,11 @@ describe('Inventario v0 + piezas en visita (e2e)', () => {
       stock.body as {
         sku: string;
         qty: number;
-        stockMin: number | null;
+        minQty: number | null;
         alerta: string | null;
       }[]
     ).find((s) => s.sku === 'UMB-BAJO-01');
-    expect(row).toMatchObject({ qty: 4, stockMin: 5, alerta: 'BAJO' });
+    expect(row).toMatchObject({ qty: 4, minQty: 5, alerta: 'BAJO' });
 
     const inbox = await request(server)
       .get('/notifications')
@@ -493,7 +493,7 @@ describe('Inventario v0 + piezas en visita (e2e)', () => {
     expect(alert!.subjectType).toBe('ITEM');
     expect(alert!.severity).toBe('WARNING');
     expect(alert!.deeplinkPath).toBe('/inventario/stock');
-    expect(alert!.dedupeKey).toMatch(/INVENTARIO:StockBajo:/);
+    expect(alert!.dedupeKey).toBe(`INV:stock-bajo:${item.body.id}`);
 
     const zero = await request(server)
       .post('/inventario/movimientos/ajuste')
@@ -534,6 +534,18 @@ describe('Inventario v0 + piezas en visita (e2e)', () => {
     ).toBe(false);
 
     const ds = app.get(DataSource);
+    const stockCols: { column_name: string }[] = await ds.query(
+      `SELECT column_name FROM information_schema.columns
+       WHERE table_schema = 'inventario' AND table_name = 'stock'`,
+    );
+    expect(stockCols.map((c) => c.column_name)).toContain('min_qty');
+    const itemCols: { column_name: string }[] = await ds.query(
+      `SELECT column_name FROM information_schema.columns
+       WHERE table_schema = 'inventario' AND table_name = 'items'`,
+    );
+    expect(itemCols.map((c) => c.column_name)).not.toContain('min_qty');
+    expect(itemCols.map((c) => c.column_name)).not.toContain('stock_min');
+
     const tables: { table_name: string }[] = await ds.query(
       `SELECT table_name FROM information_schema.tables WHERE table_schema = 'andon'`,
     );

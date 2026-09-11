@@ -166,7 +166,7 @@ export class SeedService implements OnModuleInit {
       oem: 'OEM-PAST-01',
       tipos: [camion.id],
       stock: 2,
-      stockMin: 5,
+      minQty: 5,
       codigoProveedor: 'PN-PAST-20',
       proveedorId: proveedor.id,
       seedUser,
@@ -207,7 +207,7 @@ export class SeedService implements OnModuleInit {
     oem?: string;
     tipos: string[];
     stock: number;
-    stockMin?: number | null;
+    minQty?: number | null;
     codigoProveedor: string;
     proveedorId: string;
     seedUser: { rol: Rol; userId: string };
@@ -216,9 +216,9 @@ export class SeedService implements OnModuleInit {
       (i) => i.sku === input.sku,
     );
     if (existing) {
-      if (input.stockMin != null && existing.stockMin == null) {
+      if (input.minQty != null && existing.minQty == null) {
         await this.inventario.updateItem(existing.id, {
-          stockMin: input.stockMin,
+          minQty: input.minQty,
         });
       }
       return existing;
@@ -236,8 +236,8 @@ export class SeedService implements OnModuleInit {
         input.seedUser,
       );
     }
-    if (input.stockMin != null) {
-      await this.inventario.updateItem(item.id, { stockMin: input.stockMin });
+    if (input.minQty != null) {
+      await this.inventario.updateItem(item.id, { minQty: input.minQty });
     }
     await this.inventario.addItemProveedor(item.id, {
       proveedorId: input.proveedorId,

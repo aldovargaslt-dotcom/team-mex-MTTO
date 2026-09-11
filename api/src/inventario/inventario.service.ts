@@ -198,10 +198,15 @@ export class InventarioService implements OnModuleInit {
       oem: dto.oem?.trim() || null,
       uom: UOM_PIEZA,
       activo: dto.activo ?? true,
-      stockMin: dto.stockMin ?? null,
     });
     const saved = await this.items.save(item);
-    await this.stock.save(this.stock.create({ itemId: saved.id, qty: 0 }));
+    await this.stock.save(
+      this.stock.create({
+        itemId: saved.id,
+        qty: 0,
+        minQty: dto.minQty ?? null,
+      }),
+    );
     if (dto.tipoVehiculoIds?.length) {
       await this.replaceCompatibilidad(saved.id, dto.tipoVehiculoIds);
     }
@@ -210,14 +215,15 @@ export class InventarioService implements OnModuleInit {
       prevQty: 0,
       nextQty: 0,
       prevMin: null,
-      nextMin: saved.stockMin,
+      nextMin: dto.minQty ?? null,
     });
     return this.findItem(saved.id);
   }
 
   async updateItem(id: string, dto: UpdateItemDto) {
     const item = await this.requireItemEntity(id);
-    const prevMin = item.stockMin ?? null;
+    const stockRow = await this.stock.findOne({ where: { itemId: id } });
+    const prevMin = stockRow?.minQty ?? null;
     if (dto.sku !== undefined) {
       item.sku = requireTrimmed(dto.sku, 'El SKU no puede estar vacío.');
     }
@@ -236,22 +242,21 @@ export class InventarioService implements OnModuleInit {
     if (dto.activo !== undefined) {
       item.activo = dto.activo;
     }
-    if (dto.stockMin !== undefined) {
-      item.stockMin = dto.stockMin;
-    }
     await this.items.save(item);
     if (dto.tipoVehiculoIds) {
       await this.replaceCompatibilidad(id, dto.tipoVehiculoIds);
     }
-    if (dto.stockMin !== undefined) {
-      const stock = await this.stock.findOne({ where: { itemId: id } });
-      const qty = stock?.qty ?? 0;
+    if (dto.minQty !== undefined) {
+      const stock =
+        stockRow ?? this.stock.create({ itemId: id, qty: 0, minQty: null });
+      stock.minQty = dto.minQty;
+      await this.stock.save(stock);
       await this.emitCruceUmbral({
         item,
-        prevQty: qty,
-        nextQty: qty,
+        prevQty: stock.qty,
+        nextQty: stock.qty,
         prevMin,
-        nextMin: item.stockMin ?? null,
+        nextMin: dto.minQty,
       });
     }
     return this.findItem(id);
@@ -358,8 +363,8 @@ export class InventarioService implements OnModuleInit {
       activo: row.item.activo,
       uom: row.item.uom,
       qty: row.qty,
-      stockMin: row.item.stockMin ?? null,
-      alerta: estadoAlertaStock(row.qty, row.item.stockMin ?? null),
+      minQty: row.minQty ?? null,
+      alerta: estadoAlertaStock(row.qty, row.minQty ?? null),
       updatedAt: row.updatedAt,
     }));
   }
@@ -565,7 +570,7 @@ export class InventarioService implements OnModuleInit {
       lock: { mode: 'pessimistic_write' },
     });
     if (!stock) {
-      stock = stockRepo.create({ itemId, qty: 0 });
+      stock = stockRepo.create({ itemId, qty: 0, minQty: null });
     }
 
     const prevQty = stock.qty;
@@ -594,7 +599,7 @@ export class InventarioService implements OnModuleInit {
         createdBy: extra.createdBy ?? null,
       }),
     );
-    const min = item.stockMin ?? null;
+    const min = stock.minQty ?? null;
     return {
       item,
       prevQty,
@@ -704,8 +709,8 @@ export class InventarioService implements OnModuleInit {
       uom: item.uom,
       activo: item.activo,
       stock: item.stock?.qty ?? 0,
-      stockMin: item.stockMin ?? null,
-      alerta: estadoAlertaStock(item.stock?.qty ?? 0, item.stockMin ?? null),
+      minQty: item.stock?.minQty ?? null,
+      alerta: estadoAlertaStock(item.stock?.qty ?? 0, item.stock?.minQty ?? null),
       tipoVehiculoIds: (item.compatibilidades ?? []).map(
         (c) => c.tipoVehiculoId,
       ),

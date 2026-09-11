@@ -109,7 +109,7 @@ export type ItemInventario = {
   uom: string;
   activo: boolean;
   stock: number;
-  stockMin: number | null;
+  minQty: number | null;
   alerta: AlertaStock | null;
   tipoVehiculoIds: string[];
   proveedores: {
@@ -139,7 +139,7 @@ export type StockRow = {
   activo: boolean;
   uom: string;
   qty: number;
-  stockMin: number | null;
+  minQty: number | null;
   alerta: AlertaStock | null;
   updatedAt: string;
 };

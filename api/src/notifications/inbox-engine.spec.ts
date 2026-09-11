@@ -188,7 +188,7 @@ describe('Notifications inbox (ADR-004 N1–N4 / ADR-006)', () => {
       expect(cmd.subjectType).toBe(SubjectType.ITEM);
       expect(cmd.severity).toBe(Severity.WARNING);
       expect(cmd.dedupeKey).toBe(stockBajoDedupeKey('item-opa'));
-      expect(cmd.dedupeKey).toContain('INVENTARIO');
+      expect(cmd.dedupeKey).toBe('INV:stock-bajo:item-opa');
 
       const avisoEntity = readFileSync(
         join(__dirname, '../andon/entities/aviso.entity.ts'),

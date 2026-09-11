@@ -38,7 +38,7 @@ export default function ItemsPage() {
   const [oem, setOem] = useState('');
   const [tipoIds, setTipoIds] = useState<Set<string>>(new Set());
   const [openId, setOpenId] = useState<string | null>(null);
-  const [stockMin, setStockMin] = useState('');
+  const [minQty, setMinQty] = useState('');
   const [provId, setProvId] = useState('');
   const [codigoProv, setCodigoProv] = useState('');
 
@@ -101,19 +101,19 @@ export default function ItemsPage() {
   }
 
   async function guardarMin(item: ItemInventario) {
-    const next = stockMin.trim() === '' ? null : Number(stockMin);
+    const next = minQty.trim() === '' ? null : Number(minQty);
     if (next !== null && (!Number.isInteger(next) || next < 0)) {
       setError('El mínimo debe ser un entero ≥ 0, o vacío para no alertar.');
       return;
     }
-    if (next === item.stockMin) return;
+    if (next === item.minQty) return;
     setError(null);
     try {
       await api(`/inventario/items/${item.id}`, {
         role: role!,
         userId,
         method: 'PATCH',
-        body: JSON.stringify({ stockMin: next }),
+        body: JSON.stringify({ minQty: next }),
       });
       notifyInboxChanged();
       await cargar();
@@ -249,8 +249,8 @@ export default function ItemsPage() {
               const next = openId === row.original.id ? null : row.original.id;
               setOpenId(next);
               if (next) {
-                setStockMin(
-                  row.original.stockMin == null ? '' : String(row.original.stockMin),
+                setMinQty(
+                  row.original.minQty == null ? '' : String(row.original.minQty),
                 );
               }
             }}
@@ -337,8 +337,8 @@ export default function ItemsPage() {
                 step={1}
                 inputMode="numeric"
                 placeholder="—"
-                value={stockMin}
-                onChange={(e) => setStockMin(e.target.value)}
+                value={minQty}
+                onChange={(e) => setMinQty(e.target.value)}
                 className="w-[7rem]"
               />
             </Field>

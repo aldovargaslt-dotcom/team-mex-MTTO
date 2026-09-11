@@ -44,8 +44,8 @@ Supervisor y Admin: mismo inbox v0.
 
 - **Andon `AvisoAbierto`** (cableado): `WARNING`, `subject_type=UNIDAD`, `dedupe_key=ANDON:AvisoAbierto:{unidadId}`.
 - **Andon `AvisoResuelto`**: no crea fila nueva; `expires_at` en el ítem matching.
-- **Inventario `StockBajo`**: Inventario emite al cruzar a `qty <= stock_min` (opt-in). `WARNING` si `qty > 0`, `CRITICAL` si `qty = 0`. `dedupe_key=INVENTARIO:StockBajo:{itemId}`. Deeplink `/inventario/stock`.
-- **Inventario `StockReabastecido`**: no crea fila; expira el matching `dedupe_key` cuando `qty > stock_min` (o se quita el umbral).
+- **Inventario `StockBajo`**: Inventario emite al cruzar a `qty <= min_qty` (ADR-007, opt-in). `WARNING` si `qty > 0`, `CRITICAL` si `qty = 0`. `dedupe_key=INV:stock-bajo:{itemId}`. Deeplink `/inventario/stock`.
+- **Inventario `StockReabastecido`**: no crea fila; expira el matching `dedupe_key` cuando `qty > min_qty` (o se quita el umbral).
 
 ## Prohibido
 
