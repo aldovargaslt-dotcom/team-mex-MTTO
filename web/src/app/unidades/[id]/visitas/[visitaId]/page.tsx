@@ -190,7 +190,7 @@ function VisitaReadonly({
             return (
               <div key={tipo}>
                 <p className="muted">
-                  {tipo === 'CHOFER' ? 'Chofer' : 'Jefe'}
+                  {tipo === 'CHOFER' ? 'Chofer' : 'Jefe de mecánicos / taller'}
                 </p>
                 {firma ? (
                   // eslint-disable-next-line @next/next/no-img-element
@@ -373,7 +373,7 @@ function VisitWizard({
   if (km.trim() === '') faltantes.push('Kilometraje');
   if (!tipo) faltantes.push('Tipo predictivo o correctivo');
   if (trabajos.size < 1) faltantes.push('Al menos un trabajo');
-  if (!firmaChofer || !firmaJefe) faltantes.push('Firmas de chofer y jefe');
+  if (!firmaChofer || !firmaJefe) faltantes.push('Firmas de chofer y jefe de mecánicos / taller');
 
   return (
     <>
@@ -566,7 +566,7 @@ function VisitWizard({
               onChange={setFirmaChofer}
             />
             <SignaturePad
-              label="Firma del jefe"
+              label="Jefe de mecánicos / taller"
               value={firmaJefe || null}
               onChange={setFirmaJefe}
             />

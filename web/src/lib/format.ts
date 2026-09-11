@@ -6,8 +6,12 @@ export function formatKm(km: number | null | undefined) {
 export function formatFecha(value: string | null | undefined) {
   if (!value) return '—';
   return new Date(value).toLocaleString('es-MX', {
-    dateStyle: 'short',
-    timeStyle: 'short',
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
   });
 }
 
