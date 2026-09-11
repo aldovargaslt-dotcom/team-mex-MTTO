@@ -61,14 +61,16 @@ El cliente usa el rol stub `X-Role: SUPERVISOR | ADMIN_DIRECTIVO` (y `X-User-Id`
 
 ## Deploy (Vercel + Railway)
 
-Monorepo: **no** apunte Railway ni Vercel a la raíz del repo (no hay `package.json` ahí).
+Monorepo: Vercel **no** puede apuntar a la raíz (Root Directory = `web`). Railway sí puede usar la raíz: el `Dockerfile` / `railway.toml` de la raíz construyen `api/`.
+
+Si el log de Railway dice `Railpack could not determine how to build` y lista `api/`, `web/`, `docs/`, el servicio está en la raíz **sin** este Dockerfile, o Railpack está forzado en el dashboard. Ponga **Builder = Dockerfile** o **Root Directory = `api`**.
 
 ### 1. Railway — Postgres + API
 
 1. En el proyecto de Railway, **New → Database → PostgreSQL**.
 2. **New → GitHub Repo** (este repo) → servicio `api`:
-   - **Root Directory:** `api`
-   - Builder: Dockerfile (`api/Dockerfile` + `api/railway.toml`)
+   - **Root Directory:** vacío (usa `Dockerfile` + `railway.toml` de la raíz) **o** `api`
+   - Builder: **Dockerfile** (no Railpack)
 3. En Variables del servicio `api`, **Reference** el Postgres (`DATABASE_URL`). Railway lo inyecta solo.
 4. Variables extra:
 
