@@ -2,9 +2,13 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CurrentUser } from '../auth/current-user';
-import { mensajeVisita, puedeCrearVisita } from '../common/hub-policy';
+import { Rol } from '../auth/roles.enum';
+import { mensajesHub, puedeCrearVisita } from '../common/hub-policy';
 import { requireTrimmed } from '../common/require-trimmed';
+import { Chofer } from '../choferes/chofer.entity';
 import { TiposVehiculoService } from '../tipos-vehiculo/tipos-vehiculo.service';
+import { EstadoVisita } from '../visitas/enums';
+import { Visita } from '../visitas/visita.entity';
 import { CreateUnidadDto } from './dto/create-unidad.dto';
 import { FiltrarUnidadesDto } from './dto/filtrar-unidades.dto';
 import { UpdateUnidadDto } from './dto/update-unidad.dto';
@@ -19,6 +23,10 @@ export class UnidadesService {
   constructor(
     @InjectRepository(Unidad)
     private readonly repo: Repository<Unidad>,
+    @InjectRepository(Visita)
+    private readonly visitas: Repository<Visita>,
+    @InjectRepository(Chofer)
+    private readonly choferes: Repository<Chofer>,
     private readonly tipos: TiposVehiculoService,
   ) {}
 
@@ -114,6 +122,49 @@ export class UnidadesService {
 
   async hub(id: string, user: CurrentUser): Promise<UnidadHubDto> {
     const unidad = await this.findOne(id);
+    const [ultimoCerrado, hayChoferes, visitas] = await Promise.all([
+      this.visitas.findOne({
+        where: { unidad: { id }, estado: EstadoVisita.CERRADO },
+        order: { cerradoAt: 'DESC' },
+      }),
+      this.choferes.count().then((n) => n > 0),
+      this.visitas.find({
+        where: { unidad: { id } },
+        relations: { chofer: true, trabajos: true },
+        order: { updatedAt: 'DESC' },
+      }),
+    ]);
+
+    const toItem = (visita: Visita) => ({
+      id: visita.id,
+      estado: visita.estado,
+      tipo: visita.tipo,
+      km: visita.km,
+      choferId: visita.chofer?.id ?? null,
+      choferNombre: visita.chofer?.nombre ?? null,
+      createdBy: visita.createdBy,
+      createdAt: visita.createdAt,
+      updatedAt: visita.updatedAt,
+      cerradoAt: visita.cerradoAt,
+      trabajosCount: visita.trabajos?.length ?? 0,
+    });
+
+    const historialCerrado = visitas
+      .filter((v) => v.estado === EstadoVisita.CERRADO)
+      .sort((a, b) => {
+        const ta = a.cerradoAt?.getTime() ?? 0;
+        const tb = b.cerradoAt?.getTime() ?? 0;
+        return tb - ta;
+      })
+      .map(toItem);
+
+    const borradores =
+      user.rol === Rol.ADMIN_DIRECTIVO
+        ? []
+        : visitas
+            .filter((v) => v.estado === EstadoVisita.BORRADOR)
+            .map(toItem);
+
     return {
       fichaCorta: {
         id: unidad.id,
@@ -125,19 +176,12 @@ export class UnidadesService {
         tipoNombre: unidad.tipo.nombre,
         marcaModelo: unidad.marcaModelo,
         anio: unidad.anio,
-        // Slice 1: no hay visitas cerradas; el km se derivará de la última visita
-        // cerrada cuando exista ese dominio.
-        ultimoKm: null,
+        ultimoKm: ultimoCerrado?.km ?? null,
       },
-      mantenimiento: {
-        estado: 'sin_registros',
-        ultimaVisita: null,
-        mensajeHistorial: 'Aún no hay visitas de mantenimiento registradas.',
-        mensajeResumen:
-          'El historial de mantenimiento estará disponible en una siguiente entrega.',
-      },
+      borradores,
+      historialCerrado,
       puedeCrearVisita: puedeCrearVisita(user.rol, unidad.estado),
-      mensaje: mensajeVisita(user.rol, unidad.estado),
+      mensajes: mensajesHub(user.rol, unidad.estado, hayChoferes),
     };
   }
 

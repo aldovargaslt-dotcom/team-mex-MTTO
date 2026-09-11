@@ -1,9 +1,16 @@
 'use client';
 
 import Link from 'next/link';
-import { FormEvent, useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { FormEvent, useEffect, useMemo, useState } from 'react';
+import { ColumnDef } from '@tanstack/react-table';
 import { RoleGate } from '@/components/RoleGate';
 import { StatusBadge } from '@/components/StatusBadge';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { DataTable } from '@/components/ui/data-table';
+import { Field, FormAlert, PageHeader } from '@/components/ui/field';
+import { Input, NativeSelect } from '@/components/ui/input';
 import { api, HttpError } from '@/lib/api';
 import { useRole } from '@/lib/role';
 import type { TipoVehiculo, Unidad } from '@/lib/types';
@@ -18,6 +25,7 @@ export default function UnidadesPage() {
 
 function UnidadesList() {
   const { role, userId, isAdmin } = useRole();
+  const router = useRouter();
   const [numeroInterno, setNumeroInterno] = useState('');
   const [placas, setPlacas] = useState('');
   const [tipo, setTipo] = useState('');
@@ -78,103 +86,103 @@ function UnidadesList() {
     void cargar();
   }
 
+  const columns: ColumnDef<Unidad, unknown>[] = useMemo(
+    () => [
+      {
+        accessorKey: 'numeroInterno',
+        header: 'Interno',
+        cell: ({ row }) => (
+          <span className="mono">{row.original.numeroInterno}</span>
+        ),
+      },
+      {
+        id: 'unidad',
+        header: 'Unidad',
+        cell: ({ row }) => (
+          <span>
+            {row.original.tipo.nombre}
+            {row.original.marcaModelo ? ` · ${row.original.marcaModelo}` : ''}
+          </span>
+        ),
+      },
+      { accessorKey: 'placas', header: 'Placas' },
+      {
+        accessorKey: 'estado',
+        header: 'Estado',
+        cell: ({ row }) => <StatusBadge estado={row.original.estado} />,
+      },
+    ],
+    [],
+  );
+
   return (
     <>
-      <div className="page-head">
-        <div>
-          <h1>Unidades</h1>
-          <p className="lede">Consulte la flota por número interno, placas o tipo.</p>
-        </div>
-        {isAdmin ? (
-          <Link className="btn btn-primary" href="/unidades/nueva">
-            Nueva unidad
-          </Link>
-        ) : null}
-      </div>
+      <PageHeader
+        title="Unidades"
+        lede="Consulte la flota por número interno, placas o tipo."
+        actions={
+          isAdmin ? (
+            <Button asChild>
+              <Link href="/unidades/nueva">Nueva unidad</Link>
+            </Button>
+          ) : null
+        }
+      />
 
-      <form className="card filters" onSubmit={onSearch}>
-        <div className="field">
-          <label htmlFor="numeroInterno">Número interno</label>
-          <input
-            id="numeroInterno"
-            value={numeroInterno}
-            onChange={(e) => setNumeroInterno(e.target.value)}
-            placeholder="Ej. U-101"
-          />
-        </div>
-        <div className="field">
-          <label htmlFor="placas">Placas</label>
-          <input
-            id="placas"
-            value={placas}
-            onChange={(e) => setPlacas(e.target.value)}
-            placeholder="Ej. TMX-101-A"
-          />
-        </div>
-        <div className="field">
-          <label htmlFor="tipo">Tipo</label>
-          <select
-            id="tipo"
-            value={tipo}
-            onChange={(e) => setTipo(e.target.value)}
-          >
-            <option value="">Todos</option>
-            {tipos.map((item) => (
-              <option key={item.id} value={item.id}>
-                {item.nombre}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className="field">
-          <label htmlFor="buscar">&nbsp;</label>
-          <button id="buscar" className="btn btn-outline" type="submit">
-            Buscar
-          </button>
-        </div>
+      <form className="mb-3" onSubmit={onSearch}>
+        <Card className="filters">
+          <Field label="Número interno" htmlFor="numeroInterno">
+            <Input
+              id="numeroInterno"
+              value={numeroInterno}
+              onChange={(e) => setNumeroInterno(e.target.value)}
+              placeholder="Ej. U-101"
+            />
+          </Field>
+          <Field label="Placas" htmlFor="placas">
+            <Input
+              id="placas"
+              value={placas}
+              onChange={(e) => setPlacas(e.target.value)}
+              placeholder="Ej. TMX-101-A"
+            />
+          </Field>
+          <Field label="Tipo" htmlFor="tipo">
+            <NativeSelect
+              id="tipo"
+              value={tipo}
+              onChange={(e) => setTipo(e.target.value)}
+            >
+              <option value="">Todos</option>
+              {tipos.map((item) => (
+                <option key={item.id} value={item.id}>
+                  {item.nombre}
+                </option>
+              ))}
+            </NativeSelect>
+          </Field>
+          <Field label=" " htmlFor="buscar">
+            <Button id="buscar" variant="outline" type="submit" className="w-full">
+              Buscar
+            </Button>
+          </Field>
+        </Card>
       </form>
 
       {error ? (
         <div className="error-state">
           <h2>No se pudo consultar la flota</h2>
-          <p>{error}</p>
+          <FormAlert>{error}</FormAlert>
         </div>
       ) : loading ? (
         <p className="muted">Cargando unidades…</p>
-      ) : !unidades?.length ? (
-        <div className="empty-state">
-          <h2>No hay unidades que coincidan</h2>
-          <p className="muted">
-            Ajuste los filtros o verifique que el número interno y las placas
-            estén escritos correctamente.
-          </p>
-        </div>
       ) : (
-        <div className="card list">
-          <div className="list-row list-head">
-            <span>Interno</span>
-            <span>Unidad</span>
-            <span>Placas</span>
-            <span>Estado</span>
-            <span />
-          </div>
-          {unidades.map((unidad) => (
-            <Link
-              key={unidad.id}
-              href={`/unidades/${unidad.id}`}
-              className="list-row"
-            >
-              <span className="mono">{unidad.numeroInterno}</span>
-              <span>
-                {unidad.tipo.nombre}
-                {unidad.marcaModelo ? ` · ${unidad.marcaModelo}` : ''}
-              </span>
-              <span>{unidad.placas}</span>
-              <StatusBadge estado={unidad.estado} />
-              <span className="muted">→</span>
-            </Link>
-          ))}
-        </div>
+        <DataTable
+          columns={columns}
+          data={unidades ?? []}
+          empty="No hay unidades que coincidan. Ajuste los filtros."
+          onRowClick={(unidad) => router.push(`/unidades/${unidad.id}`)}
+        />
       )}
     </>
   );

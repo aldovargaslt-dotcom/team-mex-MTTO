@@ -30,7 +30,9 @@ export class UnidadesController {
   }
 
   @Get(':id/hub')
-  @ApiOperation({ summary: 'Hub de unidad: ficha corta y stubs de mantenimiento' })
+  @ApiOperation({
+    summary: 'Hub de unidad: ficha, borradores, historial y mensajes',
+  })
   hub(
     @Param('id', ParseUUIDPipe) id: string,
     @CurrentUserParam() user: CurrentUser,

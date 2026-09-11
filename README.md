@@ -1,13 +1,15 @@
 # team-mex-MTTO
 
-Team Mex — módulo Mantenimiento (Slice 1: Nest API + UI).
+Team Mex — Mantenimiento + Inventario v0 (piezas en visita).
 
-Slice 1 cubre el catálogo de tipos de vehículo, el ABM de unidades (alta/edición admin) y el hub de cada unidad, con un stub de roles. Quedan fuera de este corte: visitas reales, choferes, reportes y autenticación definitiva.
+Cubre el kernel delgado (unidades, tipos, choferes, roles), visitas de mantenimiento y el módulo Inventario (schema `inventario`) con el paso **Piezas** en el cierre. Quedan fuera: multi-almacén, lotes, costeo, OC formal, kardex pesado, ítem↔placa, Andon y reserva de stock en borrador.
+
+Arquitectura: [ADR-000](docs/adr/000-thin-kernel.md), [ADR-002](docs/adr/002-schema-per-module.md), [ADR-003](docs/adr/003-shadcn-tailwind.md).
 
 ## Stack
 
 - API NestJS + TypeORM + PostgreSQL (sin SQLite)
-- Cliente delgado Next.js App Router en `web/`
+- Cliente delgado Next.js App Router en `web/` (shadcn/ui + Tailwind, tokens Team Mex)
 - PostgreSQL local vía `docker compose`
 
 ## Requisitos
@@ -43,7 +45,11 @@ El cliente usa el rol stub `X-Role: SUPERVISOR | ADMIN_DIRECTIVO` (y `X-User-Id`
 | U-102  | ACTIVA   | Segunda unidad activa                             |
 | U-103  | INACTIVA | Hub bloqueado: no se puede crear visita           |
 
-## API (Slice 1)
+Choferes: Juan Pérez, María López, Carlos Ruiz.
+
+Inventario: familias Filtros/Frenos; SKUs `FIL-ACEITE-01` (stock 10, Camión/Camioneta), `PAST-FR-01` (stock 2, Camión), `FIL-CAB-01` (stock 5, Van); proveedor Refacciones del Norte.
+
+## API
 
 Autenticación stub: encabezado `X-Role`. Falta el encabezado → 401.
 
@@ -51,27 +57,33 @@ Autenticación stub: encabezado `X-Role`. Falta el encabezado → 401.
 |---------|------------|-----------------|
 | `GET /tipos-vehiculo` | sí | sí |
 | `POST/PATCH/DELETE /tipos-vehiculo` | 403 | sí |
+| `GET /choferes` | sí | sí |
+| `POST/PATCH/DELETE /choferes` | 403 | sí |
 | `GET /unidades` (filtros `numeroInterno`, `placas`, `tipo`) | sí | sí |
 | `GET /unidades/:id` y `/unidades/:id/hub` | sí | sí |
 | `POST/PATCH /unidades` | 403 | sí |
+| `POST /unidades/:id/visitas` (borrador) | sí | 403 |
+| `PATCH /visitas/:id`, `DELETE /visitas/:id`, `POST /visitas/:id/cerrar` | sí | 403 |
+| `GET /visitas/:id` y historial | sí (incluye borradores) | historial/detalle cerrado |
+| `/inventario/*` (familias, ítems, proveedores, stock, entradas, ajustes, movimientos, pendientes) | sí | sí |
 
-Hub: `fichaCorta` + stubs de mantenimiento (mensajes en español, sin arreglos vacíos crudos). `puedeCrearVisita` es **true solo si el rol es SUPERVISOR y la unidad está ACTIVA**. El admin nunca obtiene `true`. Unicidad de número interno, placas, VIN (si viene informado) y nombre de tipo → 409.
+Hub: `fichaCorta` + `borradores[]` (vacío para admin) + `historialCerrado[]` + `puedeCrearVisita` + `mensajes[]`. `puedeCrearVisita` es **true solo si el rol es SUPERVISOR y la unidad está ACTIVA**.
 
-Campos maestros de unidad (alta/edición admin): `numeroInterno`, `placas`, `vin` (opcional), `tipo`, `estado`, `marcaModelo`, `anio`. El kilometraje **no** se edita en la unidad: `fichaCorta.ultimoKm` es el km de la última visita cerrada. En Slice 1 las visitas están fuera de alcance, así que `ultimoKm` siempre es `null` y la UI muestra «Sin registro».
+Cierre (reglas existentes + piezas): unidad ACTIVA, chofer, km ≥ último cerrado, tipo, ≥ 1 trabajo A–E, firmas chofer y jefe. Piezas opcionales. Al cerrar se publica `VisitaCerrada` (ADR-001: `eventId` = outbox id, `eventType`, `occurredAt`/`cerradoAt`, `km`, `consumos`) en la misma transacción. Handler in-process (ADR-002): `DESDE_STOCK` → `SALIDA_OT` si stock ≥ qty (si no, 400 y la visita sigue en borrador); `COMPRA_EXTERNA` → pendiente de comprobante, sin movimiento de stock. Visita **no** guarda campos de stock; `itemId` es opaco.
 
 Documentación: [http://localhost:3001/docs](http://localhost:3001/docs).
 
 ## UI
 
-Rol stub → listado/búsqueda de unidades → hub. El admin ve alta/edición de unidades y CRUD de tipos; el supervisor no. **Nueva visita** se habilita según `puedeCrearVisita`; no hay formularios de visita (muestra *Próximamente*).
+Rol stub → Unidades / Inventario. Admin: CRUD de tipos y choferes; inventario; historial de visitas en solo lectura (sin Nueva visita). Supervisor: inventario (catálogo, entradas, ajustes) y visitas (Datos → Trabajos → Obs → Fotos → **Piezas** → Firmas → Confirmar).
+
+Inventario: Ítems (búsqueda + Nuevo ítem), Familias, Proveedores, Stock, Movimientos, Pendientes.
 
 ## Pruebas
 
 ```bash
 cd api
-# requiere la base team_mex_mtto_test (el compose solo crea team_mex_mtto;
-# el script de e2e asume PostgreSQL local con usuario team_mex)
-createdb -U team_mex team_mex_mtto_test   # si aún no existe
+# requiere la base team_mex_mtto_test (el compose crea team_mex_mtto y team_mex_mtto_test)
 npm run test
 npm run test:e2e
 ```

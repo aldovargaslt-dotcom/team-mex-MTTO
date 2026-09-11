@@ -1,12 +1,15 @@
 'use client';
 
+import type { ReactNode } from 'react';
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
 import { useRole } from '@/lib/role';
 
 export function RoleGate({
   children,
   adminOnly = false,
 }: {
-  children: React.ReactNode;
+  children: ReactNode;
   adminOnly?: boolean;
 }) {
   const { ready, role, isAdmin } = useRole();
@@ -18,11 +21,10 @@ export function RoleGate({
   if (!role) {
     return (
       <div className="empty-state">
-        <h2>Seleccione un rol</h2>
-        <p>Para consultar unidades necesita indicar si es supervisor o administrador.</p>
-        <a className="btn btn-primary" href="/">
-          Ir a selección de rol
-        </a>
+        <h2>Seleccione un rol.</h2>
+        <Button asChild>
+          <Link href="/">Ir a selección de rol</Link>
+        </Button>
       </div>
     );
   }
@@ -30,14 +32,10 @@ export function RoleGate({
   if (adminOnly && !isAdmin) {
     return (
       <div className="empty-state">
-        <h2>Acceso restringido</h2>
-        <p>
-          Esta sección es exclusiva del administrador directivo. El supervisor
-          solo puede consultar unidades y su hub.
-        </p>
-        <a className="btn btn-secondary" href="/unidades">
-          Volver a unidades
-        </a>
+        <h2>Acceso restringido al administrador directivo.</h2>
+        <Button asChild variant="secondary">
+          <Link href="/unidades">Volver a unidades</Link>
+        </Button>
       </div>
     );
   }

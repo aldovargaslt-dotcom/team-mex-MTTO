@@ -1,13 +1,19 @@
 'use client';
 
 import Link from 'next/link';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { RoleGate } from '@/components/RoleGate';
 import { StatusBadge } from '@/components/StatusBadge';
 import { api, HttpError } from '@/lib/api';
+import {
+  etiquetaEstadoVisita,
+  etiquetaTipoVisita,
+  formatFecha,
+  formatKm,
+} from '@/lib/format';
 import { useRole } from '@/lib/role';
-import type { UnidadHub } from '@/lib/types';
+import type { UnidadHub, VisitaDetalle, VisitaResumen } from '@/lib/types';
 
 export default function HubPage() {
   return (
@@ -19,19 +25,25 @@ export default function HubPage() {
 
 function HubContent() {
   const params = useParams<{ id: string }>();
+  const router = useRouter();
   const { role, userId, isAdmin } = useRole();
   const [hub, setHub] = useState<UnidadHub | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [notFound, setNotFound] = useState(false);
-  const [soon, setSoon] = useState(false);
+  const [creating, setCreating] = useState(false);
+  const [busyId, setBusyId] = useState<string | null>(null);
+
+  async function cargar() {
+    setHub(
+      await api<UnidadHub>(`/unidades/${params.id}/hub`, { role: role!, userId }),
+    );
+  }
 
   useEffect(() => {
     if (!role || !params.id) return;
     void (async () => {
       try {
-        setHub(
-          await api<UnidadHub>(`/unidades/${params.id}/hub`, { role, userId }),
-        );
+        await cargar();
       } catch (err) {
         if (err instanceof HttpError && err.status === 404) {
           setNotFound(true);
@@ -44,24 +56,66 @@ function HubContent() {
         }
       }
     })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params.id, role, userId]);
+
+  async function nuevaVisita() {
+    if (!hub?.puedeCrearVisita) return;
+    setCreating(true);
+    setError(null);
+    try {
+      const created = await api<VisitaDetalle>(
+        `/unidades/${params.id}/visitas`,
+        { role: role!, userId, method: 'POST' },
+      );
+      router.push(`/unidades/${params.id}/visitas/${created.id}`);
+    } catch (err) {
+      setError(
+        err instanceof HttpError
+          ? err.message
+          : 'No se pudo crear la visita.',
+      );
+    } finally {
+      setCreating(false);
+    }
+  }
+
+  async function eliminar(id: string) {
+    if (
+      !window.confirm(
+        '¿Eliminar este borrador? Esta acción no se puede deshacer.',
+      )
+    ) {
+      return;
+    }
+    setBusyId(id);
+    setError(null);
+    try {
+      await api(`/visitas/${id}`, { role: role!, userId, method: 'DELETE' });
+      await cargar();
+    } catch (err) {
+      setError(
+        err instanceof HttpError
+          ? err.message
+          : 'No se pudo eliminar el borrador.',
+      );
+    } finally {
+      setBusyId(null);
+    }
+  }
 
   if (notFound) {
     return (
-      <div className="empty-state">
-        <h2>No se encontró la unidad</h2>
-        <p className="muted">
-          Es posible que el identificador sea incorrecto o que la unidad ya no
-          exista en el catálogo.
-        </p>
-        <Link className="btn btn-primary" href="/unidades">
-          Volver al listado
-        </Link>
-      </div>
+        <div className="empty-state">
+          <h2>No se encontró la unidad.</h2>
+          <Link className="btn btn-outline" href="/unidades">
+            Volver al listado
+          </Link>
+        </div>
     );
   }
 
-  if (error) {
+  if (!hub && error) {
     return (
       <div className="error-state">
         <h2>No se pudo abrir el hub</h2>
@@ -75,15 +129,18 @@ function HubContent() {
   }
 
   const ficha = hub.fichaCorta;
+  const warn = hub.mensajes.some(
+    (m) =>
+      /inactiva|administrador|choferes/i.test(m) && !hub.puedeCrearVisita
+      || /choferes/i.test(m),
+  );
 
   return (
     <>
       <div className="page-head">
         <div>
-          <p className="muted">Hub de unidad</p>
           <h1>
-            {ficha.numeroInterno}{' '}
-            <StatusBadge estado={ficha.estado} />
+            {ficha.numeroInterno} <StatusBadge estado={ficha.estado} />
           </h1>
           <p className="lede">
             {ficha.tipoNombre}
@@ -94,6 +151,8 @@ function HubContent() {
           Volver
         </Link>
       </div>
+
+      {error ? <p className="alert" style={{ marginBottom: 12 }}>{error}</p> : null}
 
       <div className="hub-grid">
         <section className="card panel">
@@ -140,37 +199,110 @@ function HubContent() {
 
         <section className="card panel">
           <h2>Mantenimiento</h2>
-          <p>{hub.mantenimiento.mensajeHistorial}</p>
-          <p className="note">{hub.mantenimiento.mensajeResumen}</p>
-          <p className="muted" style={{ marginTop: 12 }}>
-            Última visita:{' '}
-            {hub.mantenimiento.ultimaVisita
-              ? hub.mantenimiento.ultimaVisita
-              : 'sin registros todavía'}
-          </p>
-          <div className="hub-actions">
-            <button
-              type="button"
-              className="btn btn-primary"
-              disabled={!hub.puedeCrearVisita}
-              onClick={() => setSoon(true)}
-            >
-              Nueva visita
-            </button>
-          </div>
-          {!hub.puedeCrearVisita ? (
-            <p className="note note-warn">{hub.mensaje}</p>
-          ) : (
-            <p className="note">{hub.mensaje}</p>
-          )}
-          {soon ? (
-            <p className="soon">
-              Próximamente. El registro de visitas de mantenimiento estará
-              disponible en una siguiente entrega.
-            </p>
+          {!isAdmin ? (
+            <>
+              <h3 className="subhead">Borradores</h3>
+              {hub.borradores.length === 0 ? (
+                <p className="muted">No hay visitas en borrador en esta unidad.</p>
+              ) : (
+                <ul className="visit-list">
+                  {hub.borradores.map((visita, index) => (
+                    <li key={visita.id}>
+                      <div>
+                        <strong>{etiquetaTipoVisita(visita.tipo)}</strong>
+                        <div className="muted">
+                          {formatKm(visita.km)}
+                          {visita.choferNombre ? ` · ${visita.choferNombre}` : ''}
+                          {' · '}
+                          {formatFecha(visita.updatedAt)}
+                        </div>
+                      </div>
+                      <div className="hub-actions" style={{ marginTop: 0 }}>
+                        <Link
+                          className={
+                            index === 0 ? 'btn btn-primary' : 'btn btn-outline'
+                          }
+                          href={`/unidades/${ficha.id}/visitas/${visita.id}`}
+                        >
+                          Continuar
+                        </Link>
+                        <button
+                          type="button"
+                          className="btn btn-danger"
+                          disabled={busyId === visita.id}
+                          onClick={() => void eliminar(visita.id)}
+                        >
+                          Eliminar
+                        </button>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              )}
+              <div className="hub-actions">
+                <button
+                  type="button"
+                  className={
+                    hub.borradores.length > 0 ? 'btn btn-outline' : 'btn btn-primary'
+                  }
+                  disabled={!hub.puedeCrearVisita || creating}
+                  onClick={() => void nuevaVisita()}
+                >
+                  {creating ? 'Creando…' : 'Nueva visita'}
+                </button>
+              </div>
+            </>
           ) : null}
+
+          <h3 className="subhead">Historial</h3>
+          {hub.historialCerrado.length === 0 ? (
+            <p className="muted">Aún no hay visitas de mantenimiento registradas.</p>
+          ) : (
+            <ul className="visit-list">
+              {hub.historialCerrado.map((visita) => (
+                <HistorialItem
+                  key={visita.id}
+                  unidadId={ficha.id}
+                  visita={visita}
+                />
+              ))}
+            </ul>
+          )}
+
+          {hub.mensajes.map((mensaje) => (
+            <p
+              key={mensaje}
+              className={warn ? 'note note-warn' : 'note'}
+            >
+              {mensaje}
+            </p>
+          ))}
         </section>
       </div>
     </>
+  );
+}
+
+function HistorialItem({
+  unidadId,
+  visita,
+}: {
+  unidadId: string;
+  visita: VisitaResumen;
+}) {
+  return (
+    <li>
+      <Link href={`/unidades/${unidadId}/visitas/${visita.id}`}>
+        <strong>
+          {etiquetaTipoVisita(visita.tipo)} · {etiquetaEstadoVisita(visita.estado)}
+        </strong>
+        <div className="muted">
+          {formatKm(visita.km)}
+          {visita.choferNombre ? ` · ${visita.choferNombre}` : ''}
+          {' · '}
+          {formatFecha(visita.cerradoAt)}
+        </div>
+      </Link>
+    </li>
   );
 }

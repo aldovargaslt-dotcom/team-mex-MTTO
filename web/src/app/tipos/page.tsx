@@ -168,7 +168,7 @@ function TiposAdmin() {
                   </div>
                   <button
                     type="button"
-                    className="btn btn-primary"
+                    className="btn btn-outline"
                     onClick={() => void guardarEdicion(tipo.id)}
                   >
                     Guardar

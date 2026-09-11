@@ -239,8 +239,10 @@ describe('Slice 1 (e2e)', () => {
     expect(res.body.fichaCorta.vin).toBeTruthy();
     expect(res.body.fichaCorta.marcaModelo).toMatch(/International/i);
     expect(res.body.fichaCorta.ultimoKm).toBeNull();
-    expect(res.body.mantenimiento.mensajeHistorial).toMatch(/visitas/i);
-    expect(JSON.stringify(res.body)).not.toContain('[]');
+    expect(res.body.borradores).toEqual([]);
+    expect(res.body.historialCerrado).toEqual([]);
+    expect(res.body.mensajes[0]).toMatch(/visita/i);
+    expect(res.body.mantenimiento).toBeUndefined();
   });
 
   it('hub U-103 supervisor: bloqueado (inactiva)', async () => {
@@ -250,7 +252,7 @@ describe('Slice 1 (e2e)', () => {
       .set(SUPERVISOR)
       .expect(200);
     expect(res.body.puedeCrearVisita).toBe(false);
-    expect(res.body.mensaje).toMatch(/inactiva/i);
+    expect(res.body.mensajes[0]).toMatch(/inactiva/i);
   });
 
   it('hub U-101 admin: puedeCrearVisita nunca true', async () => {
@@ -260,7 +262,8 @@ describe('Slice 1 (e2e)', () => {
       .set(ADMIN)
       .expect(200);
     expect(res.body.puedeCrearVisita).toBe(false);
-    expect(res.body.mensaje).toMatch(/administrador directivo/i);
+    expect(res.body.mensajes[0]).toMatch(/administrador directivo/i);
+    expect(res.body.borradores).toEqual([]);
   });
 
   it('GET unidad inexistente 404 en español', async () => {
