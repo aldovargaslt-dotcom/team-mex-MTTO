@@ -100,6 +100,7 @@ export function AndonHubCard({
               <Button
                 type="button"
                 variant="outline"
+                className="h-11 min-h-11 min-w-[44px] md:h-11 md:min-h-11"
                 disabled={busy}
                 onClick={() => void enterado()}
               >

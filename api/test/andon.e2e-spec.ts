@@ -43,6 +43,16 @@ describe('Andon v0 (e2e)', () => {
     expect(hub.body.fichaCorta.ultimoKm).toBe(100);
     expect(hub.body.historialCerrado.length).toBeGreaterThanOrEqual(1);
 
+    const defaultList = await request(server)
+      .get('/andon/avisos')
+      .set(SUPERVISOR)
+      .expect(200);
+    const enDefault = (
+      defaultList.body as { numeroInterno: string; estado: string }[]
+    ).find((a) => a.numeroInterno === 'U-101');
+    expect(enDefault).toBeTruthy();
+    expect(enDefault!.estado).not.toBe('RESUELTO');
+
     const avisos = await request(server)
       .get('/andon/avisos')
       .query({ estado: 'ABIERTO' })
