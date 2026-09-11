@@ -24,3 +24,13 @@ export function etiquetaTipoVisita(tipo: string | null) {
 export function etiquetaEstadoVisita(estado: string) {
   return estado === 'CERRADO' ? 'Cerrada' : 'Borrador';
 }
+
+export function etiquetaOrigenPieza(origen: string) {
+  return origen === 'COMPRA_EXTERNA' ? 'Compra externa' : 'Desde stock';
+}
+
+export function etiquetaMovimiento(tipo: string) {
+  if (tipo === 'SALIDA_OT') return 'Salida OT';
+  if (tipo === 'AJUSTE') return 'Ajuste';
+  return 'Entrada';
+}

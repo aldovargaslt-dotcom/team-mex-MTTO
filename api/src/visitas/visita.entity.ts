@@ -15,6 +15,7 @@ import { Unidad } from '../unidades/unidad.entity';
 import { EstadoVisita, TipoVisita } from './enums';
 import { VisitaFirma } from './visita-firma.entity';
 import { VisitaFoto } from './visita-foto.entity';
+import { VisitaPieza } from './visita-pieza.entity';
 import { VisitaTrabajo } from './visita-trabajo.entity';
 
 @Entity('visitas')
@@ -58,6 +59,9 @@ export class Visita {
 
   @OneToMany(() => VisitaFirma, (firma) => firma.visita, { cascade: true })
   firmas: VisitaFirma[];
+
+  @OneToMany(() => VisitaPieza, (pieza) => pieza.visita, { cascade: true })
+  piezas: VisitaPieza[];
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;

@@ -5,8 +5,16 @@ import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 import { RoleGate } from '@/components/RoleGate';
 import { SignaturePad } from '@/components/SignaturePad';
+import {
+  PiezasReadonly,
+  PiezasStep,
+  lineasDesdeVisita,
+  piezasInsuficientes,
+  type PiezaLinea,
+} from '@/components/PiezasStep';
 import { api, HttpError } from '@/lib/api';
 import {
+  etiquetaOrigenPieza,
   etiquetaTipoVisita,
   formatFecha,
   formatKm,
@@ -15,6 +23,7 @@ import { useRole } from '@/lib/role';
 import type {
   CatalogoCategoria,
   Chofer,
+  SkuCompatible,
   TipoFirma,
   TipoVisita,
   VisitaDetalle,
@@ -23,8 +32,9 @@ import type {
 const STEPS = [
   { id: 'datos', label: 'Datos' },
   { id: 'trabajos', label: 'Trabajos' },
-  { id: 'observaciones', label: 'Observaciones' },
+  { id: 'observaciones', label: 'Obs' },
   { id: 'fotos', label: 'Fotos' },
+  { id: 'piezas', label: 'Piezas' },
   { id: 'firmas', label: 'Firmas' },
   { id: 'confirmar', label: 'Confirmar' },
 ] as const;
@@ -182,6 +192,8 @@ function VisitaReadonly({
         )}
       </section>
 
+      <PiezasReadonly piezas={visita.piezas ?? []} />
+
       <section className="card panel" style={{ marginTop: 12 }}>
         <h2>Firmas</h2>
         <div className="firmas-grid">
@@ -237,6 +249,9 @@ function VisitWizard({
   const [firmaJefe, setFirmaJefe] = useState(
     visita.firmas.find((f) => f.tipo === 'JEFE')?.dataUrl ?? '',
   );
+  const [piezas, setPiezas] = useState<PiezaLinea[]>(() =>
+    lineasDesdeVisita(visita.piezas ?? []),
+  );
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [ultimoKm, setUltimoKm] = useState<number | null>(null);
@@ -264,6 +279,28 @@ function VisitWizard({
       }
     })();
   }, [role, userId, unidadId]);
+
+  useEffect(() => {
+    if (step !== 'piezas' || !visita.tipoVehiculoId || !role) return;
+    void (async () => {
+      try {
+        const data = await api<SkuCompatible[]>(
+          `/inventario/skus?tipoVehiculoId=${visita.tipoVehiculoId}`,
+          { role, userId },
+        );
+        const stockById = new Map(data.map((item) => [item.id, item.stock]));
+        setPiezas((current) =>
+          current.map((linea) =>
+            stockById.has(linea.itemId)
+              ? { ...linea, stock: stockById.get(linea.itemId)! }
+              : linea,
+          ),
+        );
+      } catch {
+        /* el paso Piezas muestra su propio error de búsqueda */
+      }
+    })();
+  }, [step, visita.tipoVehiculoId, role, userId]);
 
   const sinChoferes = choferes.length === 0;
   const stepIndex = STEPS.findIndex((s) => s.id === step);
@@ -297,6 +334,11 @@ function VisitWizard({
             ...(firmaChofer ? [{ tipo: 'CHOFER', dataUrl: firmaChofer }] : []),
             ...(firmaJefe ? [{ tipo: 'JEFE', dataUrl: firmaJefe }] : []),
           ],
+          piezas: piezas.map((linea) => ({
+            itemId: linea.itemId,
+            qty: linea.qty,
+            origen: linea.origen,
+          })),
           ...extra,
         }),
       });
@@ -318,6 +360,12 @@ function VisitWizard({
         setError('No hay choferes. Pide alta a administración.');
         return;
       }
+    }
+    if (step === 'piezas' && piezasInsuficientes(piezas).length) {
+      setError(
+        'Hay piezas que superan el stock. Use compra externa o reduzca la cantidad.',
+      );
+      return;
     }
     const saved = await persist();
     if (!saved) return;
@@ -374,6 +422,10 @@ function VisitWizard({
   if (!tipo) faltantes.push('Tipo predictivo o correctivo');
   if (trabajos.size < 1) faltantes.push('Al menos un trabajo');
   if (!firmaChofer || !firmaJefe) faltantes.push('Firmas de chofer y jefe de mecánicos / taller');
+  const bloqueoStock = piezasInsuficientes(piezas);
+  if (bloqueoStock.length) {
+    faltantes.push('Piezas con stock insuficiente (compra externa o reduzca qty)');
+  }
 
   return (
     <>
@@ -555,6 +607,17 @@ function VisitWizard({
         </section>
       ) : null}
 
+      {step === 'piezas' ? (
+        <PiezasStep
+          role={role!}
+          userId={userId}
+          tipoVehiculoId={visita.tipoVehiculoId}
+          tipoVehiculoNombre={visita.tipoVehiculoNombre}
+          lineas={piezas}
+          onChange={setPiezas}
+        />
+      ) : null}
+
       {step === 'firmas' ? (
         <section className="card panel">
           <h2>Firmas</h2>
@@ -588,6 +651,17 @@ function VisitWizard({
             <dd>{trabajos.size}</dd>
             <dt>Fotos</dt>
             <dd>{fotos.length}</dd>
+            <dt>Piezas</dt>
+            <dd>
+              {piezas.length === 0
+                ? 'Ninguna'
+                : piezas
+                    .map(
+                      (p) =>
+                        `${p.sku} ×${p.qty} (${etiquetaOrigenPieza(p.origen)})`,
+                    )
+                    .join(', ')}
+            </dd>
           </dl>
           {faltantes.length ? (
             <p className="note note-warn">
@@ -617,7 +691,11 @@ function VisitWizard({
           <button
             type="button"
             className="btn btn-primary"
-            disabled={saving || (step === 'datos' && sinChoferes)}
+            disabled={
+              saving ||
+              (step === 'datos' && sinChoferes) ||
+              (step === 'piezas' && bloqueoStock.length > 0)
+            }
             onClick={() => void continuar()}
           >
             {saving ? 'Guardando…' : 'Continuar'}

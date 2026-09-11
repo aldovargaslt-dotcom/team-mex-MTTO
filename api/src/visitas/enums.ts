@@ -20,3 +20,5 @@ export enum TipoFirma {
   CHOFER = 'CHOFER',
   JEFE = 'JEFE',
 }
+
+export { OrigenConsumo as OrigenPieza } from '../kernel/events/visita-cerrada';

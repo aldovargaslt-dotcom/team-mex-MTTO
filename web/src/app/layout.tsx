@@ -11,7 +11,7 @@ const roboto = Roboto({
 
 export const metadata: Metadata = {
   title: 'Team Mex — Mantenimiento',
-  description: 'Módulo de mantenimiento de unidades. Slice 2.',
+  description: 'Módulo de mantenimiento e inventario de unidades.',
 };
 
 export default function RootLayout({

@@ -1,8 +1,10 @@
 # team-mex-MTTO
 
-Team Mex — módulo Mantenimiento (Slice 2: visitas + choferes).
+Team Mex — Mantenimiento + Inventario v0 (piezas en visita).
 
-Slice 2 cubre el catálogo admin de choferes y el flujo de visitas de mantenimiento (borrador, cierre y historial) sobre el catálogo de unidades de Slice 1. Quedan fuera: reportes/export, reapertura admin, E/S, Andon, autenticación real y costos.
+Cubre el kernel delgado (unidades, tipos, choferes, roles), visitas de mantenimiento y el módulo Inventario (schema `inventario`) con el paso **Piezas** en el cierre. Quedan fuera: multi-almacén, lotes, costeo, OC formal, kardex pesado, ítem↔placa, Andon y reserva de stock en borrador.
+
+Arquitectura: [ADR-000](docs/adr/000-thin-kernel.md), [ADR-002](docs/adr/002-schema-per-module.md).
 
 ## Stack
 
@@ -43,7 +45,9 @@ El cliente usa el rol stub `X-Role: SUPERVISOR | ADMIN_DIRECTIVO` (y `X-User-Id`
 | U-102  | ACTIVA   | Segunda unidad activa                             |
 | U-103  | INACTIVA | Hub bloqueado: no se puede crear visita           |
 
-Choferes de semilla: Juan Pérez, María López, Carlos Ruiz.
+Choferes: Juan Pérez, María López, Carlos Ruiz.
+
+Inventario: familias Filtros/Frenos; SKUs `FIL-ACEITE-01` (stock 10, Camión/Camioneta), `PAST-FR-01` (stock 2, Camión), `FIL-CAB-01` (stock 5, Van); proveedor Refacciones del Norte.
 
 ## API
 
@@ -61,16 +65,19 @@ Autenticación stub: encabezado `X-Role`. Falta el encabezado → 401.
 | `POST /unidades/:id/visitas` (borrador) | sí | 403 |
 | `PATCH /visitas/:id`, `DELETE /visitas/:id`, `POST /visitas/:id/cerrar` | sí | 403 |
 | `GET /visitas/:id` y historial | sí (incluye borradores) | historial/detalle cerrado |
+| `/inventario/*` (familias, ítems, proveedores, stock, entradas, ajustes, movimientos, pendientes) | sí | sí |
 
-Hub: `fichaCorta` + `borradores[]` (vacío para admin) + `historialCerrado[]` + `puedeCrearVisita` + `mensajes[]`. `puedeCrearVisita` es **true solo si el rol es SUPERVISOR y la unidad está ACTIVA**. `fichaCorta.ultimoKm` es el km de la última visita cerrada.
+Hub: `fichaCorta` + `borradores[]` (vacío para admin) + `historialCerrado[]` + `puedeCrearVisita` + `mensajes[]`. `puedeCrearVisita` es **true solo si el rol es SUPERVISOR y la unidad está ACTIVA**.
 
-Cierre (todas obligatorias): unidad ACTIVA, chofer del catálogo, km ≥ último cerrado (o ≥ 0 si es la primera), tipo PREDICTIVO\|CORRECTIVO, ≥ 1 trabajo del checklist A–E, firmas de chofer y jefe. Observaciones y fotos son opcionales. Un km menor al último cerrado **no se persiste ni como borrador**.
+Cierre (reglas existentes + piezas): unidad ACTIVA, chofer, km ≥ último cerrado, tipo, ≥ 1 trabajo A–E, firmas chofer y jefe. Piezas opcionales. Al cerrar se publica `VisitaCerrada.consumos` (outbox, handler in-process): `DESDE_STOCK` → `SALIDA_OT` si stock ≥ qty (si no, 400 y la visita sigue en borrador); `COMPRA_EXTERNA` → pendiente de comprobante, sin movimiento de stock. Visita **no** guarda campos de stock; `itemId` es opaco.
 
 Documentación: [http://localhost:3001/docs](http://localhost:3001/docs).
 
 ## UI
 
-Rol stub → listado de unidades → hub. Admin: CRUD de tipos y choferes, historial de visitas en solo lectura (sin Nueva visita ni borradores). Supervisor: crea/continúa/elimina borradores y cierra visitas (Datos → Trabajos A–E → Observaciones → Fotos → Firmas → confirmar).
+Rol stub → Unidades / Inventario. Admin: CRUD de tipos y choferes; inventario; historial de visitas en solo lectura (sin Nueva visita). Supervisor: inventario (catálogo, entradas, ajustes) y visitas (Datos → Trabajos → Obs → Fotos → **Piezas** → Firmas → Confirmar).
+
+Inventario: Ítems, Familias, Proveedores, Stock, Movimientos, Pendientes comprobante.
 
 ## Pruebas
 

@@ -26,6 +26,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               >
                 Unidades
               </Link>
+              <Link
+                className={pathname?.startsWith('/inventario') ? 'active' : ''}
+                href="/inventario"
+              >
+                Inventario
+              </Link>
               {isAdmin ? (
                 <>
                   <Link
