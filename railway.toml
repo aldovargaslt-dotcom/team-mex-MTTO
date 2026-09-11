@@ -1,0 +1,13 @@
+# Servicio API cuando Railway apunta a la raíz del repo (sin Root Directory).
+# Si el servicio tiene Root Directory = api, se usa api/railway.toml + api/Dockerfile.
+
+[build]
+builder = "DOCKERFILE"
+dockerfilePath = "Dockerfile"
+watchPatterns = ["api/**"]
+
+[deploy]
+startCommand = "node dist/main.js"
+healthcheckPath = "/health"
+healthcheckTimeout = 300
+restartPolicyType = "ON_FAILURE"
