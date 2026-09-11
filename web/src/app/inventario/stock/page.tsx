@@ -27,6 +27,35 @@ const FILTROS: { id: 'TODOS' | AlertaStock; label: string }[] = [
   { id: 'AGOTADO', label: 'Agotado' },
 ];
 
+function StockRowActions({
+  itemId,
+  onAbrir,
+}: {
+  itemId: string;
+  onAbrir: (id: string, next: 'entrada' | 'ajuste') => void;
+}) {
+  return (
+    <div className="row-actions" onClick={(e) => e.stopPropagation()}>
+      <Button
+        type="button"
+        variant="entrada"
+        size="compact"
+        onClick={() => onAbrir(itemId, 'entrada')}
+      >
+        Entrada
+      </Button>
+      <Button
+        type="button"
+        variant="outline"
+        size="compact"
+        onClick={() => onAbrir(itemId, 'ajuste')}
+      >
+        Ajuste
+      </Button>
+    </div>
+  );
+}
+
 export default function StockPage() {
   const { role, userId } = useRole();
   const [rows, setRows] = useState<StockRow[]>([]);
@@ -191,24 +220,10 @@ export default function StockPage() {
         id: 'acciones',
         header: '',
         cell: ({ row }) => (
-          <div className="row-actions" onClick={(e) => e.stopPropagation()}>
-            <Button
-              type="button"
-              variant="positive"
-              size="compact"
-              onClick={() => abrir(row.original.itemId, 'entrada')}
-            >
-              Entrada
-            </Button>
-            <Button
-              type="button"
-              variant="adjust"
-              size="compact"
-              onClick={() => abrir(row.original.itemId, 'ajuste')}
-            >
-              Ajuste
-            </Button>
-          </div>
+          <StockRowActions
+            itemId={row.original.itemId}
+            onAbrir={abrir}
+          />
         ),
       },
     ],
@@ -243,7 +258,34 @@ export default function StockPage() {
         ))}
       </nav>
       <FormAlert>{error}</FormAlert>
-      <DataTable columns={columns} data={filtered} empty={empty} />
+      <div className="ops-desktop-table">
+        <DataTable columns={columns} data={filtered} empty={empty} />
+      </div>
+      <div className="ops-card-list" aria-label="Stock por ítem">
+        {filtered.length === 0 ? (
+          <p className="muted">{empty}</p>
+        ) : (
+          filtered.map((row) => (
+            <article key={row.itemId} className="ops-card-row">
+              <div className="ops-card-id">
+                <span className="ops-card-sku">{row.sku}</span>
+                <span className="ops-card-name">{row.nombre}</span>
+              </div>
+              <div className="ops-card-meta">
+                <span className="mono">
+                  {row.qty} {etiquetaUom(row.uom)}
+                </span>
+                <span>{row.familia}</span>
+                <StockAlertaBadge alerta={row.alerta} />
+                <span>
+                  Min {row.minQty == null ? '—' : row.minQty}
+                </span>
+              </div>
+              <StockRowActions itemId={row.itemId} onAbrir={abrir} />
+            </article>
+          ))
+        )}
+      </div>
 
       <Sheet
         open={mode !== null}
@@ -304,7 +346,10 @@ export default function StockPage() {
               />
             </Field>
             <SheetFooter className="p-0">
-              <Button type="submit">
+              <Button
+                type="submit"
+                variant={mode === 'ajuste' ? 'outline' : 'default'}
+              >
                 {mode === 'entrada' ? 'Registrar entrada' : 'Aplicar ajuste'}
               </Button>
               <Button
