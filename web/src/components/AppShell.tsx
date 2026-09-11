@@ -22,7 +22,6 @@ const NAV_ITEMS = [
   { href: '/unidades', label: 'Unidades' },
   { href: '/andon', label: 'Andon' },
   { href: '/inventario', label: 'Inventario' },
-  { href: '/tipos', label: 'Tipos', adminOnly: true },
   { href: '/choferes', label: 'Choferes', adminOnly: true },
 ] as const;
 
