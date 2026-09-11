@@ -131,8 +131,11 @@ export default function StockPage() {
     return rows.filter((row) => row.alerta === filtro);
   }, [rows, filtro]);
 
-  const empty =
-    filtro === 'TODOS' ? 'Aún no hay existencias.' : 'Nada en este filtro.';
+  const empty = error
+    ? ''
+    : filtro === 'TODOS'
+      ? 'Aún no hay existencias.'
+      : 'Nada en este filtro.';
 
   const columns: ColumnDef<StockRow, unknown>[] = useMemo(
     () => [

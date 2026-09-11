@@ -82,28 +82,28 @@ export default function ProveedoresPage() {
       </form>
       {error ? <p className="alert" style={{ margin: '12px 0' }}>{error}</p> : null}
       <div className="card list" style={{ marginTop: 12 }}>
-        {proveedores.length === 0 ? (
-          <div className="empty-state">
-            <h2>No hay proveedores</h2>
-            <p className="muted">Agregue el primero.</p>
-          </div>
-        ) : (
-          proveedores.map((proveedor) => (
-            <div key={proveedor.id} className="tipo-row">
-              <div>
-                <strong>{proveedor.nombre}</strong>
-                <div className="muted">{proveedor.activo ? 'Activo' : 'Inactivo'}</div>
+        {proveedores.length > 0
+          ? proveedores.map((proveedor) => (
+              <div key={proveedor.id} className="tipo-row">
+                <div>
+                  <strong>{proveedor.nombre}</strong>
+                  <div className="muted">{proveedor.activo ? 'Activo' : 'Inactivo'}</div>
+                </div>
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={() => void toggle(proveedor)}
+                >
+                  {proveedor.activo ? 'Inactivar' : 'Activar'}
+                </button>
               </div>
-              <button
-                type="button"
-                className="btn btn-secondary"
-                onClick={() => void toggle(proveedor)}
-              >
-                {proveedor.activo ? 'Inactivar' : 'Activar'}
-              </button>
-            </div>
-          ))
-        )}
+            ))
+          : !error && (
+              <div className="empty-state">
+                <h2>No hay proveedores</h2>
+                <p className="muted">Agregue el primero.</p>
+              </div>
+            )}
       </div>
     </>
   );

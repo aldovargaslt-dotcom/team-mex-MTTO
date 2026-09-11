@@ -87,7 +87,11 @@ export default function MovimientosPage() {
     <>
       <PageHeader title="Movimientos" />
       <FormAlert>{error}</FormAlert>
-      <DataTable columns={columns} data={rows} empty="Aún no hay movimientos." />
+      <DataTable
+        columns={columns}
+        data={rows}
+        empty={error ? '' : 'Aún no hay movimientos.'}
+      />
     </>
   );
 }

@@ -78,28 +78,28 @@ export default function FamiliasPage() {
       </form>
       {error ? <p className="alert" style={{ margin: '12px 0' }}>{error}</p> : null}
       <div className="card list" style={{ marginTop: 12 }}>
-        {familias.length === 0 ? (
-          <div className="empty-state">
-            <h2>No hay familias</h2>
-            <p className="muted">Agregue la primera.</p>
-          </div>
-        ) : (
-          familias.map((familia) => (
-            <div key={familia.id} className="tipo-row">
-              <div>
-                <strong>{familia.nombre}</strong>
-                <div className="muted">{familia.activa ? 'Activa' : 'Inactiva'}</div>
+        {familias.length > 0
+          ? familias.map((familia) => (
+              <div key={familia.id} className="tipo-row">
+                <div>
+                  <strong>{familia.nombre}</strong>
+                  <div className="muted">{familia.activa ? 'Activa' : 'Inactiva'}</div>
+                </div>
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={() => void toggle(familia)}
+                >
+                  {familia.activa ? 'Inactivar' : 'Activar'}
+                </button>
               </div>
-              <button
-                type="button"
-                className="btn btn-secondary"
-                onClick={() => void toggle(familia)}
-              >
-                {familia.activa ? 'Inactivar' : 'Activar'}
-              </button>
-            </div>
-          ))
-        )}
+            ))
+          : !error && (
+              <div className="empty-state">
+                <h2>No hay familias</h2>
+                <p className="muted">Agregue la primera.</p>
+              </div>
+            )}
       </div>
     </>
   );

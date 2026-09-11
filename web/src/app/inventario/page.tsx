@@ -14,7 +14,6 @@ import { DataTable } from '@/components/ui/data-table';
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -300,7 +299,13 @@ export default function ItemsPage() {
       <DataTable
         columns={columns}
         data={filtered}
-        empty={items.length === 0 ? 'Aún no hay ítems.' : 'Sin coincidencias.'}
+        empty={
+          error
+            ? ''
+            : items.length === 0
+              ? 'Aún no hay ítems.'
+              : 'Sin coincidencias.'
+        }
       />
 
       {detalle ? (
@@ -363,7 +368,7 @@ export default function ItemsPage() {
               </label>
             ))}
           </div>
-          {detalle.tipoVehiculoIds.length === 0 ? (
+          {detalle.tipoVehiculoIds.length === 0 && tipos.length > 0 ? (
             <Note variant="warn">Elija al menos un tipo de vehículo.</Note>
           ) : null}
           <p className="muted" style={{ marginTop: 10 }}>
@@ -418,9 +423,6 @@ export default function ItemsPage() {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Nuevo ítem</DialogTitle>
-            <DialogDescription className="sr-only">
-              Código, nombre y familia.
-            </DialogDescription>
           </DialogHeader>
           <form className="grid gap-3" onSubmit={crear}>
             <Field label="SKU" htmlFor="sku">
@@ -484,7 +486,7 @@ export default function ItemsPage() {
                   </label>
                 ))}
               </div>
-              {tipoIds.size === 0 ? (
+              {tipoIds.size === 0 && tipos.length > 0 ? (
                 <Note variant="warn">Elija al menos un tipo de vehículo.</Note>
               ) : null}
             </div>

@@ -103,14 +103,7 @@ export default function PendientesPage() {
         help="Compras fuera del almacén. No descuentan stock."
       />
       <FormAlert>{error}</FormAlert>
-      {rows.length === 0 ? (
-        <div className="empty-state">
-          <h2>No hay compras</h2>
-          <p className="muted">
-            Las compras externas de una visita aparecen aquí.
-          </p>
-        </div>
-      ) : (
+      {rows.length > 0 ? (
         <div className="card overflow-hidden">
           {rows.map((row) => {
             const abierto = row.estado === 'PENDIENTE';
@@ -176,7 +169,14 @@ export default function PendientesPage() {
             );
           })}
         </div>
-      )}
+      ) : !error ? (
+        <div className="empty-state">
+          <h2>No hay compras</h2>
+          <p className="muted">
+            Las compras externas de una visita aparecen aquí.
+          </p>
+        </div>
+      ) : null}
     </>
   );
 }
