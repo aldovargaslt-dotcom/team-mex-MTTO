@@ -23,5 +23,5 @@ SKU search y stock: lecturas síncronas de la API de Inventario (`GET /inventari
 Integración en el cierre (misma transacción + fila de outbox en el monolito modular):
 
 1. Mantenimiento persiste las líneas de pieza (sin campos de stock) y marca la visita cerrada.
-2. Escribe `outbox_events` con `VisitaCerrada { visitaId, unidadId, tipoVehiculoId, consumos: [{ itemId, qty, origen }] }`.
+2. Escribe `outbox_events` con el envelope `VisitaCerrada` (ADR-001) e incluye `consumos: [{ itemId, qty, origen }]`.
 3. Handler de Inventario (mismo txn): `DESDE_STOCK` → `SALIDA_OT` si stock ≥ qty (si no, falla y no cierra); `COMPRA_EXTERNA` → pendiente de comprobante, sin movimiento de stock.

@@ -5,6 +5,7 @@ import { App } from 'supertest/types';
 import { DataSource } from 'typeorm';
 import { AppModule } from '../src/app.module';
 import { configureApp } from '../src/configure-app';
+import { assertVisitaCerradaOutbox } from './assert-visita-cerrada-outbox';
 
 const SUPERVISOR = { 'X-Role': 'SUPERVISOR', 'X-User-Id': 'sup-inv' };
 const ADMIN = { 'X-Role': 'ADMIN_DIRECTIVO', 'X-User-Id': 'adm-inv' };
@@ -204,6 +205,14 @@ describe('Inventario v0 + piezas en visita (e2e)', () => {
       .find((m) => m.tipo === 'SALIDA_OT' && m.visitaId === draft.body.id);
     expect(salida?.sku).toBe('FIL-ACEITE-01');
     expect(salida?.delta).toBe(-2);
+
+    await assertVisitaCerradaOutbox(app, {
+      visitaId: draft.body.id,
+      unidadId: u101.id,
+      tipoVehiculoId: u101.tipo.id,
+      km: 1800,
+      consumos: [{ itemId: filtro.id, qty: 2, origen: 'DESDE_STOCK' }],
+    });
   });
 
   it('stock insuficiente bloquea el cierre salvo COMPRA_EXTERNA (pendiente, sin movimiento)', async () => {

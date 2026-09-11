@@ -22,7 +22,16 @@ export class OutboxService {
     type: string,
     payload: Record<string, unknown> | VisitaCerradaPayload,
   ) {
+    const eventId =
+      payload &&
+      typeof payload === 'object' &&
+      'eventId' in payload &&
+      typeof payload.eventId === 'string'
+        ? payload.eventId
+        : undefined;
+
     const event = manager.create(OutboxEvent, {
+      ...(eventId ? { id: eventId } : {}),
       type,
       payload: payload as unknown as Record<string, unknown>,
       processedAt: null,
@@ -35,7 +44,7 @@ export class OutboxService {
       return event;
     }
 
-    await handler(payload, manager);
+    await handler(payload as unknown as Record<string, unknown>, manager);
     event.processedAt = new Date();
     await manager.save(event);
     return event;

@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
+import { randomUUID } from 'crypto';
 import { CurrentUser } from '../auth/current-user';
 import { Rol } from '../auth/roles.enum';
 import { EstadoUnidad } from '../common/estado-unidad.enum';
@@ -12,7 +13,7 @@ import { ChoferesService } from '../choferes/choferes.service';
 import {
   OrigenConsumo,
   VISITA_CERRADA,
-  VisitaCerradaPayload,
+  buildVisitaCerrada,
 } from '../kernel/events/visita-cerrada';
 import { OutboxService } from '../kernel/outbox/outbox.service';
 import { UnidadesService } from '../unidades/unidades.service';
@@ -220,16 +221,19 @@ export class VisitasService {
       visita.estado = EstadoVisita.CERRADO;
       visita.cerradoAt = new Date();
       await manager.save(visita);
-      const payload: VisitaCerradaPayload = {
+      const payload = buildVisitaCerrada({
+        eventId: randomUUID(),
         visitaId: visita.id,
         unidadId: visita.unidad.id,
         tipoVehiculoId: visita.unidad.tipo.id,
+        km: visita.km as number,
+        cerradoAt: visita.cerradoAt,
         consumos: (visita.piezas ?? []).map((pieza) => ({
           itemId: pieza.itemId,
           qty: pieza.qty,
           origen: pieza.origen,
         })),
-      };
+      });
       await this.outbox.enqueueAndDispatch(manager, VISITA_CERRADA, payload);
     });
     return this.findDetalle(id, user);

@@ -4,6 +4,7 @@ import request from 'supertest';
 import { App } from 'supertest/types';
 import { AppModule } from '../src/app.module';
 import { configureApp } from '../src/configure-app';
+import { assertVisitaCerradaOutbox } from './assert-visita-cerrada-outbox';
 
 const SUPERVISOR = { 'X-Role': 'SUPERVISOR', 'X-User-Id': 'sup-1' };
 const ADMIN = { 'X-Role': 'ADMIN_DIRECTIVO', 'X-User-Id': 'adm-1' };
@@ -35,9 +36,11 @@ describe('Slice 2 visitas y choferes (e2e)', () => {
       .query({ numeroInterno })
       .set(ADMIN)
       .expect(200);
-    const found = (res.body as { numeroInterno: string; id: string }[]).find(
-      (u) => u.numeroInterno === numeroInterno,
-    );
+    const found = (res.body as {
+      numeroInterno: string;
+      id: string;
+      tipo: { id: string };
+    }[]).find((u) => u.numeroInterno === numeroInterno);
     if (!found) {
       throw new Error(`No se sembró ${numeroInterno}`);
     }
@@ -314,6 +317,14 @@ describe('Slice 2 visitas y choferes (e2e)', () => {
     expect(cerrado.body.estado).toBe('CERRADO');
     expect(cerrado.body.trabajos).toHaveLength(2);
     expect(cerrado.body.fotos).toHaveLength(1);
+
+    await assertVisitaCerradaOutbox(app, {
+      visitaId: a.body.id,
+      unidadId: u102.id,
+      tipoVehiculoId: u102.tipo.id,
+      km: 250,
+      consumos: [],
+    });
 
     const hub = await request(server)
       .get(`/unidades/${u102.id}/hub`)
