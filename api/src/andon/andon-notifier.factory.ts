@@ -42,5 +42,6 @@ export function createAndonNotifier(
     );
   }
   log.log('Andon notifier: noop/log (default). Enterado es in-app.');
+  // evolution / otros: otro agente; providers desconocidos → noop.
   return stub;
 }

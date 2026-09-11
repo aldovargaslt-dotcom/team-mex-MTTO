@@ -12,7 +12,7 @@ import { UltimaVisitaEntity } from './entities/ultima-visita.entity';
 import { UmbralEntity } from './entities/umbral.entity';
 import { WhatsappSalidaEntity } from './entities/whatsapp-salida.entity';
 import { NestUnidadCatalog } from './nest-unidad-catalog';
-import { ANDON_NOTIFIER } from './ports';
+import { NOTIFY_PORT } from './ports';
 import { StubWhatsAppAdapter } from './stub-whatsapp.adapter';
 import { TypeOrmAndonStore } from './typeorm-store';
 
@@ -36,7 +36,7 @@ export const ANDON_ENTITIES = [
     StubWhatsAppAdapter,
     NestUnidadCatalog,
     {
-      provide: ANDON_NOTIFIER,
+      provide: NOTIFY_PORT,
       inject: [ConfigService, StubWhatsAppAdapter],
       useFactory: (config: ConfigService, stub: StubWhatsAppAdapter) =>
         createAndonNotifier(

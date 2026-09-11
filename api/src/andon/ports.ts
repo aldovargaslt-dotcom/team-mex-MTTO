@@ -28,12 +28,13 @@ export interface UnidadCatalog {
   list(): Promise<UnidadVista[]>;
 }
 
-/** Outbound Andon (noop por defecto; adapters opcionales detrás del puerto). */
-export interface AndonNotifier {
+/** Seam de outbound Andon. Default: noop/log. Adapters (Twilio/Evolution) se enchufan aquí. */
+export interface NotifyPort {
   send(message: WhatsAppMessage): Promise<void>;
 }
 
-export type NotifyPort = AndonNotifier;
-export type WhatsAppPort = AndonNotifier;
+export type AndonNotifier = NotifyPort;
+export type WhatsAppPort = NotifyPort;
 
-export const ANDON_NOTIFIER = Symbol('AndonNotifier');
+export const NOTIFY_PORT = Symbol('NotifyPort');
+export const ANDON_NOTIFIER = NOTIFY_PORT;

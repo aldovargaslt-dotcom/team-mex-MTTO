@@ -22,7 +22,7 @@ import { Aviso, LastClosedVisit } from './andon-types';
 import { AvisoDto, UmbralDto } from './dto/andon.dto';
 import { DEFAULT_T_DIAS, DEFAULT_T_KM, EstadoAviso } from './enums';
 import { NestUnidadCatalog } from './nest-unidad-catalog';
-import { ANDON_NOTIFIER, AndonNotifier } from './ports';
+import { NOTIFY_PORT, NotifyPort } from './ports';
 import { TypeOrmAndonStore } from './typeorm-store';
 
 @Injectable()
@@ -30,7 +30,7 @@ export class AndonService implements OnModuleInit {
   constructor(
     private readonly store: TypeOrmAndonStore,
     private readonly catalog: NestUnidadCatalog,
-    @Inject(ANDON_NOTIFIER) private readonly notifier: AndonNotifier,
+    @Inject(NOTIFY_PORT) private readonly notifier: NotifyPort,
     private readonly outbox: OutboxService,
     private readonly tipos: TiposVehiculoService,
   ) {

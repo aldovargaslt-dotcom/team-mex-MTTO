@@ -5,7 +5,7 @@ MUST 1–3 no dependen de WhatsApp. Enterado es in-app.
 
 ## Must
 
-- [x] Puerto `AndonNotifier` / `NotifyPort` (`WhatsAppPort`). El motor no importa adapters.
+- [x] Puerto `NotifyPort` (`AndonNotifier`). Default **noop/log**. Evolution **no** se implementa en este PR (otro agente; API no oficial / riesgo ToS; no prod).
 - [x] Default **noop/log** (stub). No promete envío live ni grupo WA.
 - [x] Twilio **opcional y aparcado**: solo si `ANDON_NOTIFY_PROVIDER=twilio` **y** SID/token/from/`ANDON_OPS_PHONES`. HTTP plano, sin SDK.
 - [x] Fan-out a teléfonos ops E.164 si se desaparca — **no** grupo `@g.us`.
