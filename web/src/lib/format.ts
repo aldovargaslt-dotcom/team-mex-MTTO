@@ -21,8 +21,8 @@ export function etiquetaTipoVisita(tipo: string | null) {
   return 'Sin tipo';
 }
 
-export function etiquetaEstadoVisita(estado: string) {
-  return estado === 'CERRADO' ? 'Cerrada' : 'Borrador';
+export function etiquetaEstadoChofer(estado: string) {
+  return estado === 'INACTIVO' ? 'Inactivo' : 'Activo';
 }
 
 export function etiquetaOrigenPieza(origen: string) {

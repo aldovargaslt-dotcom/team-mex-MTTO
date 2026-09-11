@@ -255,6 +255,7 @@ function VisitWizard({
   const router = useRouter();
   const [step, setStep] = useState<StepId>('datos');
   const [choferes, setChoferes] = useState<Chofer[]>([]);
+  const [choferesListos, setChoferesListos] = useState(false);
   const [catalogo, setCatalogo] = useState<CatalogoCategoria[]>([]);
   const [choferId, setChoferId] = useState(visita.chofer?.id ?? '');
   const [km, setKm] = useState(visita.km != null ? String(visita.km) : '');
@@ -281,7 +282,7 @@ function VisitWizard({
     void (async () => {
       try {
         const [lista, cats, hub] = await Promise.all([
-          api<Chofer[]>('/choferes', { role: role!, userId }),
+          api<Chofer[]>('/choferes?estado=ACTIVO', { role: role!, userId }),
           api<CatalogoCategoria[]>('/catalogo/trabajos', { role: role!, userId }),
           api<{ fichaCorta: { ultimoKm: number | null } }>(
             `/unidades/${unidadId}/hub`,
@@ -289,6 +290,7 @@ function VisitWizard({
           ),
         ]);
         setChoferes(lista);
+        setChoferesListos(true);
         setCatalogo(cats);
         setUltimoKm(hub.fichaCorta.ultimoKm);
         setPiezas(
@@ -306,6 +308,13 @@ function VisitWizard({
       }
     })();
   }, [role, userId, unidadId, visita.piezas]);
+
+  useEffect(() => {
+    if (!choferesListos) return;
+    if (choferId && !choferes.some((c) => c.id === choferId)) {
+      setChoferId('');
+    }
+  }, [choferes, choferesListos, choferId]);
 
   useEffect(() => {
     if (step !== 'piezas' || !visita.tipoVehiculoId || !role) return;
@@ -329,7 +338,7 @@ function VisitWizard({
     })();
   }, [step, visita.tipoVehiculoId, role, userId]);
 
-  const sinChoferes = choferes.length === 0;
+  const sinChoferesActivos = choferesListos && choferes.length === 0;
   const stepIndex = STEPS.findIndex((s) => s.id === step);
 
   const payloadTrabajos = useMemo(
@@ -383,8 +392,10 @@ function VisitWizard({
 
   async function continuar() {
     if (step === 'datos') {
-      if (sinChoferes) {
-        setError('No hay choferes. Pide alta a administración.');
+      if (sinChoferesActivos) {
+        setError(
+          'No hay choferes activos. Pide alta o reactivación a administración.',
+        );
         return;
       }
     }
@@ -513,8 +524,10 @@ function VisitWizard({
       {step === 'datos' ? (
         <Card className="p-3">
           <h2 className="text-[13px] font-semibold">Datos</h2>
-          {sinChoferes ? (
-            <Note variant="warn">No hay choferes. Pide alta a administración.</Note>
+          {sinChoferesActivos ? (
+            <Note variant="warn">
+              No hay choferes activos. Pide alta o reactivación a administración.
+            </Note>
           ) : null}
           <div className="mt-3 grid gap-3 sm:grid-cols-3">
             <Field label="Chofer" htmlFor="choferId">
@@ -522,7 +535,7 @@ function VisitWizard({
                 id="choferId"
                 value={choferId}
                 onChange={(e) => setChoferId(e.target.value)}
-                disabled={sinChoferes}
+                disabled={sinChoferesActivos}
               >
                 <option value="">Seleccione un chofer</option>
                 {choferes.map((c) => (
@@ -722,7 +735,7 @@ function VisitWizard({
             type="button"
             disabled={
               saving ||
-              (step === 'datos' && sinChoferes) ||
+              (step === 'datos' && sinChoferesActivos) ||
               (step === 'piezas' && bloqueoStock.length > 0)
             }
             onClick={() => void continuar()}

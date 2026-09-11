@@ -8,6 +8,7 @@ import {
   Unique,
   UpdateDateColumn,
 } from 'typeorm';
+import { EstadoChofer } from './estado-chofer.enum';
 
 @Entity('choferes')
 @Unique('choferes_nombre_uidx', ['nombre'])
@@ -17,6 +18,13 @@ export class Chofer {
 
   @Column()
   nombre: string;
+
+  @Column({
+    type: 'enum',
+    enum: EstadoChofer,
+    default: EstadoChofer.ACTIVO,
+  })
+  estado: EstadoChofer;
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;

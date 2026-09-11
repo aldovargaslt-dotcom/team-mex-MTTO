@@ -6,6 +6,7 @@ import { Rol } from '../auth/roles.enum';
 import { mensajesHub, puedeCrearVisita } from '../common/hub-policy';
 import { requireTrimmed } from '../common/require-trimmed';
 import { Chofer } from '../choferes/chofer.entity';
+import { EstadoChofer } from '../choferes/estado-chofer.enum';
 import { TiposVehiculoService } from '../tipos-vehiculo/tipos-vehiculo.service';
 import { EstadoVisita } from '../visitas/enums';
 import { Visita } from '../visitas/visita.entity';
@@ -122,12 +123,14 @@ export class UnidadesService {
 
   async hub(id: string, user: CurrentUser): Promise<UnidadHubDto> {
     const unidad = await this.findOne(id);
-    const [ultimoCerrado, hayChoferes, visitas] = await Promise.all([
+    const [ultimoCerrado, hayChoferesActivos, visitas] = await Promise.all([
       this.visitas.findOne({
         where: { unidad: { id }, estado: EstadoVisita.CERRADO },
         order: { cerradoAt: 'DESC' },
       }),
-      this.choferes.count().then((n) => n > 0),
+      this.choferes
+        .count({ where: { estado: EstadoChofer.ACTIVO } })
+        .then((n) => n > 0),
       this.visitas.find({
         where: { unidad: { id } },
         relations: { chofer: true, trabajos: true },
@@ -181,7 +184,7 @@ export class UnidadesService {
       borradores,
       historialCerrado,
       puedeCrearVisita: puedeCrearVisita(user.rol, unidad.estado),
-      mensajes: mensajesHub(user.rol, unidad.estado, hayChoferes),
+      mensajes: mensajesHub(user.rol, unidad.estado, hayChoferesActivos),
     };
   }
 

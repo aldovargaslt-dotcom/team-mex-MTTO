@@ -65,6 +65,7 @@ describe('Slice 2 visitas y choferes (e2e)', () => {
       .send({ nombre: '  Ana Soto  ' })
       .expect(201);
     expect(created.body.nombre).toBe('Ana Soto');
+    expect(created.body.estado).toBe('ACTIVO');
 
     const vacio = await request(server)
       .post('/choferes')
@@ -87,10 +88,25 @@ describe('Slice 2 visitas y choferes (e2e)', () => {
       .expect(200);
     expect(updated.body.nombre).toBe('Ana Soto R.');
 
-    await request(server)
+    const deactivated = await request(server)
+      .patch(`/choferes/${created.body.id}`)
+      .set(ADMIN)
+      .send({ estado: 'INACTIVO' })
+      .expect(200);
+    expect(deactivated.body.estado).toBe('INACTIVO');
+
+    const del = await request(server)
       .delete(`/choferes/${created.body.id}`)
       .set(ADMIN)
+      .expect(400);
+    expect(del.body.message).toMatch(/INACTIVO|no se elimina/i);
+
+    const still = await request(server)
+      .get(`/choferes/${created.body.id}`)
+      .set(ADMIN)
       .expect(200);
+    expect(still.body.nombre).toBe('Ana Soto R.');
+    expect(still.body.estado).toBe('INACTIVO');
   });
 
   it('supervisor no puede escribir choferes (403)', async () => {
@@ -102,20 +118,128 @@ describe('Slice 2 visitas y choferes (e2e)', () => {
     expect(crear.body.message).toMatch(/supervisor/i);
   });
 
-  it('chofer con visita cerrada no se elimina; hub U-101 conserva último km', async () => {
-    const list = await request(server).get('/choferes').set(ADMIN).expect(200);
-    const choferes = list.body as { id: string; nombre: string }[];
-    const borrados: string[] = [];
-    for (const c of choferes) {
-      const res = await request(server).delete(`/choferes/${c.id}`).set(ADMIN);
-      if (res.status === 409) {
-        expect(res.body.message).toMatch(/visitas asociadas/i);
-        continue;
-      }
-      expect(res.status).toBe(200);
-      borrados.push(c.nombre);
+  it('v0 chofer ACTIVO/INACTIVO: filtro visita, no baja física, historial conserva nombre', async () => {
+    const juan = await choferPorNombre('Juan Pérez');
+    const u101 = await unidadPorNumero('U-101');
+
+    const created = await request(server)
+      .post('/choferes')
+      .set(ADMIN)
+      .send({ nombre: 'Luisa Mora' })
+      .expect(201);
+    expect(created.body.estado).toBe('ACTIVO');
+
+    await request(server)
+      .patch(`/choferes/${juan.id}`)
+      .set(ADMIN)
+      .send({ estado: 'INACTIVO' })
+      .expect(200);
+
+    const activos = await request(server)
+      .get('/choferes')
+      .query({ estado: 'ACTIVO' })
+      .set(SUPERVISOR)
+      .expect(200);
+    expect(
+      (activos.body as { id: string }[]).find((c) => c.id === juan.id),
+    ).toBeUndefined();
+    expect(
+      (activos.body as { nombre: string }[]).some((c) => c.nombre === 'Luisa Mora'),
+    ).toBe(true);
+
+    const todos = await request(server).get('/choferes').set(ADMIN).expect(200);
+    expect(
+      (todos.body as { id: string; estado: string }[]).find((c) => c.id === juan.id)
+        ?.estado,
+    ).toBe('INACTIVO');
+
+    const draft = await request(server)
+      .post(`/unidades/${u101.id}/visitas`)
+      .set(SUPERVISOR)
+      .expect(201);
+    const assign = await request(server)
+      .patch(`/visitas/${draft.body.id}`)
+      .set(SUPERVISOR)
+      .send({ choferId: juan.id })
+      .expect(400);
+    expect(assign.body.message).toMatch(/activo/i);
+
+    const hub = await request(server)
+      .get(`/unidades/${u101.id}/hub`)
+      .set(SUPERVISOR)
+      .expect(200);
+    const historialJuan = (
+      hub.body.historialCerrado as {
+        choferId: string | null;
+        choferNombre: string | null;
+      }[]
+    ).find((v) => v.choferId === juan.id);
+    expect(historialJuan?.choferNombre).toBe('Juan Pérez');
+
+    const detalleCerrado = await request(server)
+      .get(`/visitas/${hub.body.historialCerrado[0].id}`)
+      .set(SUPERVISOR)
+      .expect(200);
+    if (detalleCerrado.body.chofer?.id === juan.id) {
+      expect(detalleCerrado.body.chofer.nombre).toBe('Juan Pérez');
     }
-    expect(borrados.length).toBeGreaterThan(0);
+
+    const del = await request(server)
+      .delete(`/choferes/${juan.id}`)
+      .set(ADMIN)
+      .expect(400);
+    expect(del.body.message).toMatch(/INACTIVO|no se elimina/i);
+    await request(server).get(`/choferes/${juan.id}`).set(ADMIN).expect(200);
+
+    await request(server)
+      .patch(`/choferes/${juan.id}`)
+      .set(ADMIN)
+      .send({ estado: 'ACTIVO' })
+      .expect(200);
+
+    const activosOtraVez = await request(server)
+      .get('/choferes')
+      .query({ estado: 'ACTIVO' })
+      .set(SUPERVISOR)
+      .expect(200);
+    expect(
+      (activosOtraVez.body as { id: string }[]).some((c) => c.id === juan.id),
+    ).toBe(true);
+
+    await request(server)
+      .patch(`/visitas/${draft.body.id}`)
+      .set(SUPERVISOR)
+      .send({ choferId: juan.id })
+      .expect(200);
+
+    await request(server).delete(`/visitas/${draft.body.id}`).set(SUPERVISOR);
+
+    await request(server)
+      .patch(`/choferes/${created.body.id}`)
+      .set(ADMIN)
+      .send({ estado: 'INACTIVO' })
+      .expect(200);
+  });
+
+  it('hub avisa si no hay choferes activos y conserva historial', async () => {
+    const list = await request(server).get('/choferes').set(ADMIN).expect(200);
+    const choferes = list.body as { id: string; estado: string }[];
+    for (const c of choferes) {
+      if (c.estado !== 'INACTIVO') {
+        await request(server)
+          .patch(`/choferes/${c.id}`)
+          .set(ADMIN)
+          .send({ estado: 'INACTIVO' })
+          .expect(200);
+      }
+    }
+
+    const vacio = await request(server)
+      .get('/choferes')
+      .query({ estado: 'ACTIVO' })
+      .set(SUPERVISOR)
+      .expect(200);
+    expect(vacio.body).toEqual([]);
 
     const u101 = await unidadPorNumero('U-101');
     const hub = await request(server)
@@ -123,14 +247,18 @@ describe('Slice 2 visitas y choferes (e2e)', () => {
       .set(SUPERVISOR)
       .expect(200);
     expect(hub.body.puedeCrearVisita).toBe(true);
+    expect(hub.body.mensajes).toContain(
+      'No hay choferes activos. Pide alta o reactivación a administración.',
+    );
     expect(hub.body.fichaCorta.ultimoKm).toBe(100);
+    expect(hub.body.historialCerrado[0].choferNombre).toBeTruthy();
 
-    for (const nombre of borrados) {
+    for (const c of choferes) {
       await request(server)
-        .post('/choferes')
+        .patch(`/choferes/${c.id}`)
         .set(ADMIN)
-        .send({ nombre })
-        .expect(201);
+        .send({ estado: 'ACTIVO' })
+        .expect(200);
     }
   });
 

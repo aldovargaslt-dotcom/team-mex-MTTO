@@ -45,7 +45,7 @@ El cliente usa el rol stub `X-Role: SUPERVISOR | ADMIN_DIRECTIVO` (y `X-User-Id`
 | U-102  | ACTIVA   | Segunda unidad activa                             |
 | U-103  | INACTIVA | Hub bloqueado: no se puede crear visita           |
 
-Choferes: Juan Pérez, María López, Carlos Ruiz.
+Choferes: Juan Pérez, María López, Carlos Ruiz (default **ACTIVO**). INACTIVO los oculta del select de visita; el historial cerrado conserva nombre/id.
 
 Inventario: familias Filtros/Frenos; SKUs `FIL-ACEITE-01` (stock 10, Camión/Camioneta), `PAST-FR-01` (stock 2, Camión), `FIL-CAB-01` (stock 5, Van); proveedor Refacciones del Norte.
 
@@ -57,8 +57,8 @@ Autenticación stub: encabezado `X-Role`. Falta el encabezado → 401.
 |---------|------------|-----------------|
 | `GET /tipos-vehiculo` | sí | sí |
 | `POST/PATCH/DELETE /tipos-vehiculo` | 403 | sí |
-| `GET /choferes` | sí | sí |
-| `POST/PATCH/DELETE /choferes` | 403 | sí |
+| `GET /choferes` (`?estado=ACTIVO` o `INACTIVO`) | sí | sí |
+| `POST/PATCH /choferes` (estado ACTIVO/INACTIVO; sin DELETE físico) | 403 | sí |
 | `GET /unidades` (filtros `numeroInterno`, `placas`, `tipo`) | sí | sí |
 | `GET /unidades/:id` y `/unidades/:id/hub` | sí | sí |
 | `POST/PATCH /unidades` | 403 | sí |
@@ -80,7 +80,7 @@ Documentación: [http://localhost:3001/docs](http://localhost:3001/docs).
 
 ## UI
 
-Rol stub → Unidades / Andon / Inventario. Admin: CRUD de tipos (con t_km/t_días) y choferes; inventario; historial de visitas en solo lectura (sin Nueva visita). Supervisor: inventario, Andon (Enterado) y visitas (Datos → Trabajos → Obs → Fotos → **Piezas** → Firmas → Confirmar).
+Rol stub → Unidades / Andon / Inventario. Admin: CRUD de tipos (con t_km/t_días) y choferes (estado ACTIVO/INACTIVO, filtro Activos/Todos); inventario; historial de visitas en solo lectura (sin Nueva visita). Supervisor: inventario, Andon (Enterado) y visitas (Datos → Trabajos → Obs → Fotos → **Piezas** → Firmas → Confirmar). El select de chofer en visita solo lista ACTIVO.
 
 Inventario: Ítems (búsqueda + Nuevo ítem), Familias, Proveedores, Stock, Movimientos, Pendientes.
 
