@@ -40,6 +40,8 @@ Variantes shadcn: `positive` | `adjust` | `linkish` | `quiet` | `dangerSoft`. Cl
 ## Evidencia
 
 - `docs/screenshots/pasteles_stock_lista.png`
+- `docs/screenshots/pasteles_stock_items.png`
+- `docs/screenshots/pasteles_stock_items_mobile.png`
 - `docs/screenshots/pasteles_stock_ficha.png`
 - `docs/screenshots/pasteles_stock_ficha_mobile.png`
 - `docs/screenshots/pasteles_stock_mobile.png`
