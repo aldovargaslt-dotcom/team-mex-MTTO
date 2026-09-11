@@ -859,63 +859,6 @@
     justify-content: flex-end;
   }
 
-  .ops-card-list {
-    display: none;
-  }
-
-  @media (max-width: 767px) {
-    .ops-desktop-table {
-      display: none;
-    }
-
-    .ops-card-list {
-      display: grid;
-      gap: 8px;
-    }
-
-    .ops-card-row {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 12px;
-      display: grid;
-      gap: 8px;
-    }
-
-    .ops-card-id {
-      display: grid;
-      gap: 2px;
-      min-width: 0;
-    }
-
-    .ops-card-id .ops-card-sku {
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--navy);
-      overflow-wrap: anywhere;
-    }
-
-    .ops-card-id .ops-card-name {
-      font-size: 14px;
-      color: var(--foreground);
-      overflow-wrap: anywhere;
-    }
-
-    .ops-card-meta {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 8px;
-      font-size: 12px;
-      color: var(--muted-foreground);
-    }
-
-    .ops-card-row .row-actions {
-      justify-content: flex-start;
-    }
-  }
-
   .btn-compact {
     min-height: 32px;
     min-width: 0;

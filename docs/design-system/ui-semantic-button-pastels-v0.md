@@ -2,11 +2,11 @@
 
 Estado: aceptado (visual only). **Este texto sustituye el mapa previo pastel-on-verbs** (mint Entrada / ámbar Ajuste / sky Detalle-Vincular).
 
-Problema: verbos de fila con fill mint/ámbar/sky se leen como estado, no como acción. En mobile la columna de botones recorta SKU/Nombre.
+Problema: verbos de fila con fill mint/ámbar/sky se leen como estado, no como acción.
 
 Meta: naranja sólido **un CTA por vista**. Secundarios = gris/outline navy. Pasteles de color **solo en badges de estado**. Primer corte: Inventario Stock, ficha ítem, inbox.
 
-Stack: CSS vars + variantes shadcn (`Button`). Dominio / Inventario apply / Andon / BrandPlate / ADR-000 / ADR-002 sin cambios.
+Stack: CSS vars + variantes shadcn (`Button`). Dominio / Inventario apply / Andon / BrandPlate / ADR-000 / ADR-002 sin cambios. **Solo tokens/variantes de botón** — layout de tablas sin cambios.
 
 ## Tokens (botón)
 
@@ -30,15 +30,15 @@ Verde / ámbar / rojo / sky **solo** en status badges (BAJO / AGOTADO / OK / Act
 - **Ítems lista:** Detalle → `outline` (texto navy, sin sky). Inactivar → `btn-danger-soft`. Activar → `outline`.
 - **Ficha ítem:** Guardar mínimo y Vincular → `outline` / secondary. Nuevo ítem = único naranja sólido.
 - **Inbox:** Marcar todas leídas → `btn-quiet` (gris, no sky).
-- **Mobile `<768` / 390:** filas card. Identidad (SKU + Nombre) completa primero; acciones **debajo**, sin recortar la columna de botones.
+
+Mobile card-row / no-clip @390 (identidad primero, acciones debajo) es **follow-up PR**, no este corte.
 
 ## Must
 
 1. Un naranja sólido `#EA7515` por vista.
 2. Verbos secundarios = outline/gris; Entrada puede tinte `#FFF7ED` / `#C2410C`.
 3. Inactivar = rose danger-soft. Detalle = outline navy, no sky fill.
-4. Hit ≥44 en viewport `<768`.
-5. Mobile Stock (e Ítems): no clip SKU/Nombre; stack actions under identity.
+4. Hit ≥44 en viewport `<768` (compact mobile ya 44; no bajar). Sin markup extra de layout.
 
 ## Evidencia
 
@@ -46,10 +46,7 @@ Verde / ámbar / rojo / sky **solo** en status badges (BAJO / AGOTADO / OK / Act
 - `docs/screenshots/pasteles_stock_items.png`
 - `docs/screenshots/pasteles_stock_ficha.png`
 - `docs/screenshots/pasteles_inbox_unread.png`
-- `docs/screenshots/pasteles_stock_mobile.png`
-- `docs/screenshots/pasteles_stock_items_mobile.png`
-- `docs/screenshots/pasteles_inbox_mobile.png`
 
 ## Don’t
 
-Dos naranjas sólidos; mint/ámbar/sky en verbos; neón / gradientes; blanco sobre pastel de badge usado como botón; recortar SKU/Nombre en 390; tocar BrandPlate/logo o dominio Andon.
+Dos naranjas sólidos; mint/ámbar/sky en verbos; neón / gradientes; blanco sobre pastel de badge usado como botón; cambiar layout de tablas (card-row) en este PR; tocar BrandPlate/logo o dominio Andon.

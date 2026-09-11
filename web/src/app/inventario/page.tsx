@@ -297,65 +297,11 @@ export default function ItemsPage() {
 
       <FormAlert>{error}</FormAlert>
 
-      <div className="ops-desktop-table">
-        <DataTable
-          columns={columns}
-          data={filtered}
-          empty="No hay ítems que coincidan. Use Nuevo ítem para dar de alta un SKU."
-        />
-      </div>
-      <div className="ops-card-list" aria-label="Ítems">
-        {filtered.length === 0 ? (
-          <p className="muted">
-            No hay ítems que coincidan. Use Nuevo ítem para dar de alta un SKU.
-          </p>
-        ) : (
-          filtered.map((item) => (
-            <article key={item.id} className="ops-card-row">
-              <div className="ops-card-id">
-                <span className="ops-card-sku">{item.sku}</span>
-                <span className="ops-card-name">{item.nombre}</span>
-                {item.oem ? (
-                  <span className="text-xs text-muted-foreground">OEM {item.oem}</span>
-                ) : null}
-              </div>
-              <div className="ops-card-meta">
-                <span className="mono">
-                  {item.stock} {etiquetaUom(item.uom)}
-                </span>
-                <StockAlertaBadge alerta={item.alerta} />
-                <Badge variant={item.activo ? 'success' : 'muted'}>
-                  {item.activo ? 'Activo' : 'Inactivo'}
-                </Badge>
-              </div>
-              <div className="row-actions" onClick={(e) => e.stopPropagation()}>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="compact"
-                  onClick={() => {
-                    const next = openId === item.id ? null : item.id;
-                    setOpenId(next);
-                    if (next) {
-                      setMinQty(item.minQty == null ? '' : String(item.minQty));
-                    }
-                  }}
-                >
-                  Detalle
-                </Button>
-                <Button
-                  type="button"
-                  variant={item.activo ? 'dangerSoft' : 'outline'}
-                  size="compact"
-                  onClick={() => void toggleActivo(item)}
-                >
-                  {item.activo ? 'Inactivar' : 'Activar'}
-                </Button>
-              </div>
-            </article>
-          ))
-        )}
-      </div>
+      <DataTable
+        columns={columns}
+        data={filtered}
+        empty="No hay ítems que coincidan. Use Nuevo ítem para dar de alta un SKU."
+      />
 
       {detalle ? (
         <Card className="mt-3 p-4">
