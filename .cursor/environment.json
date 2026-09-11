@@ -1,0 +1,21 @@
+{
+  "name": "Team Mex — Mantenimiento",
+  "install": "bash .cursor/install.sh",
+  "start": "bash .cursor/start.sh",
+  "terminals": [
+    {
+      "name": "API",
+      "command": "cd api && npm run start:dev",
+      "description": "NestJS API on http://localhost:3001 (Swagger at /docs)."
+    },
+    {
+      "name": "Web",
+      "command": "cd web && API_URL=http://localhost:3001 npm run dev",
+      "description": "Next.js UI on http://localhost:3000 (proxies /backend to the API)."
+    }
+  ],
+  "ports": [
+    { "name": "web", "port": 3000 },
+    { "name": "api", "port": 3001 }
+  ]
+}
