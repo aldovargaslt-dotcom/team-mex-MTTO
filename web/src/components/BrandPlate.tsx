@@ -6,8 +6,8 @@ export function BrandPlate() {
       <Image
         src="/brand/logo-team-mex-shell-white.png"
         alt="Team Mex"
-        width={461}
-        height={194}
+        width={704}
+        height={378}
         priority
         unoptimized
         className="h-9 w-auto max-h-9 object-contain object-left"
