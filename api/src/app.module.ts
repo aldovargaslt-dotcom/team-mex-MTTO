@@ -7,6 +7,7 @@ import { RolesGuard } from './auth/roles.guard';
 import { HealthController } from './health.controller';
 import { ChoferesModule } from './choferes/choferes.module';
 import { ensureModuleSchemas } from './db/ensure-schemas';
+import { AndonModule } from './andon/andon.module';
 import { InventarioModule } from './inventario/inventario.module';
 import { OutboxModule } from './kernel/outbox/outbox.module';
 import { SeedModule } from './seed/seed.module';
@@ -39,6 +40,7 @@ import { VisitasModule } from './visitas/visitas.module';
     UnidadesModule,
     ChoferesModule,
     InventarioModule,
+    AndonModule,
     VisitasModule,
     SeedModule,
   ],

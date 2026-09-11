@@ -10,6 +10,6 @@ El kernel de Team Mex es deliberadamente delgado. Solo vive aquí lo que varios 
 - Roles (`SUPERVISOR`, `ADMIN_DIRECTIVO`)
 - Outbox de integración (eventos entre módulos, sin FKs cruzadas)
 
-Mantenimiento es dueño de Visita (datos, trabajos, observaciones, fotos, firmas, **piezas como líneas de consumo**). Inventario es dueño de Familia, Ítem/SKU, Proveedor, ÍtemProveedor, Compatibilidad, Stock, Movimiento y Pendiente de comprobante.
+Mantenimiento es dueño de Visita (datos, trabajos, observaciones, fotos, firmas, **piezas como líneas de consumo**). Inventario es dueño de Familia, Ítem/SKU, Proveedor, ÍtemProveedor, Compatibilidad, Stock, Movimiento y Pendiente de comprobante. Andon es dueño de avisos de mantenimiento vencido (schema `andon`; ADR-005: no alertas de stock).
 
-El kernel no conoce stock, costos ni catálogo de refacciones. Inventario no conoce la entidad Visita: solo IDs opacos (`visitaId`, `tipoVehiculoId`) y el payload `VisitaCerrada.consumos`.
+El kernel no conoce stock, costos ni catálogo de refacciones. Inventario no conoce la entidad Visita: solo IDs opacos (`visitaId`, `tipoVehiculoId`) y el payload `VisitaCerrada.consumos`. Andon consume el mismo envelope e ignora `consumos`.

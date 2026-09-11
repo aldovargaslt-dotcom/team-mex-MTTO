@@ -4,7 +4,7 @@ import { FormEvent, useEffect, useState } from 'react';
 import { RoleGate } from '@/components/RoleGate';
 import { api, HttpError } from '@/lib/api';
 import { useRole } from '@/lib/role';
-import type { TipoVehiculo } from '@/lib/types';
+import type { TipoVehiculo, UmbralAndon } from '@/lib/types';
 
 export default function TiposPage() {
   return (
@@ -17,15 +17,23 @@ export default function TiposPage() {
 function TiposAdmin() {
   const { role, userId } = useRole();
   const [tipos, setTipos] = useState<TipoVehiculo[]>([]);
+  const [umbrales, setUmbrales] = useState<Record<string, UmbralAndon>>({});
   const [nombre, setNombre] = useState('');
   const [descripcion, setDescripcion] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editNombre, setEditNombre] = useState('');
   const [editDescripcion, setEditDescripcion] = useState('');
+  const [editTkm, setEditTkm] = useState('10000');
+  const [editTdias, setEditTdias] = useState('90');
 
   async function cargar() {
-    setTipos(await api<TipoVehiculo[]>('/tipos-vehiculo', { role: role!, userId }));
+    const [lista, umb] = await Promise.all([
+      api<TipoVehiculo[]>('/tipos-vehiculo', { role: role!, userId }),
+      api<UmbralAndon[]>('/andon/umbrales', { role: role!, userId }),
+    ]);
+    setTipos(lista);
+    setUmbrales(Object.fromEntries(umb.map((u) => [u.tipoVehiculoId, u])));
   }
 
   useEffect(() => {
@@ -75,6 +83,15 @@ function TiposAdmin() {
           descripcion: editDescripcion.trim() || undefined,
         }),
       });
+      await api(`/andon/umbrales/${id}`, {
+        role: role!,
+        userId,
+        method: 'PATCH',
+        body: JSON.stringify({
+          tKm: Number(editTkm),
+          tDias: Number(editTdias),
+        }),
+      });
       setEditingId(null);
       await cargar();
     } catch (err) {
@@ -109,7 +126,7 @@ function TiposAdmin() {
       <div className="page-head">
         <div>
           <h1>Tipos de vehículo</h1>
-          <p className="lede">Catálogo usado al dar de alta o filtrar unidades.</p>
+          <p className="lede">Catálogo y umbrales Andon (t_km / t_días) por tipo.</p>
         </div>
       </div>
 
@@ -165,6 +182,24 @@ function TiposAdmin() {
                       aria-label="Descripción del tipo"
                       placeholder="Descripción"
                     />
+                    <div className="flex gap-2">
+                      <input
+                        type="number"
+                        min={1}
+                        value={editTkm}
+                        onChange={(e) => setEditTkm(e.target.value)}
+                        aria-label="Umbral kilómetros"
+                        placeholder="t_km"
+                      />
+                      <input
+                        type="number"
+                        min={1}
+                        value={editTdias}
+                        onChange={(e) => setEditTdias(e.target.value)}
+                        aria-label="Umbral días"
+                        placeholder="t_días"
+                      />
+                    </div>
                   </div>
                   <button
                     type="button"
@@ -186,6 +221,11 @@ function TiposAdmin() {
                   <div>
                     <strong>{tipo.nombre}</strong>
                     <div className="muted">{tipo.descripcion || 'Sin descripción'}</div>
+                    <div className="muted">
+                      Andon: {(umbrales[tipo.id]?.tKm ?? 10000).toLocaleString('es-MX')} km
+                      {' / '}
+                      {umbrales[tipo.id]?.tDias ?? 90} días
+                    </div>
                   </div>
                   <button
                     type="button"
@@ -194,6 +234,8 @@ function TiposAdmin() {
                       setEditingId(tipo.id);
                       setEditNombre(tipo.nombre);
                       setEditDescripcion(tipo.descripcion ?? '');
+                      setEditTkm(String(umbrales[tipo.id]?.tKm ?? 10000));
+                      setEditTdias(String(umbrales[tipo.id]?.tDias ?? 90));
                     }}
                   >
                     Editar

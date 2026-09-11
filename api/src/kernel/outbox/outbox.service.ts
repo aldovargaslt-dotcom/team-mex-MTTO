@@ -11,10 +11,12 @@ export type OutboxHandler = (
 @Injectable()
 export class OutboxService {
   private readonly logger = new Logger(OutboxService.name);
-  private readonly handlers = new Map<string, OutboxHandler>();
+  private readonly handlers = new Map<string, OutboxHandler[]>();
 
   register(type: string, handler: OutboxHandler) {
-    this.handlers.set(type, handler);
+    const list = this.handlers.get(type) ?? [];
+    list.push(handler);
+    this.handlers.set(type, list);
   }
 
   async enqueueAndDispatch(
@@ -47,13 +49,15 @@ export class OutboxService {
     });
     await manager.save(event);
 
-    const handler = this.handlers.get(type);
-    if (!handler) {
+    const handlers = this.handlers.get(type) ?? [];
+    if (handlers.length === 0) {
       this.logger.warn(`Sin handler para outbox ${type}; queda pendiente.`);
       return event;
     }
 
-    await handler(payload as unknown as Record<string, unknown>, manager);
+    for (const handler of handlers) {
+      await handler(payload, manager);
+    }
     event.processedAt = new Date();
     await manager.save(event);
     return event;

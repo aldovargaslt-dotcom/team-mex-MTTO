@@ -81,4 +81,32 @@ describe('OutboxService (ADR-001 / ADR-004 O1/O2)', () => {
     expect(event.processedAt).toEqual(processed.processedAt);
     expect(handlerCalls).toBe(0);
   });
+
+  it('despacha todos los handlers registrados para el mismo type', async () => {
+    const saved: OutboxEvent[] = [];
+    const manager = {
+      findOne: async () => null,
+      create: (_cls: unknown, data: Partial<OutboxEvent>) =>
+        Object.assign(new OutboxEvent(), data),
+      save: async (entity: OutboxEvent) => {
+        saved.push(entity);
+        return entity;
+      },
+    } as unknown as EntityManager;
+    const order: string[] = [];
+    const svc = new OutboxService();
+    svc.register(VISITA_CERRADA, async () => {
+      order.push('inventario');
+    });
+    svc.register(VISITA_CERRADA, async () => {
+      order.push('andon');
+    });
+    await svc.enqueueAndDispatch(
+      manager,
+      VISITA_CERRADA,
+      payloadFixture(randomUUID()),
+    );
+    expect(order).toEqual(['inventario', 'andon']);
+    expect(saved.some((e) => e.processedAt != null)).toBe(true);
+  });
 });

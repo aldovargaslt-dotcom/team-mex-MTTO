@@ -21,3 +21,4 @@ type VisitaCerrada = {
 - `eventId` = `outbox_events.id`.
 - `occurredAt` = el mismo ISO-8601 que `cerradoAt`.
 - Inventario **aplica** `consumos` según ADR-002; no interpreta el resto del envelope.
+- Andon **ignora** `consumos` (A7 / ADR-005); usa `unidadId`, `tipoVehiculoId`, `km`, `cerradoAt`, `visitaId`, `eventId`.

@@ -40,6 +40,12 @@ export function etiquetaUom(uom?: string | null) {
   return uom;
 }
 
+export function etiquetaEstadoAviso(estado: string) {
+  if (estado === 'ENTERADO') return 'Enterado';
+  if (estado === 'RESUELTO') return 'Resuelto';
+  return 'Abierto';
+}
+
 export function resumenOrigenPiezas(
   piezas: { origen: string }[],
 ) {

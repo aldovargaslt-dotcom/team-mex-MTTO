@@ -26,6 +26,9 @@ export function AppShell({ children }: { children: ReactNode }) {
               <NavLink href="/unidades" active={Boolean(pathname?.startsWith('/unidades'))}>
                 Unidades
               </NavLink>
+              <NavLink href="/andon" active={Boolean(pathname?.startsWith('/andon'))}>
+                Andon
+              </NavLink>
               <NavLink href="/inventario" active={Boolean(pathname?.startsWith('/inventario'))}>
                 Inventario
               </NavLink>

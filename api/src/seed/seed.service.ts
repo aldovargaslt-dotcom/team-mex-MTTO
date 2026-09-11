@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { Rol } from '../auth/roles.enum';
 import { Chofer } from '../choferes/chofer.entity';
 import { EstadoUnidad } from '../common/estado-unidad.enum';
+import { AndonService } from '../andon/andon.service';
 import { InventarioService } from '../inventario/inventario.service';
 import { TipoVehiculo } from '../tipos-vehiculo/tipo-vehiculo.entity';
 import { Unidad } from '../unidades/unidad.entity';
@@ -58,6 +59,7 @@ export class SeedService implements OnModuleInit {
     @InjectRepository(Chofer)
     private readonly choferes: Repository<Chofer>,
     private readonly inventario: InventarioService,
+    private readonly andon: AndonService,
   ) {}
 
   async onModuleInit() {
@@ -110,9 +112,10 @@ export class SeedService implements OnModuleInit {
     }
 
     await this.seedInventario();
+    await this.andon.seedDefaults();
 
     this.logger.log(
-      'Semilla lista (unidades, choferes, inventario v0).',
+      'Semilla lista (unidades, choferes, inventario v0, andon v0).',
     );
   }
 
