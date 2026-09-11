@@ -18,6 +18,8 @@ export type TipoMovimiento = 'ENTRADA' | 'SALIDA_OT' | 'AJUSTE';
 
 export type EstadoPendiente = 'PENDIENTE' | 'RECIBIDA';
 
+export type AlertaStock = 'OK' | 'BAJO' | 'AGOTADO';
+
 export type EstadoAviso = 'ABIERTO' | 'ENTERADO' | 'RESUELTO';
 
 export type TipoVehiculo = {
@@ -107,6 +109,8 @@ export type ItemInventario = {
   uom: string;
   activo: boolean;
   stock: number;
+  minQty: number | null;
+  alerta: AlertaStock | null;
   tipoVehiculoIds: string[];
   proveedores: {
     id: string;
@@ -135,6 +139,8 @@ export type StockRow = {
   activo: boolean;
   uom: string;
   qty: number;
+  minQty: number | null;
+  alerta: AlertaStock | null;
   updatedAt: string;
 };
 

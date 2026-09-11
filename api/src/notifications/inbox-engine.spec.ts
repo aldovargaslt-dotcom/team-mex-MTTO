@@ -16,6 +16,7 @@ import {
   avisoAbiertoCommand,
   avisoAbiertoDedupeKey,
   stockBajoCommand,
+  stockBajoDedupeKey,
 } from './inbox-rules';
 import { InMemoryInboxStore } from './in-memory-inbox-store';
 
@@ -69,9 +70,7 @@ describe('Notifications inbox (ADR-004 N1–N4 / ADR-006)', () => {
   describe('N2 mark read / badge / unread first', () => {
     it('marca leída por usuario, el badge baja y Todas pone no leídas primero', async () => {
       const { engine } = inboxHarness();
-      const abierto = await engine.ingest(
-        avisoAbiertoCommand(avisoInput),
-      );
+      const abierto = await engine.ingest(avisoAbiertoCommand(avisoInput));
       const stock = await engine.ingest(
         stockBajoCommand({
           itemId: 'item-1',
@@ -182,11 +181,28 @@ describe('Notifications inbox (ADR-004 N1–N4 / ADR-006)', () => {
         itemId: 'item-opa',
         sku: 'PAST-FR-01',
         nombre: 'Pastilla de freno',
+        qty: 2,
       });
       expect(cmd.sourceModule).toBe(SourceModule.INVENTARIO);
       expect(cmd.sourceEvent).toBe(SourceEvent.STOCK_BAJO);
       expect(cmd.subjectType).toBe(SubjectType.ITEM);
-      expect(cmd.dedupeKey).toContain('INVENTARIO');
+      expect(cmd.subjectRef).toBe('item-opa');
+      expect(cmd.sourceRef).toBe('item-opa');
+      expect(cmd.severity).toBe(Severity.WARNING);
+      expect(cmd.dedupeKey).toBe(stockBajoDedupeKey('item-opa'));
+      expect(cmd.dedupeKey).toBe('INV:stock-bajo:item-opa');
+
+      const full = stockBajoCommand({
+        eventId: 'evt-envelope',
+        itemId: 'item-opa',
+        sku: 'PAST-FR-01',
+        qty: 2,
+        minQty: 5,
+        occurredAt: '2026-09-11T16:00:00.000Z',
+      });
+      expect(full.sourceRef).toBe('evt-envelope');
+      expect(full.subjectRef).toBe('item-opa');
+      expect(full.createdAt?.toISOString()).toBe('2026-09-11T16:00:00.000Z');
 
       const avisoEntity = readFileSync(
         join(__dirname, '../andon/entities/aviso.entity.ts'),
@@ -200,6 +216,28 @@ describe('Notifications inbox (ADR-004 N1–N4 / ADR-006)', () => {
       );
       expect(andonDir).toMatch(/ANDON_SCHEMA = 'andon'/);
       expect(andonDir).not.toMatch(/stock/i);
+    });
+
+    it('qty=0 es CRITICAL; StockReabastecido expira el matching dedupe', async () => {
+      const { engine } = inboxHarness();
+      const cmd = stockBajoCommand({
+        itemId: 'item-zero',
+        sku: 'FIL-CAB-01',
+        nombre: 'Filtro de cabina',
+        qty: 0,
+      });
+      expect(cmd.severity).toBe(Severity.CRITICAL);
+      expect(cmd.title).toMatch(/agotado/i);
+      await engine.ingest(cmd);
+      const [row] = await engine.list(USER, 'unread');
+      expect(row.deeplinkPath).toBe('/inventario/stock');
+      expect(await engine.badge(USER)).toBe(1);
+
+      const expired = await engine.expireDedupe(
+        stockBajoDedupeKey('item-zero'),
+      );
+      expect(expired?.expiresAt).toBeTruthy();
+      expect(await engine.list(USER, 'all')).toEqual([]);
     });
   });
 });

@@ -3,9 +3,11 @@
 import { FormEvent, useEffect, useMemo, useState } from 'react';
 import { api, HttpError } from '@/lib/api';
 import { etiquetaUom } from '@/lib/format';
+import { notifyInboxChanged } from '@/lib/inbox';
 import { useRole } from '@/lib/role';
 import type { Familia, ItemInventario, Proveedor, TipoVehiculo } from '@/lib/types';
 import { Badge } from '@/components/ui/badge';
+import { StockAlertaBadge } from '@/components/StatusBadge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { DataTable } from '@/components/ui/data-table';
@@ -36,6 +38,7 @@ export default function ItemsPage() {
   const [oem, setOem] = useState('');
   const [tipoIds, setTipoIds] = useState<Set<string>>(new Set());
   const [openId, setOpenId] = useState<string | null>(null);
+  const [minQty, setMinQty] = useState('');
   const [provId, setProvId] = useState('');
   const [codigoProv, setCodigoProv] = useState('');
 
@@ -94,6 +97,28 @@ export default function ItemsPage() {
       await cargar();
     } catch (err) {
       setError(err instanceof HttpError ? err.message : 'No se pudo crear el ítem.');
+    }
+  }
+
+  async function guardarMin(item: ItemInventario) {
+    const next = minQty.trim() === '' ? null : Number(minQty);
+    if (next !== null && (!Number.isInteger(next) || next < 0)) {
+      setError('El mínimo debe ser un entero ≥ 0, o vacío para no alertar.');
+      return;
+    }
+    if (next === item.minQty) return;
+    setError(null);
+    try {
+      await api(`/inventario/items/${item.id}`, {
+        role: role!,
+        userId,
+        method: 'PATCH',
+        body: JSON.stringify({ minQty: next }),
+      });
+      notifyInboxChanged();
+      await cargar();
+    } catch (err) {
+      setError(err instanceof HttpError ? err.message : 'No se pudo guardar el mínimo.');
     }
   }
 
@@ -194,9 +219,12 @@ export default function ItemsPage() {
       accessorKey: 'stock',
       header: 'Stock',
       cell: ({ row }) => (
-        <span className="mono">
-          {row.original.stock} {etiquetaUom(row.original.uom)}
-        </span>
+        <div className="flex items-center gap-2">
+          <span className="mono">
+            {row.original.stock} {etiquetaUom(row.original.uom)}
+          </span>
+          <StockAlertaBadge alerta={row.original.alerta} />
+        </div>
       ),
     },
     {
@@ -217,7 +245,15 @@ export default function ItemsPage() {
             type="button"
             variant="secondary"
             size="compact"
-            onClick={() => setOpenId(openId === row.original.id ? null : row.original.id)}
+            onClick={() => {
+              const next = openId === row.original.id ? null : row.original.id;
+              setOpenId(next);
+              if (next) {
+                setMinQty(
+                  row.original.minQty == null ? '' : String(row.original.minQty),
+                );
+              }
+            }}
           >
             Detalle
           </Button>
@@ -270,7 +306,48 @@ export default function ItemsPage() {
       {detalle ? (
         <Card className="mt-3 p-4">
           <p className="text-sm font-semibold text-navy">
-            {detalle.sku} · compatibilidad
+            {detalle.sku} · {detalle.nombre}
+          </p>
+          <div className="mt-2 flex flex-wrap items-end gap-3">
+            <p className="muted">
+              Stock {detalle.stock} {etiquetaUom(detalle.uom)}
+            </p>
+            <StockAlertaBadge alerta={detalle.alerta} />
+          </div>
+          <form
+            className="mt-3 flex flex-wrap items-end gap-2"
+            onSubmit={(e) => {
+              e.preventDefault();
+              void guardarMin(detalle);
+            }}
+          >
+            <Field
+              label="Mínimo"
+              htmlFor="fichaStockMin"
+              hint={
+                <span className="text-xs text-muted-foreground">
+                  Vacío = sin alerta. Supervisor y Admin.
+                </span>
+              }
+            >
+              <Input
+                id="fichaStockMin"
+                type="number"
+                min={0}
+                step={1}
+                inputMode="numeric"
+                placeholder="—"
+                value={minQty}
+                onChange={(e) => setMinQty(e.target.value)}
+                className="w-[7rem]"
+              />
+            </Field>
+            <Button type="submit" variant="secondary" size="compact">
+              Guardar mínimo
+            </Button>
+          </form>
+          <p className="text-sm font-semibold text-navy" style={{ marginTop: 12 }}>
+            Compatibilidad
           </p>
           <div className="chip-row">
             {tipos.map((tipo) => (

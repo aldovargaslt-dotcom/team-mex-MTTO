@@ -5,7 +5,10 @@ import { App } from 'supertest/types';
 import { DataSource } from 'typeorm';
 import { AppModule } from '../src/app.module';
 import { configureApp } from '../src/configure-app';
-import { assertVisitaCerradaOutbox, countVisitaCerradaOutbox } from './assert-visita-cerrada-outbox';
+import {
+  assertVisitaCerradaOutbox,
+  countVisitaCerradaOutbox,
+} from './assert-visita-cerrada-outbox';
 
 const SUPERVISOR = { 'X-Role': 'SUPERVISOR', 'X-User-Id': 'sup-inv' };
 const ADMIN = { 'X-Role': 'ADMIN_DIRECTIVO', 'X-User-Id': 'adm-inv' };
@@ -37,15 +40,18 @@ describe('Inventario v0 + piezas en visita (e2e)', () => {
       .query({ numeroInterno })
       .set(ADMIN)
       .expect(200);
-    const found = (res.body as { numeroInterno: string; id: string; tipo: { id: string } }[]).find(
-      (u) => u.numeroInterno === numeroInterno,
-    );
+    const found = (
+      res.body as { numeroInterno: string; id: string; tipo: { id: string } }[]
+    ).find((u) => u.numeroInterno === numeroInterno);
     if (!found) throw new Error(`No se sembró ${numeroInterno}`);
     return found;
   }
 
   async function choferPorNombre(nombre: string) {
-    const res = await request(server).get('/choferes').set(SUPERVISOR).expect(200);
+    const res = await request(server)
+      .get('/choferes')
+      .set(SUPERVISOR)
+      .expect(200);
     const found = (res.body as { id: string; nombre: string }[]).find(
       (c) => c.nombre === nombre,
     );
@@ -54,16 +60,22 @@ describe('Inventario v0 + piezas en visita (e2e)', () => {
   }
 
   async function itemPorSku(sku: string) {
-    const res = await request(server).get('/inventario/items').set(SUPERVISOR).expect(200);
-    const found = (res.body as { id: string; sku: string; stock: number }[]).find(
-      (i) => i.sku === sku,
-    );
+    const res = await request(server)
+      .get('/inventario/items')
+      .set(SUPERVISOR)
+      .expect(200);
+    const found = (
+      res.body as { id: string; sku: string; stock: number }[]
+    ).find((i) => i.sku === sku);
     if (!found) throw new Error(`No se sembró SKU ${sku}`);
     return found;
   }
 
   async function tipoPorNombre(nombre: string) {
-    const res = await request(server).get('/tipos-vehiculo').set(ADMIN).expect(200);
+    const res = await request(server)
+      .get('/tipos-vehiculo')
+      .set(ADMIN)
+      .expect(200);
     const found = (res.body as { id: string; nombre: string }[]).find(
       (t) => t.nombre === nombre,
     );
@@ -71,7 +83,11 @@ describe('Inventario v0 + piezas en visita (e2e)', () => {
     return found;
   }
 
-  async function prepararCierre(visitaId: string, choferId: string, km: number) {
+  async function prepararCierre(
+    visitaId: string,
+    choferId: string,
+    km: number,
+  ) {
     await request(server)
       .patch(`/visitas/${visitaId}`)
       .set(SUPERVISOR)
@@ -125,8 +141,13 @@ describe('Inventario v0 + piezas en visita (e2e)', () => {
       .expect(201);
     expect(entrada.body.stock).toBe(4);
 
-    const stock = await request(server).get('/inventario/stock').set(ADMIN).expect(200);
-    const row = (stock.body as { sku: string; qty: number }[]).find((s) => s.sku === 'FUS-10A');
+    const stock = await request(server)
+      .get('/inventario/stock')
+      .set(ADMIN)
+      .expect(200);
+    const row = (stock.body as { sku: string; qty: number }[]).find(
+      (s) => s.sku === 'FUS-10A',
+    );
     expect(row?.qty).toBe(4);
 
     const u101 = await unidadPorNumero('U-101');
@@ -176,9 +197,7 @@ describe('Inventario v0 + piezas en visita (e2e)', () => {
       .patch(`/visitas/${draft.body.id}`)
       .set(SUPERVISOR)
       .send({
-        piezas: [
-          { itemId: filtro.id, qty: 2, origen: 'DESDE_STOCK' },
-        ],
+        piezas: [{ itemId: filtro.id, qty: 2, origen: 'DESDE_STOCK' }],
       })
       .expect(200);
 
@@ -201,8 +220,14 @@ describe('Inventario v0 + piezas en visita (e2e)', () => {
       .get('/inventario/movimientos')
       .set(SUPERVISOR)
       .expect(200);
-    const salida = (movs.body as { tipo: string; sku: string; visitaId: string; delta: number }[])
-      .find((m) => m.tipo === 'SALIDA_OT' && m.visitaId === draft.body.id);
+    const salida = (
+      movs.body as {
+        tipo: string;
+        sku: string;
+        visitaId: string;
+        delta: number;
+      }[]
+    ).find((m) => m.tipo === 'SALIDA_OT' && m.visitaId === draft.body.id);
     expect(salida?.sku).toBe('FIL-ACEITE-01');
     expect(salida?.delta).toBe(-2);
 
@@ -231,7 +256,11 @@ describe('Inventario v0 + piezas en visita (e2e)', () => {
       .set(SUPERVISOR)
       .send({
         piezas: [
-          { itemId: pastillas.id, qty: pastillas.stock + 5, origen: 'DESDE_STOCK' },
+          {
+            itemId: pastillas.id,
+            qty: pastillas.stock + 5,
+            origen: 'DESDE_STOCK',
+          },
         ],
       })
       .expect(200);
@@ -240,7 +269,9 @@ describe('Inventario v0 + piezas en visita (e2e)', () => {
       .post(`/visitas/${draft.body.id}/cerrar`)
       .set(SUPERVISOR)
       .expect(400);
-    expect(bloqueado.body.message).toMatch(/stock insuficiente|compra externa/i);
+    expect(bloqueado.body.message).toMatch(
+      /stock insuficiente|compra externa/i,
+    );
 
     const sigueBorrador = await request(server)
       .get(`/visitas/${draft.body.id}`)
@@ -256,7 +287,11 @@ describe('Inventario v0 + piezas en visita (e2e)', () => {
       .set(SUPERVISOR)
       .send({
         piezas: [
-          { itemId: pastillas.id, qty: pastillas.stock + 5, origen: 'COMPRA_EXTERNA' },
+          {
+            itemId: pastillas.id,
+            qty: pastillas.stock + 5,
+            origen: 'COMPRA_EXTERNA',
+          },
         ],
       })
       .expect(200);
@@ -288,9 +323,14 @@ describe('Inventario v0 + piezas en visita (e2e)', () => {
       .get('/inventario/pendientes-comprobante')
       .set(ADMIN)
       .expect(200);
-    const pend = (pendientes.body as { id: string; visitaId: string; sku: string; estado: string }[]).find(
-      (p) => p.visitaId === draft.body.id,
-    );
+    const pend = (
+      pendientes.body as {
+        id: string;
+        visitaId: string;
+        sku: string;
+        estado: string;
+      }[]
+    ).find((p) => p.visitaId === draft.body.id);
     expect(pend).toBeTruthy();
     expect(pend?.sku).toBe('PAST-FR-01');
     expect(pend?.estado).toBe('PENDIENTE');
@@ -308,7 +348,10 @@ describe('Inventario v0 + piezas en visita (e2e)', () => {
       .expect(201);
     expect(recibida.body.estado).toBe('RECIBIDA');
 
-    const movs = await request(server).get('/inventario/movimientos').set(ADMIN).expect(200);
+    const movs = await request(server)
+      .get('/inventario/movimientos')
+      .set(ADMIN)
+      .expect(200);
     expect(
       (movs.body as { visitaId: string; tipo: string }[]).some(
         (m) => m.visitaId === draft.body.id && m.tipo === 'SALIDA_OT',
@@ -372,5 +415,154 @@ describe('Inventario v0 + piezas en visita (e2e)', () => {
       (fk) => fk.src_table === 'visita_piezas' && fk.dst_table === 'items',
     );
     expect(piezaItemFk).toBeUndefined();
+  });
+
+  it('S1–S4 min_qty: envelope StockBajo, inbox ITEM, entrada expira; sin andon', async () => {
+    const familia = await request(server)
+      .post('/inventario/familias')
+      .set(SUPERVISOR)
+      .send({ nombre: 'Umbral demo' })
+      .expect(201);
+    const item = await request(server)
+      .post('/inventario/items')
+      .set(ADMIN)
+      .send({
+        sku: 'UMB-BAJO-01',
+        nombre: 'Junta umbral',
+        familiaId: familia.body.id,
+      })
+      .expect(201);
+    expect(item.body.minQty).toBeNull();
+    expect(item.body.alerta).toBeNull();
+
+    await request(server)
+      .post('/inventario/movimientos/entrada')
+      .set(SUPERVISOR)
+      .send({ itemId: item.body.id, qty: 4 })
+      .expect(201);
+
+    const neg = await request(server)
+      .patch(`/inventario/items/${item.body.id}`)
+      .set(SUPERVISOR)
+      .send({ minQty: -1 })
+      .expect(400);
+    expect(neg.body.message).toMatch(/mínimo|negativo/i);
+
+    const conMin = await request(server)
+      .patch(`/inventario/items/${item.body.id}`)
+      .set(ADMIN)
+      .send({ minQty: 5 })
+      .expect(200);
+    expect(conMin.body.minQty).toBe(5);
+    expect(conMin.body.stock).toBe(4);
+    expect(conMin.body.alerta).toBe('BAJO');
+
+    const stock = await request(server)
+      .get('/inventario/stock')
+      .set(SUPERVISOR)
+      .expect(200);
+    const row = (
+      stock.body as {
+        sku: string;
+        qty: number;
+        minQty: number | null;
+        alerta: string | null;
+      }[]
+    ).find((s) => s.sku === 'UMB-BAJO-01');
+    expect(row).toMatchObject({ qty: 4, minQty: 5, alerta: 'BAJO' });
+
+    const inbox = await request(server)
+      .get('/notifications')
+      .query({ filter: 'unread' })
+      .set(SUPERVISOR)
+      .expect(200);
+    const alert = (
+      inbox.body as {
+        title: string;
+        severity: string;
+        sourceModule: string;
+        sourceEvent: string;
+        sourceRef: string;
+        subjectType: string;
+        subjectRef: string | null;
+        deeplinkPath: string;
+        dedupeKey: string;
+      }[]
+    ).find((n) => n.title.includes('UMB-BAJO-01'));
+    expect(alert).toBeTruthy();
+    expect(alert!.sourceModule).toBe('INVENTARIO');
+    expect(alert!.sourceEvent).toBe('StockBajo');
+    expect(alert!.subjectType).toBe('ITEM');
+    expect(alert!.subjectRef).toBe(item.body.id);
+    expect(alert!.sourceRef).toMatch(
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i,
+    );
+    expect(alert!.sourceRef).not.toBe(item.body.id);
+    expect(alert!.severity).toBe('WARNING');
+    expect(alert!.deeplinkPath).toBe('/inventario/stock');
+    expect(alert!.dedupeKey).toBe(`INV:stock-bajo:${item.body.id}`);
+
+    const zero = await request(server)
+      .post('/inventario/movimientos/ajuste')
+      .set(SUPERVISOR)
+      .send({ itemId: item.body.id, qtyDelta: -4 })
+      .expect(201);
+    expect(zero.body.stock).toBe(0);
+    expect(zero.body.alerta).toBe('AGOTADO');
+
+    const critical = await request(server)
+      .get('/notifications')
+      .query({ filter: 'unread' })
+      .set(ADMIN)
+      .expect(200);
+    const agotado = (
+      critical.body as { title: string; severity: string }[]
+    ).find((n) => n.title.includes('UMB-BAJO-01'));
+    expect(agotado?.severity).toBe('CRITICAL');
+    expect(agotado?.title).toMatch(/agotado/i);
+
+    const reabastecido = await request(server)
+      .post('/inventario/movimientos/entrada')
+      .set(SUPERVISOR)
+      .send({ itemId: item.body.id, qty: 8 })
+      .expect(201);
+    expect(reabastecido.body.stock).toBe(8);
+    expect(reabastecido.body.alerta).toBe('OK');
+
+    const after = await request(server)
+      .get('/notifications')
+      .query({ filter: 'all' })
+      .set(SUPERVISOR)
+      .expect(200);
+    expect(
+      (after.body as { title: string }[]).some((n) =>
+        n.title.includes('UMB-BAJO-01'),
+      ),
+    ).toBe(false);
+
+    const ds = app.get(DataSource);
+    const stockCols: { column_name: string }[] = await ds.query(
+      `SELECT column_name FROM information_schema.columns
+       WHERE table_schema = 'inventario' AND table_name = 'stock'`,
+    );
+    expect(stockCols.map((c) => c.column_name)).toContain('min_qty');
+    const itemCols: { column_name: string }[] = await ds.query(
+      `SELECT column_name FROM information_schema.columns
+       WHERE table_schema = 'inventario' AND table_name = 'items'`,
+    );
+    expect(itemCols.map((c) => c.column_name)).not.toContain('min_qty');
+    expect(itemCols.map((c) => c.column_name)).not.toContain('stock_min');
+
+    const tables: { table_name: string }[] = await ds.query(
+      `SELECT table_name FROM information_schema.tables WHERE table_schema = 'andon'`,
+    );
+    expect(
+      tables.map((t) => t.table_name).some((n) => /stock|sku/i.test(n)),
+    ).toBe(false);
+    const avisosAntes = await request(server)
+      .get('/andon/avisos')
+      .set(ADMIN)
+      .expect(200);
+    expect(Array.isArray(avisosAntes.body)).toBe(true);
   });
 });

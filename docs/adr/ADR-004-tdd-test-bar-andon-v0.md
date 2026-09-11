@@ -47,6 +47,15 @@ TDD en `api/src/notifications/inbox-engine.spec.ts` (fakes en memoria; sin Postg
 - **N3** — productor Andon `AvisoAbierto` → ítem `WARNING`, `source_module=ANDON`, `subject_type=UNIDAD`. WhatsApp sigue en `NotifyPort`.
 - **N4** — `AvisoResuelto` pone `expires_at` en el matching `dedupe_key`; handler `StockBajo` escribe `notifications` (no `andon`); cero tablas/filas de stock en `andon.*`.
 
+## Inventario umbral (S1–S4)
+
+TDD en `api/src/inventario/stock-alerta-rules.spec.ts` (puro + fake `StockAlertPort`) + e2e de cruce.
+
+- **S1** — `min_qty` null = sin alerta (opt-in). `qty <= min_qty` → Bajo; `qty = 0` → Agotado / `CRITICAL`; `qty > 0` → `WARNING`.
+- **S2** — cruce a `qty <= min_qty` emite `StockBajo` por `StockAlertPort` con envelope `{ eventId, itemId, sku, qty, minQty, occurredAt }`; cruce a `qty > min_qty` emite `StockReabastecido`. Notifications: `source_module=INVENTARIO`, `subject_type=ITEM`, `subject_ref=itemId`, `dedupe_key=INV:stock-bajo:{itemId}`.
+- **S3** — cero escrituras en `andon.*` (ADR-005). WhatsApp Inventario fuera.
+- **S4** — dominio Inventario no escribe `notifications.*` ni `andon.*`; solo el adapter Notifications llama `ingestStockBajo` / `clear`.
+
 ## Outbound ops
 
 Puerto `NotifyPort`. `ANDON_NOTIFY_PROVIDER=evolution|noop` (**default noop**). Contrato lab: `POST /message/sendText/{instance}` con `number=ANDON_WA_GROUP_JID` (`@g.us`). Cableado HTTP: **otro agente**. Throwaway Baileys — **riesgo ToS, no prod**. Meta/Twilio no en este PR. Enterado in-app. Checklist: [andon-whatsapp-ops-checklist-v0](../../architecture/andon-whatsapp-ops-checklist-v0.md).

@@ -44,6 +44,13 @@ export function etiquetaUom(uom?: string | null) {
   return uom;
 }
 
+export function etiquetaAlertaStock(alerta: string | null | undefined) {
+  if (alerta === 'BAJO') return 'Bajo';
+  if (alerta === 'AGOTADO') return 'Agotado';
+  if (alerta === 'OK') return 'OK';
+  return '—';
+}
+
 export function etiquetaEstadoAviso(estado: string) {
   if (estado === 'ENTERADO') return 'Enterado';
   if (estado === 'RESUELTO') return 'Resuelto';

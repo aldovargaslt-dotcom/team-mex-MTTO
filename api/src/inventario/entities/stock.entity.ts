@@ -21,6 +21,10 @@ export class Stock {
   @Column({ type: 'int', default: 0 })
   qty: number;
 
+  /** Umbral opt-in (ADR-007). null = sin alerta. Integer >= 0. */
+  @Column({ name: 'min_qty', type: 'int', nullable: true })
+  minQty: number | null;
+
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
 }

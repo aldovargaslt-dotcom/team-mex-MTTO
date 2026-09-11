@@ -1,10 +1,5 @@
 import { randomUUID } from 'crypto';
-import {
-  Severity,
-  SourceEvent,
-  SourceModule,
-  SubjectType,
-} from './enums';
+import { Severity, SourceEvent, SourceModule, SubjectType } from './enums';
 import { InboxItem, IngestCommand, StockBajoInput } from './inbox-types';
 
 export type AvisoAbiertoInput = {
@@ -21,14 +16,16 @@ export function avisoAbiertoDedupeKey(unidadId: string) {
 }
 
 export function stockBajoDedupeKey(itemId: string) {
-  return `INVENTARIO:StockBajo:${itemId}`;
+  return `INV:stock-bajo:${itemId}`;
 }
 
 export function isExpired(item: InboxItem, now: Date) {
   return item.expiresAt != null && item.expiresAt.getTime() <= now.getTime();
 }
 
-export function deeplinkPath(item: Pick<InboxItem, 'subjectType' | 'subjectRef' | 'sourceModule'>) {
+export function deeplinkPath(
+  item: Pick<InboxItem, 'subjectType' | 'subjectRef' | 'sourceModule'>,
+) {
   if (item.subjectType === SubjectType.UNIDAD && item.subjectRef) {
     return `/unidades/${item.subjectRef}`;
   }
@@ -57,18 +54,33 @@ export function avisoAbiertoCommand(input: AvisoAbiertoInput): IngestCommand {
   };
 }
 
-/** Contract stub: Inventario emitirá esto; Notifications solo ingiere. */
+/** Inventario emite el envelope ADR-007; Notifications solo ingiere. qty=0 → CRITICAL. */
 export function stockBajoCommand(input: StockBajoInput): IngestCommand {
+  const agotado = input.qty === 0;
+  const who = input.nombre?.trim()
+    ? `${input.nombre.trim()} (${input.sku})`
+    : input.sku;
+  const umbral =
+    input.qty != null && input.minQty != null
+      ? `hay ${input.qty}, mínimo ${input.minQty}`
+      : null;
   return {
     sourceModule: SourceModule.INVENTARIO,
     sourceEvent: SourceEvent.STOCK_BAJO,
-    sourceRef: input.itemId,
+    sourceRef: input.eventId ?? input.itemId,
     subjectType: SubjectType.ITEM,
     subjectRef: input.itemId,
-    severity: Severity.WARNING,
-    title: `Stock bajo — ${input.sku}`,
-    body: `${input.nombre} (${input.sku}) requiere reabastecimiento.`,
+    severity: agotado ? Severity.CRITICAL : Severity.WARNING,
+    title: agotado
+      ? `Stock agotado — ${input.sku}`
+      : `Stock bajo — ${input.sku}`,
+    body: agotado
+      ? `${who} está en 0${umbral ? ` (${umbral})` : ''}. Requiere reabastecimiento.`
+      : umbral
+        ? `${who}: ${umbral}. Requiere reabastecimiento.`
+        : `${who} requiere reabastecimiento.`,
     dedupeKey: stockBajoDedupeKey(input.itemId),
+    createdAt: input.occurredAt ? new Date(input.occurredAt) : undefined,
   };
 }
 

@@ -7,6 +7,7 @@ import {
   MaxLength,
 } from 'class-validator';
 import { OptionalTrimmed, RequiredTrimmed } from '../../common/trim';
+import { OptionalMinQty } from './optional-min-qty';
 
 export class CreateItemDto {
   @ApiProperty({ example: 'FIL-ACEITE-01' })
@@ -38,4 +39,7 @@ export class CreateItemDto {
   @IsArray()
   @IsUUID('4', { each: true, message: 'El tipo de vehículo no es válido.' })
   tipoVehiculoIds?: string[];
+
+  @OptionalMinQty()
+  minQty?: number | null;
 }

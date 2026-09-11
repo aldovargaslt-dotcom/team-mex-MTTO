@@ -40,9 +40,13 @@ export type InboxListItem = InboxItem & {
 };
 
 export type StockBajoInput = {
+  eventId?: string;
   itemId: string;
   sku: string;
-  nombre: string;
+  qty?: number;
+  minQty?: number | null;
+  occurredAt?: string;
+  nombre?: string;
 };
 
 export interface InboxStore {

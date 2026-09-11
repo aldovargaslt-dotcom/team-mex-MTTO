@@ -85,7 +85,9 @@ export class SeedService implements OnModuleInit {
 
   async seed() {
     for (const tipo of TIPOS_SEED) {
-      const exists = await this.tipos.findOne({ where: { nombre: tipo.nombre } });
+      const exists = await this.tipos.findOne({
+        where: { nombre: tipo.nombre },
+      });
       if (!exists) {
         await this.tipos.save(this.tipos.create(tipo));
       }
@@ -164,6 +166,7 @@ export class SeedService implements OnModuleInit {
       oem: 'OEM-PAST-01',
       tipos: [camion.id],
       stock: 2,
+      minQty: 5,
       codigoProveedor: 'PN-PAST-20',
       proveedorId: proveedor.id,
       seedUser,
@@ -182,7 +185,9 @@ export class SeedService implements OnModuleInit {
   }
 
   private async ensureFamilia(nombre: string) {
-    const exists = (await this.inventario.listFamilias()).find((f) => f.nombre === nombre);
+    const exists = (await this.inventario.listFamilias()).find(
+      (f) => f.nombre === nombre,
+    );
     if (exists) return exists;
     return this.inventario.createFamilia({ nombre, activa: true });
   }
@@ -202,12 +207,20 @@ export class SeedService implements OnModuleInit {
     oem?: string;
     tipos: string[];
     stock: number;
+    minQty?: number | null;
     codigoProveedor: string;
     proveedorId: string;
     seedUser: { rol: Rol; userId: string };
   }) {
-    const existing = (await this.inventario.listItems()).find((i) => i.sku === input.sku);
+    const existing = (await this.inventario.listItems()).find(
+      (i) => i.sku === input.sku,
+    );
     if (existing) {
+      if (input.minQty != null && existing.minQty == null) {
+        await this.inventario.updateItem(existing.id, {
+          minQty: input.minQty,
+        });
+      }
       return existing;
     }
     const item = await this.inventario.createItem({
@@ -222,6 +235,9 @@ export class SeedService implements OnModuleInit {
         { itemId: item.id, qty: input.stock, nota: 'Semilla inicial' },
         input.seedUser,
       );
+    }
+    if (input.minQty != null) {
+      await this.inventario.updateItem(item.id, { minQty: input.minQty });
     }
     await this.inventario.addItemProveedor(item.id, {
       proveedorId: input.proveedorId,
@@ -307,4 +323,3 @@ export class SeedService implements OnModuleInit {
     return this.visitas.findOneByOrFail({ id: draft.id });
   }
 }
-

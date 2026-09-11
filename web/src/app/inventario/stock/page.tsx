@@ -1,11 +1,13 @@
 'use client';
 
-import { FormEvent, useEffect, useMemo, useState } from 'react';
+import { FormEvent, KeyboardEvent, useEffect, useMemo, useState } from 'react';
 import { ColumnDef } from '@tanstack/react-table';
 import { api, HttpError } from '@/lib/api';
 import { etiquetaUom } from '@/lib/format';
+import { notifyInboxChanged } from '@/lib/inbox';
 import { useRole } from '@/lib/role';
-import type { StockRow } from '@/lib/types';
+import type { AlertaStock, StockRow } from '@/lib/types';
+import { StockAlertaBadge } from '@/components/StatusBadge';
 import { Button } from '@/components/ui/button';
 import { DataTable } from '@/components/ui/data-table';
 import { Field, FormAlert, PageHeader } from '@/components/ui/field';
@@ -19,17 +21,31 @@ import {
   SheetTitle,
 } from '@/components/ui/sheet';
 
+const FILTROS: { id: 'TODOS' | AlertaStock; label: string }[] = [
+  { id: 'TODOS', label: 'Todos' },
+  { id: 'BAJO', label: 'Bajo' },
+  { id: 'AGOTADO', label: 'Agotado' },
+];
+
 export default function StockPage() {
   const { role, userId } = useRole();
   const [rows, setRows] = useState<StockRow[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [filtro, setFiltro] = useState<'TODOS' | AlertaStock>('TODOS');
+  const [minDraft, setMinDraft] = useState<Record<string, string>>({});
   const [itemId, setItemId] = useState('');
   const [mode, setMode] = useState<'entrada' | 'ajuste' | null>(null);
   const [qty, setQty] = useState('1');
   const [nota, setNota] = useState('');
 
   async function cargar() {
-    setRows(await api<StockRow[]>('/inventario/stock', { role: role!, userId }));
+    const data = await api<StockRow[]>('/inventario/stock', { role: role!, userId });
+    setRows(data);
+    setMinDraft(
+      Object.fromEntries(
+        data.map((row) => [row.itemId, row.minQty == null ? '' : String(row.minQty)]),
+      ),
+    );
   }
 
   useEffect(() => {
@@ -46,6 +62,29 @@ export default function StockPage() {
     setQty(next === 'ajuste' ? '-1' : '1');
     setNota('');
     setError(null);
+  }
+
+  async function guardarMin(row: StockRow) {
+    const raw = minDraft[row.itemId] ?? '';
+    const next = raw.trim() === '' ? null : Number(raw);
+    if (next !== null && (!Number.isInteger(next) || next < 0)) {
+      setError('El mínimo debe ser un entero ≥ 0, o vacío para no alertar.');
+      return;
+    }
+    if (next === row.minQty) return;
+    setError(null);
+    try {
+      await api(`/inventario/items/${row.itemId}`, {
+        role: role!,
+        userId,
+        method: 'PATCH',
+        body: JSON.stringify({ minQty: next }),
+      });
+      notifyInboxChanged();
+      await cargar();
+    } catch (err) {
+      setError(err instanceof HttpError ? err.message : 'No se pudo guardar el mínimo.');
+    }
   }
 
   async function aplicar(event: FormEvent) {
@@ -78,6 +117,7 @@ export default function StockPage() {
       }
       setItemId('');
       setMode(null);
+      notifyInboxChanged();
       await cargar();
     } catch (err) {
       setError(err instanceof HttpError ? err.message : 'No se pudo registrar el movimiento.');
@@ -85,6 +125,14 @@ export default function StockPage() {
   }
 
   const selected = rows.find((row) => row.itemId === itemId);
+
+  const filtered = useMemo(() => {
+    if (filtro === 'TODOS') return rows;
+    return rows.filter((row) => row.alerta === filtro);
+  }, [rows, filtro]);
+
+  const empty =
+    filtro === 'TODOS' ? 'No hay SKUs en stock.' : 'Sin items en stock bajo.';
 
   const columns: ColumnDef<StockRow, unknown>[] = useMemo(
     () => [
@@ -103,6 +151,41 @@ export default function StockPage() {
             {row.original.qty} {etiquetaUom(row.original.uom)}
           </span>
         ),
+      },
+      {
+        id: 'min',
+        header: 'Min',
+        cell: ({ row }) => (
+          <Input
+            aria-label={`Mínimo ${row.original.sku}`}
+            className="h-11 min-h-11 w-[4.5rem] md:h-10 md:min-h-10"
+            type="number"
+            min={0}
+            step={1}
+            inputMode="numeric"
+            placeholder="—"
+            value={minDraft[row.original.itemId] ?? ''}
+            onClick={(e) => e.stopPropagation()}
+            onChange={(e) =>
+              setMinDraft((current) => ({
+                ...current,
+                [row.original.itemId]: e.target.value,
+              }))
+            }
+            onBlur={() => void guardarMin(row.original)}
+            onKeyDown={(e: KeyboardEvent<HTMLInputElement>) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                (e.target as HTMLInputElement).blur();
+              }
+            }}
+          />
+        ),
+      },
+      {
+        id: 'alerta',
+        header: 'Estado',
+        cell: ({ row }) => <StockAlertaBadge alerta={row.original.alerta} />,
       },
       {
         id: 'acciones',
@@ -129,14 +212,14 @@ export default function StockPage() {
         ),
       },
     ],
-    [],
+    [minDraft, role, userId],
   );
 
   return (
     <>
       <PageHeader
         title="Stock"
-        lede="Almacén único. No se permiten existencias negativas."
+        lede="Almacén único. Mínimo opt-in por SKU: vacío = sin alerta. No se permiten existencias negativas."
         actions={
           <Button
             type="button"
@@ -147,8 +230,20 @@ export default function StockPage() {
           </Button>
         }
       />
+      <nav className="subnav" aria-label="Filtro de stock bajo">
+        {FILTROS.map((f) => (
+          <button
+            key={f.id}
+            type="button"
+            className={filtro === f.id ? 'active' : ''}
+            onClick={() => setFiltro(f.id)}
+          >
+            {f.label}
+          </button>
+        ))}
+      </nav>
       <FormAlert>{error}</FormAlert>
-      <DataTable columns={columns} data={rows} empty="No hay SKUs en stock." />
+      <DataTable columns={columns} data={filtered} empty={empty} />
 
       <Sheet
         open={mode !== null}

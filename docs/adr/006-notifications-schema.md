@@ -44,7 +44,8 @@ Supervisor y Admin: mismo inbox v0.
 
 - **Andon `AvisoAbierto`** (cableado): `WARNING`, `subject_type=UNIDAD`, `dedupe_key=ANDON:AvisoAbierto:{unidadId}`.
 - **Andon `AvisoResuelto`**: no crea fila nueva; `expires_at` en el ítem matching.
-- **Inventario `StockBajo`**: tipos + handler de ingest listos; Inventario aún no emite.
+- **Inventario `StockBajo`**: Inventario emite envelope ADR-007 vía `StockAlertPort`; el adapter llama `ingestStockBajo`. `source_module=INVENTARIO`, `subject_type=ITEM`, `subject_ref=itemId`, `dedupe_key=INV:stock-bajo:{itemId}`. `WARNING` si `qty > 0`, `CRITICAL` si `qty = 0`. Deeplink `/inventario/stock`.
+- **Inventario `StockReabastecido`**: no crea fila; `clear(itemId)` expira el matching `dedupe_key` cuando `qty > min_qty` (o se quita el umbral).
 
 ## Prohibido
 
