@@ -84,7 +84,9 @@ El boot crea schemas `inventario` / `andon` / `notifications`, sincroniza tablas
 
 ### 2. Vercel — UI
 
-1. Importar el mismo repo. **Root Directory:** `web`.
+Si el log repite `Using TypeScript 5.9.3 (local user-provided)` cada ~2 s, Vercel está compilando **`api/`** (Nest), no la UI. En el proyecto: **Settings → General → Root Directory = `web`** → Save → Redeploy. Un build bueno dice Next.js y ~369 paquetes, no 726 ni cientos de líneas de TypeScript.
+
+1. Importar el mismo repo. **Root Directory:** `web` (nunca `api`).
 2. Framework: Next.js. Env (Production y Preview):
 
    | Variable | Valor |

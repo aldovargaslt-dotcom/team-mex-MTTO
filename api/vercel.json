@@ -1,0 +1,6 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": null,
+  "installCommand": "echo 'skip: la API no se instala en Vercel'",
+  "buildCommand": "echo 'ERROR: Vercel Root Directory es api (NestJS). Settings → General → Root Directory = web. La API va a Railway.' && exit 1"
+}
