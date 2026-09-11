@@ -29,11 +29,13 @@ export function configureApp(app: INestApplication): void {
   };
   withParser.useBodyParser?.('json', { limit: '10mb' });
 
+  const corsRaw = process.env.CORS_ORIGIN?.trim();
   app.enableCors({
-    origin: process.env.CORS_ORIGIN?.split(',') ?? [
-      'http://localhost:3000',
-      'http://127.0.0.1:3000',
-    ],
+    origin: !corsRaw
+      ? ['http://localhost:3000', 'http://127.0.0.1:3000']
+      : corsRaw === '*'
+        ? true
+        : corsRaw.split(',').map((origin) => origin.trim()).filter(Boolean),
     credentials: true,
     allowedHeaders: ['Content-Type', 'X-Role', 'X-User-Id'],
   });

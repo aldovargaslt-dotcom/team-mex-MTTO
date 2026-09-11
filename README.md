@@ -14,10 +14,12 @@ Arquitectura: [ADR-000](docs/adr/000-thin-kernel.md), [ADR-002](docs/adr/002-sch
 
 ## Requisitos
 
-- Node.js 20+
-- Docker (recomendado) o PostgreSQL 16
+- Node.js 20+ (solo si desarrolla con `npm run dev` / `start:dev`)
+- Docker Engine + Compose v2 (Docker Desktop en Windows/macOS)
 
 ## Cómo correrlo
+
+Desarrollo con Node en el host (solo Postgres en Docker):
 
 ```bash
 # 1. Base de datos
@@ -34,6 +36,26 @@ cd ../web
 npm install
 npm run dev
 ```
+
+### Stack completo en Docker (red local)
+
+Para abrir la app desde el celular u otra PC de la misma Wi‑Fi/LAN, sin instalar Node:
+
+```bash
+docker compose --profile app up -d --build
+```
+
+1. En la máquina anfitriona anote su IP de LAN:
+   - Linux: `hostname -I`
+   - macOS: `ipconfig getifaddr en0`
+   - Windows: `ipconfig` (IPv4 del adaptador Wi‑Fi/Ethernet)
+2. Abra el firewall para los puertos **3000** (UI) y, si quiere Swagger, **3001** (API). Postgres queda solo en `127.0.0.1:5432`.
+3. Desde cualquier dispositivo de la red: `http://<IP-LAN>:3000`  
+   Swagger: `http://<IP-LAN>:3001/docs`
+
+La UI habla con la API por el proxy `/backend` (mismo origen), así no hay que poner la IP en variables de entorno.
+
+Pare el stack con `docker compose --profile app down`. Si también desarrolla con Node en el host, no mezcle ambos: o el perfil `app`, o `npm run dev` / `start:dev`.
 
 El cliente usa el rol stub `X-Role: SUPERVISOR | ADMIN_DIRECTIVO` (y `X-User-Id` opcional). En la pantalla inicial elija el rol; sin encabezado la API responde 401.
 
