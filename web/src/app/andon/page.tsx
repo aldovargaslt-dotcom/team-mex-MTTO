@@ -11,7 +11,7 @@ import { Button } from '@/components/ui/button';
 import { DataTable } from '@/components/ui/data-table';
 import { FormAlert, PageHeader } from '@/components/ui/field';
 import { api, HttpError } from '@/lib/api';
-import { etiquetaEstadoAviso, formatFecha, formatKm } from '@/lib/format';
+import { etiquetaEstadoAviso, formatFecha, formatKm, resumenAvisoMantenimiento } from '@/lib/format';
 import { useRole } from '@/lib/role';
 import type { AvisoAndon, EstadoAviso } from '@/lib/types';
 
@@ -128,8 +128,10 @@ function AndonContent() {
             {row.original.kmAlAbrir.toLocaleString('es-MX')} km ·{' '}
             {row.original.diasAlAbrir} d
             <span className="block">
-              umbral {row.original.umbralKm.toLocaleString('es-MX')} km /{' '}
-              {row.original.umbralDias} d
+              {resumenAvisoMantenimiento(
+                row.original.umbralKm,
+                row.original.umbralDias,
+              )}
             </span>
           </span>
         ),
@@ -174,7 +176,7 @@ function AndonContent() {
         actions={
           isAdmin ? (
             <Button asChild variant="secondary">
-              <Link href="/unidades">Reglas por tipo</Link>
+              <Link href="/unidades">Configurar alertas</Link>
             </Button>
           ) : null
         }

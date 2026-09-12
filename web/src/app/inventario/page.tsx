@@ -118,7 +118,7 @@ export default function ItemsPage() {
       notifyInboxChanged();
       await cargar();
     } catch (err) {
-      setError(err instanceof HttpError ? err.message : 'No se pudo guardar el mínimo.');
+      setError(err instanceof HttpError ? err.message : 'No se pudo guardar cuándo avisar.');
     }
   }
 
@@ -325,9 +325,13 @@ export default function ItemsPage() {
             }}
           >
             <Field
-              label="Mínimo"
+              label="Avisar si quedan"
               htmlFor="fichaStockMin"
-              help="Avisa si el stock baja de este número. Vacío: no avisa."
+              hint={
+                <p className="text-[12px] text-muted-foreground">
+                  Piezas o menos. Vacío = no avisar de este producto.
+                </p>
+              }
             >
               <Input
                 id="fichaStockMin"
