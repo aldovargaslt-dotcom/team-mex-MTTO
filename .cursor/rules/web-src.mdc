@@ -6,7 +6,7 @@ alwaysApply: false
 
 # UI (`web/src`)
 
-Leer, no recopiar: [ADR-003](docs/adr/003-shadcn-tailwind.md), [anti-generic](docs/design-system/ui-polish-anti-generic-v0.md), [touch 44px](docs/design-system/ui-touch-targets-mobile-v0.md), [pasteles](docs/design-system/ui-semantic-button-pastels-v0.md), [nav vs filtro vs Inicio](docs/design-system/ui-nav-filter-action-inicio-v0.md).
+Leer, no recopiar: [ADR-003](docs/adr/003-shadcn-tailwind.md), [anti-generic](docs/design-system/ui-polish-anti-generic-v0.md), [touch 44px](docs/design-system/ui-touch-targets-mobile-v0.md), [pasteles](docs/design-system/ui-semantic-button-pastels-v0.md), [nav vs filtro vs Inicio](docs/design-system/ui-nav-filter-action-inicio-v0.md), [UX operacional](docs/design-system/ux-operacional-cortes-v0.md).
 
 - Un CTA primario naranja `#EA7515` por vista; secundario outline/ghost navy.
 - Mobile `<768`: hits ≥44px (wizard WO). Densidad anti-generic en desktop.

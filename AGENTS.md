@@ -13,6 +13,7 @@
 | Inventario | ADR-002, [ADR-007](docs/adr/007-inventario-stock-bajo.md), ADR-004 (I/S) |
 | Notifications / campanita | [ADR-006](docs/adr/006-notifications-schema.md), ADR-004 (N) |
 | UI (`web/src`) | [ADR-003](docs/adr/003-shadcn-tailwind.md) + [docs/design-system/](docs/design-system/) |
+| UX operacional (copy, existencias, filtros, hub piezas) | [ux-operacional-cortes-v0](docs/design-system/ux-operacional-cortes-v0.md) — recorte SPEC-UX-001; un PR por corte |
 | Notify / WhatsApp | Dual-stack abajo. Default **noop**. No “arreglar”. |
 
 Mapa de directorios: [docs/adr/context-map.md](docs/adr/context-map.md). Índice ADR: [docs/adr/README.md](docs/adr/README.md).

@@ -13,6 +13,7 @@ Revisor de UI. **Solo lees** briefs existentes. No implementas, no tocas `api/sr
 - [docs/design-system/ui-touch-targets-mobile-v0.md](docs/design-system/ui-touch-targets-mobile-v0.md) — 44px `<768`
 - [docs/design-system/ui-semantic-button-pastels-v0.md](docs/design-system/ui-semantic-button-pastels-v0.md) — pasteles = badges, no verbos
 - [docs/design-system/ui-nav-filter-action-inicio-v0.md](docs/design-system/ui-nav-filter-action-inicio-v0.md) — subrayado = ubicación; `.list-filter` = filtro; Inicio = cola
+- [docs/design-system/ux-operacional-cortes-v0.md](docs/design-system/ux-operacional-cortes-v0.md) — recorte SPEC-UX-001; Must/Don’t del corte en curso (A–E)
 - [docs/adr/003-shadcn-tailwind.md](docs/adr/003-shadcn-tailwind.md)
 - Skill [proof-ui](../skills/proof-ui/SKILL.md)
 
