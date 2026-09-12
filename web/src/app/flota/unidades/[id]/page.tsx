@@ -3,26 +3,26 @@
 import { FormEvent, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
-import { ColumnDef } from '@tanstack/react-table';
 import { RoleGate } from '@/components/RoleGate';
 import { SignaturePad } from '@/components/SignaturePad';
-import { StatusBadge } from '@/components/StatusBadge';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { DataTable } from '@/components/ui/data-table';
 import { Field, FormAlert, Note, PageHeader } from '@/components/ui/field';
 import { Input, NativeSelect, Textarea } from '@/components/ui/input';
 import { api, HttpError } from '@/lib/api';
 import {
-  etiquetaMovimientoFlota,
-  formatDuracion,
-  formatFecha,
-  formatKm,
-} from '@/lib/format';
+  choferDeFila,
+  ciclosDeHistorial,
+  detalleCicloFlota,
+  etiquetaAdminFlota,
+  fraseCicloFlota,
+  viajeDeFila,
+} from '@/lib/flota-viaje';
+import { formatKm } from '@/lib/format';
 import { useRole } from '@/lib/role';
 import type {
   Chofer,
   FlotaUnidadDetalle,
-  MovimientoFlota,
   SitioFlota,
   TipoMovimientoFlota,
 } from '@/lib/types';
@@ -100,40 +100,9 @@ function FlotaUnidad() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [role, params.id]);
 
-  const columns = useMemo<ColumnDef<MovimientoFlota>[]>(
-    () => [
-      {
-        accessorKey: 'tipo',
-        header: 'Tipo',
-        cell: ({ row }) => etiquetaMovimientoFlota(row.original.tipo),
-      },
-      {
-        accessorKey: 'occurredAt',
-        header: 'Hora',
-        cell: ({ row }) => formatFecha(row.original.occurredAt),
-      },
-      {
-        accessorKey: 'choferNombre',
-        header: 'Chofer',
-        cell: ({ row }) => row.original.choferNombre ?? '—',
-      },
-      {
-        accessorKey: 'sitioNombre',
-        header: 'Sitio',
-        cell: ({ row }) => row.original.sitioNombre ?? '—',
-      },
-      {
-        accessorKey: 'km',
-        header: 'Km',
-        cell: ({ row }) => formatKm(row.original.km),
-      },
-      {
-        accessorKey: 'notas',
-        header: 'Nota',
-        cell: ({ row }) => row.original.notas ?? '—',
-      },
-    ],
-    [],
+  const ciclos = useMemo(
+    () => ciclosDeHistorial(detalle?.historial ?? []),
+    [detalle?.historial],
   );
 
   async function registrar(event: FormEvent) {
@@ -233,6 +202,9 @@ function FlotaUnidad() {
 
   const { unidad, tablero } = detalle;
   const sitiosActivos = sitios;
+  const viaje = tablero ? viajeDeFila(tablero) : null;
+  const chofer = tablero ? choferDeFila(tablero) : null;
+  const admin = etiquetaAdminFlota(unidad);
 
   return (
     <div className="space-y-3">
@@ -272,27 +244,50 @@ function FlotaUnidad() {
       <section className="card panel">
         <h2>Situación</h2>
         <dl className="dl">
-          <dt>Estado</dt>
+          <dt>Viaje</dt>
           <dd>
-            <StatusBadge estado={unidad.estado} />
-            {unidad.motivoInactivacion === 'ENVIO_ESPECIAL' ? (
-              <span className="ml-2 text-[12px] text-muted-foreground">
-                Envío especial
-              </span>
-            ) : null}
+            {viaje ? (
+              <>
+                <div>{viaje.titulo}</div>
+                {viaje.detalle ? (
+                  <div className="muted">{viaje.detalle}</div>
+                ) : null}
+              </>
+            ) : (
+              'Sin registro de patio'
+            )}
           </dd>
-          <dt>Sitio</dt>
-          <dd>{tablero?.sitioNombre ?? 'Sin movimiento'}</dd>
-          <dt>Chofer actual</dt>
-          <dd>{tablero?.choferActualNombre ?? '—'}</dd>
-          <dt>Último chofer</dt>
-          <dd>{tablero?.choferUltimoNombre ?? '—'}</dd>
-          <dt>Tiempo fuera</dt>
+          <dt>Chofer</dt>
           <dd>
-            {tablero?.salidaAbiertaId
-              ? formatDuracion(tablero.tiempoFueraMs)
-              : 'En patio'}
+            {chofer ? (
+              <>
+                <div className={chofer.asignado ? undefined : 'muted'}>
+                  {chofer.principal}
+                </div>
+                {chofer.secundario ? (
+                  <div className="muted">{chofer.secundario}</div>
+                ) : null}
+              </>
+            ) : (
+              <span className="muted">Sin asignar</span>
+            )}
           </dd>
+          {tablero?.salidaAbiertaId ? (
+            <>
+              <dt>Atención</dt>
+              <dd>
+                <Badge variant="warning" className="normal-case tracking-normal">
+                  Registrar entrada
+                </Badge>
+              </dd>
+            </>
+          ) : null}
+          {admin ? (
+            <>
+              <dt>Estado</dt>
+              <dd className="muted">{admin}</dd>
+            </>
+          ) : null}
           <dt>Último km visita</dt>
           <dd>{formatKm(unidad.ultimoKmVisita)}</dd>
         </dl>
@@ -396,11 +391,21 @@ function FlotaUnidad() {
 
       <section>
         <h2 className="mb-2 text-[15px] font-medium">Historial</h2>
-        <DataTable
-          columns={columns}
-          data={detalle.historial}
-          empty="Aún no hay movimientos de patio."
-        />
+        {ciclos.length === 0 ? (
+          <p className="muted">Aún no hay movimientos de patio.</p>
+        ) : (
+          <ul className="card divide-y divide-border overflow-hidden">
+            {ciclos.map((ciclo) => {
+              const detalle = detalleCicloFlota(ciclo);
+              return (
+                <li key={ciclo.id} className="px-3 py-2">
+                  <div className="text-sm">{fraseCicloFlota(ciclo)}</div>
+                  {detalle ? <div className="muted">{detalle}</div> : null}
+                </li>
+              );
+            })}
+          </ul>
+        )}
       </section>
     </div>
   );

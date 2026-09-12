@@ -257,6 +257,7 @@ export class FlotaService implements OnModuleInit {
         : null,
       salidaAbiertaId: op?.salidaAbiertaId ?? null,
       salidaAbiertaAt: salida?.occurredAt ?? null,
+      ultimoMovimientoAt: op?.ultimoMovimientoAt ?? null,
       tiempoFueraMs:
         salida?.occurredAt != null
           ? Math.max(0, ctx.now - Date.parse(salida.occurredAt))

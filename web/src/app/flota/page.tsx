@@ -1,29 +1,36 @@
 'use client';
 
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useEffect, useMemo, useState } from 'react';
+import { useRouter, usePathname, useSearchParams } from 'next/navigation';
+import { Suspense, useEffect, useMemo, useState } from 'react';
 import { ColumnDef } from '@tanstack/react-table';
 import { ListFilter } from '@/components/ListFilter';
 import { RoleGate } from '@/components/RoleGate';
-import { StatusBadge } from '@/components/StatusBadge';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { DataTable } from '@/components/ui/data-table';
 import { FormAlert, PageHeader } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
 import { api, HttpError } from '@/lib/api';
-import { formatDuracion } from '@/lib/format';
+import {
+  choferDeFila,
+  emptyTableroFlota,
+  etiquetaAdminFlota,
+  filtraTablero,
+  opcionesFiltroTablero,
+  parseFiltroTablero,
+  viajeDeFila,
+  type FiltroTableroFlota,
+} from '@/lib/flota-viaje';
 import { useRole } from '@/lib/role';
 import type { TableroFlotaRow } from '@/lib/types';
-
-const FILTROS = [
-  { id: 'todas', label: 'Todas' },
-  { id: 'fuera', label: 'Aún no regresan' },
-] as const;
 
 export default function FlotaPage() {
   return (
     <RoleGate allow={['LOGISTICA', 'ADMIN_DIRECTIVO']}>
-      <FlotaTablero />
+      <Suspense fallback={<p className="muted">Cargando tablero…</p>}>
+        <FlotaTablero />
+      </Suspense>
     </RoleGate>
   );
 }
@@ -31,13 +38,15 @@ export default function FlotaPage() {
 function FlotaTablero() {
   const { role, userId } = useRole();
   const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const filtro = parseFiltroTablero(searchParams.get('filtro'));
   const [rows, setRows] = useState<TableroFlotaRow[]>([]);
-  const [filtro, setFiltro] = useState<(typeof FILTROS)[number]['id']>('todas');
+  const [q, setQ] = useState('');
   const [error, setError] = useState<string | null>(null);
 
-  async function cargar(soloFuera = filtro === 'fuera') {
-    const qs = soloFuera ? '?fuera=1' : '';
-    setRows(await api<TableroFlotaRow[]>(`/flota/tablero${qs}`, { role: role!, userId }));
+  async function cargar() {
+    setRows(await api<TableroFlotaRow[]>('/flota/tablero', { role: role!, userId }));
   }
 
   useEffect(() => {
@@ -48,54 +57,80 @@ function FlotaTablero() {
       );
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [role, filtro]);
+  }, [role]);
+
+  function setFiltro(id: FiltroTableroFlota) {
+    const params = new URLSearchParams(searchParams.toString());
+    if (id === 'todas') params.delete('filtro');
+    else params.set('filtro', id);
+    const qs = params.toString();
+    router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
+  }
+
+  const visibles = useMemo(
+    () => filtraTablero(rows, filtro, q),
+    [rows, filtro, q],
+  );
 
   const columns = useMemo<ColumnDef<TableroFlotaRow>[]>(
     () => [
       {
         accessorKey: 'numeroInterno',
         header: 'Unidad',
-        cell: ({ row }) => (
-          <div>
-            <strong>{row.original.numeroInterno}</strong>
-            <div className="muted">{row.original.placas}</div>
-          </div>
-        ),
+        cell: ({ row }) => {
+          const admin = etiquetaAdminFlota(row.original);
+          return (
+            <div>
+              <strong>{row.original.numeroInterno}</strong>
+              <div className="muted">{row.original.placas}</div>
+              {admin ? <div className="muted">{admin}</div> : null}
+            </div>
+          );
+        },
       },
       {
-        accessorKey: 'estado',
-        header: 'Estado',
-        cell: ({ row }) => (
-          <div>
-            <StatusBadge estado={row.original.estado} />
-            {row.original.motivoInactivacion === 'ENVIO_ESPECIAL' ? (
-              <div className="muted">Envío especial</div>
-            ) : null}
-          </div>
-        ),
+        id: 'viaje',
+        header: 'Viaje',
+        cell: ({ row }) => {
+          const viaje = viajeDeFila(row.original);
+          return (
+            <div>
+              <div>{viaje.titulo}</div>
+              {viaje.detalle ? (
+                <div className="muted">{viaje.detalle}</div>
+              ) : null}
+            </div>
+          );
+        },
       },
       {
-        accessorKey: 'sitioNombre',
-        header: 'Sitio',
-        cell: ({ row }) => row.original.sitioNombre ?? 'Sin movimiento',
+        id: 'chofer',
+        header: 'Chofer',
+        cell: ({ row }) => {
+          const chofer = choferDeFila(row.original);
+          return (
+            <div>
+              <div className={chofer.asignado ? undefined : 'muted'}>
+                {chofer.principal}
+              </div>
+              {chofer.secundario ? (
+                <div className="muted">{chofer.secundario}</div>
+              ) : null}
+            </div>
+          );
+        },
       },
       {
-        accessorKey: 'choferActualNombre',
-        header: 'Chofer actual',
-        cell: ({ row }) => row.original.choferActualNombre ?? '—',
-      },
-      {
-        accessorKey: 'choferUltimoNombre',
-        header: 'Último chofer',
-        cell: ({ row }) => row.original.choferUltimoNombre ?? '—',
-      },
-      {
-        accessorKey: 'tiempoFueraMs',
-        header: 'Fuera',
+        id: 'atencion',
+        header: 'Atención',
         cell: ({ row }) =>
-          row.original.salidaAbiertaId
-            ? formatDuracion(row.original.tiempoFueraMs)
-            : 'En patio',
+          row.original.salidaAbiertaId ? (
+            <Badge variant="warning" className="normal-case tracking-normal">
+              Registrar entrada
+            </Badge>
+          ) : (
+            <span className="muted">—</span>
+          ),
       },
     ],
     [],
@@ -105,7 +140,7 @@ function FlotaTablero() {
     <div className="space-y-3">
       <PageHeader
         title="Flota"
-        lede="Bitácora de patio: quién se lleva qué unidad, a qué sitio y con firmas."
+        lede="Quién se llevó qué unidad, a qué sitio y a qué hora."
         actions={
           <Button asChild variant="secondary">
             <Link href="/flota/sitios">Sitios</Link>
@@ -116,13 +151,21 @@ function FlotaTablero() {
       <ListFilter
         label="Filtro flota"
         value={filtro}
-        options={FILTROS}
+        options={opcionesFiltroTablero(rows)}
         onChange={setFiltro}
+      />
+      <Input
+        type="search"
+        value={q}
+        onChange={(e) => setQ(e.target.value)}
+        placeholder="Buscar unidad, placas, chofer o sitio…"
+        aria-label="Buscar unidad, placas, chofer o sitio"
+        className="max-w-md"
       />
       <DataTable
         columns={columns}
-        data={rows}
-        empty="No hay unidades en este filtro."
+        data={visibles}
+        empty={emptyTableroFlota(filtro, q)}
         onRowClick={(row) => router.push(`/flota/unidades/${row.unidadId}`)}
       />
     </div>

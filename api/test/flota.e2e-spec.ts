@@ -117,12 +117,17 @@ describe('Flota v0 (e2e)', () => {
       .query({ fuera: '1' })
       .set(ADMIN)
       .expect(200);
-    expect(
-      (tablero.body as { numeroInterno: string; salidaAbiertaId: string }[]).some(
-        (r) => r.numeroInterno === 'U-102' && r.salidaAbiertaId,
-      ),
-    ).toBe(true);
+    const filaFuera = (
+      tablero.body as {
+        numeroInterno: string;
+        salidaAbiertaId: string | null;
+        ultimoMovimientoAt: string | null;
+      }[]
+    ).find((r) => r.numeroInterno === 'U-102');
+    expect(filaFuera?.salidaAbiertaId).toBeTruthy();
+    expect(filaFuera?.ultimoMovimientoAt).toMatch(/^\d{4}-\d{2}-\d{2}T/);
 
+    const occurredEntrada = new Date(Date.now() - 30 * 60_000).toISOString();
     await request(server)
       .post('/flota/movimientos')
       .set(ADMIN)
@@ -131,7 +136,7 @@ describe('Flota v0 (e2e)', () => {
         unidadId: u102.id,
         choferId: chofer.id,
         sitioId: patio!.id,
-        occurredAt: new Date(Date.now() - 30 * 60_000).toISOString(),
+        occurredAt: occurredEntrada,
         km: 560,
         firmas: [
           { tipo: 'CHOFER', dataUrl: FIRMA },
@@ -139,6 +144,22 @@ describe('Flota v0 (e2e)', () => {
         ],
       })
       .expect(201);
+
+    const tableroCerrado = await request(server)
+      .get('/flota/tablero')
+      .set(LOGISTICA)
+      .expect(200);
+    const filaCerrada = (
+      tableroCerrado.body as {
+        numeroInterno: string;
+        salidaAbiertaId: string | null;
+        ultimoMovimientoAt: string | null;
+        sitioNombre: string | null;
+      }[]
+    ).find((r) => r.numeroInterno === 'U-102');
+    expect(filaCerrada?.salidaAbiertaId).toBeFalsy();
+    expect(filaCerrada?.ultimoMovimientoAt).toBe(occurredEntrada);
+    expect(filaCerrada?.sitioNombre).toBe('Patio');
 
     const u103 = await unidad('U-103');
     const especial = await request(server)
