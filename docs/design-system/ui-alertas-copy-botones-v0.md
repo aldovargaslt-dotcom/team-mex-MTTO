@@ -33,7 +33,13 @@ Prefs por usuario; umbral por placa; tercer servicio de notify; tocar `api/src`;
 
 ## Proof
 
-- `docs/screenshots/alertas_unidades_dialog.png` — Admin, Unidades → Configurar alertas (Camión / Van).
-- `docs/screenshots/alertas_familia_sin_tkm.png` — Nueva/Editar familia sin campos t_km.
+Click-through `proof-ui` @390×844, rol desde `/`, sin chrome DevTools:
+
+- `docs/screenshots/alertas_unidades_dialog.png` — Admin, Unidades → Configurar alertas (Camioneta / Camión).
+- `docs/screenshots/alertas_unidades_camion_van.png` — mismo diálogo, Camión / Van + Guardar.
+- `docs/screenshots/alertas_familia_sin_tkm.png` — Nueva familia (nombre y descripción; sin t_km).
+- `docs/screenshots/alertas_familia_editar_sin_tkm.png` — Editar familia, mismos campos.
 - `docs/screenshots/alertas_stock_dialog.png` — Supervisor, Stock → Configurar alertas.
-- `docs/screenshots/alertas_andon_cta.png` — Andon Admin, CTA Configurar alertas.
+- `docs/screenshots/alertas_stock_campanita.png` — Stock con columna Avisar si quedan; campanita en el shell.
+- `docs/screenshots/alertas_andon_cta.png` — Andon Admin, CTA Configurar alertas (no “Reglas por tipo”).
+- `docs/screenshots/alertas_andon_hub.png` — Hub U-101: `Avisa a los 10,000 km o a los 90 días`.

@@ -430,15 +430,18 @@ function StockContent() {
           setAlertasOpen(next);
         }}
       >
-        <DialogContent className="max-h-[90vh] overflow-y-auto">
-          <form onSubmit={guardarAlertas}>
+        <DialogContent className="max-h-[90vh] overflow-hidden">
+          <form
+            className="grid max-h-[calc(90vh-2rem)] grid-rows-[auto_minmax(0,1fr)_auto]"
+            onSubmit={guardarAlertas}
+          >
             <DialogHeader>
               <DialogTitle className="text-[16px]">Alertas de inventario</DialogTitle>
               <DialogDescription>
                 Te avisamos en la campanita cuando un producto se esté acabando.
               </DialogDescription>
             </DialogHeader>
-            <div className="space-y-3 py-3">
+            <div className="min-h-0 space-y-3 overflow-y-auto py-3">
               {rows.map((row) => (
                 <div
                   key={row.itemId}

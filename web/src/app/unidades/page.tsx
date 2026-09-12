@@ -505,8 +505,11 @@ function UnidadesList() {
           if (!next) setAlertDraft({});
         }}
       >
-        <DialogContent className="max-h-[90vh] overflow-y-auto">
-          <form onSubmit={guardarAlertas}>
+        <DialogContent className="max-h-[90vh] overflow-hidden">
+          <form
+            className="grid max-h-[calc(90vh-2rem)] grid-rows-[auto_minmax(0,1fr)_auto]"
+            onSubmit={guardarAlertas}
+          >
             <DialogHeader>
               <DialogTitle className="text-[16px]">Alertas de mantenimiento</DialogTitle>
               <DialogDescription>
@@ -515,7 +518,7 @@ function UnidadesList() {
                 cumpla una de las dos.
               </DialogDescription>
             </DialogHeader>
-            <div className="space-y-4 py-3">
+            <div className="min-h-0 space-y-4 overflow-y-auto py-3">
               {tipos.map((tipo) => {
                 const draft = alertDraft[tipo.id] ?? {
                   tKm: String(DEFAULT_T_KM),
