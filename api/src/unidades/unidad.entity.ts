@@ -10,6 +10,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { EstadoUnidad } from '../common/estado-unidad.enum';
+import { MotivoInactivacion } from '../common/motivo-inactivacion.enum';
 import { TipoVehiculo } from './tipo-vehiculo.entity';
 
 @Entity('unidades')
@@ -32,6 +33,14 @@ export class Unidad {
 
   @Column({ type: 'enum', enum: EstadoUnidad, default: EstadoUnidad.ACTIVA })
   estado: EstadoUnidad;
+
+  @Column({
+    name: 'motivo_inactivacion',
+    type: 'varchar',
+    length: 32,
+    nullable: true,
+  })
+  motivoInactivacion: MotivoInactivacion | null;
 
   @Column({ name: 'marca_modelo', type: 'varchar', nullable: true })
   marcaModelo: string | null;

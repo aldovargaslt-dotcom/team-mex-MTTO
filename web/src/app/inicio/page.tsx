@@ -18,7 +18,7 @@ type AttentionRow = {
 
 export default function InicioPage() {
   return (
-    <RoleGate>
+    <RoleGate allow={['SUPERVISOR', 'ADMIN_DIRECTIVO']}>
       <InicioContent />
     </RoleGate>
   );

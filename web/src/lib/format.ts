@@ -55,6 +55,21 @@ export function etiquetaAlertaStock(alerta: string | null | undefined) {
   return '—';
 }
 
+export function formatDuracion(ms: number | null | undefined) {
+  if (ms == null) return '—';
+  const min = Math.max(0, Math.floor(ms / 60000));
+  if (min < 60) return `${min} min`;
+  const h = Math.floor(min / 60);
+  const rest = min % 60;
+  if (h < 24) return rest ? `${h} h ${rest} min` : `${h} h`;
+  const d = Math.floor(h / 24);
+  return `${d} d`;
+}
+
+export function etiquetaMovimientoFlota(tipo: string) {
+  return tipo === 'ENTRADA' ? 'Entrada' : 'Salida';
+}
+
 export function etiquetaEstadoAviso(estado: string) {
   if (estado === 'ENTERADO') return 'Enterado';
   if (estado === 'RESUELTO') return 'Resuelto';

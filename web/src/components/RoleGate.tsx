@@ -4,13 +4,16 @@ import type { ReactNode } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { useRole } from '@/lib/role';
+import type { Role } from '@/lib/types';
 
 export function RoleGate({
   children,
   adminOnly = false,
+  allow,
 }: {
   children: ReactNode;
   adminOnly?: boolean;
+  allow?: Role[];
 }) {
   const { ready, role, isAdmin } = useRole();
 
@@ -29,12 +32,25 @@ export function RoleGate({
     );
   }
 
-  if (adminOnly && !isAdmin) {
+  const permitted = adminOnly
+    ? isAdmin
+    : allow
+      ? allow.includes(role)
+      : true;
+
+  if (!permitted) {
+    const home = role === 'LOGISTICA' ? '/flota' : '/inicio';
     return (
       <div className="empty-state">
-        <h2>Acceso restringido al administrador directivo.</h2>
+        <h2>
+          {role === 'LOGISTICA'
+            ? 'Este módulo no está disponible para logística.'
+            : 'Acceso restringido al administrador directivo.'}
+        </h2>
         <Button asChild variant="secondary">
-          <Link href="/inicio">Volver al inicio</Link>
+          <Link href={home}>
+            {role === 'LOGISTICA' ? 'Volver' : 'Volver al inicio'}
+          </Link>
         </Button>
       </div>
     );

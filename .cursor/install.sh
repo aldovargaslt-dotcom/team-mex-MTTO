@@ -3,7 +3,7 @@
 # Provisions native PostgreSQL (Cloud Agent VM; humans still use docker compose
 # in the README) and installs Node dependencies for the API and web apps.
 # DBs/schemas match docker/init.sql: team_mex_mtto + team_mex_mtto_test,
-# schemas inventario / andon / notifications.
+# schemas inventario / andon / notifications / flota.
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -45,6 +45,7 @@ for db in team_mex_mtto team_mex_mtto_test; do
     -c "CREATE SCHEMA IF NOT EXISTS inventario AUTHORIZATION team_mex;" \
     -c "CREATE SCHEMA IF NOT EXISTS andon AUTHORIZATION team_mex;" \
     -c "CREATE SCHEMA IF NOT EXISTS notifications AUTHORIZATION team_mex;" \
+    -c "CREATE SCHEMA IF NOT EXISTS flota AUTHORIZATION team_mex;" \
     -c "GRANT ALL ON SCHEMA public TO team_mex;"
 done
 

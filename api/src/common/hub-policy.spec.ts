@@ -1,4 +1,5 @@
 import { EstadoUnidad } from './estado-unidad.enum';
+import { MotivoInactivacion } from './motivo-inactivacion.enum';
 import { mensajesHub, puedeCrearVisita } from './hub-policy';
 import { Rol } from '../auth/roles.enum';
 
@@ -12,6 +13,7 @@ describe('hub-policy', () => {
     expect(puedeCrearVisita(Rol.ADMIN_DIRECTIVO, EstadoUnidad.INACTIVA)).toBe(
       false,
     );
+    expect(puedeCrearVisita(Rol.LOGISTICA, EstadoUnidad.ACTIVA)).toBe(false);
   });
 
   it('mensajes en español según rol, estado y catálogo de choferes', () => {
@@ -21,6 +23,17 @@ describe('hub-policy', () => {
     expect(
       mensajesHub(Rol.SUPERVISOR, EstadoUnidad.INACTIVA, true)[0],
     ).toMatch(/inactiva/i);
+    expect(
+      mensajesHub(
+        Rol.SUPERVISOR,
+        EstadoUnidad.INACTIVA,
+        true,
+        MotivoInactivacion.ENVIO_ESPECIAL,
+      )[0],
+    ).toMatch(/envío especial/i);
+    expect(
+      mensajesHub(Rol.LOGISTICA, EstadoUnidad.ACTIVA, true)[0],
+    ).toMatch(/Logística no crea/i);
     expect(
       mensajesHub(Rol.SUPERVISOR, EstadoUnidad.ACTIVA, false)[0],
     ).toBe(

@@ -27,7 +27,7 @@ const FILTROS: {
 
 export default function AndonPage() {
   return (
-    <RoleGate>
+    <RoleGate allow={['SUPERVISOR', 'ADMIN_DIRECTIVO']}>
       <AndonContent />
     </RoleGate>
   );

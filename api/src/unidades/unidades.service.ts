@@ -4,6 +4,8 @@ import { Repository } from 'typeorm';
 import { CurrentUser } from '../auth/current-user';
 import { Rol } from '../auth/roles.enum';
 import { mensajesHub, puedeCrearVisita } from '../common/hub-policy';
+import { EstadoUnidad } from '../common/estado-unidad.enum';
+import { MotivoInactivacion } from '../common/motivo-inactivacion.enum';
 import { requireTrimmed } from '../common/require-trimmed';
 import { Chofer } from '../choferes/chofer.entity';
 import { EstadoChofer } from '../choferes/estado-chofer.enum';
@@ -83,6 +85,7 @@ export class UnidadesService {
       vin: this.normalizeVin(dto.vin),
       tipo,
       estado: dto.estado,
+      motivoInactivacion: null,
       marcaModelo: dto.marcaModelo?.trim() || null,
       anio: dto.anio ?? null,
     });
@@ -111,6 +114,7 @@ export class UnidadesService {
     }
     if (dto.estado !== undefined) {
       unidad.estado = dto.estado;
+      unidad.motivoInactivacion = null;
     }
     if (dto.marcaModelo !== undefined) {
       unidad.marcaModelo = dto.marcaModelo.trim() || null;
@@ -119,6 +123,28 @@ export class UnidadesService {
       unidad.anio = dto.anio;
     }
     return this.repo.save(unidad);
+  }
+
+  async marcarEnvioEspecial(id: string) {
+    const unidad = await this.findOne(id);
+    unidad.estado = EstadoUnidad.INACTIVA;
+    unidad.motivoInactivacion = MotivoInactivacion.ENVIO_ESPECIAL;
+    return this.repo.save(unidad);
+  }
+
+  async reactivar(id: string) {
+    const unidad = await this.findOne(id);
+    unidad.estado = EstadoUnidad.ACTIVA;
+    unidad.motivoInactivacion = null;
+    return this.repo.save(unidad);
+  }
+
+  async ultimoKmCerrado(unidadId: string): Promise<number | null> {
+    const ultimoCerrado = await this.visitas.findOne({
+      where: { unidad: { id: unidadId }, estado: EstadoVisita.CERRADO },
+      order: { cerradoAt: 'DESC' },
+    });
+    return ultimoCerrado?.km ?? null;
   }
 
   async hub(id: string, user: CurrentUser): Promise<UnidadHubDto> {
@@ -175,6 +201,7 @@ export class UnidadesService {
         placas: unidad.placas,
         vin: unidad.vin,
         estado: unidad.estado,
+        motivoInactivacion: unidad.motivoInactivacion,
         tipoId: unidad.tipo.id,
         tipoNombre: unidad.tipo.nombre,
         marcaModelo: unidad.marcaModelo,
@@ -184,7 +211,12 @@ export class UnidadesService {
       borradores,
       historialCerrado,
       puedeCrearVisita: puedeCrearVisita(user.rol, unidad.estado),
-      mensajes: mensajesHub(user.rol, unidad.estado, hayChoferesActivos),
+      mensajes: mensajesHub(
+        user.rol,
+        unidad.estado,
+        hayChoferesActivos,
+        unidad.motivoInactivacion,
+      ),
     };
   }
 

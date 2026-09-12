@@ -28,7 +28,7 @@ const DEFAULT_T_DIAS = '90';
 
 export default function UnidadesPage() {
   return (
-    <RoleGate>
+    <RoleGate allow={['SUPERVISOR', 'ADMIN_DIRECTIVO']}>
       <UnidadesList />
     </RoleGate>
   );

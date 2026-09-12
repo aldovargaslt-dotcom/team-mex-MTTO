@@ -9,6 +9,8 @@ import {
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CurrentUser } from '../auth/current-user';
 import { CurrentUserParam } from '../auth/current-user.decorator';
+import { Roles } from '../auth/roles.decorator';
+import { Rol } from '../auth/roles.enum';
 import { ListNotificationsQuery } from './dto/list-notifications.query';
 import { NotificationsService } from './notifications.service';
 
@@ -37,6 +39,7 @@ function toDto(row: Awaited<ReturnType<NotificationsService['list']>>[number]) {
 
 @ApiTags('notifications')
 @Controller('notifications')
+@Roles(Rol.SUPERVISOR, Rol.ADMIN_DIRECTIVO)
 export class NotificationsController {
   constructor(private readonly service: NotificationsService) {}
 

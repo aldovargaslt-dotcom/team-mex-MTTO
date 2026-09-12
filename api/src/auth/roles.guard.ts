@@ -27,12 +27,18 @@ export class RolesGuard implements CanActivate {
       .getRequest<{ user?: CurrentUser }>();
     const user = request.user;
     if (!user || !required.includes(user.rol)) {
-      throw new ForbiddenException(
-        user?.rol === Rol.ADMIN_DIRECTIVO
-          ? 'El administrador directivo no tiene permiso para realizar esta acción.'
-          : 'El supervisor no tiene permiso para realizar esta acción.',
-      );
+      throw new ForbiddenException(mensajeSinPermiso(user?.rol));
     }
     return true;
   }
+}
+
+export function mensajeSinPermiso(rol?: Rol): string {
+  if (rol === Rol.ADMIN_DIRECTIVO) {
+    return 'El administrador directivo no tiene permiso para realizar esta acción.';
+  }
+  if (rol === Rol.LOGISTICA) {
+    return 'Logística no tiene permiso para realizar esta acción.';
+  }
+  return 'El supervisor no tiene permiso para realizar esta acción.';
 }

@@ -11,14 +11,14 @@ export default function HomePage() {
 
   function elegir(next: Role) {
     setRole(next);
-    router.push('/inicio');
+    router.push(next === 'LOGISTICA' ? '/flota' : '/inicio');
   }
 
   return (
     <div className="home">
       <div className="home-card">
         <p className="text-xs text-muted-foreground">TEAM MEX</p>
-        <h1>Mantenimiento de unidades</h1>
+        <h1>Operación de unidades</h1>
         <p className="lede">
           Seleccione un rol para continuar.
         </p>
@@ -42,6 +42,14 @@ export default function HomePage() {
             onClick={() => elegir('ADMIN_DIRECTIVO')}
           >
             Entrar como administrador directivo
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            className="w-full"
+            onClick={() => elegir('LOGISTICA')}
+          >
+            Entrar como logística
           </Button>
         </div>
       </div>

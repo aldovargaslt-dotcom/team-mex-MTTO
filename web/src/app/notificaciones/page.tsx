@@ -21,7 +21,7 @@ const FILTROS: { id: 'unread' | 'all'; label: string }[] = [
 
 export default function NotificacionesPage() {
   return (
-    <RoleGate>
+    <RoleGate allow={['SUPERVISOR', 'ADMIN_DIRECTIVO']}>
       <InboxContent />
     </RoleGate>
   );

@@ -30,6 +30,7 @@ export class UnidadesController {
   }
 
   @Get(':id/hub')
+  @Roles(Rol.SUPERVISOR, Rol.ADMIN_DIRECTIVO)
   @ApiOperation({
     summary: 'Hub de unidad: ficha, borradores, historial y mensajes',
   })

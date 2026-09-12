@@ -6,7 +6,8 @@
 
 | Si tocas | Lee primero |
 |----------|-------------|
-| Kernel, unidades, choferes, tipos, outbox | [ADR-000](docs/adr/000-thin-kernel.md), [ADR-001](docs/adr/001-visita-cerrada-outbox.md), [ADR-002](docs/adr/002-schema-per-module.md) |
+| Kernel, unidades, choferes, tipos, outbox | [ADR-000](docs/adr/000-thin-kernel.md), [ADR-001](docs/adr/001-visita-cerrada-outbox.md), [ADR-002](docs/adr/002-schema-per-module.md), [ADR-008](docs/adr/008-flota-schema.md) (`LOGISTICA`, `motivoInactivacion`) |
+| Flota / bitácora patio | [spec](docs/specs/fleet-manager-v0.md), ADR-008, ADR-004 (F1–F11) |
 | Visitas / cierre / `VisitaCerrada` | ADR-001, ADR-002, [ADR-004](docs/adr/ADR-004-tdd-test-bar-andon-v0.md) (C/O) |
 | Andon | ADR-004, [ADR-005](docs/adr/005-andon-no-stock-alerts.md), [ops checklist](architecture/andon-whatsapp-ops-checklist-v0.md) |
 | Inventario | ADR-002, [ADR-007](docs/adr/007-inventario-stock-bajo.md), ADR-004 (I/S) |
@@ -31,7 +32,7 @@ El [checklist de ops](architecture/andon-whatsapp-ops-checklist-v0.md) todavía 
 
 ## Fuera de v0
 
-README: multi-almacén, lotes, costeo, OC formal, kardex pesado, ítem↔placa, reserva de stock en borrador. No ampliar ownership de Inventario ni Andon sin ADR.
+README: multi-almacén, lotes, costeo, OC formal, kardex pesado, ítem↔placa, reserva de stock en borrador. Flota: sin GPS/rutas. No ampliar ownership de Inventario ni Andon sin ADR.
 
 ## Verificación
 

@@ -33,7 +33,8 @@ for db in team_mex_mtto team_mex_mtto_test; do
   sudo -u postgres psql -d "$db" -v ON_ERROR_STOP=1 \
     -c "CREATE SCHEMA IF NOT EXISTS inventario AUTHORIZATION team_mex;" \
     -c "CREATE SCHEMA IF NOT EXISTS andon AUTHORIZATION team_mex;" \
-    -c "CREATE SCHEMA IF NOT EXISTS notifications AUTHORIZATION team_mex;" >/dev/null
+    -c "CREATE SCHEMA IF NOT EXISTS notifications AUTHORIZATION team_mex;" \
+    -c "CREATE SCHEMA IF NOT EXISTS flota AUTHORIZATION team_mex;" >/dev/null
 done
 
 echo "==> start.sh complete; PostgreSQL is ready on 127.0.0.1:5432"
