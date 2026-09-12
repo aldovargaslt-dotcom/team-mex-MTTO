@@ -1,15 +1,24 @@
 'use client';
 
 import { FormEvent, useEffect, useMemo, useState } from 'react';
+import { ColumnDef } from '@tanstack/react-table';
 import { api, HttpError } from '@/lib/api';
 import { etiquetaUom } from '@/lib/format';
-import { notifyInboxChanged } from '@/lib/inbox';
 import { useRole } from '@/lib/role';
-import type { Familia, ItemInventario, Proveedor, TipoVehiculo } from '@/lib/types';
+import type {
+  Familia,
+  ItemInventario,
+  Proveedor,
+  TipoVehiculo,
+} from '@/lib/types';
+import {
+  InventarioMovimientoSheet,
+  type MovimientoSheetMode,
+} from '@/components/InventarioMovimientoSheet';
+import { RefaccionFicha } from '@/components/RefaccionFicha';
 import { Badge } from '@/components/ui/badge';
 import { StockAlertaBadge } from '@/components/StatusBadge';
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
 import { DataTable } from '@/components/ui/data-table';
 import {
   Dialog,
@@ -21,7 +30,6 @@ import {
 import { Field, FormAlert, Note, PageHeader } from '@/components/ui/field';
 import { Hint } from '@/components/ui/hint';
 import { Input, NativeSelect } from '@/components/ui/input';
-import { ColumnDef } from '@tanstack/react-table';
 
 export default function ItemsPage() {
   const { role, userId } = useRole();
@@ -37,10 +45,9 @@ export default function ItemsPage() {
   const [familiaId, setFamiliaId] = useState('');
   const [oem, setOem] = useState('');
   const [tipoIds, setTipoIds] = useState<Set<string>>(new Set());
-  const [openId, setOpenId] = useState<string | null>(null);
-  const [minQty, setMinQty] = useState('');
-  const [provId, setProvId] = useState('');
-  const [codigoProv, setCodigoProv] = useState('');
+  const [ficha, setFicha] = useState<ItemInventario | null>(null);
+  const [itemId, setItemId] = useState('');
+  const [mode, setMode] = useState<MovimientoSheetMode | null>(null);
 
   async function cargar() {
     const [lista, fams, tps, provs] = await Promise.all([
@@ -59,7 +66,11 @@ export default function ItemsPage() {
   useEffect(() => {
     if (!role) return;
     void cargar().catch((err) => {
-      setError(err instanceof HttpError ? err.message : 'No se pudieron cargar las refacciones.');
+      setError(
+        err instanceof HttpError
+          ? err.message
+          : 'No se pudieron cargar las refacciones.',
+      );
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [role]);
@@ -96,29 +107,11 @@ export default function ItemsPage() {
       setOpenNuevo(false);
       await cargar();
     } catch (err) {
-      setError(err instanceof HttpError ? err.message : 'No se pudo crear la refacción.');
-    }
-  }
-
-  async function guardarMin(item: ItemInventario) {
-    const next = minQty.trim() === '' ? null : Number(minQty);
-    if (next !== null && (!Number.isInteger(next) || next < 0)) {
-      setError('Indique un número entero, o déjelo vacío.');
-      return;
-    }
-    if (next === item.minQty) return;
-    setError(null);
-    try {
-      await api(`/inventario/items/${item.id}`, {
-        role: role!,
-        userId,
-        method: 'PATCH',
-        body: JSON.stringify({ minQty: next }),
-      });
-      notifyInboxChanged();
-      await cargar();
-    } catch (err) {
-      setError(err instanceof HttpError ? err.message : 'No se pudo guardar cuándo avisar.');
+      setError(
+        err instanceof HttpError
+          ? err.message
+          : 'No se pudo crear la refacción.',
+      );
     }
   }
 
@@ -134,51 +127,6 @@ export default function ItemsPage() {
       await cargar();
     } catch (err) {
       setError(err instanceof HttpError ? err.message : 'No se pudo actualizar.');
-    }
-  }
-
-  async function toggleCompat(item: ItemInventario, tipoId: string, checked: boolean) {
-    setError(null);
-    try {
-      if (checked) {
-        await api(`/inventario/items/${item.id}/compatibilidad`, {
-          role: role!,
-          userId,
-          method: 'POST',
-          body: JSON.stringify({ tipoVehiculoId: tipoId }),
-        });
-      } else {
-        await api(`/inventario/items/${item.id}/compatibilidad/${tipoId}`, {
-          role: role!,
-          userId,
-          method: 'DELETE',
-        });
-      }
-      await cargar();
-    } catch (err) {
-      setError(err instanceof HttpError ? err.message : 'No se pudo guardar.');
-    }
-  }
-
-  async function addProveedor(itemId: string, event: FormEvent) {
-    event.preventDefault();
-    setError(null);
-    try {
-      await api(`/inventario/items/${itemId}/proveedores`, {
-        role: role!,
-        userId,
-        method: 'POST',
-        body: JSON.stringify({
-          proveedorId: provId,
-          codigoProveedor: codigoProv.trim(),
-          preferido: true,
-        }),
-      });
-      setProvId('');
-      setCodigoProv('');
-      await cargar();
-    } catch (err) {
-      setError(err instanceof HttpError ? err.message : 'No se pudo agregar el proveedor.');
     }
   }
 
@@ -206,7 +154,9 @@ export default function ItemsPage() {
         <div>
           {row.original.nombre}
           {row.original.oem ? (
-            <div className="text-xs text-muted-foreground">OEM {row.original.oem}</div>
+            <div className="text-xs text-muted-foreground">
+              OEM {row.original.oem}
+            </div>
           ) : null}
         </div>
       ),
@@ -243,22 +193,6 @@ export default function ItemsPage() {
         <div className="row-actions" onClick={(e) => e.stopPropagation()}>
           <Button
             type="button"
-            variant="outline"
-            size="compact"
-            onClick={() => {
-              const next = openId === row.original.id ? null : row.original.id;
-              setOpenId(next);
-              if (next) {
-                setMinQty(
-                  row.original.minQty == null ? '' : String(row.original.minQty),
-                );
-              }
-            }}
-          >
-            Detalle
-          </Button>
-          <Button
-            type="button"
             variant={row.original.activo ? 'dangerSoft' : 'outline'}
             size="compact"
             onClick={() => void toggleActivo(row.original)}
@@ -269,8 +203,6 @@ export default function ItemsPage() {
       ),
     },
   ];
-
-  const detalle = items.find((item) => item.id === openId) ?? null;
 
   return (
     <>
@@ -303,133 +235,62 @@ export default function ItemsPage() {
           empty={
             items.length === 0 ? (
               <>
-                <span className="block font-medium text-navy">Aún no hay refacciones.</span>
+                <span className="block font-medium text-navy">
+                  Aún no hay refacciones.
+                </span>
                 <span>Agregue la primera con Nueva refacción.</span>
               </>
             ) : (
               <>
-                <span className="block font-medium text-navy">Nada que coincida.</span>
+                <span className="block font-medium text-navy">
+                  Nada que coincida.
+                </span>
                 <span>Ajuste la búsqueda.</span>
               </>
             )
           }
+          onRowClick={(item) => setFicha(item)}
         />
       ) : null}
 
-      {detalle ? (
-        <Card className="mt-3 p-4">
-          <p className="text-sm font-semibold text-navy">
-            {detalle.sku} · {detalle.nombre}
-          </p>
-          <div className="mt-2 flex flex-wrap items-end gap-3">
-            <p className="muted">
-              Stock {detalle.stock} {etiquetaUom(detalle.uom)}
-            </p>
-            <StockAlertaBadge alerta={detalle.alerta} />
-          </div>
-          <form
-            className="mt-3 flex flex-wrap items-end gap-2"
-            onSubmit={(e) => {
-              e.preventDefault();
-              void guardarMin(detalle);
-            }}
-          >
-            <Field
-              label="Avisar si quedan"
-              htmlFor="fichaStockMin"
-              hint={
-                <p className="text-[12px] text-muted-foreground">
-                  Piezas o menos. Vacío = no avisar de este producto.
-                </p>
-              }
-            >
-              <Input
-                id="fichaStockMin"
-                type="number"
-                min={0}
-                step={1}
-                inputMode="numeric"
-                placeholder="Sin mínimo"
-                value={minQty}
-                onChange={(e) => setMinQty(e.target.value)}
-                className="w-[7rem]"
-              />
-            </Field>
-            <Button type="submit" variant="outline" size="compact">
-              Guardar
-            </Button>
-          </form>
-          <p
-            className="text-sm font-semibold text-navy inline-flex items-center gap-1"
-            style={{ marginTop: 12 }}
-          >
-            Vehículos
-            <Hint label="En qué tipos de unidad se puede usar." />
-          </p>
-          <div className="chip-row">
-            {tipos.map((tipo) => (
-              <label key={tipo.id} className="check">
-                <input
-                  type="checkbox"
-                  checked={detalle.tipoVehiculoIds.includes(tipo.id)}
-                  onChange={(e) =>
-                    void toggleCompat(detalle, tipo.id, e.target.checked)
-                  }
-                />
-                {tipo.nombre}
-              </label>
-            ))}
-          </div>
-          {detalle.tipoVehiculoIds.length === 0 && tipos.length > 0 ? (
-            <Note variant="warn">Elija al menos un tipo de vehículo.</Note>
-          ) : null}
-          <p className="muted" style={{ marginTop: 10 }}>
-            Proveedores
-          </p>
-          {detalle.proveedores.length === 0 ? (
-            <p className="muted">Ninguno.</p>
-          ) : (
-            <ul className="plain-list">
-              {detalle.proveedores.map((p) => (
-                <li key={p.id}>
-                  {p.proveedorNombre} · {p.codigoProveedor}
-                  {p.preferido ? ' · preferido' : ''}
-                </li>
-              ))}
-            </ul>
-          )}
-          <form
-            className="inline-form"
-            onSubmit={(e) => void addProveedor(detalle.id, e)}
-          >
-            <NativeSelect
-              value={provId}
-              onChange={(e) => setProvId(e.target.value)}
-              required
-              aria-label="Proveedor"
-              className="h-9 min-h-9 w-auto"
-            >
-              <option value="">Proveedor</option>
-              {proveedores.map((p) => (
-                <option key={p.id} value={p.id}>
-                  {p.nombre}
-                </option>
-              ))}
-            </NativeSelect>
-            <Input
-              value={codigoProv}
-              onChange={(e) => setCodigoProv(e.target.value)}
-              placeholder="Código"
-              required
-              aria-label="Código proveedor"
-              className="h-9 min-h-9 w-[180px]"
-            />
-            <Button size="compact" type="submit" variant="outline">
-              Agregar
-            </Button>
-          </form>
-        </Card>
-      ) : null}
+      <RefaccionFicha
+        item={ficha}
+        tipos={tipos}
+        proveedores={proveedores}
+        role={role ?? ''}
+        userId={userId}
+        onClose={() => setFicha(null)}
+        onChanged={(updated) => {
+          if (updated) setFicha(updated);
+          void cargar();
+        }}
+        onAjuste={(item) => {
+          setFicha(null);
+          setItemId(item.id);
+          setMode('ajuste');
+        }}
+      />
+
+      <InventarioMovimientoSheet
+        mode={mode}
+        itemId={itemId}
+        rows={items.map((item) => ({
+          itemId: item.id,
+          sku: item.sku,
+          nombre: item.nombre,
+          qty: item.stock,
+          uom: item.uom,
+        }))}
+        lockItem
+        role={role ?? ''}
+        userId={userId}
+        onClose={() => {
+          setMode(null);
+          setItemId('');
+        }}
+        onApplied={() => cargar()}
+        onError={setError}
+      />
 
       <Dialog open={openNuevo} onOpenChange={setOpenNuevo}>
         <DialogContent>
