@@ -34,7 +34,7 @@ export function RoleGate({
       <div className="empty-state">
         <h2>Acceso restringido al administrador directivo.</h2>
         <Button asChild variant="secondary">
-          <Link href="/unidades">Volver a unidades</Link>
+          <Link href="/inicio">Volver al inicio</Link>
         </Button>
       </div>
     );

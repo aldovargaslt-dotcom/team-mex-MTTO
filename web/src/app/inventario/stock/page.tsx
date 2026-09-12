@@ -1,12 +1,14 @@
 'use client';
 
-import { FormEvent, KeyboardEvent, useEffect, useMemo, useState } from 'react';
+import { FormEvent, KeyboardEvent, Suspense, useEffect, useMemo, useState } from 'react';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { ColumnDef } from '@tanstack/react-table';
 import { api, HttpError } from '@/lib/api';
 import { etiquetaUom } from '@/lib/format';
 import { notifyInboxChanged } from '@/lib/inbox';
 import { useRole } from '@/lib/role';
 import type { AlertaStock, StockRow } from '@/lib/types';
+import { ListFilter } from '@/components/ListFilter';
 import { StockAlertaBadge } from '@/components/StatusBadge';
 import { Button } from '@/components/ui/button';
 import { DataTable } from '@/components/ui/data-table';
@@ -27,11 +29,27 @@ const FILTROS: { id: 'TODOS' | AlertaStock; label: string }[] = [
   { id: 'AGOTADO', label: 'Agotado' },
 ];
 
+function parseAlerta(raw: string | null): 'TODOS' | AlertaStock {
+  if (raw === 'BAJO' || raw === 'AGOTADO') return raw;
+  return 'TODOS';
+}
+
 export default function StockPage() {
+  return (
+    <Suspense fallback={<p className="muted">Cargando stock…</p>}>
+      <StockContent />
+    </Suspense>
+  );
+}
+
+function StockContent() {
   const { role, userId } = useRole();
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const filtro = parseAlerta(searchParams.get('alerta'));
   const [rows, setRows] = useState<StockRow[]>([]);
   const [error, setError] = useState<string | null>(null);
-  const [filtro, setFiltro] = useState<'TODOS' | AlertaStock>('TODOS');
   const [minDraft, setMinDraft] = useState<Record<string, string>>({});
   const [itemId, setItemId] = useState('');
   const [mode, setMode] = useState<'entrada' | 'ajuste' | null>(null);
@@ -233,18 +251,18 @@ export default function StockPage() {
           </Button>
         }
       />
-      <nav className="subnav" aria-label="Filtro de stock">
-        {FILTROS.map((f) => (
-          <button
-            key={f.id}
-            type="button"
-            className={filtro === f.id ? 'active' : ''}
-            onClick={() => setFiltro(f.id)}
-          >
-            {f.label}
-          </button>
-        ))}
-      </nav>
+      <ListFilter
+        label="Filtro de stock"
+        value={filtro}
+        options={FILTROS}
+        onChange={(next) => {
+          const params = new URLSearchParams(searchParams.toString());
+          if (next === 'TODOS') params.delete('alerta');
+          else params.set('alerta', next);
+          const qs = params.toString();
+          router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
+        }}
+      />
       <FormAlert>{error}</FormAlert>
       {rows.length > 0 || !error ? (
         <DataTable columns={columns} data={filtered} empty={empty} />

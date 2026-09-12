@@ -19,6 +19,7 @@ import { cn } from '@/lib/utils';
 import { etiquetaRol, useRole } from '@/lib/role';
 
 const NAV_ITEMS = [
+  { href: '/inicio', label: 'Inicio' },
   { href: '/unidades', label: 'Unidades' },
   { href: '/andon', label: 'Andon' },
   { href: '/inventario', label: 'Inventario' },
@@ -45,7 +46,7 @@ export function AppShell({ children }: { children: ReactNode }) {
     <div className="app">
       <header className="shell-header">
         <div className="shell-header__bar">
-          <Link href={role ? '/unidades' : '/'} className="shell-header__brand">
+          <Link href={role ? '/inicio' : '/'} className="shell-header__brand">
             <BrandPlate />
           </Link>
           {showChrome ? (
@@ -156,6 +157,7 @@ function NavLink({
   return (
     <Link
       href={href}
+      aria-current={active ? 'page' : undefined}
       className={cn(
         'inline-flex min-h-9 items-center rounded-none px-2.5 text-[13px] text-white/65 hover:text-white',
         active &&
