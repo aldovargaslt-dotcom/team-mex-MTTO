@@ -7,10 +7,11 @@ import { ColumnDef } from '@tanstack/react-table';
 import { RoleGate } from '@/components/RoleGate';
 import { StatusBadge } from '@/components/StatusBadge';
 import { AndonHubCard } from '@/components/AndonHubCard';
+import { Button } from '@/components/ui/button';
 import { DataTable } from '@/components/ui/data-table';
+import { FormAlert, Note, PageHeader } from '@/components/ui/field';
 import { api, HttpError } from '@/lib/api';
 import {
-  etiquetaEstadoVisita,
   etiquetaOrigenPieza,
   etiquetaTipoVisita,
   etiquetaUom,
@@ -115,14 +116,48 @@ function HubContent() {
     }
   }
 
+  const historialColumns = useMemo<ColumnDef<VisitaResumen, unknown>[]>(
+    () => [
+      {
+        id: 'tipo',
+        header: 'Visita',
+        cell: ({ row }) => (
+          <span className="font-medium text-navy">
+            {etiquetaTipoVisita(row.original.tipo)}
+          </span>
+        ),
+      },
+      {
+        id: 'km',
+        header: 'Km',
+        cell: ({ row }) => formatKm(row.original.km),
+      },
+      {
+        id: 'chofer',
+        header: 'Chofer',
+        cell: ({ row }) => row.original.choferNombre ?? '—',
+      },
+      {
+        id: 'cerrada',
+        header: 'Cerrada',
+        cell: ({ row }) => (
+          <span className="text-[12px] text-muted-foreground">
+            {formatFecha(row.original.cerradoAt)}
+          </span>
+        ),
+      },
+    ],
+    [],
+  );
+
   if (notFound) {
     return (
-        <div className="empty-state">
-          <h2>No se encontró la unidad.</h2>
-          <Link className="btn btn-outline" href="/unidades">
-            Volver al listado
-          </Link>
-        </div>
+      <div className="empty-state">
+        <h2>No se encontró la unidad.</h2>
+        <Button asChild variant="outline">
+          <Link href="/unidades">Volver al listado</Link>
+        </Button>
+      </div>
     );
   }
 
@@ -140,200 +175,175 @@ function HubContent() {
   }
 
   const ficha = hub.fichaCorta;
-  const warn = hub.mensajes.some(
-    (m) =>
-      /inactiva|administrador|choferes/i.test(m) && !hub.puedeCrearVisita
-      || /choferes/i.test(m),
+  const primerBorrador = hub.borradores[0];
+  const ultimaCerrada = hub.historialCerrado[0];
+  const lede = [
+    ficha.tipoNombre,
+    ficha.marcaModelo,
+    ficha.anio ? String(ficha.anio) : null,
+    ficha.placas,
+  ]
+    .filter(Boolean)
+    .join(' · ');
+  const bloqueos = hub.mensajes.filter((mensaje) =>
+    /inactiva|choferes/i.test(mensaje),
   );
 
   return (
     <>
-      <div className="page-head">
-        <div>
-          <h1>
+      <PageHeader
+        title={
+          <>
             {ficha.numeroInterno} <StatusBadge estado={ficha.estado} />
-          </h1>
-          <p className="lede">
-            {ficha.tipoNombre}
-            {ficha.marcaModelo ? ` · ${ficha.marcaModelo}` : ''}
-          </p>
-        </div>
-        <Link className="btn btn-secondary" href="/unidades">
-          Volver
-        </Link>
-      </div>
-
-      {error ? <p className="alert" style={{ marginBottom: 12 }}>{error}</p> : null}
-
-      <div style={{ marginBottom: 12 }}>
-        <AndonHubCard
-          unidadId={ficha.id}
-          puedeCrearVisita={hub.puedeCrearVisita}
-          onNuevaVisita={() => void nuevaVisita()}
-          creating={creating}
-        />
-      </div>
-
-      <div className="hub-grid">
-        <section className="card panel">
-          <h2>Ficha corta</h2>
-          <dl className="dl">
-            <dt>Número interno</dt>
-            <dd className="mono">{ficha.numeroInterno}</dd>
-            <dt>Placas</dt>
-            <dd>{ficha.placas}</dd>
-            {ficha.vin ? (
-              <>
-                <dt>VIN</dt>
-                <dd className="mono">{ficha.vin}</dd>
-              </>
-            ) : null}
-            <dt>Tipo</dt>
-            <dd>{ficha.tipoNombre}</dd>
-            <dt>Estado</dt>
-            <dd>
-              <StatusBadge estado={ficha.estado} />
-              {ficha.motivoInactivacion === 'ENVIO_ESPECIAL' ? (
-                <span className="ml-2 text-[12px] text-muted-foreground">
-                  Envío especial
-                </span>
-              ) : null}
-            </dd>
-            <dt>Marca / modelo</dt>
-            <dd>{ficha.marcaModelo || 'Sin marca / modelo'}</dd>
-            <dt>Año</dt>
-            <dd>{ficha.anio ?? 'Sin año registrado'}</dd>
-            <dt>Último km (visita cerrada)</dt>
-            <dd>
-              {ficha.ultimoKm != null
-                ? `${ficha.ultimoKm.toLocaleString('es-MX')} km`
-                : 'Sin registro'}
-            </dd>
-          </dl>
-          {isAdmin ? (
-            <div className="hub-actions">
-              <Link
-                className="btn btn-secondary"
-                href={`/unidades/${ficha.id}/editar`}
+          </>
+        }
+        lede={lede}
+        actions={
+          <>
+            <Button asChild variant="secondary">
+              <Link href="/unidades">Volver</Link>
+            </Button>
+            {isAdmin ? (
+              <Button asChild variant="outline">
+                <Link href={`/unidades/${ficha.id}/editar`}>Editar unidad</Link>
+              </Button>
+            ) : primerBorrador ? (
+              <Button asChild>
+                <Link href={`/unidades/${ficha.id}/visitas/${primerBorrador.id}`}>
+                  Continuar
+                </Link>
+              </Button>
+            ) : hub.puedeCrearVisita ? (
+              <Button
+                type="button"
+                disabled={creating}
+                onClick={() => void nuevaVisita()}
               >
-                Editar unidad
-              </Link>
+                {creating ? 'Creando…' : 'Nueva visita'}
+              </Button>
+            ) : null}
+          </>
+        }
+      />
+
+      <FormAlert>{error}</FormAlert>
+
+      <dl className="hub-facts card">
+        {ficha.vin ? (
+          <div className="hub-fact">
+            <dt>VIN</dt>
+            <dd className="mono">{ficha.vin}</dd>
+          </div>
+        ) : null}
+        <div className="hub-fact">
+          <dt>Último km</dt>
+          <dd>
+            {ficha.ultimoKm != null
+              ? `${ficha.ultimoKm.toLocaleString('es-MX')} km`
+              : 'Sin registro'}
+          </dd>
+        </div>
+        <div className="hub-fact">
+          <dt>Última visita</dt>
+          <dd>
+            {ultimaCerrada
+              ? `${etiquetaTipoVisita(ultimaCerrada.tipo)} · ${formatFecha(ultimaCerrada.cerradoAt)}`
+              : 'Sin visitas cerradas'}
+          </dd>
+        </div>
+        {ficha.motivoInactivacion === 'ENVIO_ESPECIAL' ? (
+          <div className="hub-fact">
+            <dt>Motivo</dt>
+            <dd>Envío especial</dd>
+          </div>
+        ) : null}
+      </dl>
+
+      <AndonHubCard unidadId={ficha.id} />
+
+      {bloqueos.map((mensaje) => (
+        <Note key={mensaje} variant="warn">
+          {mensaje}
+        </Note>
+      ))}
+
+      {!isAdmin && hub.borradores.length > 0 ? (
+        <section className="card panel mb-3" aria-labelledby="hub-borradores">
+          <h2 id="hub-borradores">Borradores</h2>
+          <ul className="visit-list">
+            {hub.borradores.map((visita) => (
+              <li key={visita.id}>
+                <div>
+                  <strong>{etiquetaTipoVisita(visita.tipo)}</strong>
+                  <div className="muted">
+                    {formatKm(visita.km)}
+                    {visita.choferNombre ? ` · ${visita.choferNombre}` : ''}
+                    {' · '}
+                    {formatFecha(visita.updatedAt)}
+                  </div>
+                </div>
+                <div className="hub-actions" style={{ marginTop: 0 }}>
+                  <Button asChild variant="outline" size="compact">
+                    <Link href={`/unidades/${ficha.id}/visitas/${visita.id}`}>
+                      Continuar
+                    </Link>
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="dangerSoft"
+                    size="compact"
+                    disabled={busyId === visita.id}
+                    onClick={() => void eliminar(visita.id)}
+                  >
+                    Eliminar
+                  </Button>
+                </div>
+              </li>
+            ))}
+          </ul>
+          {hub.puedeCrearVisita ? (
+            <div className="hub-actions">
+              <Button
+                type="button"
+                variant="outline"
+                disabled={creating}
+                onClick={() => void nuevaVisita()}
+              >
+                {creating ? 'Creando…' : 'Nueva visita'}
+              </Button>
             </div>
           ) : null}
         </section>
+      ) : null}
 
-        <section className="card panel">
-          <h2>Mantenimiento</h2>
-          {!isAdmin ? (
-            <>
-              <h3 className="subhead">Borradores</h3>
-              {hub.borradores.length === 0 ? (
-                <p className="muted">No hay visitas en borrador en esta unidad.</p>
-              ) : (
-                <ul className="visit-list">
-                  {hub.borradores.map((visita, index) => (
-                    <li key={visita.id}>
-                      <div>
-                        <strong>{etiquetaTipoVisita(visita.tipo)}</strong>
-                        <div className="muted">
-                          {formatKm(visita.km)}
-                          {visita.choferNombre ? ` · ${visita.choferNombre}` : ''}
-                          {' · '}
-                          {formatFecha(visita.updatedAt)}
-                        </div>
-                      </div>
-                      <div className="hub-actions" style={{ marginTop: 0 }}>
-                        <Link
-                          className={
-                            index === 0 ? 'btn btn-primary' : 'btn btn-outline'
-                          }
-                          href={`/unidades/${ficha.id}/visitas/${visita.id}`}
-                        >
-                          Continuar
-                        </Link>
-                        <button
-                          type="button"
-                          className="btn btn-danger"
-                          disabled={busyId === visita.id}
-                          onClick={() => void eliminar(visita.id)}
-                        >
-                          Eliminar
-                        </button>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              )}
-              <div className="hub-actions">
-                <button
-                  type="button"
-                  className={
-                    hub.borradores.length > 0 ? 'btn btn-outline' : 'btn btn-primary'
-                  }
-                  disabled={!hub.puedeCrearVisita || creating}
-                  onClick={() => void nuevaVisita()}
-                >
-                  {creating ? 'Creando…' : 'Nueva visita'}
-                </button>
-              </div>
-            </>
-          ) : null}
-
-          <h3 className="subhead">Historial</h3>
-          {hub.historialCerrado.length === 0 ? (
-            <p className="muted">Aún no hay visitas de mantenimiento registradas.</p>
-          ) : (
-            <ul className="visit-list">
-              {hub.historialCerrado.map((visita) => (
-                <HistorialItem
-                  key={visita.id}
-                  unidadId={ficha.id}
-                  visita={visita}
-                />
-              ))}
-            </ul>
-          )}
-
-          <HubRefacciones
-            unidadId={ficha.id}
-            historial={hub.historialCerrado}
+      <section aria-labelledby="hub-historial">
+        <h2
+          id="hub-historial"
+          className="mb-1 text-sm font-semibold text-navy"
+        >
+          Historial
+        </h2>
+        {hub.historialCerrado.length === 0 ? (
+          <p className="muted">
+            Aún no hay visitas de mantenimiento registradas.
+          </p>
+        ) : (
+          <DataTable
+            columns={historialColumns}
+            data={hub.historialCerrado}
+            empty="Aún no hay visitas de mantenimiento registradas."
+            onRowClick={(visita) =>
+              router.push(`/unidades/${ficha.id}/visitas/${visita.id}`)
+            }
           />
+        )}
+      </section>
 
-          {hub.mensajes.map((mensaje) => (
-            <p
-              key={mensaje}
-              className={warn ? 'note note-warn' : 'note'}
-            >
-              {mensaje}
-            </p>
-          ))}
-        </section>
-      </div>
+      <HubRefacciones
+        unidadId={ficha.id}
+        historial={hub.historialCerrado}
+      />
     </>
-  );
-}
-
-function HistorialItem({
-  unidadId,
-  visita,
-}: {
-  unidadId: string;
-  visita: VisitaResumen;
-}) {
-  return (
-    <li>
-      <Link href={`/unidades/${unidadId}/visitas/${visita.id}`}>
-        <strong>
-          {etiquetaTipoVisita(visita.tipo)} · {etiquetaEstadoVisita(visita.estado)}
-        </strong>
-        <div className="muted">
-          {formatKm(visita.km)}
-          {visita.choferNombre ? ` · ${visita.choferNombre}` : ''}
-          {' · '}
-          {formatFecha(visita.cerradoAt)}
-        </div>
-      </Link>
-    </li>
   );
 }
 
@@ -459,8 +469,13 @@ function HubRefacciones({
   );
 
   return (
-    <>
-      <h3 className="subhead">Refacciones</h3>
+    <section className="mt-4" aria-labelledby="hub-refacciones">
+      <h2
+        id="hub-refacciones"
+        className="mb-1 text-sm font-semibold text-navy"
+      >
+        Refacciones
+      </h2>
       {rows.length === 0 ? (
         <p className="muted">Aún no hay refacciones en visitas cerradas.</p>
       ) : (
@@ -472,6 +487,6 @@ function HubRefacciones({
           }
         />
       )}
-    </>
+    </section>
   );
 }

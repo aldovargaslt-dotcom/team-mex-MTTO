@@ -37,6 +37,15 @@ export function lineasCausaAvisoAndon(aviso: {
   return lines;
 }
 
+/** Listado / ficha: vencido = aviso Andon no resuelto. Sin aviso = al día. */
+export function etiquetaMantenimientoUnidad(
+  estado: string | null | undefined,
+) {
+  if (estado === 'ABIERTO') return 'Vencido';
+  if (estado === 'ENTERADO') return 'Enterado';
+  return 'Al día';
+}
+
 export function formatFecha(value: string | null | undefined) {
   if (!value) return '—';
   return new Date(value).toLocaleString('es-MX', {

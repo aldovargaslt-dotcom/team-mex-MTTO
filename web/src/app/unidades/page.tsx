@@ -4,8 +4,10 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { FormEvent, useEffect, useMemo, useState } from 'react';
 import { ColumnDef } from '@tanstack/react-table';
+import { ListFilter } from '@/components/ListFilter';
 import { RoleGate } from '@/components/RoleGate';
 import { StatusBadge } from '@/components/StatusBadge';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { DataTable } from '@/components/ui/data-table';
@@ -20,9 +22,22 @@ import {
 import { Field, FormAlert, PageHeader } from '@/components/ui/field';
 import { Input, NativeSelect } from '@/components/ui/input';
 import { api, HttpError } from '@/lib/api';
-import { resumenAvisoMantenimiento } from '@/lib/format';
+import {
+  etiquetaMantenimientoUnidad,
+  fraseCuenta,
+  resumenAvisoMantenimiento,
+} from '@/lib/format';
 import { useRole } from '@/lib/role';
-import type { TipoVehiculo, UmbralAndon, Unidad } from '@/lib/types';
+import type { AvisoAndon, TipoVehiculo, UmbralAndon, Unidad } from '@/lib/types';
+
+const FILTROS = [
+  { id: 'todas', label: 'Todas' },
+  { id: 'activas', label: 'Activas' },
+  { id: 'inactivas', label: 'Inactivas' },
+  { id: 'vencidas', label: 'Vencidas' },
+] as const;
+
+type FiltroUnidad = (typeof FILTROS)[number]['id'];
 
 const DEFAULT_T_KM = 10000;
 const DEFAULT_T_DIAS = 90;
@@ -57,6 +72,10 @@ function UnidadesList() {
     Record<string, { tKm: string; tDias: string }>
   >({});
   const [savingAlertas, setSavingAlertas] = useState(false);
+  const [filtro, setFiltro] = useState<FiltroUnidad>('todas');
+  const [avisosByUnidad, setAvisosByUnidad] = useState<
+    Record<string, AvisoAndon>
+  >({});
 
   async function cargar() {
     if (!role) return;
@@ -68,17 +87,24 @@ function UnidadesList() {
     if (estadoFiltro) params.set('estado', estadoFiltro);
     const qs = params.toString();
     try {
-      const [lista, catalogo, umb] = await Promise.all([
+      const [lista, catalogo, umb, avisos] = await Promise.all([
         api<Unidad[]>(`/unidades${qs ? `?${qs}` : ''}`, { role, userId }),
         api<TipoVehiculo[]>('/unidades/tipos', { role, userId }),
         api<UmbralAndon[]>('/andon/umbrales', { role, userId }),
+        api<AvisoAndon[]>('/andon/avisos', { role, userId }).catch(
+          () => [] as AvisoAndon[],
+        ),
       ]);
       setUnidades(lista);
       setTipos(catalogo);
       setUmbrales(Object.fromEntries(umb.map((u) => [u.tipoVehiculoId, u])));
+      setAvisosByUnidad(
+        Object.fromEntries(avisos.map((aviso) => [aviso.unidadId, aviso])),
+      );
       setLoadFailed(false);
     } catch (err) {
       setUnidades([]);
+      setAvisosByUnidad({});
       setLoadFailed(true);
       setError(
         err instanceof HttpError
@@ -249,11 +275,15 @@ function UnidadesList() {
   const grupos = useMemo(() => {
     const byTipo = new Map<string, Unidad[]>();
     for (const unidad of unidades ?? []) {
+      if (filtro === 'activas' && unidad.estado !== 'ACTIVA') continue;
+      if (filtro === 'inactivas' && unidad.estado !== 'INACTIVA') continue;
+      if (filtro === 'vencidas' && !avisosByUnidad[unidad.id]) continue;
       const id = unidad.tipo.id;
       const list = byTipo.get(id) ?? [];
       list.push(unidad);
       byTipo.set(id, list);
     }
+    const ocultarVacios = buscando || filtro !== 'todas';
     return tipos
       .map((tipo) => ({
         tipo,
@@ -261,49 +291,97 @@ function UnidadesList() {
         umbral: umbrales[tipo.id],
       }))
       .filter((grupo) => {
-        if (buscando) return grupo.unidades.length > 0;
+        if (ocultarVacios) return grupo.unidades.length > 0;
         if (isAdmin) return true;
         return grupo.unidades.length > 0;
       });
-  }, [tipos, unidades, umbrales, buscando, isAdmin]);
+  }, [tipos, unidades, umbrales, buscando, isAdmin, filtro, avisosByUnidad]);
+
+  const resumenFlota = useMemo(() => {
+    const lista = unidades ?? [];
+    if (lista.length === 0) return null;
+    const vencidas = lista.filter((unidad) => avisosByUnidad[unidad.id]).length;
+    const inactivas = lista.filter((unidad) => unidad.estado === 'INACTIVA').length;
+    const parts = [fraseCuenta(lista.length, 'unidad', 'unidades')];
+    if (vencidas > 0) {
+      parts.push(fraseCuenta(vencidas, 'vencida', 'vencidas'));
+    }
+    if (inactivas > 0) {
+      parts.push(fraseCuenta(inactivas, 'inactiva', 'inactivas'));
+    }
+    return parts.join(' · ');
+  }, [unidades, avisosByUnidad]);
 
   const columns: ColumnDef<Unidad, unknown>[] = useMemo(
     () => [
       {
-        accessorKey: 'numeroInterno',
-        header: 'Interno',
-        cell: ({ row }) => (
-          <span className="mono">{row.original.numeroInterno}</span>
-        ),
-      },
-      {
         id: 'unidad',
         header: 'Unidad',
-        cell: ({ row }) => (
-          <span>
-            {row.original.marcaModelo
-              ? `${row.original.marcaModelo}${
-                  row.original.anio ? ` · ${row.original.anio}` : ''
-                }`
-              : '—'}
-          </span>
-        ),
+        cell: ({ row }) => {
+          const unidad = row.original;
+          const detalle = [
+            unidad.marcaModelo,
+            unidad.anio ? String(unidad.anio) : null,
+          ]
+            .filter(Boolean)
+            .join(' · ');
+          return (
+            <span>
+              <span className="mono font-medium text-navy">
+                {unidad.numeroInterno}
+              </span>
+              {detalle ? (
+                <span className="text-muted-foreground"> · {detalle}</span>
+              ) : null}
+            </span>
+          );
+        },
       },
       { accessorKey: 'placas', header: 'Placas' },
       {
         accessorKey: 'estado',
         header: 'Estado',
-        cell: ({ row }) => <StatusBadge estado={row.original.estado} />,
+        cell: ({ row }) => (
+          <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0">
+            <StatusBadge estado={row.original.estado} />
+            {row.original.motivoInactivacion === 'ENVIO_ESPECIAL' ? (
+              <span className="text-[11px] text-muted-foreground">
+                Envío especial
+              </span>
+            ) : null}
+          </div>
+        ),
+      },
+      {
+        id: 'mantenimiento',
+        header: 'Mantenimiento',
+        cell: ({ row }) => {
+          const aviso = avisosByUnidad[row.original.id];
+          if (!aviso) {
+            return (
+              <span className="text-[12px] text-muted-foreground">Al día</span>
+            );
+          }
+          return (
+            <Badge variant={aviso.estado === 'ABIERTO' ? 'warning' : 'muted'}>
+              {etiquetaMantenimientoUnidad(aviso.estado)}
+            </Badge>
+          );
+        },
       },
     ],
-    [],
+    [avisosByUnidad],
   );
 
   return (
     <>
       <PageHeader
         title="Unidades"
-        lede="Flota agrupada por tipo. Busque por interno, placas o marca."
+        lede={
+          resumenFlota
+            ? `Flota de mantenimiento por tipo. ${resumenFlota}.`
+            : 'Flota agrupada por tipo. Busque por interno, placas o marca.'
+        }
         actions={
           isAdmin ? (
             tipos.length > 0 ? (
@@ -365,6 +443,15 @@ function UnidadesList() {
         </Card>
       </form>
 
+      {loadFailed ? null : (
+        <ListFilter
+          label="Filtro unidades"
+          value={filtro}
+          options={FILTROS}
+          onChange={setFiltro}
+        />
+      )}
+
       {loadFailed && !dialogOpen && !alertasOpen ? (
         <div className="error-state">
           <h2>No se pudo consultar la flota</h2>
@@ -381,14 +468,14 @@ function UnidadesList() {
       ) : grupos.length === 0 ? (
         <div className="empty-state">
           <h2>
-            {buscando
+            {buscando || filtro !== 'todas'
               ? 'No hay unidades que coincidan'
               : isAdmin
                 ? 'No hay tipos'
                 : 'No hay unidades'}
           </h2>
           <p className="muted">
-            {buscando
+            {buscando || filtro !== 'todas'
               ? 'Ajuste la búsqueda o los filtros.'
               : isAdmin
                 ? 'Agregue el primer tipo para clasificar la flota.'
