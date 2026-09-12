@@ -111,7 +111,7 @@ describe('Slice 1 (e2e)', () => {
   });
 
   it('supervisor no puede crear ni actualizar unidades (403)', async () => {
-    const tipos = await request(server).get('/tipos-vehiculo').set(SUPERVISOR);
+    const tipos = await request(server).get('/unidades/tipos').set(SUPERVISOR);
     const tipoId = tipos.body[0].id as string;
     const u101 = await unidadPorNumero('U-101');
 
@@ -136,7 +136,7 @@ describe('Slice 1 (e2e)', () => {
 
   it('supervisor no puede escribir tipos de vehículo (403)', async () => {
     const res = await request(server)
-      .post('/tipos-vehiculo')
+      .post('/unidades/tipos')
       .set(SUPERVISOR)
       .send({ nombre: 'Motocicleta' })
       .expect(403);
@@ -145,27 +145,27 @@ describe('Slice 1 (e2e)', () => {
 
   it('admin CRUD de tipos de vehículo', async () => {
     const created = await request(server)
-      .post('/tipos-vehiculo')
+      .post('/unidades/tipos')
       .set(ADMIN)
       .send({ nombre: 'Plataforma', descripcion: 'Cama baja' })
       .expect(201);
     expect(created.body.nombre).toBe('Plataforma');
 
     const updated = await request(server)
-      .patch(`/tipos-vehiculo/${created.body.id}`)
+      .patch(`/unidades/tipos/${created.body.id}`)
       .set(ADMIN)
       .send({ descripcion: 'Cama baja reforzada' })
       .expect(200);
     expect(updated.body.descripcion).toContain('reforzada');
 
     await request(server)
-      .delete(`/tipos-vehiculo/${created.body.id}`)
+      .delete(`/unidades/tipos/${created.body.id}`)
       .set(ADMIN)
       .expect(200);
   });
 
   it('admin crea y actualiza unidades', async () => {
-    const tipos = await request(server).get('/tipos-vehiculo').set(ADMIN);
+    const tipos = await request(server).get('/unidades/tipos').set(ADMIN);
     const tipoId = tipos.body[0].id as string;
 
     const created = await request(server)
@@ -194,7 +194,7 @@ describe('Slice 1 (e2e)', () => {
   });
 
   it('409 en unicidad de número interno, placas y nombre de tipo', async () => {
-    const tipos = await request(server).get('/tipos-vehiculo').set(ADMIN);
+    const tipos = await request(server).get('/unidades/tipos').set(ADMIN);
     const tipoId = tipos.body[0].id as string;
 
     const dupNumero = await request(server)
@@ -220,7 +220,7 @@ describe('Slice 1 (e2e)', () => {
     expect(dupPlacas.body.message).toMatch(/placas/i);
 
     const dupTipo = await request(server)
-      .post('/tipos-vehiculo')
+      .post('/unidades/tipos')
       .set(ADMIN)
       .send({ nombre: 'Camión' })
       .expect(409);
@@ -276,7 +276,7 @@ describe('Slice 1 (e2e)', () => {
   });
 
   it('VIN es opcional y único si se informa', async () => {
-    const tipos = await request(server).get('/tipos-vehiculo').set(ADMIN);
+    const tipos = await request(server).get('/unidades/tipos').set(ADMIN);
     const tipoId = tipos.body[0].id as string;
 
     const sinVin = await request(server)
@@ -327,7 +327,7 @@ describe('Slice 1 (e2e)', () => {
   });
 
   it('rechaza número interno, placas y nombre de tipo solo con espacios', async () => {
-    const tipos = await request(server).get('/tipos-vehiculo').set(ADMIN);
+    const tipos = await request(server).get('/unidades/tipos').set(ADMIN);
     const tipoId = tipos.body[0].id as string;
     const u101 = await unidadPorNumero('U-101');
 
@@ -361,7 +361,7 @@ describe('Slice 1 (e2e)', () => {
     expect(patchNumero.body.message).toMatch(/número interno|vacío|válidos/i);
 
     const tipoVacio = await request(server)
-      .post('/tipos-vehiculo')
+      .post('/unidades/tipos')
       .set(ADMIN)
       .send({ nombre: '   ' })
       .expect(400);

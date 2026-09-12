@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { TiposVehiculoModule } from '../tipos-vehiculo/tipos-vehiculo.module';
 import { UnidadesModule } from '../unidades/unidades.module';
 import { NotificationsModule } from '../notifications/notifications.module';
 import { AndonInboxAdapter } from '../notifications/andon-inbox.adapter';
@@ -29,7 +28,6 @@ export const ANDON_ENTITIES = [
   imports: [
     TypeOrmModule.forFeature(ANDON_ENTITIES),
     UnidadesModule,
-    TiposVehiculoModule,
     NotificationsModule,
   ],
   controllers: [AndonController],

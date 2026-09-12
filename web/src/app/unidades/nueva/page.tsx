@@ -1,7 +1,7 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { Suspense, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { RoleGate } from '@/components/RoleGate';
 import { toPayload, UnidadForm } from '@/components/UnidadForm';
 import { api, HttpError } from '@/lib/api';
@@ -11,7 +11,9 @@ import type { Unidad } from '@/lib/types';
 export default function NuevaUnidadPage() {
   return (
     <RoleGate adminOnly>
-      <NuevaUnidadForm />
+      <Suspense fallback={<p className="muted">Cargando…</p>}>
+        <NuevaUnidadForm />
+      </Suspense>
     </RoleGate>
   );
 }
@@ -19,6 +21,8 @@ export default function NuevaUnidadPage() {
 function NuevaUnidadForm() {
   const { role, userId } = useRole();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const defaultTipoId = searchParams.get('tipoId') ?? undefined;
   const [error, setError] = useState<string | null>(null);
 
   return (
@@ -32,6 +36,7 @@ function NuevaUnidadForm() {
       <UnidadForm
         role={role!}
         userId={userId}
+        defaultTipoId={defaultTipoId}
         submitLabel="Crear unidad"
         error={error}
         onSubmit={async (values) => {

@@ -10,7 +10,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { EstadoUnidad } from '../common/estado-unidad.enum';
-import { TipoVehiculo } from '../tipos-vehiculo/tipo-vehiculo.entity';
+import { TipoVehiculo } from './tipo-vehiculo.entity';
 
 @Entity('unidades')
 export class Unidad {

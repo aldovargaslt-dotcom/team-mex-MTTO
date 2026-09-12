@@ -15,8 +15,8 @@ import { CreateTipoVehiculoDto } from './dto/create-tipo-vehiculo.dto';
 import { UpdateTipoVehiculoDto } from './dto/update-tipo-vehiculo.dto';
 import { TiposVehiculoService } from './tipos-vehiculo.service';
 
-@ApiTags('tipos-vehiculo')
-@Controller('tipos-vehiculo')
+@ApiTags('unidades')
+@Controller('unidades/tipos')
 export class TiposVehiculoController {
   constructor(private readonly service: TiposVehiculoService) {}
 

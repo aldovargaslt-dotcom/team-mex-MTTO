@@ -8,7 +8,7 @@ import {
   PrimaryColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Unidad } from '../unidades/unidad.entity';
+import { Unidad } from './unidad.entity';
 
 @Entity('tipos_vehiculo')
 export class TipoVehiculo {

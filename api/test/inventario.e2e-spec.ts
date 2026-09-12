@@ -73,7 +73,7 @@ describe('Inventario v0 + piezas en visita (e2e)', () => {
 
   async function tipoPorNombre(nombre: string) {
     const res = await request(server)
-      .get('/tipos-vehiculo')
+      .get('/unidades/tipos')
       .set(ADMIN)
       .expect(200);
     const found = (res.body as { id: string; nombre: string }[]).find(

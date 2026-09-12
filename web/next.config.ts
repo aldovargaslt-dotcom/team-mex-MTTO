@@ -9,12 +9,22 @@ const nextConfig: NextConfig = {
     return [
       {
         source: '/tipos',
-        destination: '/unidades/configuracion',
+        destination: '/unidades',
         permanent: false,
       },
       {
         source: '/tipos/',
-        destination: '/unidades/configuracion',
+        destination: '/unidades',
+        permanent: false,
+      },
+      {
+        source: '/unidades/configuracion',
+        destination: '/unidades',
+        permanent: false,
+      },
+      {
+        source: '/unidades/configuracion/',
+        destination: '/unidades',
         permanent: false,
       },
     ];

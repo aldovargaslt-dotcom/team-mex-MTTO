@@ -173,7 +173,7 @@ function AndonContent() {
         actions={
           isAdmin ? (
             <Button asChild variant="secondary">
-              <Link href="/unidades/configuracion">Reglas por tipo</Link>
+              <Link href="/unidades">Reglas por tipo</Link>
             </Button>
           ) : null
         }

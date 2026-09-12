@@ -124,11 +124,11 @@ Autenticación stub: encabezado `X-Role`. Falta el encabezado → 401.
 
 | Recurso | Supervisor | Admin directivo |
 |---------|------------|-----------------|
-| `GET /tipos-vehiculo` | sí | sí |
-| `POST/PATCH/DELETE /tipos-vehiculo` | 403 | sí |
 | `GET /choferes` (`?estado=ACTIVO` o `INACTIVO`) | sí | sí |
 | `POST/PATCH /choferes` (estado ACTIVO/INACTIVO; sin DELETE físico) | 403 | sí |
 | `GET /unidades` (filtros `numeroInterno`, `placas`, `tipo`) | sí | sí |
+| `GET /unidades/tipos` | sí | sí |
+| `POST/PATCH/DELETE /unidades/tipos` | 403 | sí |
 | `GET /unidades/:id` y `/unidades/:id/hub` | sí | sí |
 | `POST/PATCH /unidades` | 403 | sí |
 | `POST /unidades/:id/visitas` (borrador) | sí | 403 |
@@ -151,7 +151,7 @@ Documentación: [http://localhost:3001/docs](http://localhost:3001/docs).
 
 ## UI
 
-Rol stub → Unidades / Andon / Inventario. Campanita en el shell (badge de no leídas) abre `/notificaciones`. Admin: CRUD de tipos (con t_km/t_días) y choferes (estado ACTIVO/INACTIVO, filtro Activos/Todos); inventario; historial de visitas en solo lectura (sin Nueva visita). Supervisor: inventario, Andon (Enterado) y visitas (Datos → Trabajos → Obs → Fotos → **Piezas** → Firmas → Confirmar). El select de chofer en visita solo lista ACTIVO.
+Rol stub → Unidades / Andon / Inventario. Campanita en el shell (badge de no leídas) abre `/notificaciones`. Admin: en Unidades, familias (tipos + reglas t_km/t_días) junto a la flota; choferes (estado ACTIVO/INACTIVO, filtro Activos/Todos); inventario; historial de visitas en solo lectura (sin Nueva visita). Supervisor: inventario, Andon (Enterado) y visitas (Datos → Trabajos → Obs → Fotos → **Piezas** → Firmas → Confirmar). El select de chofer en visita solo lista ACTIVO.
 
 Inventario: Ítems (búsqueda + Nuevo ítem; ficha con **Mínimo**), Familias, Proveedores, Stock (columna Min editable, badges OK/Bajo/Agotado, filtro Todos | Bajo | Agotado), Movimientos, Pendientes.
 

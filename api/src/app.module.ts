@@ -13,7 +13,6 @@ import { InventarioModule } from './inventario/inventario.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { OutboxModule } from './kernel/outbox/outbox.module';
 import { SeedModule } from './seed/seed.module';
-import { TiposVehiculoModule } from './tipos-vehiculo/tipos-vehiculo.module';
 import { UnidadesModule } from './unidades/unidades.module';
 import { VisitasModule } from './visitas/visitas.module';
 
@@ -28,7 +27,6 @@ import { VisitasModule } from './visitas/visitas.module';
       },
     }),
     OutboxModule,
-    TiposVehiculoModule,
     UnidadesModule,
     ChoferesModule,
     InventarioModule,
