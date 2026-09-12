@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsInt, IsUUID, NotEquals } from 'class-validator';
+import { IsDefined, IsInt, IsUUID, NotEquals } from 'class-validator';
 import { RequiredTrimmed } from '../../common/trim';
 
 export class AjusteDto {
@@ -13,6 +13,7 @@ export class AjusteDto {
   qtyDelta: number;
 
   @ApiProperty({ example: 'Conteo físico' })
+  @IsDefined({ message: 'La nota es obligatoria' })
   @RequiredTrimmed('La nota es obligatoria')
   nota: string;
 }
