@@ -333,11 +333,19 @@ function UnidadesList() {
               {detalle ? (
                 <span className="text-muted-foreground"> · {detalle}</span>
               ) : null}
+              <span className="text-muted-foreground md:hidden">
+                {' · '}
+                {unidad.placas}
+              </span>
             </span>
           );
         },
       },
-      { accessorKey: 'placas', header: 'Placas' },
+      {
+        accessorKey: 'placas',
+        header: 'Placas',
+        meta: { className: 'hidden md:table-cell' },
+      },
       {
         accessorKey: 'estado',
         header: 'Estado',
