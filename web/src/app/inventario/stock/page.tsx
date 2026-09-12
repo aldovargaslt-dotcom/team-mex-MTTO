@@ -15,6 +15,14 @@ import { DataTable } from '@/components/ui/data-table';
 import { Field, FormAlert, PageHeader } from '@/components/ui/field';
 import { Input, NativeSelect, Textarea } from '@/components/ui/input';
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import {
   Sheet,
   SheetContent,
   SheetDescription,
@@ -55,6 +63,8 @@ function StockContent() {
   const [mode, setMode] = useState<'entrada' | 'ajuste' | null>(null);
   const [qty, setQty] = useState('1');
   const [nota, setNota] = useState('');
+  const [alertasOpen, setAlertasOpen] = useState(false);
+  const [savingAlertas, setSavingAlertas] = useState(false);
 
   async function cargar() {
     const data = await api<StockRow[]>('/inventario/stock', { role: role!, userId });
@@ -101,7 +111,7 @@ function StockContent() {
       notifyInboxChanged();
       await cargar();
     } catch (err) {
-      setError(err instanceof HttpError ? err.message : 'No se pudo guardar el mínimo.');
+      setError(err instanceof HttpError ? err.message : 'No se pudo guardar cuándo avisar.');
     }
   }
 
@@ -142,6 +152,44 @@ function StockContent() {
     }
   }
 
+  async function guardarAlertas(event: FormEvent) {
+    event.preventDefault();
+    setError(null);
+    for (const row of rows) {
+      const raw = minDraft[row.itemId] ?? '';
+      const next = raw.trim() === '' ? null : Number(raw);
+      if (next !== null && (!Number.isInteger(next) || next < 0)) {
+        setError('Indique un número entero, o déjelo vacío.');
+        return;
+      }
+    }
+    setSavingAlertas(true);
+    try {
+      for (const row of rows) {
+        const raw = minDraft[row.itemId] ?? '';
+        const next = raw.trim() === '' ? null : Number(raw);
+        if (next === row.minQty) continue;
+        await api(`/inventario/items/${row.itemId}`, {
+          role: role!,
+          userId,
+          method: 'PATCH',
+          body: JSON.stringify({ minQty: next }),
+        });
+      }
+      notifyInboxChanged();
+      setAlertasOpen(false);
+      await cargar();
+    } catch (err) {
+      setError(
+        err instanceof HttpError
+          ? err.message
+          : 'No se pudo guardar cuándo avisar.',
+      );
+    } finally {
+      setSavingAlertas(false);
+    }
+  }
+
   const selected = rows.find((row) => row.itemId === itemId);
 
   const filtered = useMemo(() => {
@@ -173,14 +221,14 @@ function StockContent() {
       {
         id: 'min',
         header: () => (
-          <span title="Avisa si el stock baja de este número. Vacío: no avisa.">
-            Mín.
+          <span title="Piezas o menos. Vacío = no avisar de este producto.">
+            Avisar si quedan
           </span>
         ),
         cell: ({ row }) => (
           <Input
-            aria-label={`Mínimo ${row.original.sku}`}
-            className="h-11 min-h-11 w-[4.5rem] md:h-10 md:min-h-10"
+            aria-label={`Avisar si quedan ${row.original.sku}`}
+            className="h-11 min-h-11 w-[5.5rem] md:h-10 md:min-h-10"
             type="number"
             min={0}
             step={1}
@@ -242,13 +290,28 @@ function StockContent() {
       <PageHeader
         title="Stock"
         actions={
-          <Button
-            type="button"
-            onClick={() => abrir(rows[0]?.itemId ?? '', 'entrada')}
-            disabled={rows.length === 0}
-          >
-            Registrar entrada
-          </Button>
+          <>
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={() => {
+                setMode(null);
+                setItemId('');
+                setError(null);
+                setAlertasOpen(true);
+              }}
+              disabled={rows.length === 0}
+            >
+              Configurar alertas
+            </Button>
+            <Button
+              type="button"
+              onClick={() => abrir(rows[0]?.itemId ?? '', 'entrada')}
+              disabled={rows.length === 0}
+            >
+              Registrar entrada
+            </Button>
+          </>
         }
       />
       <ListFilter
@@ -350,6 +413,97 @@ function StockContent() {
           </form>
         </SheetContent>
       </Sheet>
+
+      <Dialog
+        open={alertasOpen}
+        onOpenChange={(next) => {
+          if (!next) {
+            setMinDraft(
+              Object.fromEntries(
+                rows.map((row) => [
+                  row.itemId,
+                  row.minQty == null ? '' : String(row.minQty),
+                ]),
+              ),
+            );
+          }
+          setAlertasOpen(next);
+        }}
+      >
+        <DialogContent className="max-h-[90vh] overflow-y-auto">
+          <form onSubmit={guardarAlertas}>
+            <DialogHeader>
+              <DialogTitle className="text-[16px]">Alertas de inventario</DialogTitle>
+              <DialogDescription>
+                Te avisamos en la campanita cuando un producto se esté acabando.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-3 py-3">
+              {rows.map((row) => (
+                <div
+                  key={row.itemId}
+                  className="rounded-md border border-border p-3"
+                >
+                  <p className="text-sm font-semibold text-navy">{row.nombre}</p>
+                  <p className="mb-2 text-xs text-muted-foreground">
+                    <span className="mono">{row.sku}</span>
+                    {' · '}
+                    {row.qty} {etiquetaUom(row.uom)}
+                  </p>
+                  <Field
+                    label="Avisar cuando queden"
+                    htmlFor={`alertaMin-${row.itemId}`}
+                    hint={
+                      <p className="text-[12px] text-muted-foreground">
+                        Piezas o menos. Vacío = no avisar de este producto.
+                      </p>
+                    }
+                  >
+                    <Input
+                      id={`alertaMin-${row.itemId}`}
+                      type="number"
+                      min={0}
+                      step={1}
+                      inputMode="numeric"
+                      placeholder="—"
+                      value={minDraft[row.itemId] ?? ''}
+                      onChange={(e) =>
+                        setMinDraft((current) => ({
+                          ...current,
+                          [row.itemId]: e.target.value,
+                        }))
+                      }
+                    />
+                  </Field>
+                </div>
+              ))}
+              <FormAlert>{alertasOpen ? error : null}</FormAlert>
+            </div>
+            <DialogFooter>
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={() => {
+                  setMinDraft(
+                    Object.fromEntries(
+                      rows.map((row) => [
+                        row.itemId,
+                        row.minQty == null ? '' : String(row.minQty),
+                      ]),
+                    ),
+                  );
+                  setAlertasOpen(false);
+                }}
+              >
+                Cancelar
+              </Button>
+              <Button type="submit" disabled={savingAlertas || rows.length === 0}>
+                {savingAlertas ? 'Guardando…' : 'Guardar'}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }
