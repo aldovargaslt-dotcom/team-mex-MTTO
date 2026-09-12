@@ -76,6 +76,11 @@ export function InventarioMovimientoSheet({
           }),
         });
       } else {
+        const motivo = nota.trim();
+        if (!motivo) {
+          onError('La nota es obligatoria');
+          return;
+        }
         await api('/inventario/movimientos/ajuste', {
           role,
           userId,
@@ -83,7 +88,7 @@ export function InventarioMovimientoSheet({
           body: JSON.stringify({
             itemId: currentId,
             qtyDelta: Number(qty),
-            nota: nota.trim() || undefined,
+            nota: motivo,
           }),
         });
       }
@@ -149,12 +154,23 @@ export function InventarioMovimientoSheet({
               step={1}
             />
           </Field>
-          <Field label="Nota" htmlFor="movNota">
+          <Field
+            label="Nota"
+            htmlFor="movNota"
+            hint={
+              mode === 'ajuste' ? (
+                <p className="text-[12px] text-muted-foreground">
+                  Obligatoria. Texto libre; no hay catálogo de motivos.
+                </p>
+              ) : undefined
+            }
+          >
             <Textarea
               id="movNota"
+              required={mode === 'ajuste'}
               value={nota}
               onChange={(e) => setNota(e.target.value)}
-              placeholder="Opcional"
+              placeholder={mode === 'ajuste' ? 'Por qué se ajusta' : 'Opcional'}
             />
           </Field>
           <SheetFooter className="p-0">

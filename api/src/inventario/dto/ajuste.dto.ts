@@ -1,6 +1,6 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 import { IsInt, IsUUID, NotEquals } from 'class-validator';
-import { OptionalTrimmed } from '../../common/trim';
+import { RequiredTrimmed } from '../../common/trim';
 
 export class AjusteDto {
   @ApiProperty({ format: 'uuid' })
@@ -12,7 +12,7 @@ export class AjusteDto {
   @NotEquals(0, { message: 'El ajuste no puede ser 0.' })
   qtyDelta: number;
 
-  @ApiPropertyOptional()
-  @OptionalTrimmed()
-  nota?: string;
+  @ApiProperty({ example: 'Conteo físico' })
+  @RequiredTrimmed('La nota es obligatoria')
+  nota: string;
 }
