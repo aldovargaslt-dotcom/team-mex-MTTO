@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { EntityManager, IsNull, Not, Repository } from 'typeorm';
+import { EntityManager, In, IsNull, Not, Repository } from 'typeorm';
 import { Rol } from '../auth/roles.enum';
 import { EstadoSitio, TipoFirmaFlota, TipoMovimientoFlota } from './enums';
 import { MovimientoEntity } from './entities/movimiento.entity';
@@ -64,15 +64,14 @@ export class TypeOrmFlotaStore implements FlotaStore {
     const abiertas = await this.operativas.find({
       where: { salidaAbiertaId: Not(IsNull()) },
     });
-    for (const op of abiertas) {
-      if (exceptUnidadId && op.unidadId === exceptUnidadId) continue;
-      if (!op.salidaAbiertaId) continue;
-      const mov = await this.movimientos.findOne({
-        where: { id: op.salidaAbiertaId },
-      });
-      if (mov?.choferId === choferId) return true;
-    }
-    return false;
+    const ids = abiertas
+      .filter((op) => op.salidaAbiertaId && op.unidadId !== exceptUnidadId)
+      .map((op) => op.salidaAbiertaId as string);
+    if (!ids.length) return false;
+    const count = await this.movimientos.count({
+      where: { id: In(ids), choferId },
+    });
+    return count > 0;
   }
 
   async insertMovimiento(mov: MovimientoFlota): Promise<void> {

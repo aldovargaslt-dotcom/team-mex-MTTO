@@ -22,11 +22,17 @@ import { Aviso, LastClosedVisit } from './andon-types';
 import { AvisoDto, UmbralDto } from './dto/andon.dto';
 import { DEFAULT_T_DIAS, DEFAULT_T_KM, EstadoAviso } from './enums';
 import { NestUnidadCatalog } from './nest-unidad-catalog';
-import { AVISO_INBOX_PORT, AvisoInboxPort, NOTIFY_PORT, NotifyPort } from './ports';
+import {
+  AndonAbiertoPort,
+  AVISO_INBOX_PORT,
+  AvisoInboxPort,
+  NOTIFY_PORT,
+  NotifyPort,
+} from './ports';
 import { TypeOrmAndonStore } from './typeorm-store';
 
 @Injectable()
-export class AndonService implements OnModuleInit {
+export class AndonService implements OnModuleInit, AndonAbiertoPort {
   constructor(
     private readonly store: TypeOrmAndonStore,
     private readonly catalog: NestUnidadCatalog,
@@ -91,6 +97,11 @@ export class AndonService implements OnModuleInit {
   async hasNoResuelto(unidadId: string): Promise<boolean> {
     const aviso = await this.store.getNoResuelto(unidadId);
     return Boolean(aviso);
+  }
+
+  async unidadIdsNoResuelto(): Promise<string[]> {
+    const avisos = await this.store.listNoResueltos();
+    return [...new Set(avisos.map((a) => a.unidadId))];
   }
 
   async enterado(id: string, user: CurrentUser): Promise<AvisoDto> {

@@ -44,6 +44,16 @@ export interface AvisoInboxPort {
 
 export const AVISO_INBOX_PORT = Symbol('AvisoInboxPort');
 
+/**
+ * Lectura de aviso Andon abierto (ADR-008). Flota no abre el módulo Andon.
+ */
+export const ANDON_ABIERTO_PORT = Symbol('AndonAbiertoPort');
+
+export interface AndonAbiertoPort {
+  hasNoResuelto(unidadId: string): Promise<boolean>;
+  unidadIdsNoResuelto(): Promise<string[]>;
+}
+
 export type AndonNotifier = NotifyPort;
 export type WhatsAppPort = NotifyPort;
 
