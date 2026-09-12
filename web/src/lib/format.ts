@@ -3,6 +3,11 @@ export function formatKm(km: number | null | undefined) {
   return `${km.toLocaleString('es-MX')} km`;
 }
 
+/** Copy de taller para avisos de visita (no decir umbral / t_km). */
+export function resumenAvisoMantenimiento(km: number, dias: number) {
+  return `Avisa a los ${km.toLocaleString('es-MX')} km o a los ${dias} días`;
+}
+
 export function formatFecha(value: string | null | undefined) {
   if (!value) return '—';
   return new Date(value).toLocaleString('es-MX', {
