@@ -9,6 +9,7 @@ import { ChoferesModule } from './choferes/choferes.module';
 import { ensureModuleSchemas } from './db/ensure-schemas';
 import { typeormRootOptions } from './db/postgres-options';
 import { AndonModule } from './andon/andon.module';
+import { FlotaModule } from './flota/flota.module';
 import { InventarioModule } from './inventario/inventario.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { OutboxModule } from './kernel/outbox/outbox.module';
@@ -29,6 +30,7 @@ import { VisitasModule } from './visitas/visitas.module';
     OutboxModule,
     UnidadesModule,
     ChoferesModule,
+    FlotaModule,
     InventarioModule,
     NotificationsModule,
     AndonModule,

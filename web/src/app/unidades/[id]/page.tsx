@@ -18,7 +18,7 @@ import type { UnidadHub, VisitaDetalle, VisitaResumen } from '@/lib/types';
 
 export default function HubPage() {
   return (
-    <RoleGate>
+    <RoleGate allow={['SUPERVISOR', 'ADMIN_DIRECTIVO']}>
       <HubContent />
     </RoleGate>
   );
@@ -183,6 +183,11 @@ function HubContent() {
             <dt>Estado</dt>
             <dd>
               <StatusBadge estado={ficha.estado} />
+              {ficha.motivoInactivacion === 'ENVIO_ESPECIAL' ? (
+                <span className="ml-2 text-[12px] text-muted-foreground">
+                  Envío especial
+                </span>
+              ) : null}
             </dd>
             <dt>Marca / modelo</dt>
             <dd>{ficha.marcaModelo || 'Sin marca / modelo'}</dd>

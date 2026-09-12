@@ -1,6 +1,8 @@
-export type Role = 'SUPERVISOR' | 'ADMIN_DIRECTIVO';
+export type Role = 'SUPERVISOR' | 'ADMIN_DIRECTIVO' | 'LOGISTICA';
 
 export type EstadoUnidad = 'ACTIVA' | 'INACTIVA';
+
+export type MotivoInactivacion = 'ENVIO_ESPECIAL';
 
 export type EstadoChofer = 'ACTIVO' | 'INACTIVO';
 
@@ -40,6 +42,7 @@ export type Unidad = {
   placas: string;
   vin: string | null;
   estado: EstadoUnidad;
+  motivoInactivacion?: MotivoInactivacion | null;
   tipo: TipoVehiculo;
   marcaModelo: string | null;
   anio: number | null;
@@ -183,6 +186,7 @@ export type UnidadHub = {
     placas: string;
     vin: string | null;
     estado: EstadoUnidad;
+    motivoInactivacion?: MotivoInactivacion | null;
     tipoId: string;
     tipoNombre: string;
     marcaModelo: string | null;
@@ -243,6 +247,68 @@ export type SourceModule = 'ANDON' | 'INVENTARIO';
 export type SubjectType = 'UNIDAD' | 'ITEM' | 'NONE';
 
 export type Severity = 'LOW' | 'INFO' | 'WARNING' | 'CRITICAL';
+
+export type TipoMovimientoFlota = 'SALIDA' | 'ENTRADA';
+
+export type TipoFirmaFlota = 'CHOFER' | 'AVAL';
+
+export type EstadoSitio = 'ACTIVO' | 'INACTIVO';
+
+export type SitioFlota = {
+  id: string;
+  nombre: string;
+  estado: EstadoSitio;
+};
+
+export type TableroFlotaRow = {
+  unidadId: string;
+  numeroInterno: string;
+  placas: string;
+  tipoNombre: string;
+  estado: EstadoUnidad;
+  motivoInactivacion: MotivoInactivacion | null;
+  sitioId: string | null;
+  sitioNombre: string | null;
+  choferActualId: string | null;
+  choferActualNombre: string | null;
+  choferUltimoId: string | null;
+  choferUltimoNombre: string | null;
+  salidaAbiertaId: string | null;
+  salidaAbiertaAt: string | null;
+  tiempoFueraMs: number | null;
+  kmSalida: number | null;
+  andonAbierto: boolean;
+};
+
+export type MovimientoFlota = {
+  id: string;
+  tipo: TipoMovimientoFlota;
+  unidadId: string;
+  choferId: string;
+  sitioId: string;
+  occurredAt: string;
+  km: number;
+  notas: string | null;
+  createdBy: string | null;
+  avalRol: Role;
+  firmas: { tipo: TipoFirmaFlota; dataUrl: string }[];
+  choferNombre?: string | null;
+  sitioNombre?: string | null;
+};
+
+export type FlotaUnidadDetalle = {
+  unidad: {
+    id: string;
+    numeroInterno: string;
+    placas: string;
+    estado: EstadoUnidad;
+    motivoInactivacion: MotivoInactivacion | null;
+    tipoNombre: string;
+    ultimoKmVisita: number | null;
+  };
+  tablero: TableroFlotaRow | null;
+  historial: MovimientoFlota[];
+};
 
 export type ApiError = {
   statusCode: number;

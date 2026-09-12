@@ -21,6 +21,7 @@ import { VisitasService } from './visitas.service';
 
 @ApiTags('visitas')
 @Controller()
+@Roles(Rol.SUPERVISOR, Rol.ADMIN_DIRECTIVO)
 export class VisitasController {
   constructor(private readonly service: VisitasService) {}
 

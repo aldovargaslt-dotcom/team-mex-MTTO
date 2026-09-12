@@ -51,7 +51,7 @@ type StepId = (typeof STEPS)[number]['id'];
 
 export default function VisitaPage() {
   return (
-    <RoleGate>
+    <RoleGate allow={['SUPERVISOR', 'ADMIN_DIRECTIVO']}>
       <VisitaContent />
     </RoleGate>
   );

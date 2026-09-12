@@ -1,5 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { EstadoUnidad } from '../../common/estado-unidad.enum';
+import { MotivoInactivacion } from '../../common/motivo-inactivacion.enum';
 import { EstadoVisita, TipoVisita } from '../../visitas/enums';
 
 export class FichaCortaDto {
@@ -17,6 +18,13 @@ export class FichaCortaDto {
 
   @ApiProperty({ enum: EstadoUnidad })
   estado: EstadoUnidad;
+
+  @ApiProperty({
+    enum: MotivoInactivacion,
+    nullable: true,
+    type: String,
+  })
+  motivoInactivacion: MotivoInactivacion | null;
 
   @ApiProperty()
   tipoId: string;

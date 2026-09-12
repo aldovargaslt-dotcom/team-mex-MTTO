@@ -2,9 +2,9 @@
 
 Team Mex — Mantenimiento + Inventario + Andon v0.
 
-Cubre el kernel delgado (unidades, tipos, choferes, roles), visitas de mantenimiento, Inventario (schema `inventario`) con el paso **Piezas**, **Andon** (schema `andon`: avisos de mantenimiento vencido) y **Notifications** (schema `notifications`: campanita + inbox). Quedan fuera: multi-almacén, lotes, costeo, OC formal, kardex pesado, ítem↔placa y reserva de stock en borrador.
+Cubre el kernel delgado (unidades, tipos, choferes, roles), visitas de mantenimiento, Inventario (schema `inventario`) con el paso **Piezas**, **Andon** (schema `andon`: avisos de mantenimiento vencido), **Notifications** (schema `notifications`: campanita + inbox) y **Flota** (schema `flota`: bitácora de patio). Quedan fuera: multi-almacén, lotes, costeo, OC formal, kardex pesado, ítem↔placa, reserva de stock en borrador, GPS/rutas.
 
-Arquitectura: [ADR-000](docs/adr/000-thin-kernel.md), [ADR-001](docs/adr/001-visita-cerrada-outbox.md), [ADR-002](docs/adr/002-schema-per-module.md), [ADR-003](docs/adr/003-shadcn-tailwind.md), [ADR-004](docs/adr/ADR-004-tdd-test-bar-andon-v0.md), [ADR-005](docs/adr/005-andon-no-stock-alerts.md), [ADR-006](docs/adr/006-notifications-schema.md), [ADR-007](docs/adr/007-inventario-stock-bajo.md).
+Arquitectura: [ADR-000](docs/adr/000-thin-kernel.md), [ADR-001](docs/adr/001-visita-cerrada-outbox.md), [ADR-002](docs/adr/002-schema-per-module.md), [ADR-003](docs/adr/003-shadcn-tailwind.md), [ADR-004](docs/adr/ADR-004-tdd-test-bar-andon-v0.md), [ADR-005](docs/adr/005-andon-no-stock-alerts.md), [ADR-006](docs/adr/006-notifications-schema.md), [ADR-007](docs/adr/007-inventario-stock-bajo.md), [ADR-008](docs/adr/008-flota-schema.md). Spec Flota: [docs/specs/fleet-manager-v0.md](docs/specs/fleet-manager-v0.md).
 
 ## Stack
 
@@ -57,7 +57,7 @@ La UI habla con la API por el proxy `/backend` (mismo origen), así no hay que p
 
 Pare el stack con `docker compose --profile app down`. Si también desarrolla con Node en el host, no mezcle ambos: o el perfil `app`, o `npm run dev` / `start:dev`.
 
-El cliente usa el rol stub `X-Role: SUPERVISOR | ADMIN_DIRECTIVO` (y `X-User-Id` opcional). En la pantalla inicial elija el rol; sin encabezado la API responde 401.
+El cliente usa el rol stub `X-Role: SUPERVISOR | ADMIN_DIRECTIVO | LOGISTICA` (y `X-User-Id` opcional). En la pantalla inicial elija el rol; sin encabezado la API responde 401.
 
 ## Deploy (Vercel + Railway)
 
@@ -122,24 +122,26 @@ Inventario: familias Filtros/Frenos; SKUs `FIL-ACEITE-01` (stock 10, Camión/Cam
 
 Autenticación stub: encabezado `X-Role`. Falta el encabezado → 401.
 
-| Recurso | Supervisor | Admin directivo |
-|---------|------------|-----------------|
-| `GET /choferes` (`?estado=ACTIVO` o `INACTIVO`) | sí | sí |
-| `POST/PATCH /choferes` (estado ACTIVO/INACTIVO; sin DELETE físico) | 403 | sí |
-| `GET /unidades` (filtros `numeroInterno`, `placas`, `tipo`) | sí | sí |
-| `GET /unidades/tipos` | sí | sí |
-| `POST/PATCH/DELETE /unidades/tipos` | 403 | sí |
-| `GET /unidades/:id` y `/unidades/:id/hub` | sí | sí |
-| `POST/PATCH /unidades` | 403 | sí |
-| `POST /unidades/:id/visitas` (borrador) | sí | 403 |
-| `PATCH /visitas/:id`, `DELETE /visitas/:id`, `POST /visitas/:id/cerrar` | sí | 403 |
-| `GET /visitas/:id` y historial | sí (incluye borradores) | historial/detalle cerrado |
-| `/inventario/*` (familias, ítems, proveedores, stock, entradas, ajustes, movimientos, pendientes) | sí | sí |
-| `GET /andon/avisos`, `GET /andon/umbrales` | sí | sí |
-| `POST /andon/avisos/:id/enterado` | sí | 403 |
-| `PATCH /andon/umbrales/:tipoVehiculoId` | 403 | sí |
-| `GET /notifications`, `GET /notifications/badge` | sí | sí (mismo inbox) |
-| `POST /notifications/:id/read`, `POST /notifications/read-all` | sí | sí |
+| Recurso | Supervisor | Admin directivo | Logística |
+|---------|------------|-----------------|-----------|
+| `GET /choferes` (`?estado=ACTIVO` o `INACTIVO`) | sí | sí | sí |
+| `POST/PATCH /choferes` (estado ACTIVO/INACTIVO; sin DELETE físico) | 403 | sí | 403 |
+| `GET /unidades` (filtros `numeroInterno`, `placas`, `tipo`) | sí | sí | sí |
+| `GET /unidades/tipos` | sí | sí | sí |
+| `POST/PATCH/DELETE /unidades/tipos` | 403 | sí | 403 |
+| `GET /unidades/:id` | sí | sí | sí |
+| `GET /unidades/:id/hub` | sí | sí | 403 |
+| `POST/PATCH /unidades` | 403 | sí | 403 |
+| `POST /unidades/:id/visitas` (borrador) | sí | 403 | 403 |
+| `PATCH /visitas/:id`, `DELETE /visitas/:id`, `POST /visitas/:id/cerrar` | sí | 403 | 403 |
+| `GET /visitas/:id` y historial | sí (incluye borradores) | historial/detalle cerrado | 403 |
+| `/inventario/*` | sí | sí | 403 |
+| `GET /andon/avisos`, `GET /andon/umbrales` | sí | sí | 403 |
+| `POST /andon/avisos/:id/enterado` | sí | 403 | 403 |
+| `PATCH /andon/umbrales/:tipoVehiculoId` | 403 | sí | 403 |
+| `GET /notifications`, `GET /notifications/badge` | sí | sí (mismo inbox) | 403 |
+| `POST /notifications/:id/read`, `POST /notifications/read-all` | sí | sí | 403 |
+| `/flota/*` (tablero, sitios, movimientos, envío especial) | 403 | sí | sí |
 
 Hub: `fichaCorta` + `borradores[]` (vacío para admin) + `historialCerrado[]` + `puedeCrearVisita` + `mensajes[]`. `puedeCrearVisita` es **true solo si el rol es SUPERVISOR y la unidad está ACTIVA**.
 
@@ -151,7 +153,7 @@ Documentación: [http://localhost:3001/docs](http://localhost:3001/docs).
 
 ## UI
 
-Rol stub → Unidades / Andon / Inventario. Campanita en el shell (badge de no leídas) abre `/notificaciones`. Admin: en Unidades, familias (tipos + reglas t_km/t_días) junto a la flota; choferes (estado ACTIVO/INACTIVO, filtro Activos/Todos); inventario; historial de visitas en solo lectura (sin Nueva visita). Supervisor: inventario, Andon (Enterado) y visitas (Datos → Trabajos → Obs → Fotos → **Piezas** → Firmas → Confirmar). El select de chofer en visita solo lista ACTIVO.
+Rol stub → Unidades / Andon / Inventario / **Flota**. Campanita en el shell (badge de no leídas) abre `/notificaciones` (no logística). Admin: en Unidades, familias (tipos + reglas t_km/t_días) junto a la flota de mantenimiento; choferes; inventario; historial de visitas en solo lectura (sin Nueva visita); bitácora de patio en Flota. Logística: solo Flota (tablero, sitios, salidas/entradas con dos firmas, envío especial). Supervisor: inventario, Andon (Enterado) y visitas (Datos → Trabajos → Obs → Fotos → **Piezas** → Firmas → Confirmar). El select de chofer en visita solo lista ACTIVO. Hub: si la unidad está inactiva por envío especial, el mensaje lo dice.
 
 Inventario: Ítems (búsqueda + Nuevo ítem; ficha con **Mínimo**), Familias, Proveedores, Stock (columna Min editable, badges OK/Bajo/Agotado, filtro Todos | Bajo | Agotado), Movimientos, Pendientes.
 

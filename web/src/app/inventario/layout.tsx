@@ -9,7 +9,7 @@ export default function InventarioLayout({
   children: React.ReactNode;
 }) {
   return (
-    <RoleGate>
+    <RoleGate allow={['SUPERVISOR', 'ADMIN_DIRECTIVO']}>
       <InventarioNav />
       {children}
     </RoleGate>

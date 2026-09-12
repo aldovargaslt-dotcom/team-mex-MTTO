@@ -14,7 +14,7 @@ export function Campanita() {
   const [unread, setUnread] = useState(0);
 
   const cargar = useCallback(async () => {
-    if (!role) return;
+    if (!role || role === 'LOGISTICA') return;
     try {
       const data = await api<{ unread: number }>('/notifications/badge', {
         role,

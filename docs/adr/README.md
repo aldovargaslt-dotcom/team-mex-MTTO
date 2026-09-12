@@ -14,6 +14,7 @@ El archivo 004 se llama `ADR-004-…` (histórico). No renombrar en un overlay d
 | 005 | [005-andon-no-stock-alerts.md](005-andon-no-stock-alerts.md) | Andon ≠ alertas de stock |
 | 006 | [006-notifications-schema.md](006-notifications-schema.md) | Schema `notifications` (inbox) |
 | 007 | [007-inventario-stock-bajo.md](007-inventario-stock-bajo.md) | `min_qty` / `StockBajo` |
+| 008 | [008-flota-schema.md](008-flota-schema.md) | Schema `flota`, rol `LOGISTICA`, envío especial |
 
 Mapa de bounded contexts → directorios: [context-map.md](context-map.md). UI visual: [docs/design-system/](../design-system/).
 

@@ -20,6 +20,8 @@ type RoleContextValue = {
   setRole: (role: Role) => void;
   clearRole: () => void;
   isAdmin: boolean;
+  isLogistica: boolean;
+  canFlota: boolean;
 };
 
 const RoleContext = createContext<RoleContextValue | null>(null);
@@ -32,7 +34,11 @@ export function RoleProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const stored = window.localStorage.getItem(ROLE_KEY);
     const storedUser = window.localStorage.getItem(USER_KEY);
-    if (stored === 'SUPERVISOR' || stored === 'ADMIN_DIRECTIVO') {
+    if (
+      stored === 'SUPERVISOR' ||
+      stored === 'ADMIN_DIRECTIVO' ||
+      stored === 'LOGISTICA'
+    ) {
       setRoleState(stored);
     }
     if (storedUser) {
@@ -63,6 +69,8 @@ export function RoleProvider({ children }: { children: React.ReactNode }) {
       setRole,
       clearRole,
       isAdmin: role === 'ADMIN_DIRECTIVO',
+      isLogistica: role === 'LOGISTICA',
+      canFlota: role === 'LOGISTICA' || role === 'ADMIN_DIRECTIVO',
     }),
     [role, userId, ready, setRole, clearRole],
   );
@@ -79,7 +87,7 @@ export function useRole() {
 }
 
 export function etiquetaRol(role: Role) {
-  return role === 'ADMIN_DIRECTIVO'
-    ? 'Administrador directivo'
-    : 'Supervisor';
+  if (role === 'ADMIN_DIRECTIVO') return 'Administrador directivo';
+  if (role === 'LOGISTICA') return 'Logística';
+  return 'Supervisor';
 }

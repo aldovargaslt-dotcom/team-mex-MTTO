@@ -114,6 +114,7 @@ export class SeedService implements OnModuleInit {
         exists.estado = item.estado;
         exists.marcaModelo = item.marcaModelo;
         exists.anio = item.anio;
+        exists.motivoInactivacion = exists.motivoInactivacion ?? null;
         await this.unidades.save(exists);
         continue;
       }

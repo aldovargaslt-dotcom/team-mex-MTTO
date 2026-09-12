@@ -20,6 +20,7 @@ import { EstadoAviso } from './enums';
 
 @ApiTags('andon')
 @Controller('andon')
+@Roles(Rol.SUPERVISOR, Rol.ADMIN_DIRECTIVO)
 export class AndonController {
   constructor(private readonly service: AndonService) {}
 

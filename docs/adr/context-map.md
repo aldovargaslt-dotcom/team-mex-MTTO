@@ -9,7 +9,8 @@
 | Inventario | `inventario` | `api/src/inventario` | `web/src/app/inventario` |
 | Andon | `andon` | `api/src/andon` | `web/src/app/andon` |
 | Notifications | `notifications` | `api/src/notifications` | `web/src/app/notificaciones`, `Campanita` |
+| Flota | `flota` | `api/src/flota` | `web/src/app/flota` |
 
-Seams (puertos): `NotifyPort`, `StockAlertPort`, `AvisoInboxPort`. IDs opacos; sin FKs/JOINs cruzadas (ADR-002).
+Seams (puertos): `NotifyPort`, `StockAlertPort`, `AvisoInboxPort`. Flota lee aviso Andon abierto vía `AndonService.hasNoResuelto` (sin UI Andon). IDs opacos; sin FKs/JOINs cruzadas (ADR-002).
 
 Notify dual-stack (no unificar): `andon-notifier.factory.ts` vs `andon/notify/` — [AGENTS.md](../../AGENTS.md).

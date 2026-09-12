@@ -17,23 +17,34 @@ import {
 } from '@/components/ui/sheet';
 import { cn } from '@/lib/utils';
 import { etiquetaRol, useRole } from '@/lib/role';
+import type { Role } from '@/lib/types';
 
-const NAV_ITEMS = [
-  { href: '/unidades', label: 'Unidades' },
-  { href: '/andon', label: 'Andon' },
-  { href: '/inventario', label: 'Inventario' },
-  { href: '/choferes', label: 'Choferes', adminOnly: true },
-] as const;
+const NAV_ITEMS: {
+  href: string;
+  label: string;
+  roles: Role[];
+}[] = [
+  { href: '/flota', label: 'Flota', roles: ['LOGISTICA', 'ADMIN_DIRECTIVO'] },
+  { href: '/unidades', label: 'Unidades', roles: ['SUPERVISOR', 'ADMIN_DIRECTIVO'] },
+  { href: '/andon', label: 'Andon', roles: ['SUPERVISOR', 'ADMIN_DIRECTIVO'] },
+  {
+    href: '/inventario',
+    label: 'Inventario',
+    roles: ['SUPERVISOR', 'ADMIN_DIRECTIVO'],
+  },
+  { href: '/choferes', label: 'Choferes', roles: ['ADMIN_DIRECTIVO'] },
+];
 
 export function AppShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
-  const { role, isAdmin, clearRole, ready } = useRole();
+  const { role, isLogistica, clearRole, ready } = useRole();
   const isHome = pathname === '/';
   const showChrome = Boolean(!isHome && ready && role);
   const [menuOpen, setMenuOpen] = useState(false);
 
-  const items = NAV_ITEMS.filter((item) => !('adminOnly' in item) || isAdmin);
+  const items = NAV_ITEMS.filter((item) => role && item.roles.includes(role));
+  const homeHref = isLogistica ? '/flota' : '/unidades';
 
   function cambiarRol() {
     setMenuOpen(false);
@@ -45,7 +56,7 @@ export function AppShell({ children }: { children: ReactNode }) {
     <div className="app">
       <header className="shell-header">
         <div className="shell-header__bar">
-          <Link href={role ? '/unidades' : '/'} className="shell-header__brand">
+          <Link href={role ? homeHref : '/'} className="shell-header__brand">
             <BrandPlate />
           </Link>
           {showChrome ? (
@@ -64,7 +75,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           <div className="shell-header__actions">
             {showChrome ? (
               <>
-                <Campanita />
+                {isAdmin || !isLogistica ? <Campanita /> : null}
                 <span className="shell-header__role hidden md:inline">
                   {etiquetaRol(role!)}
                 </span>

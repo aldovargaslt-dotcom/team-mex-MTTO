@@ -56,6 +56,22 @@ TDD en `api/src/inventario/stock-alerta-rules.spec.ts` (puro + fake `StockAlertP
 - **S3** — cero escrituras en `andon.*` (ADR-005). WhatsApp Inventario fuera.
 - **S4** — dominio Inventario no escribe `notifications.*` ni `andon.*`; solo el adapter Notifications llama `ingestStockBajo` / `clear`.
 
+## Flota patio (F1–F11)
+
+TDD en `api/src/flota/flota-engine.spec.ts` (fakes en memoria; sin Postgres). Spec: [fleet-manager-v0](../specs/fleet-manager-v0.md).
+
+- **F1** — una sola `SALIDA` abierta por `unidadId`; segunda salida → error.
+- **F2** — `ENTRADA` exige salida abierta de esa unidad; la cierra.
+- **F3** — chofer debe estar `ACTIVO` (catálogo kernel).
+- **F4** — sitio debe existir y estar `ACTIVO`.
+- **F5** — `occurredAt` no puede ser futuro.
+- **F6** — `ENTRADA.occurredAt` >= `SALIDA.occurredAt` de la abierta.
+- **F7** — km de entrada >= km de la salida abierta.
+- **F8** — firmas `CHOFER` y `AVAL` obligatorias en el mismo alta; sin ellas no hay fila.
+- **F9** — un chofer no puede tener dos `SALIDA` abiertas (unidades distintas).
+- **F10** — bitácora permitida si la unidad está `INACTIVA`.
+- **F11** — no hay borrador: alta + proyección + firmas en una transacción lógica.
+
 ## Outbound ops
 
 Puerto `NotifyPort`. `ANDON_NOTIFY_PROVIDER=evolution|noop` (**default noop**). Contrato lab: `POST /message/sendText/{instance}` con `number=ANDON_WA_GROUP_JID` (`@g.us`). Cableado HTTP: **otro agente**. Throwaway Baileys — **riesgo ToS, no prod**. Meta/Twilio no en este PR. Enterado in-app. Checklist: [andon-whatsapp-ops-checklist-v0](../../architecture/andon-whatsapp-ops-checklist-v0.md).

@@ -31,7 +31,7 @@ export class AuthGuard implements CanActivate {
 
     if (!ROLES_VALIDOS.includes(rawRole as Rol)) {
       throw new UnauthorizedException(
-        'El rol indicado no es válido. Use SUPERVISOR o ADMIN_DIRECTIVO.',
+        'El rol indicado no es válido. Use SUPERVISOR, ADMIN_DIRECTIVO o LOGISTICA.',
       );
     }
 

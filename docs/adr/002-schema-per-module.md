@@ -8,6 +8,7 @@ Cada módulo persiste en su propio esquema (o frontera equivalente):
 - Inventario: esquema PostgreSQL `inventario`
 - Andon: esquema PostgreSQL `andon` (ADR-005: sin stock)
 - Notifications: esquema PostgreSQL `notifications` (ADR-006: inbox; `source_ref` opaco, sin FK cruzada)
+- Flota: esquema PostgreSQL `flota` (ADR-008: sitios y bitácora; IDs opacos, sin FK a `unidades` / `choferes`)
 
 Prohibido:
 

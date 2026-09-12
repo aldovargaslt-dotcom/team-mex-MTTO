@@ -12,6 +12,8 @@ import {
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CurrentUser } from '../auth/current-user';
 import { CurrentUserParam } from '../auth/current-user.decorator';
+import { Roles } from '../auth/roles.decorator';
+import { Rol } from '../auth/roles.enum';
 import { AddCompatibilidadDto } from './dto/add-compatibilidad.dto';
 import { AjusteDto } from './dto/ajuste.dto';
 import { CreateFamiliaDto } from './dto/create-familia.dto';
@@ -28,6 +30,7 @@ import { InventarioService } from './inventario.service';
 
 @ApiTags('inventario')
 @Controller('inventario')
+@Roles(Rol.SUPERVISOR, Rol.ADMIN_DIRECTIVO)
 export class InventarioController {
   constructor(private readonly service: InventarioService) {}
 

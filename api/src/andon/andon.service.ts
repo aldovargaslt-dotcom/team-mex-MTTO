@@ -88,6 +88,11 @@ export class AndonService implements OnModuleInit {
     return Promise.all(avisos.map((a) => this.toDto(a)));
   }
 
+  async hasNoResuelto(unidadId: string): Promise<boolean> {
+    const aviso = await this.store.getNoResuelto(unidadId);
+    return Boolean(aviso);
+  }
+
   async enterado(id: string, user: CurrentUser): Promise<AvisoDto> {
     try {
       const aviso = await this.engine().enterado(id, {
