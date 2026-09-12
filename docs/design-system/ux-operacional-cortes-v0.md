@@ -39,7 +39,7 @@ Prioridad: copy operacional, menos verbos por fila, consulta ≠ edición, filtr
 - Nav **Configuración**, Inicio con “Próximamente” o actividad reciente.
 - Renombrar schema/API (`t_km`, `items`, `familias`, estados `OPEN`…).
 - Meter stock en Andon empty states.
-- Tocar Flota / `LOGISTICA` / dual-stack notify.
+- Tocar Flota / `LOGISTICA` / dual-stack notify. Flota tiene plan propio: [fleet-tablero-viaje-v0](../specs/fleet-tablero-viaje-v0.md).
 
 Cada PR de implementación copia Must / Don’t / Fuera del corte a [`.github/pull_request_template.md`](../../.github/pull_request_template.md).
 
