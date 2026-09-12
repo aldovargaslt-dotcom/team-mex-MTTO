@@ -19,9 +19,13 @@ export function SignaturePad({
 
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas || !value) return;
+    if (!canvas) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
+    if (!value) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      return;
+    }
     const image = new Image();
     image.onload = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);

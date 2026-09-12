@@ -62,6 +62,7 @@ function FlotaUnidad() {
   const [notas, setNotas] = useState('');
   const [firmaChofer, setFirmaChofer] = useState<string | null>(null);
   const [firmaAval, setFirmaAval] = useState<string | null>(null);
+  const [padsNonce, setPadsNonce] = useState(0);
 
   async function cargar() {
     const [d, s, c] = await Promise.all([
@@ -76,12 +77,16 @@ function FlotaUnidad() {
     setSitios(s.filter((x) => x.estado === 'ACTIVO'));
     setChoferes(c);
     const patio = s.find((x) => x.nombre === 'Patio' && x.estado === 'ACTIVO');
-    setSitioId((current) => current || patio?.id || s.find((x) => x.estado === 'ACTIVO')?.id || '');
-    setChoferId((current) => current || d.tablero?.choferActualId || c[0]?.id || '');
-    if (d.tablero?.kmSalida != null && !d.tablero.salidaAbiertaId) {
-      /* keep km */
-    } else if (d.tablero?.kmSalida != null) {
-      setKm(String(d.tablero.kmSalida));
+    const abierta = Boolean(d.tablero?.salidaAbiertaId);
+    if (abierta) {
+      setSitioId(patio?.id || s.find((x) => x.estado === 'ACTIVO')?.id || '');
+      setChoferId(d.tablero?.choferActualId || c[0]?.id || '');
+      if (d.tablero?.kmSalida != null) {
+        setKm(String(d.tablero.kmSalida));
+      }
+    } else {
+      setSitioId('');
+      setChoferId((current) => current || c[0]?.id || '');
     }
   }
 
@@ -162,6 +167,7 @@ function FlotaUnidad() {
       setAvisos(res.avisos ?? []);
       setFirmaChofer(null);
       setFirmaAval(null);
+      setPadsNonce((n) => n + 1);
       setNotas('');
       setOccurredAt(toLocalInput());
       await cargar();
@@ -307,6 +313,9 @@ function FlotaUnidad() {
               onChange={(e) => setChoferId(e.target.value)}
               required
             >
+              {choferes.length === 0 ? (
+                <option value="">No hay choferes activos</option>
+              ) : null}
               {choferes.map((c) => (
                 <option key={c.id} value={c.id}>
                   {c.nombre}
@@ -321,6 +330,9 @@ function FlotaUnidad() {
               onChange={(e) => setSitioId(e.target.value)}
               required
             >
+              <option value="" disabled>
+                Seleccione sitio
+              </option>
               {sitiosActivos.map((s) => (
                 <option key={s.id} value={s.id}>
                   {s.nombre}
@@ -355,12 +367,19 @@ function FlotaUnidad() {
               maxLength={240}
             />
           </Field>
+          {choferes.length === 0 ? (
+            <Note variant="warn">
+              No hay choferes activos. Pide alta o reactivación a administración.
+            </Note>
+          ) : null}
           <SignaturePad
+            key={`chofer-${padsNonce}`}
             label="Firma del chofer"
             value={firmaChofer}
             onChange={setFirmaChofer}
           />
           <SignaturePad
+            key={`aval-${padsNonce}`}
             label="Firma del aval"
             value={firmaAval}
             onChange={setFirmaAval}

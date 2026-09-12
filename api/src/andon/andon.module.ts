@@ -12,7 +12,7 @@ import { UmbralEntity } from './entities/umbral.entity';
 import { WhatsappSalidaEntity } from './entities/whatsapp-salida.entity';
 import { NestUnidadCatalog } from './nest-unidad-catalog';
 import { andonNotifyProviders } from './notify/notify.providers';
-import { AVISO_INBOX_PORT } from './ports';
+import { ANDON_ABIERTO_PORT, AVISO_INBOX_PORT } from './ports';
 import { StubWhatsAppAdapter } from './stub-whatsapp.adapter';
 import { TypeOrmAndonStore } from './typeorm-store';
 
@@ -41,7 +41,11 @@ export const ANDON_ENTITIES = [
       useExisting: AndonInboxAdapter,
     },
     AndonService,
+    {
+      provide: ANDON_ABIERTO_PORT,
+      useExisting: AndonService,
+    },
   ],
-  exports: [AndonService, TypeOrmModule],
+  exports: [AndonService, ANDON_ABIERTO_PORT, TypeOrmModule],
 })
 export class AndonModule {}

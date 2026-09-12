@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  Inject,
   Injectable,
   NotFoundException,
   OnModuleInit,
@@ -7,11 +8,16 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 import { CurrentUser } from '../auth/current-user';
-import { AndonService } from '../andon/andon.service';
+import {
+  ANDON_ABIERTO_PORT,
+  AndonAbiertoPort,
+} from '../andon/ports';
 import { ChoferesService } from '../choferes/choferes.service';
+import { Chofer } from '../choferes/chofer.entity';
 import { EstadoChofer } from '../choferes/estado-chofer.enum';
 import { EstadoUnidad } from '../common/estado-unidad.enum';
 import { requireTrimmed } from '../common/require-trimmed';
+import { Unidad } from '../unidades/unidad.entity';
 import { UnidadesService } from '../unidades/unidades.service';
 import {
   CreateMovimientoFlotaDto,
@@ -21,6 +27,7 @@ import {
 import { SitioEntity } from './entities/sitio.entity';
 import { EstadoSitio } from './enums';
 import { FlotaDomainError, FlotaEngine } from './flota-engine';
+import { MovimientoFlota, UnidadOperativa } from './flota-types';
 import { TypeOrmFlotaStore } from './typeorm-flota-store';
 
 const SITIOS_SEED = ['Patio', 'Taller'];
@@ -33,7 +40,8 @@ export class FlotaService implements OnModuleInit {
     private readonly sitios: Repository<SitioEntity>,
     private readonly unidades: UnidadesService,
     private readonly choferes: ChoferesService,
-    private readonly andon: AndonService,
+    @Inject(ANDON_ABIERTO_PORT)
+    private readonly andon: AndonAbiertoPort,
     private readonly dataSource: DataSource,
   ) {}
 
@@ -85,70 +93,26 @@ export class FlotaService implements OnModuleInit {
   }
 
   async tablero(soloFuera = false) {
-    const [unidades, choferes, sitios, operativas] = await Promise.all([
+    const [unidades, ctx] = await Promise.all([
       this.unidades.findAll({}),
-      this.choferes.findAll(),
-      this.sitios.find(),
-      this.store.listOperativas(),
+      this.tableroContext(),
     ]);
-    const choferById = new Map(choferes.map((c) => [c.id, c]));
-    const sitioById = new Map(sitios.map((s) => [s.id, s]));
-    const opByUnidad = new Map(operativas.map((o) => [o.unidadId, o]));
-    const now = Date.now();
-
-    const rows = [];
-    for (const unidad of unidades) {
-      const op = opByUnidad.get(unidad.id);
-      if (soloFuera && !op?.salidaAbiertaId) continue;
-      const salida = op?.salidaAbiertaId
-        ? await this.store.getMovimiento(op.salidaAbiertaId)
-        : null;
-      const andonAbierto = await this.andon.hasNoResuelto(unidad.id);
-      rows.push({
-        unidadId: unidad.id,
-        numeroInterno: unidad.numeroInterno,
-        placas: unidad.placas,
-        tipoNombre: unidad.tipo.nombre,
-        estado: unidad.estado,
-        motivoInactivacion: unidad.motivoInactivacion,
-        sitioId: op?.sitioId ?? null,
-        sitioNombre: op?.sitioId
-          ? (sitioById.get(op.sitioId)?.nombre ?? null)
-          : null,
-        choferActualId: op?.choferActualId ?? null,
-        choferActualNombre: op?.choferActualId
-          ? (choferById.get(op.choferActualId)?.nombre ?? null)
-          : null,
-        choferUltimoId: op?.choferUltimoId ?? null,
-        choferUltimoNombre: op?.choferUltimoId
-          ? (choferById.get(op.choferUltimoId)?.nombre ?? null)
-          : null,
-        salidaAbiertaId: op?.salidaAbiertaId ?? null,
-        salidaAbiertaAt: salida?.occurredAt ?? null,
-        tiempoFueraMs:
-          salida?.occurredAt != null
-            ? Math.max(0, now - Date.parse(salida.occurredAt))
-            : null,
-        kmSalida: salida?.km ?? null,
-        andonAbierto,
-      });
-    }
-    return rows.sort((a, b) =>
-      a.numeroInterno.localeCompare(b.numeroInterno, 'es'),
-    );
+    return unidades
+      .filter((unidad) => {
+        if (!soloFuera) return true;
+        return Boolean(ctx.opByUnidad.get(unidad.id)?.salidaAbiertaId);
+      })
+      .map((unidad) => this.filaTablero(unidad, ctx))
+      .sort((a, b) => a.numeroInterno.localeCompare(b.numeroInterno, 'es'));
   }
 
   async detalle(unidadId: string) {
     const unidad = await this.unidades.findOne(unidadId);
-    const [tablero] = (await this.tablero()).filter(
-      (r) => r.unidadId === unidadId,
-    );
-    const historial = await this.store.listMovimientos(unidadId);
-    const choferes = await this.choferes.findAll();
-    const sitios = await this.sitios.find();
-    const choferById = new Map(choferes.map((c) => [c.id, c]));
-    const sitioById = new Map(sitios.map((s) => [s.id, s]));
-    const ultimoKmVisita = await this.unidades.ultimoKmCerrado(unidadId);
+    const [ctx, historial, ultimoKmVisita] = await Promise.all([
+      this.tableroContext(),
+      this.store.listMovimientos(unidadId),
+      this.unidades.ultimoKmCerrado(unidadId),
+    ]);
     return {
       unidad: {
         id: unidad.id,
@@ -159,11 +123,11 @@ export class FlotaService implements OnModuleInit {
         tipoNombre: unidad.tipo.nombre,
         ultimoKmVisita,
       },
-      tablero: tablero ?? null,
+      tablero: this.filaTablero(unidad, ctx),
       historial: historial.map((m) => ({
         ...m,
-        choferNombre: choferById.get(m.choferId)?.nombre ?? null,
-        sitioNombre: sitioById.get(m.sitioId)?.nombre ?? null,
+        choferNombre: ctx.choferById.get(m.choferId)?.nombre ?? null,
+        sitioNombre: ctx.sitioById.get(m.sitioId)?.nombre ?? null,
       })),
     };
   }
@@ -235,4 +199,79 @@ export class FlotaService implements OnModuleInit {
   reactivar(unidadId: string) {
     return this.unidades.reactivar(unidadId);
   }
+
+  private async tableroContext(): Promise<TableroCtx> {
+    const [choferes, sitios, operativas, andonIds] = await Promise.all([
+      this.choferes.findAll(),
+      this.sitios.find(),
+      this.store.listOperativas(),
+      this.andon.unidadIdsNoResuelto(),
+    ]);
+    const openIds = [
+      ...new Set(
+        operativas
+          .map((op) => op.salidaAbiertaId)
+          .filter((id): id is string => Boolean(id)),
+      ),
+    ];
+    const salidas = await Promise.all(
+      openIds.map((id) => this.store.getMovimiento(id)),
+    );
+    const salidaById = new Map<string, MovimientoFlota>();
+    for (const mov of salidas) {
+      if (mov) salidaById.set(mov.id, mov);
+    }
+    return {
+      now: Date.now(),
+      choferById: new Map(choferes.map((c) => [c.id, c])),
+      sitioById: new Map(sitios.map((s) => [s.id, s])),
+      opByUnidad: new Map(operativas.map((o) => [o.unidadId, o])),
+      salidaById,
+      andonIds: new Set(andonIds),
+    };
+  }
+
+  private filaTablero(unidad: Unidad, ctx: TableroCtx) {
+    const op = ctx.opByUnidad.get(unidad.id);
+    const salida = op?.salidaAbiertaId
+      ? (ctx.salidaById.get(op.salidaAbiertaId) ?? null)
+      : null;
+    return {
+      unidadId: unidad.id,
+      numeroInterno: unidad.numeroInterno,
+      placas: unidad.placas,
+      tipoNombre: unidad.tipo.nombre,
+      estado: unidad.estado,
+      motivoInactivacion: unidad.motivoInactivacion,
+      sitioId: op?.sitioId ?? null,
+      sitioNombre: op?.sitioId
+        ? (ctx.sitioById.get(op.sitioId)?.nombre ?? null)
+        : null,
+      choferActualId: op?.choferActualId ?? null,
+      choferActualNombre: op?.choferActualId
+        ? (ctx.choferById.get(op.choferActualId)?.nombre ?? null)
+        : null,
+      choferUltimoId: op?.choferUltimoId ?? null,
+      choferUltimoNombre: op?.choferUltimoId
+        ? (ctx.choferById.get(op.choferUltimoId)?.nombre ?? null)
+        : null,
+      salidaAbiertaId: op?.salidaAbiertaId ?? null,
+      salidaAbiertaAt: salida?.occurredAt ?? null,
+      tiempoFueraMs:
+        salida?.occurredAt != null
+          ? Math.max(0, ctx.now - Date.parse(salida.occurredAt))
+          : null,
+      kmSalida: salida?.km ?? null,
+      andonAbierto: ctx.andonIds.has(unidad.id),
+    };
+  }
 }
+
+type TableroCtx = {
+  now: number;
+  choferById: Map<string, Chofer>;
+  sitioById: Map<string, SitioEntity>;
+  opByUnidad: Map<string, UnidadOperativa>;
+  salidaById: Map<string, MovimientoFlota>;
+  andonIds: Set<string>;
+};

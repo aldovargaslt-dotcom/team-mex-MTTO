@@ -46,6 +46,7 @@ describe('Flota v0 (e2e)', () => {
   it('LOGISTICA lee catálogo y flota; no entra a inventario ni Andon', async () => {
     await request(server).get('/unidades').set(LOGISTICA).expect(200);
     await request(server).get('/choferes').set(LOGISTICA).expect(200);
+    await request(server).get('/unidades/tipos').set(LOGISTICA).expect(200);
     await request(server).get('/flota/tablero').set(LOGISTICA).expect(200);
     const inv = await request(server)
       .get('/inventario/stock')
@@ -54,6 +55,13 @@ describe('Flota v0 (e2e)', () => {
     expect(inv.body.message).toMatch(/Logística/i);
     await request(server).get('/andon/avisos').set(LOGISTICA).expect(403);
     await request(server).get('/notifications/badge').set(LOGISTICA).expect(403);
+    await request(server).post('/unidades').set(LOGISTICA).send({}).expect(403);
+    await request(server).post('/choferes').set(LOGISTICA).send({}).expect(403);
+    const u101 = await unidad('U-101');
+    await request(server)
+      .post(`/unidades/${u101.id}/visitas`)
+      .set(LOGISTICA)
+      .expect(403);
   });
 
   it('supervisor no entra a /flota', async () => {
@@ -150,5 +158,91 @@ describe('Flota v0 (e2e)', () => {
       MotivoInactivacion.ENVIO_ESPECIAL,
     );
     expect(hub.body.mensajes[0]).toMatch(/envío especial/i);
+
+    const reactivada = await request(server)
+      .post(`/flota/unidades/${u103.id}/reactivar`)
+      .set(LOGISTICA)
+      .expect(201);
+    expect(reactivada.body.estado).toBe('ACTIVA');
+    expect(reactivada.body.motivoInactivacion).toBeNull();
+
+    await request(server)
+      .post(`/flota/unidades/${u103.id}/envio-especial`)
+      .set(LOGISTICA)
+      .expect(201);
+  });
+
+  it('firma que no es PNG/JPEG no persiste; aviso Andon en SALIDA no bloquea', async () => {
+    const sitios = await request(server)
+      .get('/flota/sitios')
+      .set(LOGISTICA)
+      .expect(200);
+    const taller = (sitios.body as { id: string; nombre: string }[]).find(
+      (s) => s.nombre === 'Taller',
+    );
+    const choferes = await request(server)
+      .get('/choferes')
+      .query({ estado: 'ACTIVO' })
+      .set(LOGISTICA)
+      .expect(200);
+    const chofer = (choferes.body as { id: string }[])[1] ?? (choferes.body as { id: string }[])[0];
+    const u101 = await unidad('U-101');
+    const gif =
+      'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+
+    const bad = await request(server)
+      .post('/flota/movimientos')
+      .set(LOGISTICA)
+      .send({
+        tipo: 'SALIDA',
+        unidadId: u101.id,
+        choferId: chofer.id,
+        sitioId: taller!.id,
+        occurredAt: new Date(Date.now() - 3600_000).toISOString(),
+        km: 120,
+        firmas: [
+          { tipo: 'CHOFER', dataUrl: gif },
+          { tipo: 'AVAL', dataUrl: FIRMA },
+        ],
+      })
+      .expect(400);
+    expect(bad.body.message).toMatch(/PNG o JPEG/i);
+
+    const salida = await request(server)
+      .post('/flota/movimientos')
+      .set(LOGISTICA)
+      .send({
+        tipo: 'SALIDA',
+        unidadId: u101.id,
+        choferId: chofer.id,
+        sitioId: taller!.id,
+        occurredAt: new Date(Date.now() - 3600_000).toISOString(),
+        km: 120,
+        firmas: [
+          { tipo: 'CHOFER', dataUrl: FIRMA },
+          { tipo: 'AVAL', dataUrl: FIRMA },
+        ],
+      })
+      .expect(201);
+    expect(salida.body.avisos.some((a: string) => /Andon abierto/i.test(a))).toBe(
+      true,
+    );
+
+    await request(server)
+      .post('/flota/movimientos')
+      .set(LOGISTICA)
+      .send({
+        tipo: 'ENTRADA',
+        unidadId: u101.id,
+        choferId: chofer.id,
+        sitioId: taller!.id,
+        occurredAt: new Date(Date.now() - 60_000).toISOString(),
+        km: 130,
+        firmas: [
+          { tipo: 'CHOFER', dataUrl: FIRMA },
+          { tipo: 'AVAL', dataUrl: FIRMA },
+        ],
+      })
+      .expect(201);
   });
 });

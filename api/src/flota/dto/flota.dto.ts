@@ -26,8 +26,8 @@ export class FirmaFlotaDto {
 
   @ApiProperty({ example: 'data:image/png;base64,iVBOR...' })
   @RequiredTrimmed('La firma no puede estar vacía.')
-  @Matches(/^data:image\/[a-zA-Z0-9.+-]+;base64,/, {
-    message: 'La firma debe ser una imagen en formato data URL.',
+  @Matches(/^data:image\/(png|jpeg);base64,/i, {
+    message: 'La firma debe ser una imagen PNG o JPEG en formato data URL.',
   })
   @MaxLength(2_000_000, {
     message: 'La firma supera el tamaño máximo permitido.',
