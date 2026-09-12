@@ -103,11 +103,7 @@ function InicioContent() {
         next.push({
           href: '/inventario/pendientes',
           icon: 'compra',
-          label: fraseCuenta(
-            pendientes,
-            'compra pendiente de recibir',
-            'compras pendientes de recibir',
-          ),
+          label: fraseCuenta(pendientes, 'por recibir', 'por recibir'),
         });
       }
       setRows(next);
@@ -126,7 +122,7 @@ function InicioContent() {
       ) : rows.length === 0 && !error ? (
         <div className="empty-state">
           <h2>Nada requiere atención</h2>
-          <p className="muted">Andon, stock y compras están al día.</p>
+          <p className="muted">Andon, existencias y por recibir están al día.</p>
         </div>
       ) : rows.length === 0 ? null : (
         <section aria-labelledby="requiere-atencion">

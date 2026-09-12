@@ -4,14 +4,14 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
 const OPS = [
-  { href: '/inventario', label: 'Ítems', exact: true },
-  { href: '/inventario/stock', label: 'Stock' },
+  { href: '/inventario', label: 'Refacciones', exact: true },
+  { href: '/inventario/stock', label: 'Existencias' },
   { href: '/inventario/movimientos', label: 'Movimientos' },
-  { href: '/inventario/pendientes', label: 'Compras' },
+  { href: '/inventario/pendientes', label: 'Por recibir' },
 ] as const;
 
 const CATALOGO = [
-  { href: '/inventario/familias', label: 'Familias' },
+  { href: '/inventario/familias', label: 'Categorías' },
   { href: '/inventario/proveedores', label: 'Proveedores' },
 ] as const;
 

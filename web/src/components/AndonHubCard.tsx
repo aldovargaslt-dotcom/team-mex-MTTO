@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Note } from '@/components/ui/field';
 import { api, HttpError } from '@/lib/api';
-import { etiquetaEstadoAviso, formatFecha, resumenAvisoMantenimiento } from '@/lib/format';
+import { etiquetaEstadoAviso, formatFecha, lineasCausaAvisoAndon } from '@/lib/format';
 import { useRole } from '@/lib/role';
 import type { AvisoAndon } from '@/lib/types';
 
@@ -79,10 +79,14 @@ export function AndonHubCard({
             <Badge variant={aviso.estado === 'ABIERTO' ? 'warning' : 'muted'}>
               {etiquetaEstadoAviso(aviso.estado)}
             </Badge>
-            <span className="text-[13px]">
-              {aviso.kmAlAbrir.toLocaleString('es-MX')} km / {aviso.diasAlAbrir} d
-              desde la última visita cerrada
-            </span>
+            {aviso.tipoNombre ? (
+              <span className="text-[13px]">{aviso.tipoNombre}</span>
+            ) : null}
+          </div>
+          <div className="mt-1.5 grid gap-0.5 text-[13px]">
+            {lineasCausaAvisoAndon(aviso).map((linea) => (
+              <p key={linea}>{linea}</p>
+            ))}
           </div>
           <p className="muted" style={{ marginTop: 6 }}>
             Último cierre:{' '}
@@ -90,10 +94,6 @@ export function AndonHubCard({
               ? `${aviso.lastClosedKm.toLocaleString('es-MX')} km`
               : 'sin km'}
             {aviso.lastClosedAt ? ` · ${formatFecha(aviso.lastClosedAt)}` : ''}
-          </p>
-          <p className="muted">
-            {resumenAvisoMantenimiento(aviso.umbralKm, aviso.umbralDias)}
-            {aviso.tipoNombre ? ` · ${aviso.tipoNombre}` : ''}
           </p>
           <div className="hub-actions">
             {aviso.estado === 'ABIERTO' && !isAdmin ? (

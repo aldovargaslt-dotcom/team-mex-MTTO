@@ -19,7 +19,7 @@ export default function FamiliasPage() {
   useEffect(() => {
     if (!role) return;
     void cargar().catch((err) => {
-      setError(err instanceof HttpError ? err.message : 'No se pudieron cargar las familias.');
+      setError(err instanceof HttpError ? err.message : 'No se pudieron cargar las categorías.');
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [role]);
@@ -37,7 +37,7 @@ export default function FamiliasPage() {
       setNombre('');
       await cargar();
     } catch (err) {
-      setError(err instanceof HttpError ? err.message : 'No se pudo crear la familia.');
+      setError(err instanceof HttpError ? err.message : 'No se pudo crear la categoría.');
     }
   }
 
@@ -58,7 +58,7 @@ export default function FamiliasPage() {
 
   return (
     <>
-      <PageHeader title="Familias" />
+      <PageHeader title="Categorías" />
       <form className="card form-grid" onSubmit={crear}>
         <div className="field">
           <label htmlFor="famNombre">Nombre</label>
@@ -72,7 +72,7 @@ export default function FamiliasPage() {
         </div>
         <div className="form-actions">
           <button className="btn btn-primary" type="submit">
-            Agregar familia
+            Agregar categoría
           </button>
         </div>
       </form>
@@ -97,7 +97,7 @@ export default function FamiliasPage() {
             ))
           : (
               <div className="empty-state">
-                <h2>No hay familias</h2>
+                <h2>No hay categorías</h2>
                 <p className="muted">Agregue la primera.</p>
               </div>
             )}

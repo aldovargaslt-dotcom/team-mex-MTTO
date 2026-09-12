@@ -112,14 +112,14 @@ export function UnidadForm({
           placeholder="Opcional"
         />
       </Field>
-      <Field label="Familia" htmlFor="tipoId">
+      <Field label="Tipo" htmlFor="tipoId">
         <NativeSelect
           id="tipoId"
           required
           value={values.tipoId}
           onChange={(e) => set('tipoId', e.target.value)}
         >
-          <option value="">Seleccione una familia</option>
+          <option value="">Seleccione un tipo</option>
           {tipos.map((tipo) => (
             <option key={tipo.id} value={tipo.id}>
               {tipo.nombre}
