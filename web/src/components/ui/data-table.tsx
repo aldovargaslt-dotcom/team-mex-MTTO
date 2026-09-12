@@ -37,7 +37,7 @@ export function DataTable<TData>({
   });
 
   return (
-    <div className="card overflow-hidden">
+    <div className="card overflow-x-auto">
       <Table>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
