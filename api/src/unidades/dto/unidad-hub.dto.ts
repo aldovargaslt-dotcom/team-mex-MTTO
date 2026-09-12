@@ -2,6 +2,7 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { EstadoUnidad } from '../../common/estado-unidad.enum';
 import { MotivoInactivacion } from '../../common/motivo-inactivacion.enum';
 import { EstadoVisita, TipoVisita } from '../../visitas/enums';
+import { OrigenConsumo } from '../../kernel/events/visita-cerrada';
 
 export class FichaCortaDto {
   @ApiProperty()
@@ -47,6 +48,17 @@ export class FichaCortaDto {
   ultimoKm: number | null;
 }
 
+export class VisitaHubPiezaDto {
+  @ApiProperty({ format: 'uuid' })
+  itemId: string;
+
+  @ApiProperty()
+  qty: number;
+
+  @ApiProperty({ enum: OrigenConsumo })
+  origen: OrigenConsumo;
+}
+
 export class VisitaHubItemDto {
   @ApiProperty()
   id: string;
@@ -80,6 +92,12 @@ export class VisitaHubItemDto {
 
   @ApiProperty()
   trabajosCount: number;
+
+  @ApiProperty({
+    type: [VisitaHubPiezaDto],
+    description: 'Piezas de la visita (itemId opaco). Sin JOIN a inventario.',
+  })
+  piezas: VisitaHubPiezaDto[];
 }
 
 export class UnidadHubDto {

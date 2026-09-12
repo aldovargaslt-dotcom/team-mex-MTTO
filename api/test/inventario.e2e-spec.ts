@@ -238,6 +238,21 @@ describe('Inventario v0 + piezas en visita (e2e)', () => {
       km: 1800,
       consumos: [{ itemId: filtro.id, qty: 2, origen: 'DESDE_STOCK' }],
     });
+
+    const hub = await request(server)
+      .get(`/unidades/${u101.id}/hub`)
+      .set(SUPERVISOR)
+      .expect(200);
+    const enHistorial = (
+      hub.body.historialCerrado as {
+        id: string;
+        piezas: { itemId: string; qty: number; origen: string }[];
+      }[]
+    ).find((v) => v.id === draft.body.id);
+    expect(enHistorial?.piezas).toEqual([
+      { itemId: filtro.id, qty: 2, origen: 'DESDE_STOCK' },
+    ]);
+    expect(enHistorial?.piezas[0]).not.toHaveProperty('sku');
   });
 
   it('I2/I3 stock insuficiente bloquea el cierre salvo COMPRA_EXTERNA (pendiente, sin movimiento)', async () => {

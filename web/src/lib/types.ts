@@ -60,6 +60,7 @@ export type VisitaResumen = {
   updatedAt: string;
   cerradoAt: string | null;
   trabajosCount: number;
+  piezas?: { itemId: string; qty: number; origen: OrigenPieza }[];
 };
 
 export type VisitaDetalle = {
