@@ -56,9 +56,11 @@ jobs:
               -c "CREATE SCHEMA IF NOT EXISTS inventario;" \
               -c "CREATE SCHEMA IF NOT EXISTS andon;" \
               -c "CREATE SCHEMA IF NOT EXISTS notifications;" \
+              -c "CREATE SCHEMA IF NOT EXISTS flota;" \
               -c "GRANT ALL ON SCHEMA inventario TO team_mex;" \
               -c "GRANT ALL ON SCHEMA andon TO team_mex;" \
-              -c "GRANT ALL ON SCHEMA notifications TO team_mex;"
+              -c "GRANT ALL ON SCHEMA notifications TO team_mex;" \
+              -c "GRANT ALL ON SCHEMA flota TO team_mex;"
           done
       - run: npm ci
       - run: npm test

@@ -107,24 +107,22 @@ function FlotaTablero() {
         }
       />
       <FormAlert>{error}</FormAlert>
-      <div className="flex flex-wrap gap-2">
-        <Button
+      <nav className="subnav" aria-label="Filtro flota">
+        <button
           type="button"
-          size="compact"
-          variant={fuera ? 'secondary' : 'outline'}
+          className={!fuera ? 'active' : ''}
           onClick={() => setFuera(false)}
         >
           Todas
-        </Button>
-        <Button
+        </button>
+        <button
           type="button"
-          size="compact"
-          variant={fuera ? 'outline' : 'secondary'}
+          className={fuera ? 'active' : ''}
           onClick={() => setFuera(true)}
         >
           Aún no regresan
-        </Button>
-      </div>
+        </button>
+      </nav>
       <DataTable
         columns={columns}
         data={rows}
