@@ -1,0 +1,15 @@
+---
+description: Aislamiento de schema, test IDs ADR-004, puertos como seam.
+globs: api/src/**
+alwaysApply: false
+---
+
+# API (`api/src`)
+
+Leer, no recopiar: [ADR-002](docs/adr/002-schema-per-module.md), [ADR-004](docs/adr/ADR-004-tdd-test-bar-andon-v0.md), [context-map](docs/adr/context-map.md).
+
+- Sin FKs ni JOINs cruzadas entre `public` / `inventario` / `andon` / `notifications`. IDs opacos.
+- Cambio de schema, envelope o ownership de BC → ADR nuevo o updated (aceptado/superseded). No “arreglar” el dual-stack notify.
+- **Regla de dominio nueva** → test ID en ADR-004 (C/O/I/A/N/S) **antes** de la regla. Caracterización si el código ya existía.
+- Los **puertos** (`NotifyPort`, `StockAlertPort`, `AvisoInboxPort`) son el seam. El dominio no escribe el schema de otro BC.
+- Verificar con skill `verify-api` (`cd api && npm test && npm run test:e2e`). No `lint --fix` en CI.

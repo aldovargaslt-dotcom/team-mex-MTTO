@@ -1,0 +1,14 @@
+---
+description: Alcance v0, vocabulario WO vs brief, y no expandir Inventario/Andon.
+alwaysApply: true
+---
+
+# Scope v0
+
+Antes de editar, abre [AGENTS.md](AGENTS.md) y el ADR del BC. No copies esos docs aquí.
+
+- **Fuera de v0** (README): multi-almacén, lotes, costeo, OC formal, kardex pesado, ítem↔placa, reserva de stock en borrador.
+- **WO** = wizard de visita (UI Supervisor). El artefacto de ingeniería es el **brief** / **corte** del PR (`.github/pull_request_template.md`). No crear `work-orders/`.
+- No ampliar ownership de Inventario ni Andon (quién escribe qué schema/puerto) sin ADR nuevo o actualizado. Ver [docs/adr/README.md](docs/adr/README.md).
+- Cortes **visual only** no tocan `api/src`.
+- Notify WhatsApp: dual-stack documentado en AGENTS.md; default `noop`; no unificar fábricas.
