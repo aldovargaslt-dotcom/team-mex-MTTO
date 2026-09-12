@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Note } from '@/components/ui/field';
 import { api, HttpError } from '@/lib/api';
-import { etiquetaEstadoAviso, formatFecha } from '@/lib/format';
+import { etiquetaEstadoAviso, formatFecha, resumenAvisoMantenimiento } from '@/lib/format';
 import { useRole } from '@/lib/role';
 import type { AvisoAndon } from '@/lib/types';
 
@@ -92,8 +92,8 @@ export function AndonHubCard({
             {aviso.lastClosedAt ? ` · ${formatFecha(aviso.lastClosedAt)}` : ''}
           </p>
           <p className="muted">
-            Umbral {aviso.umbralKm.toLocaleString('es-MX')} km o {aviso.umbralDias}{' '}
-            días · {aviso.tipoNombre}
+            {resumenAvisoMantenimiento(aviso.umbralKm, aviso.umbralDias)}
+            {aviso.tipoNombre ? ` · ${aviso.tipoNombre}` : ''}
           </p>
           <div className="hub-actions">
             {aviso.estado === 'ABIERTO' && !isAdmin ? (
