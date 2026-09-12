@@ -110,6 +110,41 @@ describe('Slice 1 (e2e)', () => {
     );
   });
 
+  it('filtra unidades por q (marca) y estado INACTIVA', async () => {
+    const porMarca = await request(server)
+      .get('/unidades')
+      .query({ q: 'Ranger' })
+      .set(SUPERVISOR)
+      .expect(200);
+    expect(porMarca.body).toHaveLength(1);
+    expect(porMarca.body[0].numeroInterno).toBe('U-102');
+    expect(porMarca.body[0].marcaModelo).toMatch(/Ranger/i);
+
+    const porInterno = await request(server)
+      .get('/unidades')
+      .query({ q: 'U-101' })
+      .set(SUPERVISOR)
+      .expect(200);
+    expect(porInterno.body).toHaveLength(1);
+    expect(porInterno.body[0].numeroInterno).toBe('U-101');
+
+    const inactivas = await request(server)
+      .get('/unidades')
+      .query({ estado: 'INACTIVA' })
+      .set(SUPERVISOR)
+      .expect(200);
+    expect(
+      (inactivas.body as { numeroInterno: string; estado: string }[]).every(
+        (u) => u.estado === EstadoUnidad.INACTIVA,
+      ),
+    ).toBe(true);
+    expect(
+      (inactivas.body as { numeroInterno: string }[]).some(
+        (u) => u.numeroInterno === 'U-101',
+      ),
+    ).toBe(false);
+  });
+
   it('supervisor no puede crear ni actualizar unidades (403)', async () => {
     const tipos = await request(server).get('/unidades/tipos').set(SUPERVISOR);
     const tipoId = tipos.body[0].id as string;

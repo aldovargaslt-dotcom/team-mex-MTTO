@@ -1,5 +1,6 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsOptional, IsString } from 'class-validator';
+import { IsEnum, IsOptional, IsString } from 'class-validator';
+import { EstadoUnidad } from '../../common/estado-unidad.enum';
 
 export class FiltrarUnidadesDto {
   @ApiPropertyOptional({ description: 'Filtro por número interno (parcial)' })
@@ -18,4 +19,20 @@ export class FiltrarUnidadesDto {
   @IsOptional()
   @IsString()
   tipo?: string;
+
+  @ApiPropertyOptional({
+    description:
+      'Un término; OR ILIKE en numeroInterno, placas y marcaModelo',
+  })
+  @IsOptional()
+  @IsString()
+  q?: string;
+
+  @ApiPropertyOptional({
+    enum: EstadoUnidad,
+    description: 'Filtrar por estado. Sin valor: todas.',
+  })
+  @IsOptional()
+  @IsEnum(EstadoUnidad, { message: 'El estado de la unidad no es válido.' })
+  estado?: EstadoUnidad;
 }
