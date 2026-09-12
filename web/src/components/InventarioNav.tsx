@@ -3,29 +3,72 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
-const LINKS = [
+const OPS = [
   { href: '/inventario', label: 'Ítems', exact: true },
-  { href: '/inventario/familias', label: 'Familias' },
-  { href: '/inventario/proveedores', label: 'Proveedores' },
   { href: '/inventario/stock', label: 'Stock' },
   { href: '/inventario/movimientos', label: 'Movimientos' },
   { href: '/inventario/pendientes', label: 'Compras' },
-];
+] as const;
+
+const CATALOGO = [
+  { href: '/inventario/familias', label: 'Familias' },
+  { href: '/inventario/proveedores', label: 'Proveedores' },
+] as const;
+
+function isActive(
+  pathname: string | null,
+  href: string,
+  exact?: boolean,
+) {
+  if (!pathname) return false;
+  if (exact) return pathname === href;
+  return pathname === href || pathname.startsWith(`${href}/`);
+}
 
 export function InventarioNav() {
   const pathname = usePathname();
+  const catalogOpen = CATALOGO.some((link) => isActive(pathname, link.href));
+
   return (
-    <nav className="subnav" aria-label="Inventario">
-      {LINKS.map((link) => {
-        const active = link.exact
-          ? pathname === link.href
-          : pathname === link.href || pathname?.startsWith(`${link.href}/`);
-        return (
-          <Link key={link.href} href={link.href} className={active ? 'active' : ''}>
-            {link.label}
-          </Link>
-        );
-      })}
-    </nav>
+    <>
+      <nav className="subnav" aria-label="Inventario">
+        {OPS.map((link) => {
+          const active = isActive(pathname, link.href, 'exact' in link && link.exact);
+          return (
+            <Link
+              key={link.href}
+              href={link.href}
+              className={active ? 'active' : ''}
+              aria-current={active ? 'page' : undefined}
+            >
+              {link.label}
+            </Link>
+          );
+        })}
+        <Link
+          href="/inventario/familias"
+          className={catalogOpen ? 'active' : ''}
+        >
+          Catálogo
+        </Link>
+      </nav>
+      {catalogOpen ? (
+        <nav className="subnav" aria-label="Catálogo">
+          {CATALOGO.map((link) => {
+            const active = isActive(pathname, link.href);
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={active ? 'active' : ''}
+                aria-current={active ? 'page' : undefined}
+              >
+                {link.label}
+              </Link>
+            );
+          })}
+        </nav>
+      ) : null}
+    </>
   );
 }

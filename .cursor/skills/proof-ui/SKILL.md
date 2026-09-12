@@ -7,7 +7,7 @@ description: Prove Team Mex UI cortes with click-through screenshots (no Playwri
 
 Heurísticas recuperadas de agentes internos de verificación. **No** es un framework de tests. Web no tiene Jest/Playwright; la prueba es el flujo clickeado + `docs/screenshots/`.
 
-Briefs: [anti-generic](docs/design-system/ui-polish-anti-generic-v0.md), [44px](docs/design-system/ui-touch-targets-mobile-v0.md), [pasteles](docs/design-system/ui-semantic-button-pastels-v0.md), [ADR-003](docs/adr/003-shadcn-tailwind.md).
+Briefs: [anti-generic](docs/design-system/ui-polish-anti-generic-v0.md), [44px](docs/design-system/ui-touch-targets-mobile-v0.md), [pasteles](docs/design-system/ui-semantic-button-pastels-v0.md), [nav vs filtro vs Inicio](docs/design-system/ui-nav-filter-action-inicio-v0.md), [ADR-003](docs/adr/003-shadcn-tailwind.md).
 
 ## Cómo entrar y qué clickear
 
