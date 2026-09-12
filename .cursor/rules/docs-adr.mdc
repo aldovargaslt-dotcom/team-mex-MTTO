@@ -1,0 +1,13 @@
+---
+description: ADRs aceptados no se reescriben en silencio.
+globs: docs/adr/**
+alwaysApply: false
+---
+
+# ADRs
+
+Los ADRs en `docs/adr/` están **aceptados**. Índice y cuándo escribir uno: [README](docs/adr/README.md).
+
+- No reescribir el cuerpo de un ADR aceptado para encajar código nuevo. Nuevo archivo o el viejo pasa a *superseded* con enlace.
+- El nombre `ADR-004-tdd-test-bar-andon-v0.md` es histórico; no renombrar por cosmética.
+- Copy visual y CI no van aquí (`docs/design-system/` o el PR).

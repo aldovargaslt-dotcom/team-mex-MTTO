@@ -1,0 +1,82 @@
+name: Verify
+
+on:
+  pull_request:
+
+concurrency:
+  group: verify-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  api:
+    name: api test + e2e
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: team_mex
+          POSTGRES_PASSWORD: team_mex
+          POSTGRES_DB: team_mex_mtto
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U team_mex -d team_mex_mtto"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    defaults:
+      run:
+        working-directory: api
+    env:
+      DB_HOST: localhost
+      DB_PORT: '5432'
+      DB_USER: team_mex
+      DB_PASSWORD: team_mex
+      DB_NAME: team_mex_mtto_test
+      DB_SYNCHRONIZE: 'true'
+      DB_DROP_SCHEMA: 'true'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: api/package-lock.json
+      - name: Init Postgres (team_mex_mtto_test + schemas)
+        working-directory: .
+        run: |
+          # Same role/DBs/schemas as docker-compose.yml + docker/init.sql.
+          docker run --rm --network host -e PGPASSWORD=team_mex postgres:16-alpine \
+            psql -h 127.0.0.1 -U team_mex -d team_mex_mtto -v ON_ERROR_STOP=1 \
+            -c "CREATE DATABASE team_mex_mtto_test;"
+          for db in team_mex_mtto team_mex_mtto_test; do
+            docker run --rm --network host -e PGPASSWORD=team_mex postgres:16-alpine \
+              psql -h 127.0.0.1 -U team_mex -d "$db" -v ON_ERROR_STOP=1 \
+              -c "CREATE SCHEMA IF NOT EXISTS inventario;" \
+              -c "CREATE SCHEMA IF NOT EXISTS andon;" \
+              -c "CREATE SCHEMA IF NOT EXISTS notifications;" \
+              -c "GRANT ALL ON SCHEMA inventario TO team_mex;" \
+              -c "GRANT ALL ON SCHEMA andon TO team_mex;" \
+              -c "GRANT ALL ON SCHEMA notifications TO team_mex;"
+          done
+      - run: npm ci
+      - run: npm test
+      - run: npm run test:e2e
+
+  web:
+    name: web lint + build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run build

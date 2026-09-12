@@ -1,0 +1,14 @@
+---
+description: ADR-003, anti-generic, 44px, un CTA naranja, proof por screenshots.
+globs: web/src/**
+alwaysApply: false
+---
+
+# UI (`web/src`)
+
+Leer, no recopiar: [ADR-003](docs/adr/003-shadcn-tailwind.md), [anti-generic](docs/design-system/ui-polish-anti-generic-v0.md), [touch 44px](docs/design-system/ui-touch-targets-mobile-v0.md), [pasteles](docs/design-system/ui-semantic-button-pastels-v0.md).
+
+- Un CTA primario naranja `#EA7515` por vista; secundario outline/ghost navy.
+- Mobile `<768`: hits ≥44px (wizard WO). Densidad anti-generic en desktop.
+- Cortes UX: screenshots en `docs/screenshots/` vía skill `proof-ui` (click-through, 390×844, copy en español). No Playwright en este overlay.
+- Visual only: no tocar `api/src`. North star: Supervisor field-service; Admin listado/ficha denso.
