@@ -24,6 +24,7 @@ const NAV_ITEMS: {
   label: string;
   roles: Role[];
 }[] = [
+  { href: '/inicio', label: 'Inicio', roles: ['SUPERVISOR', 'ADMIN_DIRECTIVO'] },
   { href: '/flota', label: 'Flota', roles: ['LOGISTICA', 'ADMIN_DIRECTIVO'] },
   { href: '/unidades', label: 'Unidades', roles: ['SUPERVISOR', 'ADMIN_DIRECTIVO'] },
   { href: '/andon', label: 'Andon', roles: ['SUPERVISOR', 'ADMIN_DIRECTIVO'] },
@@ -44,7 +45,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   const [menuOpen, setMenuOpen] = useState(false);
 
   const items = NAV_ITEMS.filter((item) => role && item.roles.includes(role));
-  const homeHref = isLogistica ? '/flota' : '/unidades';
+  const homeHref = isLogistica ? '/flota' : '/inicio';
 
   function cambiarRol() {
     setMenuOpen(false);
@@ -167,6 +168,7 @@ function NavLink({
   return (
     <Link
       href={href}
+      aria-current={active ? 'page' : undefined}
       className={cn(
         'inline-flex min-h-9 items-center rounded-none px-2.5 text-[13px] text-white/65 hover:text-white',
         active &&

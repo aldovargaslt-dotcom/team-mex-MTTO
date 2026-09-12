@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { Package, Wrench } from 'lucide-react';
 import { RoleGate } from '@/components/RoleGate';
+import { ListFilter } from '@/components/ListFilter';
 import { Button } from '@/components/ui/button';
 import { FormAlert, PageHeader } from '@/components/ui/field';
 import { api, HttpError } from '@/lib/api';
@@ -119,18 +120,12 @@ function InboxContent() {
           ) : null
         }
       />
-      <nav className="subnav" aria-label="Filtro de notificaciones">
-        {FILTROS.map((f) => (
-          <button
-            key={f.id}
-            type="button"
-            className={filtro === f.id ? 'active' : ''}
-            onClick={() => setFiltro(f.id)}
-          >
-            {f.label}
-          </button>
-        ))}
-      </nav>
+      <ListFilter
+        label="Filtro de notificaciones"
+        value={filtro}
+        options={FILTROS}
+        onChange={setFiltro}
+      />
       <FormAlert>{error}</FormAlert>
       {items == null ? (
         <p className="muted">Cargando notificaciones…</p>

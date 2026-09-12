@@ -11,7 +11,7 @@ export default function HomePage() {
 
   function elegir(next: Role) {
     setRole(next);
-    router.push(next === 'LOGISTICA' ? '/flota' : '/unidades');
+    router.push(next === 'LOGISTICA' ? '/flota' : '/inicio');
   }
 
   return (

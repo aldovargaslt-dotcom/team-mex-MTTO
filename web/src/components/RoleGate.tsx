@@ -39,6 +39,7 @@ export function RoleGate({
       : true;
 
   if (!permitted) {
+    const home = role === 'LOGISTICA' ? '/flota' : '/inicio';
     return (
       <div className="empty-state">
         <h2>
@@ -47,8 +48,8 @@ export function RoleGate({
             : 'Acceso restringido al administrador directivo.'}
         </h2>
         <Button asChild variant="secondary">
-          <Link href={role === 'LOGISTICA' ? '/flota' : '/unidades'}>
-            Volver
+          <Link href={home}>
+            {role === 'LOGISTICA' ? 'Volver' : 'Volver al inicio'}
           </Link>
         </Button>
       </div>

@@ -6,7 +6,7 @@ export default function NotFound() {
     <div className="empty-state">
       <h2>No encontramos esta página.</h2>
       <Button asChild variant="outline">
-        <Link href="/unidades">Ir a unidades</Link>
+        <Link href="/inicio">Ir a inicio</Link>
       </Button>
     </div>
   );

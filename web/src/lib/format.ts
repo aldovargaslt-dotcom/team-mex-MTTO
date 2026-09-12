@@ -76,6 +76,17 @@ export function etiquetaEstadoAviso(estado: string) {
   return 'Abierto';
 }
 
+export function saludoAhora(date = new Date()) {
+  const hour = date.getHours();
+  if (hour < 12) return 'Buenos días';
+  if (hour < 19) return 'Buenas tardes';
+  return 'Buenas noches';
+}
+
+export function fraseCuenta(n: number, uno: string, muchos: string) {
+  return `${n} ${n === 1 ? uno : muchos}`;
+}
+
 export function formatHace(value: string | null | undefined) {
   if (!value) return '—';
   const ms = Date.now() - new Date(value).getTime();

@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 import { ColumnDef } from '@tanstack/react-table';
+import { ListFilter } from '@/components/ListFilter';
 import { RoleGate } from '@/components/RoleGate';
 import { StatusBadge } from '@/components/StatusBadge';
 import { Button } from '@/components/ui/button';
@@ -13,6 +14,11 @@ import { api, HttpError } from '@/lib/api';
 import { formatDuracion } from '@/lib/format';
 import { useRole } from '@/lib/role';
 import type { TableroFlotaRow } from '@/lib/types';
+
+const FILTROS = [
+  { id: 'todas', label: 'Todas' },
+  { id: 'fuera', label: 'Aún no regresan' },
+] as const;
 
 export default function FlotaPage() {
   return (
@@ -26,10 +32,10 @@ function FlotaTablero() {
   const { role, userId } = useRole();
   const router = useRouter();
   const [rows, setRows] = useState<TableroFlotaRow[]>([]);
-  const [fuera, setFuera] = useState(false);
+  const [filtro, setFiltro] = useState<(typeof FILTROS)[number]['id']>('todas');
   const [error, setError] = useState<string | null>(null);
 
-  async function cargar(soloFuera = fuera) {
+  async function cargar(soloFuera = filtro === 'fuera') {
     const qs = soloFuera ? '?fuera=1' : '';
     setRows(await api<TableroFlotaRow[]>(`/flota/tablero${qs}`, { role: role!, userId }));
   }
@@ -42,7 +48,7 @@ function FlotaTablero() {
       );
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [role, fuera]);
+  }, [role, filtro]);
 
   const columns = useMemo<ColumnDef<TableroFlotaRow>[]>(
     () => [
@@ -107,22 +113,12 @@ function FlotaTablero() {
         }
       />
       <FormAlert>{error}</FormAlert>
-      <nav className="subnav" aria-label="Filtro flota">
-        <button
-          type="button"
-          className={!fuera ? 'active' : ''}
-          onClick={() => setFuera(false)}
-        >
-          Todas
-        </button>
-        <button
-          type="button"
-          className={fuera ? 'active' : ''}
-          onClick={() => setFuera(true)}
-        >
-          Aún no regresan
-        </button>
-      </nav>
+      <ListFilter
+        label="Filtro flota"
+        value={filtro}
+        options={FILTROS}
+        onChange={setFiltro}
+      />
       <DataTable
         columns={columns}
         data={rows}

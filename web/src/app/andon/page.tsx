@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ColumnDef } from '@tanstack/react-table';
 import { RoleGate } from '@/components/RoleGate';
+import { ListFilter } from '@/components/ListFilter';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { DataTable } from '@/components/ui/data-table';
@@ -178,18 +179,12 @@ function AndonContent() {
           ) : null
         }
       />
-      <nav className="subnav" aria-label="Filtro Andon">
-        {FILTROS.map((f) => (
-          <button
-            key={f.id}
-            type="button"
-            className={filtro === f.id ? 'active' : ''}
-            onClick={() => setFiltro(f.id)}
-          >
-            {f.label}
-          </button>
-        ))}
-      </nav>
+      <ListFilter
+        label="Filtro Andon"
+        value={filtro}
+        options={FILTROS}
+        onChange={setFiltro}
+      />
       <FormAlert>{error}</FormAlert>
       {avisos == null ? (
         <p className="muted">Cargando avisos…</p>
