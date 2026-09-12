@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { InventarioInboxAdapter } from '../notifications/inventario-inbox.adapter';
 import { NotificationsModule } from '../notifications/notifications.module';
-import { TiposVehiculoModule } from '../tipos-vehiculo/tipos-vehiculo.module';
+import { UnidadesModule } from '../unidades/unidades.module';
 import { Compatibilidad } from './entities/compatibilidad.entity';
 import { Familia } from './entities/familia.entity';
 import { Item } from './entities/item.entity';
@@ -29,7 +29,7 @@ export const INVENTARIO_ENTITIES = [
 @Module({
   imports: [
     TypeOrmModule.forFeature(INVENTARIO_ENTITIES),
-    TiposVehiculoModule,
+    UnidadesModule,
     NotificationsModule,
   ],
   controllers: [InventarioController],

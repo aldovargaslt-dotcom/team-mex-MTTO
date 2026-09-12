@@ -23,6 +23,7 @@ export function UnidadForm({
   role,
   userId,
   initial,
+  defaultTipoId,
   submitLabel,
   onSubmit,
   error,
@@ -30,6 +31,7 @@ export function UnidadForm({
   role: string;
   userId: string;
   initial?: Partial<Unidad>;
+  defaultTipoId?: string;
   submitLabel: string;
   onSubmit: (values: UnidadFormValues) => Promise<void>;
   error: string | null;
@@ -39,7 +41,7 @@ export function UnidadForm({
     numeroInterno: initial?.numeroInterno ?? '',
     placas: initial?.placas ?? '',
     vin: initial?.vin ?? '',
-    tipoId: initial?.tipo?.id ?? '',
+    tipoId: initial?.tipo?.id ?? defaultTipoId ?? '',
     estado: initial?.estado ?? 'ACTIVA',
     marcaModelo: initial?.marcaModelo ?? '',
     anio: initial?.anio != null ? String(initial.anio) : '',
@@ -48,7 +50,7 @@ export function UnidadForm({
 
   useEffect(() => {
     void (async () => {
-      setTipos(await api<TipoVehiculo[]>('/tipos-vehiculo', { role, userId }));
+      setTipos(await api<TipoVehiculo[]>('/unidades/tipos', { role, userId }));
     })();
   }, [role, userId]);
 
@@ -58,12 +60,12 @@ export function UnidadForm({
       numeroInterno: initial.numeroInterno ?? '',
       placas: initial.placas ?? '',
       vin: initial.vin ?? '',
-      tipoId: initial.tipo?.id ?? '',
+      tipoId: initial.tipo?.id ?? defaultTipoId ?? '',
       estado: initial.estado ?? 'ACTIVA',
       marcaModelo: initial.marcaModelo ?? '',
       anio: initial.anio != null ? String(initial.anio) : '',
     });
-  }, [initial]);
+  }, [initial, defaultTipoId]);
 
   async function handleSubmit(event: FormEvent) {
     event.preventDefault();
@@ -110,14 +112,14 @@ export function UnidadForm({
           placeholder="Opcional"
         />
       </Field>
-      <Field label="Tipo" htmlFor="tipoId">
+      <Field label="Familia" htmlFor="tipoId">
         <NativeSelect
           id="tipoId"
           required
           value={values.tipoId}
           onChange={(e) => set('tipoId', e.target.value)}
         >
-          <option value="">Seleccione un tipo</option>
+          <option value="">Seleccione una familia</option>
           {tipos.map((tipo) => (
             <option key={tipo.id} value={tipo.id}>
               {tipo.nombre}

@@ -6,7 +6,7 @@ import { Chofer } from '../choferes/chofer.entity';
 import { EstadoUnidad } from '../common/estado-unidad.enum';
 import { AndonService } from '../andon/andon.service';
 import { InventarioService } from '../inventario/inventario.service';
-import { TipoVehiculo } from '../tipos-vehiculo/tipo-vehiculo.entity';
+import { TipoVehiculo } from '../unidades/tipo-vehiculo.entity';
 import { Unidad } from '../unidades/unidad.entity';
 import {
   CategoriaTrabajo,

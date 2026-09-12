@@ -16,7 +16,7 @@ import {
   VisitaCerradaPayload,
 } from '../kernel/events/visita-cerrada';
 import { OutboxService } from '../kernel/outbox/outbox.service';
-import { TiposVehiculoService } from '../tipos-vehiculo/tipos-vehiculo.service';
+import { TiposVehiculoService } from '../unidades/tipos-vehiculo.service';
 import { requireTrimmed } from '../common/require-trimmed';
 import { AddCompatibilidadDto } from './dto/add-compatibilidad.dto';
 import { AjusteDto } from './dto/ajuste.dto';

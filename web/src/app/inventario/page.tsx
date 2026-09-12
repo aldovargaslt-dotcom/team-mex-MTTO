@@ -46,7 +46,7 @@ export default function ItemsPage() {
     const [lista, fams, tps, provs] = await Promise.all([
       api<ItemInventario[]>('/inventario/items', { role: role!, userId }),
       api<Familia[]>('/inventario/familias', { role: role!, userId }),
-      api<TipoVehiculo[]>('/tipos-vehiculo', { role: role!, userId }),
+      api<TipoVehiculo[]>('/unidades/tipos', { role: role!, userId }),
       api<Proveedor[]>('/inventario/proveedores', { role: role!, userId }),
     ]);
     setItems(lista);

@@ -4,7 +4,7 @@
 
 | BC | Schema | API | UI |
 |----|--------|-----|----|
-| Kernel | `public` | `api/src/kernel`, `unidades`, `tipos-vehiculo`, `choferes`, `auth` | `web/src/app/unidades`, `choferes`; Configuración tipos en `unidades/configuracion` |
+| Kernel | `public` | `api/src/kernel`, `unidades` (incluye tipos), `choferes`, `auth` | `web/src/app/unidades` (flota agrupada por familia/tipo), `choferes` |
 | Mantenimiento / Visita | `public` | `api/src/visitas` | `web/src/app/unidades/[id]/visitas` (wizard WO) |
 | Inventario | `inventario` | `api/src/inventario` | `web/src/app/inventario` |
 | Andon | `andon` | `api/src/andon` | `web/src/app/andon` |

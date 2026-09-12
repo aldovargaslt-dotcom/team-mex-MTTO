@@ -7,7 +7,7 @@ import { mensajesHub, puedeCrearVisita } from '../common/hub-policy';
 import { requireTrimmed } from '../common/require-trimmed';
 import { Chofer } from '../choferes/chofer.entity';
 import { EstadoChofer } from '../choferes/estado-chofer.enum';
-import { TiposVehiculoService } from '../tipos-vehiculo/tipos-vehiculo.service';
+import { TiposVehiculoService } from './tipos-vehiculo.service';
 import { EstadoVisita } from '../visitas/enums';
 import { Visita } from '../visitas/visita.entity';
 import { CreateUnidadDto } from './dto/create-unidad.dto';
