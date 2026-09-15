@@ -41,8 +41,6 @@ const TIPOS = [
   { id: 'AJUSTE', label: 'Ajuste' },
 ] as const;
 
-type TipoFiltro = (typeof TIPOS)[number]['id'];
-
 function ymdUtc(d: Date) {
   return d.toISOString().slice(0, 10);
 }
