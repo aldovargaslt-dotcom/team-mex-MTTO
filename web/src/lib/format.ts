@@ -89,6 +89,30 @@ export function etiquetaAlertaStock(alerta: string | null | undefined) {
   return '—';
 }
 
+export function etiquetaMinimo(minQty: number | null | undefined) {
+  if (minQty == null) return 'Sin mínimo';
+  return String(minQty);
+}
+
+/** Magnitud de consulta: solo cuando hay mínimo y ya está en Bajo/Agotado. */
+export function magnitudExistencia(row: {
+  qty: number;
+  minQty: number | null;
+  alerta: string | null;
+  uom?: string | null;
+}) {
+  const uom = etiquetaUom(row.uom);
+  const base = `${row.qty} ${uom}`;
+  if (
+    (row.alerta === 'BAJO' || row.alerta === 'AGOTADO') &&
+    row.minQty != null &&
+    row.qty <= row.minQty
+  ) {
+    return `${base} · mínimo ${row.minQty} · faltan ${row.minQty - row.qty}`;
+  }
+  return base;
+}
+
 export function formatDuracion(ms: number | null | undefined) {
   if (ms == null) return '—';
   const min = Math.max(0, Math.floor(ms / 60000));

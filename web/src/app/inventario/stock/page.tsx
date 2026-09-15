@@ -1,19 +1,30 @@
 'use client';
 
-import { FormEvent, KeyboardEvent, Suspense, useEffect, useMemo, useState } from 'react';
+import { FormEvent, Suspense, useEffect, useMemo, useState } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { ColumnDef } from '@tanstack/react-table';
 import { api, HttpError } from '@/lib/api';
-import { etiquetaUom } from '@/lib/format';
+import { etiquetaMinimo, etiquetaUom, magnitudExistencia } from '@/lib/format';
 import { notifyInboxChanged } from '@/lib/inbox';
 import { useRole } from '@/lib/role';
-import type { AlertaStock, StockRow } from '@/lib/types';
+import type {
+  AlertaStock,
+  ItemInventario,
+  Proveedor,
+  StockRow,
+  TipoVehiculo,
+} from '@/lib/types';
+import {
+  InventarioMovimientoSheet,
+  type MovimientoSheetMode,
+} from '@/components/InventarioMovimientoSheet';
 import { ListFilter } from '@/components/ListFilter';
+import { RefaccionFicha } from '@/components/RefaccionFicha';
 import { StockAlertaBadge } from '@/components/StatusBadge';
 import { Button } from '@/components/ui/button';
 import { DataTable } from '@/components/ui/data-table';
 import { Field, FormAlert, PageHeader } from '@/components/ui/field';
-import { Input, NativeSelect, Textarea } from '@/components/ui/input';
+import { Input } from '@/components/ui/input';
 import {
   Dialog,
   DialogContent,
@@ -22,14 +33,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-} from '@/components/ui/sheet';
 
 const FILTROS: { id: 'TODOS' | AlertaStock; label: string }[] = [
   { id: 'TODOS', label: 'Todos' },
@@ -42,9 +45,35 @@ function parseAlerta(raw: string | null): 'TODOS' | AlertaStock {
   return 'TODOS';
 }
 
+function emptyExistencias(filtro: 'TODOS' | AlertaStock) {
+  if (filtro === 'BAJO') {
+    return (
+      <>
+        <span className="block font-medium text-navy">Nada en Bajo.</span>
+        <span>
+          El badge Bajo aparece cuando la cantidad es igual o menor al mínimo y
+          aún hay piezas.
+        </span>
+      </>
+    );
+  }
+  if (filtro === 'AGOTADO') {
+    return (
+      <>
+        <span className="block font-medium text-navy">Nada en Agotado.</span>
+        <span>
+          El badge Agotado aparece cuando la cantidad es 0 y hay un mínimo
+          configurado.
+        </span>
+      </>
+    );
+  }
+  return 'Aún no hay existencias.';
+}
+
 export default function StockPage() {
   return (
-    <Suspense fallback={<p className="muted">Cargando stock…</p>}>
+    <Suspense fallback={<p className="muted">Cargando existencias…</p>}>
       <StockContent />
     </Suspense>
   );
@@ -57,18 +86,26 @@ function StockContent() {
   const searchParams = useSearchParams();
   const filtro = parseAlerta(searchParams.get('alerta'));
   const [rows, setRows] = useState<StockRow[]>([]);
+  const [tipos, setTipos] = useState<TipoVehiculo[]>([]);
+  const [proveedores, setProveedores] = useState<Proveedor[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [minDraft, setMinDraft] = useState<Record<string, string>>({});
+  const [ficha, setFicha] = useState<ItemInventario | null>(null);
   const [itemId, setItemId] = useState('');
-  const [mode, setMode] = useState<'entrada' | 'ajuste' | null>(null);
-  const [qty, setQty] = useState('1');
-  const [nota, setNota] = useState('');
+  const [mode, setMode] = useState<MovimientoSheetMode | null>(null);
+  const [lockItem, setLockItem] = useState(false);
   const [alertasOpen, setAlertasOpen] = useState(false);
   const [savingAlertas, setSavingAlertas] = useState(false);
 
   async function cargar() {
-    const data = await api<StockRow[]>('/inventario/stock', { role: role!, userId });
+    const [data, tps, provs] = await Promise.all([
+      api<StockRow[]>('/inventario/stock', { role: role!, userId }),
+      api<TipoVehiculo[]>('/unidades/tipos', { role: role!, userId }),
+      api<Proveedor[]>('/inventario/proveedores', { role: role!, userId }),
+    ]);
     setRows(data);
+    setTipos(tps);
+    setProveedores(provs.filter((p) => p.activo));
     setMinDraft(
       Object.fromEntries(
         data.map((row) => [row.itemId, row.minQty == null ? '' : String(row.minQty)]),
@@ -79,76 +116,44 @@ function StockContent() {
   useEffect(() => {
     if (!role) return;
     void cargar().catch((err) => {
-      setError(err instanceof HttpError ? err.message : 'No se pudo cargar el stock.');
+      setError(
+        err instanceof HttpError
+          ? err.message
+          : 'No se pudieron cargar las existencias.',
+      );
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [role]);
 
-  function abrir(id: string, next: 'entrada' | 'ajuste') {
-    setItemId(id);
-    setMode(next);
-    setQty(next === 'ajuste' ? '-1' : '1');
-    setNota('');
+  function abrirEntrada() {
+    setLockItem(false);
+    setItemId(rows[0]?.itemId ?? '');
+    setMode('entrada');
     setError(null);
   }
 
-  async function guardarMin(row: StockRow) {
-    const raw = minDraft[row.itemId] ?? '';
-    const next = raw.trim() === '' ? null : Number(raw);
-    if (next !== null && (!Number.isInteger(next) || next < 0)) {
-      setError('Indique un número entero, o déjelo vacío.');
-      return;
-    }
-    if (next === row.minQty) return;
+  function abrirAjuste(item: ItemInventario) {
+    setFicha(null);
+    setLockItem(true);
+    setItemId(item.id);
+    setMode('ajuste');
+    setError(null);
+  }
+
+  async function abrirFicha(row: StockRow) {
     setError(null);
     try {
-      await api(`/inventario/items/${row.itemId}`, {
+      const item = await api<ItemInventario>(`/inventario/items/${row.itemId}`, {
         role: role!,
         userId,
-        method: 'PATCH',
-        body: JSON.stringify({ minQty: next }),
       });
-      notifyInboxChanged();
-      await cargar();
+      setFicha(item);
     } catch (err) {
-      setError(err instanceof HttpError ? err.message : 'No se pudo guardar cuándo avisar.');
-    }
-  }
-
-  async function aplicar(event: FormEvent) {
-    event.preventDefault();
-    if (!itemId || !mode) return;
-    setError(null);
-    try {
-      if (mode === 'entrada') {
-        await api('/inventario/movimientos/entrada', {
-          role: role!,
-          userId,
-          method: 'POST',
-          body: JSON.stringify({
-            itemId,
-            qty: Number(qty),
-            nota: nota.trim() || undefined,
-          }),
-        });
-      } else {
-        await api('/inventario/movimientos/ajuste', {
-          role: role!,
-          userId,
-          method: 'POST',
-          body: JSON.stringify({
-            itemId,
-            qtyDelta: Number(qty),
-            nota: nota.trim() || undefined,
-          }),
-        });
-      }
-      setItemId('');
-      setMode(null);
-      notifyInboxChanged();
-      await cargar();
-    } catch (err) {
-      setError(err instanceof HttpError ? err.message : 'No se pudo registrar el movimiento.');
+      setError(
+        err instanceof HttpError
+          ? err.message
+          : 'No se pudo abrir la refacción.',
+      );
     }
   }
 
@@ -190,15 +195,10 @@ function StockContent() {
     }
   }
 
-  const selected = rows.find((row) => row.itemId === itemId);
-
   const filtered = useMemo(() => {
     if (filtro === 'TODOS') return rows;
     return rows.filter((row) => row.alerta === filtro);
   }, [rows, filtro]);
-
-  const empty =
-    filtro === 'TODOS' ? 'Aún no hay existencias.' : 'Nada en este filtro.';
 
   const columns: ColumnDef<StockRow, unknown>[] = useMemo(
     () => [
@@ -208,87 +208,32 @@ function StockContent() {
         cell: ({ row }) => <span className="mono">{row.original.sku}</span>,
       },
       { accessorKey: 'nombre', header: 'Nombre' },
-      { accessorKey: 'familia', header: 'Familia' },
+      { accessorKey: 'familia', header: 'Categoría' },
       {
         accessorKey: 'qty',
         header: 'Cant.',
         cell: ({ row }) => (
-          <span className="mono">
-            {row.original.qty} {etiquetaUom(row.original.uom)}
-          </span>
+          <span className="mono">{magnitudExistencia(row.original)}</span>
         ),
       },
       {
         id: 'min',
-        header: () => (
-          <span title="Piezas o menos. Vacío = no avisar de este producto.">
-            Avisar si quedan
-          </span>
-        ),
-        cell: ({ row }) => (
-          <Input
-            aria-label={`Avisar si quedan ${row.original.sku}`}
-            className="h-11 min-h-11 w-[5.5rem] md:h-10 md:min-h-10"
-            type="number"
-            min={0}
-            step={1}
-            inputMode="numeric"
-            placeholder="—"
-            value={minDraft[row.original.itemId] ?? ''}
-            onClick={(e) => e.stopPropagation()}
-            onChange={(e) =>
-              setMinDraft((current) => ({
-                ...current,
-                [row.original.itemId]: e.target.value,
-              }))
-            }
-            onBlur={() => void guardarMin(row.original)}
-            onKeyDown={(e: KeyboardEvent<HTMLInputElement>) => {
-              if (e.key === 'Enter') {
-                e.preventDefault();
-                (e.target as HTMLInputElement).blur();
-              }
-            }}
-          />
-        ),
+        header: 'Mínimo',
+        cell: ({ row }) => etiquetaMinimo(row.original.minQty),
       },
       {
         id: 'alerta',
         header: 'Estado',
         cell: ({ row }) => <StockAlertaBadge alerta={row.original.alerta} />,
       },
-      {
-        id: 'acciones',
-        header: '',
-        cell: ({ row }) => (
-          <div className="row-actions" onClick={(e) => e.stopPropagation()}>
-            <Button
-              type="button"
-              variant="entrada"
-              size="compact"
-              onClick={() => abrir(row.original.itemId, 'entrada')}
-            >
-              Entrada
-            </Button>
-            <Button
-              type="button"
-              variant="outline"
-              size="compact"
-              onClick={() => abrir(row.original.itemId, 'ajuste')}
-            >
-              Ajuste
-            </Button>
-          </div>
-        ),
-      },
     ],
-    [minDraft, role, userId],
+    [],
   );
 
   return (
     <>
       <PageHeader
-        title="Stock"
+        title="Existencias"
         actions={
           <>
             <Button
@@ -306,7 +251,7 @@ function StockContent() {
             </Button>
             <Button
               type="button"
-              onClick={() => abrir(rows[0]?.itemId ?? '', 'entrada')}
+              onClick={abrirEntrada}
               disabled={rows.length === 0}
             >
               Registrar entrada
@@ -315,7 +260,7 @@ function StockContent() {
         }
       />
       <ListFilter
-        label="Filtro de stock"
+        label="Filtro de existencias"
         value={filtro}
         options={FILTROS}
         onChange={(next) => {
@@ -328,91 +273,49 @@ function StockContent() {
       />
       <FormAlert>{error}</FormAlert>
       {rows.length > 0 || !error ? (
-        <DataTable columns={columns} data={filtered} empty={empty} />
+        <DataTable
+          columns={columns}
+          data={filtered}
+          empty={emptyExistencias(filtro)}
+          onRowClick={(row) => void abrirFicha(row)}
+        />
       ) : null}
 
-      <Sheet
-        open={mode !== null}
-        onOpenChange={(open) => {
-          if (!open) {
-            setMode(null);
-            setItemId('');
-          }
+      <RefaccionFicha
+        item={ficha}
+        tipos={tipos}
+        proveedores={proveedores}
+        role={role ?? ''}
+        userId={userId}
+        onClose={() => setFicha(null)}
+        onChanged={(updated) => {
+          if (updated) setFicha(updated);
+          void cargar();
         }}
-      >
-        <SheetContent side="bottom" className="sm:max-w-none">
-          <SheetHeader>
-            <SheetTitle>{mode === 'ajuste' ? 'Ajuste' : 'Entrada'}</SheetTitle>
-            <SheetDescription>
-              {selected
-                ? `${selected.sku} · ${selected.nombre}`
-                : 'Elija el ítem y la cantidad.'}
-            </SheetDescription>
-          </SheetHeader>
-          <form className="grid gap-3 px-4 pb-4" onSubmit={aplicar}>
-            <Field label="SKU" htmlFor="stockItem">
-              <NativeSelect
-                id="stockItem"
-                required
-                value={itemId}
-                onChange={(e) => setItemId(e.target.value)}
-              >
-                <option value="">Seleccione</option>
-                {rows.map((row) => (
-                  <option key={row.itemId} value={row.itemId}>
-                    {row.sku} · {row.nombre} ({row.qty} {etiquetaUom(row.uom)})
-                  </option>
-                ))}
-              </NativeSelect>
-            </Field>
-            <Field
-              label={mode === 'ajuste' ? 'Cambio' : 'Cantidad'}
-              htmlFor="qty"
-              help={
-                mode === 'ajuste'
-                  ? 'Positivo suma. Negativo resta.'
-                  : undefined
-              }
-            >
-              <Input
-                id="qty"
-                type="number"
-                required
-                value={qty}
-                onChange={(e) => setQty(e.target.value)}
-                min={mode === 'entrada' ? 1 : undefined}
-                step={1}
-              />
-            </Field>
-            <Field label="Nota" htmlFor="nota">
-              <Textarea
-                id="nota"
-                value={nota}
-                onChange={(e) => setNota(e.target.value)}
-                placeholder="Opcional"
-              />
-            </Field>
-            <SheetFooter className="p-0">
-              <Button
-                type="submit"
-                variant={mode === 'ajuste' ? 'outline' : 'default'}
-              >
-                {mode === 'entrada' ? 'Registrar entrada' : 'Ajustar'}
-              </Button>
-              <Button
-                type="button"
-                variant="secondary"
-                onClick={() => {
-                  setMode(null);
-                  setItemId('');
-                }}
-              >
-                Cancelar
-              </Button>
-            </SheetFooter>
-          </form>
-        </SheetContent>
-      </Sheet>
+        onAjuste={abrirAjuste}
+      />
+
+      <InventarioMovimientoSheet
+        mode={mode}
+        itemId={itemId}
+        rows={rows.map((row) => ({
+          itemId: row.itemId,
+          sku: row.sku,
+          nombre: row.nombre,
+          qty: row.qty,
+          uom: row.uom,
+        }))}
+        lockItem={lockItem}
+        role={role ?? ''}
+        userId={userId}
+        onClose={() => {
+          setMode(null);
+          setItemId('');
+          setLockItem(false);
+        }}
+        onApplied={() => cargar()}
+        onError={setError}
+      />
 
       <Dialog
         open={alertasOpen}
@@ -468,7 +371,7 @@ function StockContent() {
                       min={0}
                       step={1}
                       inputMode="numeric"
-                      placeholder="—"
+                      placeholder="Sin mínimo"
                       value={minDraft[row.itemId] ?? ''}
                       onChange={(e) =>
                         setMinDraft((current) => ({
