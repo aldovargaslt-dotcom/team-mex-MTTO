@@ -474,7 +474,7 @@ function UnidadesList() {
             </dl>
           </section>
 
-          <div className="mb-3 space-y-2 [&_.list-filter]:mb-0">
+          <div className="mb-3 flex flex-col gap-3 [&_.list-filter]:mb-0">
             <Input
               id="unidadQ"
               type="search"
