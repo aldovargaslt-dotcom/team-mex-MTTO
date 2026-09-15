@@ -2,12 +2,19 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { ChartNoAxesColumnIncreasing, LayoutList, MapPinned } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 
-const LINKS = [
-  { href: '/flota', label: 'Tablero', exact: true },
-  { href: '/flota/ranking', label: 'Ranking' },
-  { href: '/flota/sitios', label: 'Sitios' },
-] as const;
+const LINKS: {
+  href: string;
+  label: string;
+  exact?: boolean;
+  icon: LucideIcon;
+}[] = [
+  { href: '/flota', label: 'Tablero', exact: true, icon: LayoutList },
+  { href: '/flota/ranking', label: 'Ranking', icon: ChartNoAxesColumnIncreasing },
+  { href: '/flota/sitios', label: 'Sitios', icon: MapPinned },
+];
 
 function isActive(
   pathname: string | null,
@@ -25,14 +32,16 @@ export function FlotaNav() {
   return (
     <nav className="subnav" aria-label="Flota">
       {LINKS.map((link) => {
-        const active = isActive(pathname, link.href, 'exact' in link && link.exact);
+        const active = isActive(pathname, link.href, link.exact);
+        const Icon = link.icon;
         return (
           <Link
             key={link.href}
             href={link.href}
-            className={active ? 'active' : ''}
+            className={active ? 'active gap-1.5' : 'gap-1.5'}
             aria-current={active ? 'page' : undefined}
           >
+            <Icon className="size-3.5" aria-hidden />
             {link.label}
           </Link>
         );

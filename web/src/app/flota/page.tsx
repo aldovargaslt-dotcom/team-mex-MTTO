@@ -3,6 +3,7 @@
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { Suspense, useEffect, useMemo, useState } from 'react';
 import { ColumnDef } from '@tanstack/react-table';
+import { Truck, MapPin, CircleDashed, TriangleAlert } from 'lucide-react';
 import { ListFilter } from '@/components/ListFilter';
 import { RoleGate } from '@/components/RoleGate';
 import { Badge } from '@/components/ui/badge';
@@ -91,9 +92,21 @@ function FlotaTablero() {
         header: 'Viaje',
         cell: ({ row }) => {
           const viaje = viajeDeFila(row.original);
+          const Icon =
+            viaje.clase === 'en_ruta'
+              ? Truck
+              : viaje.clase === 'en_sitio'
+                ? MapPin
+                : CircleDashed;
           return (
             <div>
-              <div>{viaje.titulo}</div>
+              <span className="inline-flex items-center gap-1.5">
+                <Icon
+                  className="size-3.5 shrink-0 text-muted-foreground"
+                  aria-hidden
+                />
+                {viaje.titulo}
+              </span>
               {viaje.detalle ? (
                 <div className="muted">{viaje.detalle}</div>
               ) : null}
@@ -123,7 +136,8 @@ function FlotaTablero() {
         header: 'Atención',
         cell: ({ row }) =>
           row.original.salidaAbiertaId ? (
-            <Badge variant="warning" className="normal-case tracking-normal">
+            <Badge variant="warning" className="normal-case tracking-normal gap-1">
+              <TriangleAlert className="size-3.5" aria-hidden />
               Registrar entrada
             </Badge>
           ) : (
