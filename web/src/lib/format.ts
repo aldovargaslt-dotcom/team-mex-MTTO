@@ -8,6 +8,52 @@ export function resumenAvisoMantenimiento(km: number, dias: number) {
   return `Avisa a los ${km.toLocaleString('es-MX')} km o a los ${dias} días`;
 }
 
+/** Exceso km/días al abrir el aviso. Sin “faltan N”. */
+export function lineasOvershootAvisoAndon(aviso: {
+  kmAlAbrir: number;
+  diasAlAbrir: number;
+  umbralKm: number;
+  umbralDias: number;
+}): string[] {
+  const lines: string[] = [];
+  const extraKm = aviso.kmAlAbrir - aviso.umbralKm;
+  const extraDias = aviso.diasAlAbrir - aviso.umbralDias;
+  if (extraKm > 0) {
+    lines.push(
+      `+${extraKm.toLocaleString('es-MX')} km sobre el intervalo (${aviso.kmAlAbrir.toLocaleString('es-MX')} vs ${aviso.umbralKm.toLocaleString('es-MX')} km)`,
+    );
+  }
+  if (extraDias > 0) {
+    lines.push(
+      `+${extraDias.toLocaleString('es-MX')} días sobre el intervalo (${aviso.diasAlAbrir.toLocaleString('es-MX')} vs ${aviso.umbralDias.toLocaleString('es-MX')} días)`,
+    );
+  }
+  return lines;
+}
+
+export function fraseDemoraAviso(aviso: {
+  abiertaAt: string;
+  resueltoAt?: string | null;
+}): string | null {
+  if (!aviso.resueltoAt) return null;
+  const dias = diasEntre(aviso.abiertaAt, aviso.resueltoAt);
+  if (dias == null) return null;
+  if (dias < 1) return 'Resuelto el mismo día';
+  if (dias === 1) return 'Resuelto en 1 día';
+  return `Resuelto en ${dias.toLocaleString('es-MX')} días`;
+}
+
+export function diasEntre(
+  fromIso: string | null | undefined,
+  toIso: string | null | undefined,
+): number | null {
+  if (!fromIso || !toIso) return null;
+  const from = new Date(fromIso).getTime();
+  const to = new Date(toIso).getTime();
+  if (Number.isNaN(from) || Number.isNaN(to)) return null;
+  return Math.max(0, Math.round((to - from) / 86_400_000));
+}
+
 /** Causa operacional del aviso con campos ya en el DTO. Sin “faltan N”. */
 export function lineasCausaAvisoAndon(aviso: {
   kmAlAbrir: number;
