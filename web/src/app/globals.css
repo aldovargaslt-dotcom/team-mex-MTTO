@@ -385,6 +385,10 @@
   }
 
   @media (max-width: 767px) {
+    .unidades-table {
+      overflow-x: hidden;
+    }
+
     .unidades-table [data-slot='table-cell'],
     .unidades-table [data-slot='table-head'] {
       padding-left: 8px;

@@ -310,6 +310,7 @@ function UnidadesList() {
         header: 'Unidad',
         cell: ({ row }) => {
           const inactiva = etiquetaInactivaFila(row.original);
+          const senal = senalDeFila(avisosMap.get(row.original.id));
           return (
             <div className="min-w-0">
               <div className="font-semibold text-navy">
@@ -323,6 +324,19 @@ function UnidadesList() {
                   {inactiva}
                 </div>
               ) : null}
+              {senal.titulo ? (
+                <div className="mt-1 md:hidden">
+                  <CondicionUnidadBadge
+                    label={senal.titulo}
+                    variant={senal.variant}
+                  />
+                  {senal.detalle ? (
+                    <div className="mt-0.5 text-[12px] text-muted-foreground">
+                      {senal.detalle}
+                    </div>
+                  ) : null}
+                </div>
+              ) : null}
             </div>
           );
         },
@@ -330,6 +344,7 @@ function UnidadesList() {
       {
         id: 'aviso',
         header: 'Aviso',
+        meta: { className: 'hidden md:table-cell' },
         cell: ({ row }) => {
           const senal = senalDeFila(avisosMap.get(row.original.id));
           if (!senal.titulo) {
