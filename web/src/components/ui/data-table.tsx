@@ -17,6 +17,10 @@ import {
 } from '@/components/ui/table';
 import { cn } from '@/lib/utils';
 
+function columnClassName(column: { columnDef: { meta?: { className?: string } } }) {
+  return column.columnDef.meta?.className;
+}
+
 export function DataTable<TData>({
   columns,
   data,
@@ -43,7 +47,10 @@ export function DataTable<TData>({
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id} className="hover:bg-[#fafafb]">
               {headerGroup.headers.map((header) => (
-                <TableHead key={header.id}>
+                <TableHead
+                  key={header.id}
+                  className={columnClassName(header.column)}
+                >
                   {header.isPlaceholder
                     ? null
                     : flexRender(
@@ -69,7 +76,10 @@ export function DataTable<TData>({
                 }
               >
                 {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id}>
+                  <TableCell
+                    key={cell.id}
+                    className={columnClassName(cell.column)}
+                  >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
                 ))}

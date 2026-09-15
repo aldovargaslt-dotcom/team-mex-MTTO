@@ -9,17 +9,7 @@ import { etiquetaEstadoAviso, formatFecha, lineasCausaAvisoAndon } from '@/lib/f
 import { useRole } from '@/lib/role';
 import type { AvisoAndon } from '@/lib/types';
 
-export function AndonHubCard({
-  unidadId,
-  puedeCrearVisita,
-  onNuevaVisita,
-  creating,
-}: {
-  unidadId: string;
-  puedeCrearVisita?: boolean;
-  onNuevaVisita?: () => void;
-  creating?: boolean;
-}) {
+export function AndonHubCard({ unidadId }: { unidadId: string }) {
   const { role, userId, isAdmin } = useRole();
   const [aviso, setAviso] = useState<AvisoAndon | null | undefined>(undefined);
   const [error, setError] = useState<string | null>(null);
@@ -66,65 +56,60 @@ export function AndonHubCard({
     }
   }
 
+  if (aviso === undefined) {
+    return <p className="muted mb-3">Cargando aviso…</p>;
+  }
+
+  if (aviso == null) {
+    return (
+      <>
+        <p className="muted mb-3">Sin aviso de mantenimiento vencido.</p>
+        {error ? <p className="alert mb-3">{error}</p> : null}
+      </>
+    );
+  }
+
   return (
-    <section className="card panel">
+    <section className="card panel mb-3">
       <h2>Andon</h2>
-      {aviso === undefined ? (
-        <p className="muted">Cargando aviso…</p>
-      ) : aviso == null ? (
-        <p className="muted">Sin aviso de mantenimiento vencido.</p>
-      ) : (
-        <>
-          <div className="flex flex-wrap items-center gap-2">
-            <Badge variant={aviso.estado === 'ABIERTO' ? 'warning' : 'muted'}>
-              {etiquetaEstadoAviso(aviso.estado)}
-            </Badge>
-            {aviso.tipoNombre ? (
-              <span className="text-[13px]">{aviso.tipoNombre}</span>
-            ) : null}
-          </div>
-          <div className="mt-1.5 grid gap-0.5 text-[13px]">
-            {lineasCausaAvisoAndon(aviso).map((linea) => (
-              <p key={linea}>{linea}</p>
-            ))}
-          </div>
-          <p className="muted" style={{ marginTop: 6 }}>
-            Último cierre:{' '}
-            {aviso.lastClosedKm != null
-              ? `${aviso.lastClosedKm.toLocaleString('es-MX')} km`
-              : 'sin km'}
-            {aviso.lastClosedAt ? ` · ${formatFecha(aviso.lastClosedAt)}` : ''}
-          </p>
-          <div className="hub-actions">
-            {aviso.estado === 'ABIERTO' && !isAdmin ? (
-              <Button
-                type="button"
-                variant="outline"
-                className="h-11 min-h-11 min-w-[44px] md:h-11 md:min-h-11"
-                disabled={busy}
-                onClick={() => void enterado()}
-              >
-                {busy ? 'Marcando…' : 'Enterado'}
-              </Button>
-            ) : null}
-            {puedeCrearVisita && onNuevaVisita ? (
-              <Button
-                type="button"
-                disabled={creating}
-                onClick={() => onNuevaVisita()}
-              >
-                {creating ? 'Creando…' : 'Nueva visita'}
-              </Button>
-            ) : null}
-          </div>
-          {aviso.estado === 'ENTERADO' ? (
-            <Note>
-              Enterado: el aviso queda visto in-app. La visita cerrada
-              resuelve.
-            </Note>
-          ) : null}
-        </>
-      )}
+      <div className="flex flex-wrap items-center gap-2">
+        <Badge variant={aviso.estado === 'ABIERTO' ? 'warning' : 'muted'}>
+          {etiquetaEstadoAviso(aviso.estado)}
+        </Badge>
+        {aviso.tipoNombre ? (
+          <span className="text-[13px]">{aviso.tipoNombre}</span>
+        ) : null}
+      </div>
+      <div className="mt-1.5 grid gap-0.5 text-[13px]">
+        {lineasCausaAvisoAndon(aviso).map((linea) => (
+          <p key={linea}>{linea}</p>
+        ))}
+      </div>
+      <p className="muted" style={{ marginTop: 6 }}>
+        Último cierre:{' '}
+        {aviso.lastClosedKm != null
+          ? `${aviso.lastClosedKm.toLocaleString('es-MX')} km`
+          : 'sin km'}
+        {aviso.lastClosedAt ? ` · ${formatFecha(aviso.lastClosedAt)}` : ''}
+      </p>
+      {aviso.estado === 'ABIERTO' && !isAdmin ? (
+        <div className="hub-actions">
+          <Button
+            type="button"
+            variant="outline"
+            className="h-11 min-h-11 min-w-[44px] md:h-11 md:min-h-11"
+            disabled={busy}
+            onClick={() => void enterado()}
+          >
+            {busy ? 'Marcando…' : 'Enterado'}
+          </Button>
+        </div>
+      ) : null}
+      {aviso.estado === 'ENTERADO' ? (
+        <Note>
+          Enterado: el aviso queda visto in-app. La visita cerrada resuelve.
+        </Note>
+      ) : null}
       {error ? (
         <p className="alert" style={{ marginTop: 8 }}>
           {error}
