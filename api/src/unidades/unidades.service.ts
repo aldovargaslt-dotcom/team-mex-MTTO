@@ -169,7 +169,7 @@ export class UnidadesService {
         .then((n) => n > 0),
       this.visitas.find({
         where: { unidad: { id } },
-        relations: { chofer: true, trabajos: true },
+        relations: { chofer: true, trabajos: true, piezas: true },
         order: { updatedAt: 'DESC' },
       }),
     ]);
@@ -186,6 +186,11 @@ export class UnidadesService {
       updatedAt: visita.updatedAt,
       cerradoAt: visita.cerradoAt,
       trabajosCount: visita.trabajos?.length ?? 0,
+      piezas: (visita.piezas ?? []).map((pieza) => ({
+        itemId: pieza.itemId,
+        qty: pieza.qty,
+        origen: pieza.origen,
+      })),
     });
 
     const historialCerrado = visitas

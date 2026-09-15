@@ -2,19 +2,29 @@
 
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { ColumnDef } from '@tanstack/react-table';
 import { RoleGate } from '@/components/RoleGate';
 import { StatusBadge } from '@/components/StatusBadge';
 import { AndonHubCard } from '@/components/AndonHubCard';
+import { DataTable } from '@/components/ui/data-table';
 import { api, HttpError } from '@/lib/api';
 import {
   etiquetaEstadoVisita,
+  etiquetaOrigenPieza,
   etiquetaTipoVisita,
+  etiquetaUom,
   formatFecha,
   formatKm,
 } from '@/lib/format';
 import { useRole } from '@/lib/role';
-import type { UnidadHub, VisitaDetalle, VisitaResumen } from '@/lib/types';
+import type {
+  ItemInventario,
+  OrigenPieza,
+  UnidadHub,
+  VisitaDetalle,
+  VisitaResumen,
+} from '@/lib/types';
 
 export default function HubPage() {
   return (
@@ -284,6 +294,11 @@ function HubContent() {
             </ul>
           )}
 
+          <HubRefacciones
+            unidadId={ficha.id}
+            historial={hub.historialCerrado}
+          />
+
           {hub.mensajes.map((mensaje) => (
             <p
               key={mensaje}
@@ -319,5 +334,144 @@ function HistorialItem({
         </div>
       </Link>
     </li>
+  );
+}
+
+type HubPiezaRow = {
+  key: string;
+  visitaId: string;
+  cerradoAt: string | null;
+  itemId: string;
+  qty: number;
+  origen: OrigenPieza;
+};
+
+function HubRefacciones({
+  unidadId,
+  historial,
+}: {
+  unidadId: string;
+  historial: VisitaResumen[];
+}) {
+  const { role, userId } = useRole();
+  const router = useRouter();
+  const [labels, setLabels] = useState<
+    Record<string, { sku: string; nombre: string; uom?: string }>
+  >({});
+
+  const rows: HubPiezaRow[] = useMemo(
+    () =>
+      historial.flatMap((visita) =>
+        (visita.piezas ?? []).map((pieza, index) => ({
+          key: `${visita.id}:${pieza.itemId}:${index}`,
+          visitaId: visita.id,
+          cerradoAt: visita.cerradoAt,
+          itemId: pieza.itemId,
+          qty: pieza.qty,
+          origen: pieza.origen,
+        })),
+      ),
+    [historial],
+  );
+
+  const idsKey = rows
+    .map((row) => row.itemId)
+    .filter((id, i, all) => all.indexOf(id) === i)
+    .sort()
+    .join(',');
+
+  useEffect(() => {
+    if (!role || !idsKey) {
+      setLabels({});
+      return;
+    }
+    void api<ItemInventario[]>(`/inventario/items?ids=${idsKey}`, {
+      role,
+      userId,
+    })
+      .then((items) => {
+        setLabels(
+          Object.fromEntries(
+            items.map((item) => [
+              item.id,
+              { sku: item.sku, nombre: item.nombre, uom: item.uom },
+            ]),
+          ),
+        );
+      })
+      .catch(() => {
+        /* SKU se muestra como Refacción si Inventario no responde */
+      });
+  }, [role, userId, idsKey]);
+
+  const columns: ColumnDef<HubPiezaRow, unknown>[] = useMemo(
+    () => [
+      {
+        accessorKey: 'cerradoAt',
+        header: 'Fecha cierre',
+        cell: ({ row }) => formatFecha(row.original.cerradoAt),
+      },
+      {
+        id: 'visita',
+        header: 'Visita',
+        cell: ({ row }) => (
+          <Link
+            href={`/unidades/${unidadId}/visitas/${row.original.visitaId}`}
+            className="font-medium text-navy underline-offset-2 hover:underline"
+            onClick={(e) => e.stopPropagation()}
+          >
+            Ver visita
+          </Link>
+        ),
+      },
+      {
+        id: 'refaccion',
+        header: 'Refacción',
+        cell: ({ row }) => {
+          const item = labels[row.original.itemId];
+          return item ? (
+            <span>
+              <span className="mono">{item.sku}</span>
+              {` · ${item.nombre}`}
+            </span>
+          ) : (
+            'Refacción'
+          );
+        },
+      },
+      {
+        accessorKey: 'qty',
+        header: 'Cant.',
+        cell: ({ row }) => (
+          <span className="mono">
+            {row.original.qty}{' '}
+            {etiquetaUom(labels[row.original.itemId]?.uom)}
+          </span>
+        ),
+      },
+      {
+        accessorKey: 'origen',
+        header: 'Origen',
+        cell: ({ row }) => etiquetaOrigenPieza(row.original.origen),
+      },
+    ],
+    [labels, unidadId],
+  );
+
+  return (
+    <>
+      <h3 className="subhead">Refacciones</h3>
+      {rows.length === 0 ? (
+        <p className="muted">Aún no hay refacciones en visitas cerradas.</p>
+      ) : (
+        <DataTable
+          columns={columns}
+          data={rows}
+          onRowClick={(row) =>
+            router.push(`/unidades/${unidadId}/visitas/${row.visitaId}`)
+          }
+        />
+      )}
+    </>
   );
 }
