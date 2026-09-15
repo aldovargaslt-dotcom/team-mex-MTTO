@@ -217,25 +217,34 @@ export function HubConducta({
           Se necesitan al menos dos visitas cerradas para ver la cadencia.
         </p>
       ) : (
-        <ul className="visit-list">
+        <ul className="grid">
           {intervalos.map((row) => {
             const km = fraseDeltaVsCada(row.deltaKm, row.tKm, 'km');
             const dias = fraseDeltaVsCada(row.deltaDias, row.tDias, 'días');
             const rebaso = km.rebaso === true || dias.rebaso === true;
             return (
-              <li key={row.key}>
-                <Link href={`/unidades/${unidadId}/visitas/${row.visitaId}`}>
-                  <strong>
-                    {etiquetaTipoVisita(row.tipo)} · {formatFecha(row.cerradoAt)}
-                  </strong>
-                  <div className="muted">{km.texto}</div>
-                  <div className="muted">{dias.texto}</div>
+              <li
+                key={row.key}
+                className="border-b border-border last:border-0"
+              >
+                <Link
+                  href={`/unidades/${unidadId}/visitas/${row.visitaId}`}
+                  className="flex min-h-11 items-start gap-3 py-2 md:min-h-10"
+                >
+                  <div className="min-w-0">
+                    <strong>
+                      {etiquetaTipoVisita(row.tipo)} ·{' '}
+                      {formatFecha(row.cerradoAt)}
+                    </strong>
+                    <div className="muted">{km.texto}</div>
+                    <div className="muted">{dias.texto}</div>
+                  </div>
+                  {km.rebaso != null || dias.rebaso != null ? (
+                    <Badge variant={rebaso ? 'warning' : 'success'}>
+                      {rebaso ? 'Rebasó' : 'Dentro'}
+                    </Badge>
+                  ) : null}
                 </Link>
-                {km.rebaso != null || dias.rebaso != null ? (
-                  <Badge variant={rebaso ? 'warning' : 'success'}>
-                    {rebaso ? 'Rebasó' : 'Dentro'}
-                  </Badge>
-                ) : null}
               </li>
             );
           })}
