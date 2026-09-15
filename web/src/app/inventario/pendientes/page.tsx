@@ -99,8 +99,8 @@ export default function PendientesPage() {
   return (
     <>
       <PageHeader
-        title="Compras"
-        help="Compras fuera del almacén. No descuentan stock."
+        title="Por recibir"
+        help="Compras externas aún sin entrar al almacén. No descuentan stock."
       />
       <FormAlert>{error}</FormAlert>
       {rows.length > 0 ? (
@@ -171,9 +171,10 @@ export default function PendientesPage() {
         </div>
       ) : !error ? (
         <div className="empty-state">
-          <h2>No hay compras</h2>
+          <h2>Nada por recibir.</h2>
           <p className="muted">
-            Las compras externas de una visita aparecen aquí.
+            Las compras externas de una visita aparecen aquí hasta marcarlas
+            recibidas.
           </p>
         </div>
       ) : null}

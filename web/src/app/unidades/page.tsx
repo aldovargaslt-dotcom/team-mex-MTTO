@@ -173,8 +173,8 @@ function UnidadesList() {
         err instanceof HttpError
           ? err.message
           : editing
-            ? 'No se pudo actualizar la familia.'
-            : 'No se pudo crear la familia.',
+            ? 'No se pudo actualizar el tipo.'
+            : 'No se pudo crear el tipo.',
       );
     } finally {
       setSaving(false);
@@ -183,7 +183,7 @@ function UnidadesList() {
 
   async function eliminarFamilia(tipo: TipoVehiculo) {
     const ok = window.confirm(
-      `¿Eliminar la familia ${tipo.nombre}? Solo se puede si no tiene unidades.`,
+      `¿Eliminar el tipo ${tipo.nombre}? Solo se puede si no tiene unidades.`,
     );
     if (!ok) return;
     setError(null);
@@ -198,7 +198,7 @@ function UnidadesList() {
       setError(
         err instanceof HttpError
           ? err.message
-          : 'No se pudo eliminar la familia.',
+          : 'No se pudo eliminar el tipo.',
       );
     }
   }
@@ -301,7 +301,7 @@ function UnidadesList() {
     <>
       <PageHeader
         title="Unidades"
-        lede="Flota agrupada por familia. Consulte por número interno o placas."
+        lede="Flota agrupada por tipo. Consulte por número interno o placas."
         actions={
           isAdmin ? (
             tipos.length > 0 ? (
@@ -310,7 +310,7 @@ function UnidadesList() {
                   Configurar alertas
                 </Button>
                 <Button type="button" variant="secondary" onClick={abrirAltaFamilia}>
-                  Nueva familia
+                  Nuevo tipo
                 </Button>
                 <Button asChild>
                   <Link href="/unidades/nueva">Nueva unidad</Link>
@@ -318,7 +318,7 @@ function UnidadesList() {
               </>
             ) : (
               <Button type="button" onClick={abrirAltaFamilia}>
-                Nueva familia
+                Nuevo tipo
               </Button>
             )
           ) : null
@@ -370,25 +370,25 @@ function UnidadesList() {
             {buscando
               ? 'No hay unidades que coincidan'
               : isAdmin
-                ? 'No hay familias'
+                ? 'No hay tipos'
                 : 'No hay unidades'}
           </h2>
           <p className="muted">
             {buscando
               ? 'Ajuste los filtros.'
               : isAdmin
-                ? 'Agregue la primera familia para clasificar la flota.'
+                ? 'Agregue el primer tipo para clasificar la flota.'
                 : 'No hay unidades registradas.'}
           </p>
         </div>
       ) : (
         <div className="grid gap-3">
           {grupos.map((grupo) => (
-            <section key={grupo.tipo.id} aria-labelledby={`familia-${grupo.tipo.id}`}>
+            <section key={grupo.tipo.id} aria-labelledby={`tipo-${grupo.tipo.id}`}>
               <div className="mb-1 flex min-h-11 flex-wrap items-center justify-between gap-2">
                 <div>
                   <h2
-                    id={`familia-${grupo.tipo.id}`}
+                    id={`tipo-${grupo.tipo.id}`}
                     className="text-sm font-semibold text-navy"
                   >
                     {grupo.tipo.nombre}
@@ -432,7 +432,7 @@ function UnidadesList() {
               <DataTable
                 columns={columns}
                 data={grupo.unidades}
-                empty="No hay unidades en esta familia."
+                empty="No hay unidades en este tipo."
                 onRowClick={(unidad) => router.push(`/unidades/${unidad.id}`)}
               />
             </section>
@@ -455,10 +455,10 @@ function UnidadesList() {
           <form onSubmit={guardarFamilia}>
             <DialogHeader>
               <DialogTitle className="text-[16px]">
-                {editing ? 'Editar familia' : 'Nueva familia'}
+                {editing ? 'Editar tipo' : 'Nuevo tipo'}
               </DialogTitle>
               <DialogDescription>
-                Nombre y descripción de la familia.
+                Nombre y descripción del tipo de unidad.
               </DialogDescription>
             </DialogHeader>
             <div className="grid gap-3 py-3">
@@ -491,7 +491,7 @@ function UnidadesList() {
                 Cancelar
               </Button>
               <Button type="submit" disabled={saving || !nombre.trim()}>
-                {saving ? 'Guardando…' : editing ? 'Guardar' : 'Agregar familia'}
+                {saving ? 'Guardando…' : editing ? 'Guardar' : 'Agregar tipo'}
               </Button>
             </DialogFooter>
           </form>
@@ -539,7 +539,7 @@ function UnidadesList() {
                     </p>
                     <div className="grid gap-3 sm:grid-cols-2">
                       <Field
-                        label="Kilómetros"
+                        label="Cada … km"
                         htmlFor={`alertaKm-${tipo.id}`}
                         hint={
                           <p className="text-[12px] text-muted-foreground">
@@ -563,7 +563,7 @@ function UnidadesList() {
                         />
                       </Field>
                       <Field
-                        label="Días sin visita"
+                        label="Cada … días"
                         htmlFor={`alertaDias-${tipo.id}`}
                         hint={
                           <p className="text-[12px] text-muted-foreground">

@@ -3,9 +3,38 @@ export function formatKm(km: number | null | undefined) {
   return `${km.toLocaleString('es-MX')} km`;
 }
 
-/** Copy de taller para avisos de visita (no decir umbral / t_km). */
+/** Copy de taller para avisos de visita (no decir t_km). */
 export function resumenAvisoMantenimiento(km: number, dias: number) {
   return `Avisa a los ${km.toLocaleString('es-MX')} km o a los ${dias} días`;
+}
+
+/** Causa operacional del aviso con campos ya en el DTO. Sin “faltan N”. */
+export function lineasCausaAvisoAndon(aviso: {
+  kmAlAbrir: number;
+  diasAlAbrir: number;
+  umbralKm: number;
+  umbralDias: number;
+}): string[] {
+  const lines: string[] = [];
+  if (aviso.kmAlAbrir >= aviso.umbralKm) {
+    lines.push(
+      `${aviso.kmAlAbrir.toLocaleString('es-MX')} km desde el último cierre (umbral ${aviso.umbralKm.toLocaleString('es-MX')} km)`,
+    );
+  }
+  if (aviso.diasAlAbrir >= aviso.umbralDias) {
+    lines.push(
+      `${aviso.diasAlAbrir.toLocaleString('es-MX')} días desde el último cierre (umbral ${aviso.umbralDias.toLocaleString('es-MX')} días)`,
+    );
+  }
+  if (lines.length === 0) {
+    lines.push(
+      `${aviso.kmAlAbrir.toLocaleString('es-MX')} km desde el último cierre (umbral ${aviso.umbralKm.toLocaleString('es-MX')} km)`,
+    );
+    lines.push(
+      `${aviso.diasAlAbrir.toLocaleString('es-MX')} días desde el último cierre (umbral ${aviso.umbralDias.toLocaleString('es-MX')} días)`,
+    );
+  }
+  return lines;
 }
 
 export function formatFecha(value: string | null | undefined) {

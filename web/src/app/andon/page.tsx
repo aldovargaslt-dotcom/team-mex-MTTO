@@ -11,7 +11,7 @@ import { Button } from '@/components/ui/button';
 import { DataTable } from '@/components/ui/data-table';
 import { FormAlert, PageHeader } from '@/components/ui/field';
 import { api, HttpError } from '@/lib/api';
-import { etiquetaEstadoAviso, formatFecha, formatKm, resumenAvisoMantenimiento } from '@/lib/format';
+import { etiquetaEstadoAviso, formatFecha, formatKm, lineasCausaAvisoAndon } from '@/lib/format';
 import { useRole } from '@/lib/role';
 import type { AvisoAndon, EstadoAviso } from '@/lib/types';
 
@@ -121,18 +121,15 @@ function AndonContent() {
         ),
       },
       {
-        header: 'Km / días',
-        id: 'metricas',
+        header: 'Causa',
+        id: 'causa',
         cell: ({ row }) => (
           <span className="text-[12px] text-muted-foreground">
-            {row.original.kmAlAbrir.toLocaleString('es-MX')} km ·{' '}
-            {row.original.diasAlAbrir} d
-            <span className="block">
-              {resumenAvisoMantenimiento(
-                row.original.umbralKm,
-                row.original.umbralDias,
-              )}
-            </span>
+            {lineasCausaAvisoAndon(row.original).map((linea) => (
+              <span key={linea} className="block">
+                {linea}
+              </span>
+            ))}
           </span>
         ),
       },
@@ -190,11 +187,25 @@ function AndonContent() {
       <FormAlert>{error}</FormAlert>
       {avisos == null ? (
         <p className="muted">Cargando avisos…</p>
+      ) : avisos.length === 0 ? (
+        <div className="empty-state">
+          <h2>
+            {filtro === 'pendientes'
+              ? 'No hay avisos pendientes.'
+              : filtro === 'enterados'
+                ? 'No hay avisos enterados.'
+                : 'No hay avisos resueltos.'}
+          </h2>
+          <p className="muted">
+            {filtro === 'pendientes'
+              ? 'Aparecen cuando una unidad rebase el intervalo de km o de días desde su última visita cerrada.'
+              : 'Cambie el filtro para ver otros avisos.'}
+          </p>
+        </div>
       ) : (
         <DataTable
           columns={columns}
           data={avisos}
-          empty="No hay avisos en este filtro."
           onRowClick={(row) => router.push(`/unidades/${row.unidadId}`)}
         />
       )}

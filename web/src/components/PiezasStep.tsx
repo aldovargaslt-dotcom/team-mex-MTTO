@@ -26,7 +26,7 @@ export function lineasDesdeVisita(piezas: VisitaPieza[]): PiezaLinea[] {
   return piezas.map((p) => ({
     itemId: p.itemId,
     sku: p.itemId,
-    nombre: 'Ítem',
+    nombre: 'Refacción',
     qty: p.qty,
     origen: p.origen,
     stock: 0,
@@ -48,7 +48,7 @@ export async function hydratePiezasFromInventario(
     return {
       itemId: p.itemId,
       sku: item?.sku ?? p.itemId,
-      nombre: item?.nombre ?? 'Ítem',
+      nombre: item?.nombre ?? 'Refacción',
       qty: p.qty,
       origen: p.origen,
       stock: item?.stock ?? 0,

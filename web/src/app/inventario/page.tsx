@@ -59,7 +59,7 @@ export default function ItemsPage() {
   useEffect(() => {
     if (!role) return;
     void cargar().catch((err) => {
-      setError(err instanceof HttpError ? err.message : 'No se pudieron cargar los ítems.');
+      setError(err instanceof HttpError ? err.message : 'No se pudieron cargar las refacciones.');
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [role]);
@@ -96,7 +96,7 @@ export default function ItemsPage() {
       setOpenNuevo(false);
       await cargar();
     } catch (err) {
-      setError(err instanceof HttpError ? err.message : 'No se pudo crear el ítem.');
+      setError(err instanceof HttpError ? err.message : 'No se pudo crear la refacción.');
     }
   }
 
@@ -213,7 +213,7 @@ export default function ItemsPage() {
     },
     {
       accessorKey: 'familiaNombre',
-      header: 'Familia',
+      header: 'Categoría',
     },
     {
       accessorKey: 'stock',
@@ -275,10 +275,10 @@ export default function ItemsPage() {
   return (
     <>
       <PageHeader
-        title="Ítems"
+        title="Refacciones"
         actions={
           <Button type="button" onClick={() => setOpenNuevo(true)}>
-            Nuevo ítem
+            Nueva refacción
           </Button>
         }
       />
@@ -289,7 +289,7 @@ export default function ItemsPage() {
             id="itemSearch"
             value={q}
             onChange={(e) => setQ(e.target.value)}
-            placeholder="Nombre, código o familia"
+            placeholder="Nombre, código o categoría"
           />
         </Field>
       </div>
@@ -301,7 +301,17 @@ export default function ItemsPage() {
           columns={columns}
           data={filtered}
           empty={
-            items.length === 0 ? 'Aún no hay ítems.' : 'Sin coincidencias.'
+            items.length === 0 ? (
+              <>
+                <span className="block font-medium text-navy">Aún no hay refacciones.</span>
+                <span>Agregue la primera con Nueva refacción.</span>
+              </>
+            ) : (
+              <>
+                <span className="block font-medium text-navy">Nada que coincida.</span>
+                <span>Ajuste la búsqueda.</span>
+              </>
+            )
           }
         />
       ) : null}
@@ -339,7 +349,7 @@ export default function ItemsPage() {
                 min={0}
                 step={1}
                 inputMode="numeric"
-                placeholder="—"
+                placeholder="Sin mínimo"
                 value={minQty}
                 onChange={(e) => setMinQty(e.target.value)}
                 className="w-[7rem]"
@@ -424,7 +434,7 @@ export default function ItemsPage() {
       <Dialog open={openNuevo} onOpenChange={setOpenNuevo}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Nuevo ítem</DialogTitle>
+            <DialogTitle>Nueva refacción</DialogTitle>
           </DialogHeader>
           <form className="grid gap-3" onSubmit={crear}>
             <Field label="SKU" htmlFor="sku">
@@ -445,7 +455,7 @@ export default function ItemsPage() {
                 placeholder="Filtro de aceite"
               />
             </Field>
-            <Field label="Familia" htmlFor="familiaId">
+            <Field label="Categoría" htmlFor="familiaId">
               <NativeSelect
                 id="familiaId"
                 required
