@@ -10,11 +10,12 @@ import {
   User,
 } from 'lucide-react';
 import { ColumnDef } from '@tanstack/react-table';
+import { FilterFacet } from '@/components/FilterFacet';
 import { ListFilter } from '@/components/ListFilter';
-import { FilterDisclosure } from '@/components/FilterDisclosure';
 import { UmbralAid } from '@/components/UmbralAid';
 import { DataTable } from '@/components/ui/data-table';
-import { FormAlert, PageHeader } from '@/components/ui/field';
+import { Field, FormAlert, PageHeader } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
 import { api, HttpError } from '@/lib/api';
 import { formatDuracion, formatFecha, formatKm } from '@/lib/format';
 import {
@@ -22,7 +23,6 @@ import {
   ciclosEnPeriodo,
   cicloRebasaUmbral,
   emptyLecturaPatio,
-  etiquetaAjustePatio,
   fraseUmbralPatio,
   filtraLecturaPatio,
   filtraSitiosLectura,
@@ -36,33 +36,39 @@ import {
   parseUmbralHoras,
   parseUmbralKm,
   parseVistaPatio,
+  parseYmdPatio,
   rankingSitiosPatio,
+  rangoYmdPeriodoPatio,
   resumenCiclosPatio,
   umbralDesdeIds,
   unidadesAunFuera,
   UMBRALES_HORAS,
   UMBRALES_KM,
   type CicloCerradoPatio,
+  type PeriodoPatio,
   type RankingSitioPatio,
 } from '@/lib/ranking-patio';
 import { useRole } from '@/lib/role';
 import type { FlotaUnidadDetalle, TableroFlotaRow } from '@/lib/types';
 
-export default function FlotaRankingPage() {
+export default function FlotaCiclosPage() {
   return (
-    <Suspense fallback={<p className="muted">Cargando ranking…</p>}>
-      <RankingPatio />
+    <Suspense fallback={<p className="muted">Cargando ciclos…</p>}>
+      <CiclosPatio />
     </Suspense>
   );
 }
 
-function RankingPatio() {
+function CiclosPatio() {
   const { role, userId } = useRole();
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const vista = parseVistaPatio(searchParams.get('vista'));
-  const periodo = parsePeriodoPatio(searchParams.get('periodo'));
+  const from = parseYmdPatio(searchParams.get('from'));
+  const to = parseYmdPatio(searchParams.get('to'));
+  const periodoRaw = parsePeriodoPatio(searchParams.get('periodo'));
+  const periodo: PeriodoPatio = from || to ? 'CUSTOM' : periodoRaw;
   const horasId = parseUmbralHoras(searchParams.get('umbralH'));
   const kmId = parseUmbralKm(searchParams.get('umbralKm'));
   const lectura = parseLecturaPatio(searchParams.get('lectura'));
@@ -83,6 +89,26 @@ function RankingPatio() {
     }
     const qs = params.toString();
     router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
+  }
+
+  function setPeriodo(id: PeriodoPatio) {
+    if (id === 'CUSTOM') {
+      const seed =
+        from || to
+          ? { from, to }
+          : rangoYmdPeriodoPatio(periodo === 'CUSTOM' ? '30D' : periodo);
+      setParams({
+        periodo: 'CUSTOM',
+        from: seed.from,
+        to: seed.to,
+      });
+      return;
+    }
+    setParams({
+      periodo: id === '30D' ? null : id,
+      from: null,
+      to: null,
+    });
   }
 
   useEffect(() => {
@@ -111,7 +137,7 @@ function RankingPatio() {
         setError(
           err instanceof HttpError
             ? err.message
-            : 'No se pudo cargar el ranking de patio.',
+            : 'No se pudieron cargar los ciclos de patio.',
         );
       } finally {
         setLoading(false);
@@ -119,9 +145,10 @@ function RankingPatio() {
     })();
   }, [role, userId]);
 
+  const rango = useMemo(() => ({ from, to }), [from, to]);
   const ciclosPeriodo = useMemo(
-    () => ciclosEnPeriodo(ciclos, periodo),
-    [ciclos, periodo],
+    () => ciclosEnPeriodo(ciclos, periodo, new Date(), rango),
+    [ciclos, periodo, rango],
   );
   const ciclosLectura = useMemo(
     () =>
@@ -137,8 +164,8 @@ function RankingPatio() {
     [ciclosPeriodo, umbral, lectura],
   );
   const resumen = useMemo(
-    () => resumenCiclosPatio(ciclosPeriodo),
-    [ciclosPeriodo],
+    () => resumenCiclosPatio(ciclosPeriodo, umbral),
+    [ciclosPeriodo, umbral],
   );
   const fuera = unidadesAunFuera(tablero);
 
@@ -201,8 +228,8 @@ function RankingPatio() {
         ),
       },
       {
-        id: 'umbral',
-        header: 'Umbral',
+        id: 'atencion',
+        header: 'Atención',
         cell: ({ row }) => (
           <UmbralAid
             rebaso={cicloRebasaUmbral(row.original, umbral)}
@@ -232,8 +259,8 @@ function RankingPatio() {
         cell: ({ row }) => row.original.ciclos,
       },
       {
-        id: 'umbral',
-        header: 'Umbral',
+        id: 'atencion',
+        header: 'Atención',
         cell: ({ row }) => (
           <UmbralAid
             rebaso={row.original.rebasoCount > 0}
@@ -267,7 +294,7 @@ function RankingPatio() {
       },
       {
         accessorKey: 'unidadTopInterno',
-        header: 'Más frecuente',
+        header: 'Unidad que más va',
       },
     ],
     [],
@@ -276,60 +303,90 @@ function RankingPatio() {
   return (
     <div className="space-y-3">
       <PageHeader
-        title="Ranking de patio"
-        lede="Qué suele pasar: tiempo fuera, km del ciclo y sitios que se repiten. El tablero sigue siendo el ahora."
+        title="Ciclos de patio"
+        lede="Qué viajes ya cerrados rebasaron tiempo fuera o km — eso es lo que conviene revisar al regreso. El tablero sigue siendo el ahora."
       />
-      <div className="ranking-toolbar">
-        <ListFilter
-          label="Vista ranking patio"
-          value={vista}
-          options={opcionesVistaPatio(ciclosPeriodo)}
-          onChange={(id) => setParams({ vista: id === 'tiempo' ? null : id })}
-        />
-        <ListFilter
-          label="Lectura umbral"
-          value={lectura}
-          options={opcionesLecturaPatio(ciclosPeriodo, umbral)}
-          onChange={(id) =>
-            setParams({ lectura: id === 'todas' ? null : id })
-          }
-        />
+      <div className="filter-facets">
+        <FilterFacet label="Atención">
+          <ListFilter
+            label="Atención de ciclos"
+            value={lectura}
+            options={opcionesLecturaPatio(ciclosPeriodo, umbral)}
+            onChange={(id) =>
+              setParams({ lectura: id === 'todas' ? null : id })
+            }
+          />
+        </FilterFacet>
+        <FilterFacet label="Listar">
+          <ListFilter
+            label="Listar ciclos de patio"
+            value={vista}
+            options={opcionesVistaPatio(ciclosPeriodo)}
+            onChange={(id) => setParams({ vista: id === 'tiempo' ? null : id })}
+          />
+        </FilterFacet>
+        <FilterFacet label="Periodo">
+          <ListFilter
+            label="Periodo de ciclos"
+            value={periodo}
+            options={opcionesPeriodoPatio(ciclos, new Date(), rango)}
+            onChange={setPeriodo}
+          />
+          {periodo === 'CUSTOM' ? (
+            <div className="filter-range">
+              <Field label="Desde" htmlFor="ciclosFrom">
+                <Input
+                  id="ciclosFrom"
+                  type="date"
+                  value={from ?? ''}
+                  onChange={(e) =>
+                    setParams({
+                      periodo: 'CUSTOM',
+                      from: e.target.value || null,
+                    })
+                  }
+                />
+              </Field>
+              <Field label="Hasta" htmlFor="ciclosTo">
+                <Input
+                  id="ciclosTo"
+                  type="date"
+                  value={to ?? ''}
+                  onChange={(e) =>
+                    setParams({
+                      periodo: 'CUSTOM',
+                      to: e.target.value || null,
+                    })
+                  }
+                />
+              </Field>
+            </div>
+          ) : null}
+        </FilterFacet>
+        <FilterFacet label="Tiempo fuera">
+          <ListFilter
+            label="Tiempo fuera para rebasar"
+            value={horasId}
+            options={UMBRALES_HORAS.map((item) => ({
+              id: item.id,
+              label: item.label,
+            }))}
+            onChange={(id) => setParams({ umbralH: id === '8' ? null : id })}
+          />
+        </FilterFacet>
+        <FilterFacet label="Kilómetros">
+          <ListFilter
+            label="Kilómetros del ciclo para rebasar"
+            value={kmId}
+            options={UMBRALES_KM.map((item) => ({
+              id: item.id,
+              label: item.label,
+            }))}
+            onChange={(id) => setParams({ umbralKm: id === '50' ? null : id })}
+          />
+        </FilterFacet>
       </div>
-      <FilterDisclosure
-        label="Periodo y umbral"
-        summary={etiquetaAjustePatio(periodo, horasId, kmId)}
-      >
-        <p className="filter-disclosure__kicker">Periodo</p>
-        <ListFilter
-          label="Periodo patio"
-          value={periodo}
-          options={opcionesPeriodoPatio(ciclos)}
-          onChange={(id) => setParams({ periodo: id === '30D' ? null : id })}
-        />
-        <p className="filter-disclosure__kicker">Tiempo fuera</p>
-        <ListFilter
-          label="Umbral tiempo"
-          value={horasId}
-          options={UMBRALES_HORAS.map((item) => ({
-            id: item.id,
-            label: item.label,
-          }))}
-          onChange={(id) => setParams({ umbralH: id === '8' ? null : id })}
-        />
-        <p className="filter-disclosure__kicker">Kilómetros</p>
-        <ListFilter
-          label="Umbral km"
-          value={kmId}
-          options={UMBRALES_KM.map((item) => ({
-            id: item.id,
-            label: item.label,
-          }))}
-          onChange={(id) => setParams({ umbralKm: id === '50' ? null : id })}
-        />
-        <p className="mb-2 text-xs text-muted-foreground">
-          {fraseUmbralPatio(umbral)}
-        </p>
-      </FilterDisclosure>
+      <p className="text-xs text-muted-foreground">{fraseUmbralPatio(umbral)}</p>
       <p className="text-xs text-muted-foreground">{resumen.linea}</p>
       {fuera > 0 ? (
         <p className="text-xs text-muted-foreground">
@@ -343,7 +400,7 @@ function RankingPatio() {
       ) : null}
       <FormAlert>{error}</FormAlert>
       {loading && ciclos.length === 0 && !error ? (
-        <p className="muted">Cargando ranking…</p>
+        <p className="muted">Cargando ciclos…</p>
       ) : vista === 'sitios' ? (
         <DataTable
           columns={columnsSitios}
