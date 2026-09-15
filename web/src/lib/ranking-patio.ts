@@ -222,6 +222,7 @@ export const UMBRALES_HORAS = [
   { id: '8', label: '8 h', horas: 8 },
   { id: '12', label: '12 h', horas: 12 },
   { id: '24', label: '24 h', horas: 24 },
+  { id: '48', label: '48 h', horas: 48 },
 ] as const;
 
 export type UmbralHorasId = (typeof UMBRALES_HORAS)[number]['id'];
@@ -251,7 +252,7 @@ export type UmbralPatio = {
 const MS_HORA = 3_600_000;
 
 export function parseUmbralHoras(raw: string | null): UmbralHorasId {
-  if (raw === '4' || raw === '12' || raw === '24') return raw;
+  if (raw === '4' || raw === '12' || raw === '24' || raw === '48') return raw;
   return '8';
 }
 
