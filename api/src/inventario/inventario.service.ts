@@ -8,7 +8,15 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { randomUUID } from 'crypto';
-import { EntityManager, In, Repository } from 'typeorm';
+import {
+  Between,
+  EntityManager,
+  FindOptionsWhere,
+  In,
+  LessThanOrEqual,
+  MoreThanOrEqual,
+  Repository,
+} from 'typeorm';
 import { CurrentUser } from '../auth/current-user';
 import {
   OrigenConsumo,
@@ -20,6 +28,11 @@ import { TiposVehiculoService } from '../unidades/tipos-vehiculo.service';
 import { requireTrimmed } from '../common/require-trimmed';
 import { AddCompatibilidadDto } from './dto/add-compatibilidad.dto';
 import { AjusteDto } from './dto/ajuste.dto';
+import {
+  FiltrarMovimientosDto,
+  parseFromInclusive,
+  parseToInclusive,
+} from './dto/filtrar-movimientos.dto';
 import { CreateFamiliaDto } from './dto/create-familia.dto';
 import { CreateItemDto } from './dto/create-item.dto';
 import { CreateItemProveedorDto } from './dto/create-item-proveedor.dto';
@@ -371,8 +384,25 @@ export class InventarioService implements OnModuleInit {
     }));
   }
 
-  async listMovimientos() {
+  async listMovimientos(query: FiltrarMovimientosDto = {}) {
+    const where: FindOptionsWhere<Movimiento> = {};
+    if (query.itemId) {
+      where.item = { id: query.itemId };
+    }
+    if (query.tipo) {
+      where.tipo = query.tipo;
+    }
+    const from = query.from ? parseFromInclusive(query.from) : undefined;
+    const to = query.to ? parseToInclusive(query.to) : undefined;
+    if (from && to) {
+      where.createdAt = Between(from, to);
+    } else if (from) {
+      where.createdAt = MoreThanOrEqual(from);
+    } else if (to) {
+      where.createdAt = LessThanOrEqual(to);
+    }
     const rows = await this.movimientos.find({
+      where,
       order: { createdAt: 'DESC' },
     });
     return rows.map((row) => ({
@@ -455,7 +485,7 @@ export class InventarioService implements OnModuleInit {
         dto.itemId,
         dto.qtyDelta,
         TipoMovimiento.AJUSTE,
-        { nota: dto.nota ?? null, createdBy: user.userId },
+        { nota: dto.nota, createdBy: user.userId },
         manager,
       );
     });

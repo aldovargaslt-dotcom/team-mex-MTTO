@@ -364,7 +364,11 @@ describe('Inventario v0 + piezas en visita (e2e)', () => {
     const mal = await request(server)
       .post('/inventario/movimientos/ajuste')
       .set(ADMIN)
-      .send({ itemId: item.id, qtyDelta: -(item.stock + 1) })
+      .send({
+        itemId: item.id,
+        qtyDelta: -(item.stock + 1),
+        nota: 'intento por debajo de cero',
+      })
       .expect(400);
     expect(mal.body.message).toMatch(/negativo/i);
 
@@ -505,7 +509,11 @@ describe('Inventario v0 + piezas en visita (e2e)', () => {
     const zero = await request(server)
       .post('/inventario/movimientos/ajuste')
       .set(SUPERVISOR)
-      .send({ itemId: item.body.id, qtyDelta: -4 })
+      .send({
+        itemId: item.body.id,
+        qtyDelta: -4,
+        nota: 'conteo a cero en umbral',
+      })
       .expect(201);
     expect(zero.body.stock).toBe(0);
     expect(zero.body.alerta).toBe('AGOTADO');
@@ -564,5 +572,66 @@ describe('Inventario v0 + piezas en visita (e2e)', () => {
       .set(ADMIN)
       .expect(200);
     expect(Array.isArray(avisosAntes.body)).toBe(true);
+  });
+
+  it('GET movimientos filtra por itemId/tipo/fecha; ajuste sin nota es 400', async () => {
+    const filtro = await itemPorSku('FIL-ACEITE-01');
+    const pastillas = await itemPorSku('PAST-FR-01');
+
+    await request(server)
+      .post('/inventario/movimientos/entrada')
+      .set(SUPERVISOR)
+      .send({ itemId: filtro.id, qty: 1, nota: 'caracterización filtro' })
+      .expect(201);
+
+    const porItem = await request(server)
+      .get('/inventario/movimientos')
+      .query({ itemId: filtro.id })
+      .set(SUPERVISOR)
+      .expect(200);
+    const delFiltro = porItem.body as { itemId: string; tipo: string }[];
+    expect(delFiltro.length).toBeGreaterThan(0);
+    expect(delFiltro.every((m) => m.itemId === filtro.id)).toBe(true);
+
+    const otras = await request(server)
+      .get('/inventario/movimientos')
+      .query({ itemId: pastillas.id })
+      .set(SUPERVISOR)
+      .expect(200);
+    expect(
+      (otras.body as { itemId: string }[]).every((m) => m.itemId === pastillas.id),
+    ).toBe(true);
+
+    const porTipo = await request(server)
+      .get('/inventario/movimientos')
+      .query({ itemId: filtro.id, tipo: 'ENTRADA' })
+      .set(SUPERVISOR)
+      .expect(200);
+    expect(
+      (porTipo.body as { tipo: string }[]).every((m) => m.tipo === 'ENTRADA'),
+    ).toBe(true);
+    expect(porTipo.body.length).toBeGreaterThan(0);
+
+    const hoy = new Date().toISOString().slice(0, 10);
+    const porFecha = await request(server)
+      .get('/inventario/movimientos')
+      .query({ itemId: filtro.id, from: hoy, to: hoy })
+      .set(SUPERVISOR)
+      .expect(200);
+    expect(porFecha.body.length).toBeGreaterThan(0);
+
+    const viejo = await request(server)
+      .get('/inventario/movimientos')
+      .query({ from: '2000-01-01', to: '2000-01-02' })
+      .set(SUPERVISOR)
+      .expect(200);
+    expect(viejo.body).toEqual([]);
+
+    const sinNota = await request(server)
+      .post('/inventario/movimientos/ajuste')
+      .set(ADMIN)
+      .send({ itemId: pastillas.id, qtyDelta: 1 })
+      .expect(400);
+    expect(sinNota.body.message).toMatch(/nota/i);
   });
 });

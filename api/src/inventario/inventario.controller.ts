@@ -16,6 +16,7 @@ import { Roles } from '../auth/roles.decorator';
 import { Rol } from '../auth/roles.enum';
 import { AddCompatibilidadDto } from './dto/add-compatibilidad.dto';
 import { AjusteDto } from './dto/ajuste.dto';
+import { FiltrarMovimientosDto } from './dto/filtrar-movimientos.dto';
 import { CreateFamiliaDto } from './dto/create-familia.dto';
 import { CreateItemDto } from './dto/create-item.dto';
 import { CreateItemProveedorDto } from './dto/create-item-proveedor.dto';
@@ -163,9 +164,11 @@ export class InventarioController {
   }
 
   @Get('movimientos')
-  @ApiOperation({ summary: 'Movimientos (entrada, salida OT, ajuste)' })
-  listMovimientos() {
-    return this.service.listMovimientos();
+  @ApiOperation({
+    summary: 'Movimientos (entrada, salida OT, ajuste). Filtros opcionales.',
+  })
+  listMovimientos(@Query() query: FiltrarMovimientosDto) {
+    return this.service.listMovimientos(query);
   }
 
   @Post('movimientos/entrada')
