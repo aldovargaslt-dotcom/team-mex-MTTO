@@ -301,11 +301,19 @@ export function HubConducta({
           )}
           {andon.resueltosConDemora.slice(0, 3).map((aviso) => {
             const demora = fraseDemoraAviso(aviso);
+            const extra = lineasOvershootAvisoAndon(aviso);
             return (
-              <p key={aviso.id} className="muted">
-                {demora ?? 'Resuelto'}
-                {aviso.resueltoAt ? ` · ${formatFecha(aviso.resueltoAt)}` : ''}
-              </p>
+              <div key={aviso.id} className="grid gap-0.5">
+                {extra.map((linea) => (
+                  <p key={linea} className="text-[13px]">
+                    {linea}
+                  </p>
+                ))}
+                <p className="muted">
+                  {demora ?? 'Resuelto'}
+                  {aviso.resueltoAt ? ` · ${formatFecha(aviso.resueltoAt)}` : ''}
+                </p>
+              </div>
             );
           })}
         </div>
