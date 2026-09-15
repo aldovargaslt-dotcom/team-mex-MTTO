@@ -9,19 +9,6 @@ export const FILTROS_UNIDADES_LISTADO = [
 
 export type FiltroUnidadesListado = (typeof FILTROS_UNIDADES_LISTADO)[number];
 
-export type ResumenFlotaUnidades = {
-  total: number;
-  activas: number;
-  inactivas: number;
-  conAviso: number;
-};
-
-export type CondicionUnidad = {
-  kind: 'aviso' | 'enterado' | 'sin_aviso';
-  label: string;
-  variant: 'danger' | 'warning' | null;
-};
-
 export type AtencionUnidad = {
   titulo: string;
   detalle: string | null;
@@ -62,18 +49,6 @@ export function avisosPorUnidad(avisos: AvisoAndon[]): Map<string, AvisoAndon> {
     }
   }
   return map;
-}
-
-export function resumenFlotaUnidades(
-  unidades: Unidad[],
-  avisos: Map<string, AvisoAndon>,
-): ResumenFlotaUnidades {
-  return {
-    total: unidades.length,
-    activas: unidades.filter((unidad) => unidad.estado === 'ACTIVA').length,
-    inactivas: unidades.filter((unidad) => unidad.estado === 'INACTIVA').length,
-    conAviso: unidades.filter((unidad) => avisos.has(unidad.id)).length,
-  };
 }
 
 export function matchFiltroUnidades(
@@ -132,22 +107,29 @@ export function opcionesFiltroUnidades(
   unidades: Unidad[],
   avisos: Map<string, AvisoAndon>,
 ) {
-  const counts = cuentaFiltrosUnidades(unidades, avisos);
-  return FILTROS_UNIDADES_LISTADO.map((id) => ({
-    id,
-    label: `${ETIQUETA_FILTRO[id]} (${counts[id]})`,
-  }));
+  const conAviso = cuentaFiltrosUnidades(unidades, avisos).aviso;
+  return [
+    { id: 'todas' as const, label: ETIQUETA_FILTRO.todas },
+    {
+      id: 'aviso' as const,
+      label:
+        conAviso > 0
+          ? `${ETIQUETA_FILTRO.aviso} (${conAviso})`
+          : ETIQUETA_FILTRO.aviso,
+    },
+    { id: 'inactivas' as const, label: ETIQUETA_FILTRO.inactivas },
+  ];
 }
 
-export function opcionesSegmentoTipo(unidades: Unidad[], tipos: TipoVehiculo[]) {
+export function opcionesSegmentoTipo(tipos: TipoVehiculo[]) {
   const ordenados = [...tipos].sort((a, b) =>
     a.nombre.localeCompare(b.nombre, 'es'),
   );
   return [
-    { id: '', label: `Todos los tipos (${unidades.length})` },
+    { id: '', label: 'Todos los tipos' },
     ...ordenados.map((tipo) => ({
       id: tipo.id,
-      label: `${tipo.nombre} (${unidades.filter((unidad) => unidad.tipo.id === tipo.id).length})`,
+      label: tipo.nombre,
     })),
   ];
 }
@@ -188,18 +170,6 @@ export function identidadSecundaria(
   return partes.join(' · ');
 }
 
-export function condicionDeUnidad(
-  aviso: AvisoAndon | undefined,
-): CondicionUnidad {
-  if (!aviso) {
-    return { kind: 'sin_aviso', label: 'Sin aviso', variant: null };
-  }
-  if (aviso.estado === 'ENTERADO') {
-    return { kind: 'enterado', label: 'Enterado', variant: 'warning' };
-  }
-  return { kind: 'aviso', label: 'Requiere atención', variant: 'danger' };
-}
-
 export function atencionDeUnidad(
   aviso: AvisoAndon | undefined,
 ): AtencionUnidad {
@@ -231,11 +201,31 @@ export function atencionDeUnidad(
   };
 }
 
-export function etiquetaMotivoEstado(unidad: Unidad): string | null {
+export function etiquetaInactivaFila(unidad: Unidad): string | null {
   if (unidad.estado !== 'INACTIVA') return null;
   return unidad.motivoInactivacion === 'ENVIO_ESPECIAL'
-    ? 'Envío especial'
-    : null;
+    ? 'Inactiva · Envío especial'
+    : 'Inactiva';
+}
+
+export type SenalFilaUnidad = {
+  kind: 'aviso' | 'enterado' | 'ok';
+  titulo: string | null;
+  detalle: string | null;
+  variant: 'danger' | 'warning' | null;
+};
+
+export function senalDeFila(aviso: AvisoAndon | undefined): SenalFilaUnidad {
+  if (!aviso) {
+    return { kind: 'ok', titulo: null, detalle: null, variant: null };
+  }
+  const atencion = atencionDeUnidad(aviso);
+  return {
+    kind: aviso.estado === 'ENTERADO' ? 'enterado' : 'aviso',
+    titulo: atencion.titulo,
+    detalle: atencion.detalle,
+    variant: aviso.estado === 'ENTERADO' ? 'warning' : 'danger',
+  };
 }
 
 export function textoResultadosUnidades(

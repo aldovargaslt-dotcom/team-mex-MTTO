@@ -376,48 +376,6 @@
     margin-bottom: 12px;
   }
 
-  .fleet-summary {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin: 0 0 12px;
-  }
-
-  .fleet-summary-card {
-    flex: 1 1 7.5rem;
-    max-width: 11.5rem;
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 8px 12px;
-    min-height: 52px;
-  }
-
-  .fleet-summary-card dt {
-    font-size: 11px;
-    font-weight: 500;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-    color: var(--muted-foreground);
-  }
-
-  .fleet-summary-card dd {
-    margin: 2px 0 0;
-    color: var(--navy);
-    font-size: 18px;
-    font-weight: 600;
-    font-variant-numeric: tabular-nums;
-    line-height: 1.2;
-  }
-
-  .fleet-summary-card.tone-warning dd {
-    color: var(--warning-fg);
-  }
-
-  .fleet-summary-card.tone-danger dd {
-    color: var(--danger);
-  }
-
   .unidades-table [data-slot='table-cell'] {
     height: auto;
     min-height: 44px;
@@ -427,11 +385,6 @@
   }
 
   @media (max-width: 767px) {
-    .fleet-summary-card {
-      max-width: none;
-      flex-basis: calc(50% - 4px);
-    }
-
     .unidades-table [data-slot='table-cell'],
     .unidades-table [data-slot='table-head'] {
       padding-left: 8px;

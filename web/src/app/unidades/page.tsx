@@ -6,7 +6,7 @@ import { FormEvent, Suspense, useEffect, useMemo, useState } from 'react';
 import { ColumnDef } from '@tanstack/react-table';
 import { ListFilter } from '@/components/ListFilter';
 import { RoleGate } from '@/components/RoleGate';
-import { CondicionUnidadBadge, StatusBadge } from '@/components/StatusBadge';
+import { CondicionUnidadBadge } from '@/components/StatusBadge';
 import { Button } from '@/components/ui/button';
 import { DataTable } from '@/components/ui/data-table';
 import {
@@ -24,11 +24,9 @@ import { resumenAvisoMantenimiento } from '@/lib/format';
 import { useRole } from '@/lib/role';
 import type { AvisoAndon, TipoVehiculo, UmbralAndon, Unidad } from '@/lib/types';
 import {
-  atencionDeUnidad,
   avisosPorUnidad,
-  condicionDeUnidad,
   emptyUnidadesListado,
-  etiquetaMotivoEstado,
+  etiquetaInactivaFila,
   filtraUnidades,
   identidadSecundaria,
   opcionesFiltroUnidades,
@@ -36,7 +34,7 @@ import {
   ordenaUnidades,
   parseFiltroUnidades,
   parseTipoUnidades,
-  resumenFlotaUnidades,
+  senalDeFila,
   textoResultadosUnidades,
   type FiltroUnidadesListado,
 } from '@/lib/unidades-listado';
@@ -283,10 +281,6 @@ function UnidadesList() {
 
   const avisosMap = useMemo(() => avisosPorUnidad(avisos), [avisos]);
   const catalogo = useMemo(() => unidades ?? [], [unidades]);
-  const resumen = useMemo(
-    () => resumenFlotaUnidades(catalogo, avisosMap),
-    [catalogo, avisosMap],
-  );
   const visibles = useMemo(
     () =>
       ordenaUnidades(
@@ -296,6 +290,7 @@ function UnidadesList() {
     [catalogo, avisosMap, filtro, tipoId, q],
   );
   const tipoSeleccionado = tipos.find((tipo) => tipo.id === tipoId) ?? null;
+  const filtrando = Boolean(q.trim() || filtro !== 'todas' || tipoId);
   const empty = emptyUnidadesListado({
     buscando: Boolean(q.trim()),
     filtro,
@@ -313,65 +308,19 @@ function UnidadesList() {
       {
         id: 'unidad',
         header: 'Unidad',
-        cell: ({ row }) => (
-          <div className="min-w-0">
-            <div className="font-semibold text-navy">
-              {row.original.numeroInterno}
-            </div>
-            <div className="truncate text-[12px] text-muted-foreground">
-              {identidadSecundaria(row.original, !tipoId)}
-            </div>
-          </div>
-        ),
-      },
-      {
-        id: 'estado',
-        header: 'Estado',
         cell: ({ row }) => {
-          const motivo = etiquetaMotivoEstado(row.original);
+          const inactiva = etiquetaInactivaFila(row.original);
           return (
-            <div>
-              <StatusBadge estado={row.original.estado} />
-              {motivo ? (
-                <div className="mt-0.5 text-[12px] text-muted-foreground">
-                  {motivo}
-                </div>
-              ) : null}
-            </div>
-          );
-        },
-      },
-      {
-        id: 'condicion',
-        header: 'Condición',
-        cell: ({ row }) => {
-          const condicion = condicionDeUnidad(avisosMap.get(row.original.id));
-          return (
-            <CondicionUnidadBadge
-              label={condicion.label}
-              variant={condicion.variant}
-            />
-          );
-        },
-      },
-      {
-        id: 'atencion',
-        header: 'Atención',
-        meta: { className: 'hidden md:table-cell' },
-        cell: ({ row }) => {
-          const atencion = atencionDeUnidad(avisosMap.get(row.original.id));
-          return (
-            <div className="max-w-[220px]">
-              <div
-                className={
-                  atencion.detalle ? 'text-[13px] text-navy' : 'muted'
-                }
-              >
-                {atencion.titulo}
+            <div className="min-w-0">
+              <div className="font-semibold text-navy">
+                {row.original.numeroInterno}
               </div>
-              {atencion.detalle ? (
-                <div className="truncate text-[12px] text-muted-foreground">
-                  {atencion.detalle}
+              <div className="truncate text-[12px] text-muted-foreground">
+                {identidadSecundaria(row.original, !tipoId)}
+              </div>
+              {inactiva ? (
+                <div className="mt-0.5 text-[12px] text-muted-foreground">
+                  {inactiva}
                 </div>
               ) : null}
             </div>
@@ -379,21 +328,27 @@ function UnidadesList() {
         },
       },
       {
-        id: 'accion',
-        header: '',
-        meta: { className: 'hidden md:table-cell' },
-        cell: ({ row }) => (
-          <div className="flex justify-end">
-            <Button asChild variant="outline" size="compact">
-              <Link
-                href={`/unidades/${row.original.id}`}
-                onClick={(event) => event.stopPropagation()}
-              >
-                Ver ficha
-              </Link>
-            </Button>
-          </div>
-        ),
+        id: 'aviso',
+        header: 'Aviso',
+        cell: ({ row }) => {
+          const senal = senalDeFila(avisosMap.get(row.original.id));
+          if (!senal.titulo) {
+            return null;
+          }
+          return (
+            <div className="max-w-[240px]">
+              <CondicionUnidadBadge
+                label={senal.titulo}
+                variant={senal.variant}
+              />
+              {senal.detalle ? (
+                <div className="mt-0.5 truncate text-[12px] text-muted-foreground">
+                  {senal.detalle}
+                </div>
+              ) : null}
+            </div>
+          );
+        },
       },
     ],
     [avisosMap, tipoId],
@@ -403,7 +358,7 @@ function UnidadesList() {
     <>
       <PageHeader
         title="Unidades"
-        lede="Seleccione una unidad. El aviso Andon y el estado se ven aquí; el detalle sigue en la ficha."
+        lede="La unidad con aviso va primero. Toque la fila para abrir la ficha."
         actions={
           isAdmin ? (
             tipos.length > 0 ? (
@@ -447,33 +402,6 @@ function UnidadesList() {
         </div>
       ) : (
         <>
-          <section aria-label="Resumen de flota">
-            <dl className="fleet-summary">
-              <div className="fleet-summary-card">
-                <dt>Unidades</dt>
-                <dd>{resumen.total}</dd>
-              </div>
-              <div className="fleet-summary-card">
-                <dt>Activas</dt>
-                <dd>{resumen.activas}</dd>
-              </div>
-              <div className="fleet-summary-card">
-                <dt>Inactivas</dt>
-                <dd>{resumen.inactivas}</dd>
-              </div>
-              <div
-                className={
-                  resumen.conAviso > 0
-                    ? 'fleet-summary-card tone-danger'
-                    : 'fleet-summary-card'
-                }
-              >
-                <dt>Con aviso</dt>
-                <dd>{resumen.conAviso}</dd>
-              </div>
-            </dl>
-          </section>
-
           <div className="mb-3 flex flex-col gap-3 [&_.list-filter]:mb-0">
             <Input
               id="unidadQ"
@@ -494,7 +422,7 @@ function UnidadesList() {
               <ListFilter
                 label="Tipo de unidad"
                 value={tipoId}
-                options={opcionesSegmentoTipo(catalogo, tipos)}
+                options={opcionesSegmentoTipo(tipos)}
                 onChange={(id) => replaceParams({ tipo: id })}
               />
             ) : null}
@@ -547,18 +475,20 @@ function UnidadesList() {
             getRowClassName={(unidad) => {
               const aviso = avisosMap.get(unidad.id);
               if (aviso?.estado === 'ABIERTO') {
-                return 'shadow-[inset_3px_0_0_#b42318]';
+                return 'bg-[#fdecea] hover:bg-[#f8d4d0] shadow-[inset_3px_0_0_#b42318]';
               }
               if (aviso?.estado === 'ENTERADO') {
-                return 'shadow-[inset_3px_0_0_#8a4b12]';
+                return 'bg-[#fff4e8] hover:bg-[#fdecd6] shadow-[inset_3px_0_0_#8a4b12]';
               }
               return undefined;
             }}
             onRowClick={(unidad) => router.push(`/unidades/${unidad.id}`)}
           />
-          <p className="mt-2 text-[12px] text-muted-foreground">
-            {textoResultadosUnidades(visibles.length, catalogo.length)}
-          </p>
+          {filtrando ? (
+            <p className="mt-2 text-[12px] text-muted-foreground">
+              {textoResultadosUnidades(visibles.length, catalogo.length)}
+            </p>
+          ) : null}
         </>
       )}
 
