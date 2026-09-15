@@ -59,6 +59,16 @@ export class UnidadesService {
         });
       }
     }
+    if (filtros.q?.trim()) {
+      const q = `%${filtros.q.trim()}%`;
+      qb.andWhere(
+        '(unidad.numeroInterno ILIKE :q OR unidad.placas ILIKE :q OR unidad.marcaModelo ILIKE :q)',
+        { q },
+      );
+    }
+    if (filtros.estado) {
+      qb.andWhere('unidad.estado = :estado', { estado: filtros.estado });
+    }
 
     return qb.getMany();
   }

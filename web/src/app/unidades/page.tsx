@@ -18,7 +18,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Field, FormAlert, PageHeader } from '@/components/ui/field';
-import { Input } from '@/components/ui/input';
+import { Input, NativeSelect } from '@/components/ui/input';
 import { api, HttpError } from '@/lib/api';
 import { resumenAvisoMantenimiento } from '@/lib/format';
 import { useRole } from '@/lib/role';
@@ -38,8 +38,9 @@ export default function UnidadesPage() {
 function UnidadesList() {
   const { role, userId, isAdmin } = useRole();
   const router = useRouter();
-  const [numeroInterno, setNumeroInterno] = useState('');
-  const [placas, setPlacas] = useState('');
+  const [q, setQ] = useState('');
+  const [tipoFiltro, setTipoFiltro] = useState('');
+  const [estadoFiltro, setEstadoFiltro] = useState('');
   const [tipos, setTipos] = useState<TipoVehiculo[]>([]);
   const [unidades, setUnidades] = useState<Unidad[] | null>(null);
   const [umbrales, setUmbrales] = useState<Record<string, UmbralAndon>>({});
@@ -57,15 +58,14 @@ function UnidadesList() {
   >({});
   const [savingAlertas, setSavingAlertas] = useState(false);
 
-  async function cargar(overrides?: { numeroInterno?: string; placas?: string }) {
+  async function cargar() {
     if (!role) return;
-    setLoading(true);
+    if (unidades == null) setLoading(true);
     setError(null);
     const params = new URLSearchParams();
-    const n = overrides?.numeroInterno ?? numeroInterno;
-    const p = overrides?.placas ?? placas;
-    if (n.trim()) params.set('numeroInterno', n.trim());
-    if (p.trim()) params.set('placas', p.trim());
+    if (q.trim()) params.set('q', q.trim());
+    if (tipoFiltro) params.set('tipo', tipoFiltro);
+    if (estadoFiltro) params.set('estado', estadoFiltro);
     const qs = params.toString();
     try {
       const [lista, catalogo, umb] = await Promise.all([
@@ -91,9 +91,11 @@ function UnidadesList() {
   }
 
   useEffect(() => {
-    void cargar();
+    if (!role) return;
+    const handle = window.setTimeout(() => void cargar(), 200);
+    return () => window.clearTimeout(handle);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [role]);
+  }, [role, q, tipoFiltro, estadoFiltro]);
 
   function onSearch(event: FormEvent) {
     event.preventDefault();
@@ -243,7 +245,7 @@ function UnidadesList() {
     }
   }
 
-  const buscando = Boolean(numeroInterno.trim() || placas.trim());
+  const buscando = Boolean(q.trim() || tipoFiltro || estadoFiltro);
   const grupos = useMemo(() => {
     const byTipo = new Map<string, Unidad[]>();
     for (const unidad of unidades ?? []) {
@@ -301,7 +303,7 @@ function UnidadesList() {
     <>
       <PageHeader
         title="Unidades"
-        lede="Flota agrupada por tipo. Consulte por número interno o placas."
+        lede="Flota agrupada por tipo. Busque por interno, placas o marca."
         actions={
           isAdmin ? (
             tipos.length > 0 ? (
@@ -327,26 +329,38 @@ function UnidadesList() {
 
       <form className="mb-3" onSubmit={onSearch}>
         <Card className="filters">
-          <Field label="Número interno" htmlFor="numeroInterno">
+          <Field label="Buscar" htmlFor="unidadQ">
             <Input
-              id="numeroInterno"
-              value={numeroInterno}
-              onChange={(e) => setNumeroInterno(e.target.value)}
-              placeholder="Ej. U-101"
+              id="unidadQ"
+              value={q}
+              onChange={(e) => setQ(e.target.value)}
+              placeholder="Buscar unidad…"
             />
           </Field>
-          <Field label="Placas" htmlFor="placas">
-            <Input
-              id="placas"
-              value={placas}
-              onChange={(e) => setPlacas(e.target.value)}
-              placeholder="Ej. TMX-101-A"
-            />
+          <Field label="Tipo" htmlFor="unidadTipo">
+            <NativeSelect
+              id="unidadTipo"
+              value={tipoFiltro}
+              onChange={(e) => setTipoFiltro(e.target.value)}
+            >
+              <option value="">Todos</option>
+              {tipos.map((tipo) => (
+                <option key={tipo.id} value={tipo.id}>
+                  {tipo.nombre}
+                </option>
+              ))}
+            </NativeSelect>
           </Field>
-          <Field label=" " htmlFor="buscar">
-            <Button id="buscar" variant="outline" type="submit" className="w-full">
-              Buscar
-            </Button>
+          <Field label="Estado" htmlFor="unidadEstado">
+            <NativeSelect
+              id="unidadEstado"
+              value={estadoFiltro}
+              onChange={(e) => setEstadoFiltro(e.target.value)}
+            >
+              <option value="">Todos</option>
+              <option value="ACTIVA">Activa</option>
+              <option value="INACTIVA">Inactiva</option>
+            </NativeSelect>
           </Field>
         </Card>
       </form>
@@ -375,7 +389,7 @@ function UnidadesList() {
           </h2>
           <p className="muted">
             {buscando
-              ? 'Ajuste los filtros.'
+              ? 'Ajuste la búsqueda o los filtros.'
               : isAdmin
                 ? 'Agregue el primer tipo para clasificar la flota.'
                 : 'No hay unidades registradas.'}
