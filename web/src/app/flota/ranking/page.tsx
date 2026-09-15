@@ -3,8 +3,15 @@
 import Link from 'next/link';
 import { Suspense, useEffect, useMemo, useState } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import {
+  Clock,
+  Gauge,
+  MapPin,
+  User,
+} from 'lucide-react';
 import { ColumnDef } from '@tanstack/react-table';
 import { ListFilter } from '@/components/ListFilter';
+import { UmbralAid } from '@/components/UmbralAid';
 import { DataTable } from '@/components/ui/data-table';
 import { FormAlert, PageHeader } from '@/components/ui/field';
 import { api, HttpError } from '@/lib/api';
@@ -12,14 +19,27 @@ import { formatDuracion, formatFecha, formatKm } from '@/lib/format';
 import {
   ciclosCerradosDeDetalle,
   ciclosEnPeriodo,
+  cicloRebasaUmbral,
+  emptyLecturaPatio,
+  fraseUmbralPatio,
+  filtraLecturaPatio,
+  filtraSitiosLectura,
+  motivoRebaso,
+  opcionesLecturaPatio,
   opcionesPeriodoPatio,
   opcionesVistaPatio,
-  ordenaCiclosPorTiempo,
+  ordenaCiclosPorUmbral,
+  parseLecturaPatio,
   parsePeriodoPatio,
+  parseUmbralHoras,
+  parseUmbralKm,
   parseVistaPatio,
   rankingSitiosPatio,
   resumenCiclosPatio,
+  umbralDesdeIds,
   unidadesAunFuera,
+  UMBRALES_HORAS,
+  UMBRALES_KM,
   type CicloCerradoPatio,
   type RankingSitioPatio,
 } from '@/lib/ranking-patio';
@@ -41,6 +61,13 @@ function RankingPatio() {
   const searchParams = useSearchParams();
   const vista = parseVistaPatio(searchParams.get('vista'));
   const periodo = parsePeriodoPatio(searchParams.get('periodo'));
+  const horasId = parseUmbralHoras(searchParams.get('umbralH'));
+  const kmId = parseUmbralKm(searchParams.get('umbralKm'));
+  const lectura = parseLecturaPatio(searchParams.get('lectura'));
+  const umbral = useMemo(
+    () => umbralDesdeIds(horasId, kmId),
+    [horasId, kmId],
+  );
   const [tablero, setTablero] = useState<TableroFlotaRow[]>([]);
   const [ciclos, setCiclos] = useState<CicloCerradoPatio[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -94,13 +121,18 @@ function RankingPatio() {
     () => ciclosEnPeriodo(ciclos, periodo),
     [ciclos, periodo],
   );
-  const ciclosOrdenados = useMemo(
-    () => ordenaCiclosPorTiempo(ciclosPeriodo),
-    [ciclosPeriodo],
+  const ciclosLectura = useMemo(
+    () =>
+      ordenaCiclosPorUmbral(
+        filtraLecturaPatio(ciclosPeriodo, lectura, umbral),
+        umbral,
+      ),
+    [ciclosPeriodo, lectura, umbral],
   );
   const sitios = useMemo(
-    () => rankingSitiosPatio(ciclosPeriodo),
-    [ciclosPeriodo],
+    () =>
+      filtraSitiosLectura(rankingSitiosPatio(ciclosPeriodo, umbral), lectura),
+    [ciclosPeriodo, umbral, lectura],
   );
   const resumen = useMemo(
     () => resumenCiclosPatio(ciclosPeriodo),
@@ -123,16 +155,23 @@ function RankingPatio() {
       {
         accessorKey: 'choferPatio',
         header: 'Chofer patio',
+        cell: ({ row }) => (
+          <span className="inline-flex items-center gap-1.5">
+            <User className="size-3.5 shrink-0 text-muted-foreground" aria-hidden />
+            {row.original.choferPatio}
+          </span>
+        ),
       },
       {
         accessorKey: 'sitioDestino',
         header: 'Destino',
         cell: ({ row }) => (
           <div>
-            <div>{row.original.sitioDestino}</div>
-            <div className="muted">
-              Regreso {row.original.sitioEntrada}
-            </div>
+            <span className="inline-flex items-center gap-1.5">
+              <MapPin className="size-3.5 shrink-0 text-muted-foreground" aria-hidden />
+              {row.original.sitioDestino}
+            </span>
+            <div className="muted">Regreso {row.original.sitioEntrada}</div>
           </div>
         ),
       },
@@ -141,7 +180,10 @@ function RankingPatio() {
         header: 'Tiempo fuera',
         cell: ({ row }) => (
           <div>
-            <div>{formatDuracion(row.original.tiempoFueraMs)}</div>
+            <span className="inline-flex items-center gap-1.5">
+              <Clock className="size-3.5 shrink-0 text-muted-foreground" aria-hidden />
+              {formatDuracion(row.original.tiempoFueraMs)}
+            </span>
             <div className="muted">{formatFecha(row.original.salidaAt)}</div>
           </div>
         ),
@@ -149,39 +191,81 @@ function RankingPatio() {
       {
         accessorKey: 'kmCiclo',
         header: 'km ciclo',
-        cell: ({ row }) => formatKm(row.original.kmCiclo),
+        cell: ({ row }) => (
+          <span className="inline-flex items-center gap-1.5">
+            <Gauge className="size-3.5 shrink-0 text-muted-foreground" aria-hidden />
+            {formatKm(row.original.kmCiclo)}
+          </span>
+        ),
       },
       {
-        accessorKey: 'entradaAt',
-        header: 'Entrada',
-        cell: ({ row }) => formatFecha(row.original.entradaAt),
+        id: 'umbral',
+        header: 'Umbral',
+        cell: ({ row }) => (
+          <UmbralAid
+            rebaso={cicloRebasaUmbral(row.original, umbral)}
+            motivo={motivoRebaso(row.original, umbral)}
+          />
+        ),
       },
     ],
-    [],
+    [umbral],
   );
 
   const columnsSitios = useMemo<ColumnDef<RankingSitioPatio, unknown>[]>(
     () => [
-      { accessorKey: 'sitio', header: 'Sitio' },
+      {
+        accessorKey: 'sitio',
+        header: 'Sitio',
+        cell: ({ row }) => (
+          <span className="inline-flex items-center gap-1.5">
+            <MapPin className="size-3.5 shrink-0 text-muted-foreground" aria-hidden />
+            {row.original.sitio}
+          </span>
+        ),
+      },
       {
         accessorKey: 'ciclos',
         header: 'Ciclos',
         cell: ({ row }) => row.original.ciclos,
       },
       {
+        id: 'umbral',
+        header: 'Umbral',
+        cell: ({ row }) => (
+          <UmbralAid
+            rebaso={row.original.rebasoCount > 0}
+            motivo={
+              row.original.rebasoCount > 0
+                ? `${row.original.rebasoCount} de ${row.original.ciclos} rebasó`
+                : null
+            }
+          />
+        ),
+      },
+      {
         accessorKey: 'tiempoFueraMs',
         header: 'Tiempo fuera',
-        cell: ({ row }) => formatDuracion(row.original.tiempoFueraMs),
+        cell: ({ row }) => (
+          <span className="inline-flex items-center gap-1.5">
+            <Clock className="size-3.5 shrink-0 text-muted-foreground" aria-hidden />
+            {formatDuracion(row.original.tiempoFueraMs)}
+          </span>
+        ),
       },
       {
         accessorKey: 'kmCiclo',
         header: 'km',
-        cell: ({ row }) => formatKm(row.original.kmCiclo),
+        cell: ({ row }) => (
+          <span className="inline-flex items-center gap-1.5">
+            <Gauge className="size-3.5 shrink-0 text-muted-foreground" aria-hidden />
+            {formatKm(row.original.kmCiclo)}
+          </span>
+        ),
       },
       {
         accessorKey: 'unidadTopInterno',
         header: 'Más frecuente',
-        cell: ({ row }) => row.original.unidadTopInterno,
       },
     ],
     [],
@@ -205,7 +289,41 @@ function RankingPatio() {
         options={opcionesPeriodoPatio(ciclos)}
         onChange={(id) => setParams({ periodo: id === '30D' ? null : id })}
       />
-      <p className="text-xs text-muted-foreground">{resumen.linea}</p>
+      <p className="mb-1 text-[11px] font-medium uppercase tracking-[0.04em] text-muted-foreground">
+        Umbral tiempo
+      </p>
+      <ListFilter
+        label="Umbral tiempo"
+        value={horasId}
+        options={UMBRALES_HORAS.map((item) => ({
+          id: item.id,
+          label: item.label,
+        }))}
+        onChange={(id) => setParams({ umbralH: id === '8' ? null : id })}
+      />
+      <p className="mb-1 text-[11px] font-medium uppercase tracking-[0.04em] text-muted-foreground">
+        Umbral km
+      </p>
+      <ListFilter
+        label="Umbral km"
+        value={kmId}
+        options={UMBRALES_KM.map((item) => ({
+          id: item.id,
+          label: item.label,
+        }))}
+        onChange={(id) => setParams({ umbralKm: id === '50' ? null : id })}
+      />
+      <ListFilter
+        label="Lectura umbral"
+        value={lectura}
+        options={opcionesLecturaPatio(ciclosPeriodo, umbral)}
+        onChange={(id) =>
+          setParams({ lectura: id === 'todas' ? null : id })
+        }
+      />
+      <p className="text-xs text-muted-foreground">
+        {fraseUmbralPatio(umbral)} {resumen.linea}
+      </p>
       {fuera > 0 ? (
         <p className="text-xs text-muted-foreground">
           {fuera === 1
@@ -223,14 +341,18 @@ function RankingPatio() {
         <DataTable
           columns={columnsSitios}
           data={sitios}
-          empty="No hay sitios con ciclos cerrados en este periodo."
+          empty={
+            lectura === 'todas'
+              ? 'No hay sitios con ciclos cerrados en este periodo.'
+              : emptyLecturaPatio(lectura)
+          }
           onRowClick={(row) => router.push(`/flota/unidades/${row.unidadTopId}`)}
         />
       ) : (
         <DataTable
           columns={columnsTiempo}
-          data={ciclosOrdenados}
-          empty="No hay ciclos cerrados en este periodo."
+          data={ciclosLectura}
+          empty={emptyLecturaPatio(lectura)}
           onRowClick={(row) => router.push(`/flota/unidades/${row.unidadId}`)}
         />
       )}

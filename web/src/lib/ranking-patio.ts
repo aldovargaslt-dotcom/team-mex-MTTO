@@ -35,6 +35,7 @@ export type CicloCerradoPatio = {
 export type RankingSitioPatio = {
   sitio: string;
   ciclos: number;
+  rebasoCount: number;
   tiempoFueraMs: number;
   kmCiclo: number;
   unidadTopId: string;
@@ -128,6 +129,7 @@ export function ordenaCiclosPorTiempo(
 
 export function rankingSitiosPatio(
   ciclos: CicloCerradoPatio[],
+  umbral: UmbralPatio,
 ): RankingSitioPatio[] {
   type Bucket = {
     ciclos: CicloCerradoPatio[];
@@ -155,9 +157,13 @@ export function rankingSitiosPatio(
         if (b[1].n !== a[1].n) return b[1].n - a[1].n;
         return a[1].interno.localeCompare(b[1].interno, 'es');
       })[0];
+      const rebasoCount = bucket.ciclos.filter((c) =>
+        cicloRebasaUmbral(c, umbral),
+      ).length;
       return {
         sitio,
         ciclos: bucket.ciclos.length,
+        rebasoCount,
         tiempoFueraMs: bucket.ciclos.reduce((s, c) => s + c.tiempoFueraMs, 0),
         kmCiclo: bucket.ciclos.reduce((s, c) => s + c.kmCiclo, 0),
         unidadTopId: top[0],
@@ -165,6 +171,9 @@ export function rankingSitiosPatio(
       };
     })
     .sort((a, b) => {
+      if (b.rebasoCount !== a.rebasoCount) {
+        return b.rebasoCount - a.rebasoCount;
+      }
       if (b.ciclos !== a.ciclos) return b.ciclos - a.ciclos;
       if (b.tiempoFueraMs !== a.tiempoFueraMs) {
         return b.tiempoFueraMs - a.tiempoFueraMs;
@@ -206,4 +215,150 @@ export function resumenCiclosPatio(ciclos: CicloCerradoPatio[]) {
 
 export function unidadesAunFuera(tablero: TableroFlotaRow[]) {
   return tablero.filter((row) => Boolean(row.salidaAbiertaId)).length;
+}
+
+export const UMBRALES_HORAS = [
+  { id: '4', label: '4 h', horas: 4 },
+  { id: '8', label: '8 h', horas: 8 },
+  { id: '12', label: '12 h', horas: 12 },
+  { id: '24', label: '24 h', horas: 24 },
+] as const;
+
+export type UmbralHorasId = (typeof UMBRALES_HORAS)[number]['id'];
+
+export const UMBRALES_KM = [
+  { id: '50', label: '50 km', km: 50 },
+  { id: '100', label: '100 km', km: 100 },
+  { id: '200', label: '200 km', km: 200 },
+  { id: 'off', label: 'Sin km', km: null },
+] as const;
+
+export type UmbralKmId = (typeof UMBRALES_KM)[number]['id'];
+
+export const LECTURAS_PATIO = [
+  'todas',
+  'rebaso',
+  'en_umbral',
+] as const;
+
+export type LecturaPatio = (typeof LECTURAS_PATIO)[number];
+
+export type UmbralPatio = {
+  horas: number;
+  km: number | null;
+};
+
+const MS_HORA = 3_600_000;
+
+export function parseUmbralHoras(raw: string | null): UmbralHorasId {
+  if (raw === '4' || raw === '12' || raw === '24') return raw;
+  return '8';
+}
+
+export function parseUmbralKm(raw: string | null): UmbralKmId {
+  if (raw === '100' || raw === '200' || raw === 'off') return raw;
+  return '50';
+}
+
+export function parseLecturaPatio(raw: string | null): LecturaPatio {
+  if (raw === 'rebaso' || raw === 'en_umbral') return raw;
+  return 'todas';
+}
+
+export function umbralDesdeIds(
+  horasId: UmbralHorasId,
+  kmId: UmbralKmId,
+): UmbralPatio {
+  const horas =
+    UMBRALES_HORAS.find((item) => item.id === horasId)?.horas ?? 8;
+  const foundKm = UMBRALES_KM.find((item) => item.id === kmId);
+  return { horas, km: foundKm ? foundKm.km : 50 };
+}
+
+export function cicloRebasaUmbral(
+  ciclo: Pick<CicloCerradoPatio, 'tiempoFueraMs' | 'kmCiclo'>,
+  umbral: UmbralPatio,
+): boolean {
+  if (ciclo.tiempoFueraMs > umbral.horas * MS_HORA) return true;
+  return umbral.km != null && ciclo.kmCiclo > umbral.km;
+}
+
+export function motivoRebaso(
+  ciclo: Pick<CicloCerradoPatio, 'tiempoFueraMs' | 'kmCiclo'>,
+  umbral: UmbralPatio,
+): string | null {
+  const porTiempo = ciclo.tiempoFueraMs > umbral.horas * MS_HORA;
+  const km = umbral.km;
+  const porKm = km != null && ciclo.kmCiclo > km;
+  if (porTiempo && porKm && km != null) {
+    return `Más de ${umbral.horas} h y ${km.toLocaleString('es-MX')} km`;
+  }
+  if (porTiempo) return `Más de ${umbral.horas} h`;
+  if (porKm && km != null) return `Más de ${km.toLocaleString('es-MX')} km`;
+  return null;
+}
+
+export function fraseUmbralPatio(umbral: UmbralPatio) {
+  if (umbral.km == null) return `Rebasó = más de ${umbral.horas} h.`;
+  return `Rebasó = más de ${umbral.horas} h o más de ${umbral.km.toLocaleString('es-MX')} km.`;
+}
+
+export function filtraLecturaPatio(
+  ciclos: CicloCerradoPatio[],
+  lectura: LecturaPatio,
+  umbral: UmbralPatio,
+): CicloCerradoPatio[] {
+  if (lectura === 'todas') return ciclos;
+  return ciclos.filter((ciclo) => {
+    const rebaso = cicloRebasaUmbral(ciclo, umbral);
+    return lectura === 'rebaso' ? rebaso : !rebaso;
+  });
+}
+
+export function filtraSitiosLectura(
+  sitios: RankingSitioPatio[],
+  lectura: LecturaPatio,
+): RankingSitioPatio[] {
+  if (lectura === 'todas') return sitios;
+  if (lectura === 'rebaso') return sitios.filter((s) => s.rebasoCount > 0);
+  return sitios.filter((s) => s.rebasoCount === 0);
+}
+
+export function ordenaCiclosPorUmbral(
+  ciclos: CicloCerradoPatio[],
+  umbral: UmbralPatio,
+): CicloCerradoPatio[] {
+  return [...ciclos].sort((a, b) => {
+    const ra = cicloRebasaUmbral(a, umbral) ? 0 : 1;
+    const rb = cicloRebasaUmbral(b, umbral) ? 0 : 1;
+    if (ra !== rb) return ra - rb;
+    if (b.tiempoFueraMs !== a.tiempoFueraMs) {
+      return b.tiempoFueraMs - a.tiempoFueraMs;
+    }
+    if (b.kmCiclo !== a.kmCiclo) return b.kmCiclo - a.kmCiclo;
+    return a.numeroInterno.localeCompare(b.numeroInterno, 'es');
+  });
+}
+
+export function opcionesLecturaPatio(
+  ciclos: CicloCerradoPatio[],
+  umbral: UmbralPatio,
+) {
+  const rebaso = ciclos.filter((c) => cicloRebasaUmbral(c, umbral)).length;
+  const enUmbral = ciclos.length - rebaso;
+  return [
+    { id: 'todas' as const, label: `Todos (${ciclos.length})` },
+    { id: 'rebaso' as const, label: `Rebasó (${rebaso})` },
+    { id: 'en_umbral' as const, label: `En umbral (${enUmbral})` },
+  ];
+}
+
+export function emptyLecturaPatio(lectura: LecturaPatio): string {
+  if (lectura === 'rebaso') {
+    return 'Ningún ciclo rebasó este umbral.';
+  }
+  if (lectura === 'en_umbral') {
+    return 'No hay ciclos dentro del umbral.';
+  }
+  return 'No hay ciclos cerrados en este periodo.';
 }
