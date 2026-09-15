@@ -52,7 +52,7 @@ Sitios nuevos (Patio Norte, Cliente FEMSA, Taller externo) entran solos en `{sit
 
 **Fuera de v0**
 
-GPS/rutas/geocercas, explorador global de movimientos de patio con periodos Hoy/7d/mes, CSV, OT/preventivo en Flota, umbral de aproximación km.
+GPS/rutas/geocercas, CSV, OT/preventivo en Flota, umbral de aproximación km. Explorador/ranking de patio (Hoy/7d/mes) no va en este tablero: [consulta / conducta corte 5](../design-system/ux-consulta-conducta-cortes-v0.md).
 
 ## Gap de datos
 

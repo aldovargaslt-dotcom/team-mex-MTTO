@@ -60,15 +60,29 @@ describe('Andon v0 (e2e)', () => {
       .expect(200);
     const abierto = (
       avisos.body as {
+        id: string;
         numeroInterno: string;
         estado: string;
         lastClosedKm: number | null;
         visitaResolutoriaId: string | null;
+        resueltoAt: string | null;
+        enteradoBy: string | null;
       }[]
     ).find((a) => a.numeroInterno === 'U-101');
     expect(abierto).toBeTruthy();
     expect(abierto!.estado).toBe('ABIERTO');
     expect(abierto!.lastClosedKm).toBe(100);
     expect(abierto!.visitaResolutoriaId).toBeNull();
+    expect(abierto!.resueltoAt).toBeNull();
+    expect(abierto!.enteradoBy).toBeNull();
+
+    const enterado = await request(server)
+      .post(`/andon/avisos/${abierto!.id}/enterado`)
+      .set(SUPERVISOR)
+      .expect(201);
+    expect(enterado.body.estado).toBe('ENTERADO');
+    expect(enterado.body.enteradoBy).toBe('sup-1');
+    expect(enterado.body.resueltoAt).toBeNull();
+    expect(enterado.body.enteradoAt).toBeTruthy();
   });
 });

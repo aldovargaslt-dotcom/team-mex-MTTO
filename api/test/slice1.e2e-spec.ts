@@ -278,6 +278,10 @@ describe('Slice 1 (e2e)', () => {
     expect(res.body.historialCerrado).toHaveLength(1);
     expect(res.body.historialCerrado[0].km).toBe(100);
     expect(res.body.historialCerrado[0].piezas).toEqual([]);
+    expect(res.body.historialCerrado[0].trabajosCount).toBe(1);
+    expect(res.body.historialCerrado[0].trabajos).toEqual([
+      { categoria: 'A', item: 'Afinación / filtros de aceite' },
+    ]);
     expect(res.body.mensajes[0]).toMatch(/visita/i);
     expect(res.body.mantenimiento).toBeUndefined();
   });
