@@ -317,9 +317,9 @@ function CiclosPatio() {
             }
           />
         </FilterFacet>
-        <FilterFacet label="Listar">
+        <FilterFacet label="Vista">
           <ListFilter
-            label="Listar ciclos de patio"
+            label="Vista de ciclos de patio"
             value={vista}
             options={opcionesVistaPatio(ciclosPeriodo)}
             onChange={(id) => setParams({ vista: id === 'tiempo' ? null : id })}
