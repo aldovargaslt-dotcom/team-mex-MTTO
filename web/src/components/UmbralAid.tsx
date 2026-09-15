@@ -25,7 +25,7 @@ export function UmbralAid({
   return (
     <span className="muted inline-flex items-center gap-1">
       <CircleCheck className="size-3.5" aria-hidden />
-      En umbral
+      Dentro
     </span>
   );
 }

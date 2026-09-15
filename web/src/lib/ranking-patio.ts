@@ -7,9 +7,12 @@ export const PERIODOS_PATIO = [
   { id: '7D', label: '7 d' },
   { id: '30D', label: '30 d' },
   { id: 'MES', label: 'Este mes' },
+  { id: 'CUSTOM', label: 'De–a' },
 ] as const;
 
 export type PeriodoPatio = (typeof PERIODOS_PATIO)[number]['id'];
+
+const YMD_RE = /^\d{4}-\d{2}-\d{2}$/;
 
 export const VISTAS_PATIO = [
   { id: 'tiempo', label: 'Tiempo fuera' },
@@ -43,8 +46,39 @@ export type RankingSitioPatio = {
 };
 
 export function parsePeriodoPatio(raw: string | null): PeriodoPatio {
-  if (raw === 'HOY' || raw === '7D' || raw === 'MES') return raw;
+  if (raw === 'HOY' || raw === '7D' || raw === 'MES' || raw === 'CUSTOM') {
+    return raw;
+  }
   return '30D';
+}
+
+export function parseYmdPatio(raw: string | null): string | null {
+  if (!raw || !YMD_RE.test(raw)) return null;
+  const [y, m, d] = raw.split('-').map(Number);
+  const dt = new Date(y, m - 1, d);
+  if (
+    dt.getFullYear() !== y ||
+    dt.getMonth() !== m - 1 ||
+    dt.getDate() !== d
+  ) {
+    return null;
+  }
+  return raw;
+}
+
+export function ymdLocal(d: Date): string {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+
+export function rangoYmdPeriodoPatio(
+  id: Exclude<PeriodoPatio, 'CUSTOM'>,
+  now = new Date(),
+): { from: string; to: string } {
+  const { from, to } = rangoPeriodoPatio(id, now);
+  return { from: ymdLocal(from), to: ymdLocal(to) };
 }
 
 export function parseVistaPatio(raw: string | null): VistaPatio {
@@ -53,7 +87,7 @@ export function parseVistaPatio(raw: string | null): VistaPatio {
 }
 
 export function rangoPeriodoPatio(
-  id: PeriodoPatio,
+  id: Exclude<PeriodoPatio, 'CUSTOM'>,
   now = new Date(),
 ): { from: Date; to: Date } {
   const to = now;
@@ -69,13 +103,41 @@ export function rangoPeriodoPatio(
 
 export function inPeriodoPatio(
   iso: string,
-  id: PeriodoPatio,
+  id: Exclude<PeriodoPatio, 'CUSTOM'>,
   now = new Date(),
 ): boolean {
   const t = new Date(iso).getTime();
   if (Number.isNaN(t)) return false;
   const { from, to } = rangoPeriodoPatio(id, now);
   return t >= from.getTime() && t <= to.getTime();
+}
+
+function startOfYmd(ymd: string): Date {
+  const [y, m, d] = ymd.split('-').map(Number);
+  return new Date(y, m - 1, d);
+}
+
+function endOfYmd(ymd: string): Date {
+  const [y, m, d] = ymd.split('-').map(Number);
+  return new Date(y, m - 1, d, 23, 59, 59, 999);
+}
+
+export function inRangoYmdPatio(
+  iso: string,
+  from: string | null,
+  to: string | null,
+): boolean {
+  const t = new Date(iso).getTime();
+  if (Number.isNaN(t)) return false;
+  let start = from;
+  let end = to;
+  if (start && end && start > end) {
+    start = to;
+    end = from;
+  }
+  if (start && t < startOfYmd(start).getTime()) return false;
+  if (end && t > endOfYmd(end).getTime()) return false;
+  return true;
 }
 
 export function ciclosCerradosDeDetalle(
@@ -111,7 +173,13 @@ export function ciclosEnPeriodo(
   ciclos: CicloCerradoPatio[],
   periodo: PeriodoPatio,
   now = new Date(),
+  rango?: { from: string | null; to: string | null },
 ): CicloCerradoPatio[] {
+  if (periodo === 'CUSTOM') {
+    return ciclos.filter((ciclo) =>
+      inRangoYmdPatio(ciclo.entradaAt, rango?.from ?? null, rango?.to ?? null),
+    );
+  }
   return ciclos.filter((ciclo) => inPeriodoPatio(ciclo.entradaAt, periodo, now));
 }
 
@@ -185,11 +253,21 @@ export function rankingSitiosPatio(
 export function opcionesPeriodoPatio(
   ciclos: CicloCerradoPatio[],
   now = new Date(),
+  rango?: { from: string | null; to: string | null },
 ) {
-  return PERIODOS_PATIO.map((periodo) => ({
-    id: periodo.id,
-    label: `${periodo.label} (${ciclosEnPeriodo(ciclos, periodo.id, now).length})`,
-  }));
+  return PERIODOS_PATIO.map((periodo) => {
+    if (periodo.id === 'CUSTOM') {
+      const n = ciclosEnPeriodo(ciclos, 'CUSTOM', now, rango).length;
+      return {
+        id: periodo.id,
+        label: rango?.from || rango?.to ? `De–a (${n})` : periodo.label,
+      };
+    }
+    return {
+      id: periodo.id,
+      label: `${periodo.label} (${ciclosEnPeriodo(ciclos, periodo.id, now).length})`,
+    };
+  });
 }
 
 export function opcionesVistaPatio(ciclosPeriodo: CicloCerradoPatio[]) {
@@ -200,16 +278,23 @@ export function opcionesVistaPatio(ciclosPeriodo: CicloCerradoPatio[]) {
   ];
 }
 
-export function resumenCiclosPatio(ciclos: CicloCerradoPatio[]) {
+export function resumenCiclosPatio(
+  ciclos: CicloCerradoPatio[],
+  umbral: UmbralPatio,
+) {
   const tiempoMs = ciclos.reduce((s, c) => s + c.tiempoFueraMs, 0);
   const km = ciclos.reduce((s, c) => s + c.kmCiclo, 0);
   const n = ciclos.length;
+  const rebaso = ciclos.filter((c) => cicloRebasaUmbral(c, umbral)).length;
   const cicloTxt = n === 1 ? 'ciclo' : 'ciclos';
+  const rebasoTxt =
+    rebaso === 1 ? '1 rebasó' : `${rebaso} rebasaron`;
   return {
     n,
+    rebaso,
     tiempoMs,
     km,
-    linea: `${n} ${cicloTxt} · ${formatDuracion(tiempoMs)} · ${km.toLocaleString('es-MX')} km`,
+    linea: `${n} ${cicloTxt} · ${rebasoTxt} · ${formatDuracion(tiempoMs)} · ${km.toLocaleString('es-MX')} km`,
   };
 }
 
@@ -300,8 +385,10 @@ export function motivoRebaso(
 }
 
 export function fraseUmbralPatio(umbral: UmbralPatio) {
-  if (umbral.km == null) return `Rebasó = más de ${umbral.horas} h.`;
-  return `Rebasó = más de ${umbral.horas} h o más de ${umbral.km.toLocaleString('es-MX')} km.`;
+  if (umbral.km == null) {
+    return `Rebasó: más de ${umbral.horas} h fuera.`;
+  }
+  return `Rebasó: más de ${umbral.horas} h fuera o más de ${umbral.km.toLocaleString('es-MX')} km del ciclo.`;
 }
 
 export function filtraLecturaPatio(
@@ -350,27 +437,16 @@ export function opcionesLecturaPatio(
   return [
     { id: 'todas' as const, label: `Todos (${ciclos.length})` },
     { id: 'rebaso' as const, label: `Rebasó (${rebaso})` },
-    { id: 'en_umbral' as const, label: `En umbral (${enUmbral})` },
+    { id: 'en_umbral' as const, label: `Dentro (${enUmbral})` },
   ];
 }
 
 export function emptyLecturaPatio(lectura: LecturaPatio): string {
   if (lectura === 'rebaso') {
-    return 'Ningún ciclo rebasó este umbral.';
+    return 'Ningún ciclo rebasó tiempo o km en este periodo.';
   }
   if (lectura === 'en_umbral') {
-    return 'No hay ciclos dentro del umbral.';
+    return 'No hay ciclos dentro de tiempo y km.';
   }
   return 'No hay ciclos cerrados en este periodo.';
-}
-
-export function etiquetaAjustePatio(
-  periodo: PeriodoPatio,
-  horasId: UmbralHorasId,
-  kmId: UmbralKmId,
-): string {
-  const p = PERIODOS_PATIO.find((item) => item.id === periodo)?.label ?? '30 d';
-  const h = UMBRALES_HORAS.find((item) => item.id === horasId)?.label ?? '8 h';
-  const k = UMBRALES_KM.find((item) => item.id === kmId)?.label ?? '50 km';
-  return `Ajustar · ${p} · ${h} · ${k}`;
 }

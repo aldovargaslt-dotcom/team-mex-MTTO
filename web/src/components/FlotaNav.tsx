@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { ChartNoAxesColumnIncreasing, LayoutList, MapPinned } from 'lucide-react';
+import { History, LayoutList, MapPinned } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
 const LINKS: {
@@ -12,7 +12,7 @@ const LINKS: {
   icon: LucideIcon;
 }[] = [
   { href: '/flota', label: 'Tablero', exact: true, icon: LayoutList },
-  { href: '/flota/ranking', label: 'Ranking', icon: ChartNoAxesColumnIncreasing },
+  { href: '/flota/ranking', label: 'Ciclos', icon: History },
   { href: '/flota/sitios', label: 'Sitios', icon: MapPinned },
 ];
 
