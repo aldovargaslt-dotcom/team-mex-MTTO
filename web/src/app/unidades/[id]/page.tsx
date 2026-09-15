@@ -7,6 +7,7 @@ import { ColumnDef } from '@tanstack/react-table';
 import { RoleGate } from '@/components/RoleGate';
 import { StatusBadge } from '@/components/StatusBadge';
 import { AndonHubCard } from '@/components/AndonHubCard';
+import { HubConducta } from '@/components/HubConducta';
 import { DataTable } from '@/components/ui/data-table';
 import { api, HttpError } from '@/lib/api';
 import {
@@ -309,6 +310,12 @@ function HubContent() {
           ))}
         </section>
       </div>
+
+      <HubConducta
+        unidadId={ficha.id}
+        tipoId={ficha.tipoId}
+        historial={hub.historialCerrado}
+      />
     </>
   );
 }
