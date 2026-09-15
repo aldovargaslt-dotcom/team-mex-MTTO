@@ -93,7 +93,7 @@ Reglas:
 - No dos unidades con salida abierta al mismo chofer.
 - Aviso suave, no bloqueo, si hay Andon abierto al registrar SALIDA.
 
-Pantallas (`LOGISTICA` / `ADMIN_DIRECTIVO`): tablero (estado, motivo, sitio, chofer actual, último chofer, salida abierta / tiempo fuera, filtro “aún no regresan”) → registrar salida/entrada (datos + dos pads) → historial por unidad → sitios → “Inactivar por envío especial” / “Reactivar”.
+Pantallas (`LOGISTICA` / `ADMIN_DIRECTIVO`): tablero (estado, motivo, sitio, chofer actual, último chofer, salida abierta / tiempo fuera, filtro “aún no regresan”) → registrar salida/entrada (datos + dos pads) → historial por unidad → sitios → “Inactivar por envío especial” / “Reactivar”. UI del tablero/ficha como **viaje** derivado (sin enum nuevo): [fleet-tablero-viaje-v0](fleet-tablero-viaje-v0.md).
 
 ## Fuera de v0
 
