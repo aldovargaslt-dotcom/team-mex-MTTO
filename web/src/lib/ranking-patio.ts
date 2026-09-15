@@ -363,3 +363,14 @@ export function emptyLecturaPatio(lectura: LecturaPatio): string {
   }
   return 'No hay ciclos cerrados en este periodo.';
 }
+
+export function etiquetaAjustePatio(
+  periodo: PeriodoPatio,
+  horasId: UmbralHorasId,
+  kmId: UmbralKmId,
+): string {
+  const p = PERIODOS_PATIO.find((item) => item.id === periodo)?.label ?? '30 d';
+  const h = UMBRALES_HORAS.find((item) => item.id === horasId)?.label ?? '8 h';
+  const k = UMBRALES_KM.find((item) => item.id === kmId)?.label ?? '50 km';
+  return `Ajustar · ${p} · ${h} · ${k}`;
+}

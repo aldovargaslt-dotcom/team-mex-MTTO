@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import { ColumnDef } from '@tanstack/react-table';
 import { ListFilter } from '@/components/ListFilter';
+import { FilterDisclosure } from '@/components/FilterDisclosure';
 import { UmbralAid } from '@/components/UmbralAid';
 import { DataTable } from '@/components/ui/data-table';
 import { FormAlert, PageHeader } from '@/components/ui/field';
@@ -21,6 +22,7 @@ import {
   ciclosEnPeriodo,
   cicloRebasaUmbral,
   emptyLecturaPatio,
+  etiquetaAjustePatio,
   fraseUmbralPatio,
   filtraLecturaPatio,
   filtraSitiosLectura,
@@ -277,53 +279,58 @@ function RankingPatio() {
         title="Ranking de patio"
         lede="Qué suele pasar: tiempo fuera, km del ciclo y sitios que se repiten. El tablero sigue siendo el ahora."
       />
-      <ListFilter
-        label="Vista ranking patio"
-        value={vista}
-        options={opcionesVistaPatio(ciclosPeriodo)}
-        onChange={(id) => setParams({ vista: id === 'tiempo' ? null : id })}
-      />
-      <ListFilter
-        label="Periodo patio"
-        value={periodo}
-        options={opcionesPeriodoPatio(ciclos)}
-        onChange={(id) => setParams({ periodo: id === '30D' ? null : id })}
-      />
-      <p className="mb-1 text-[11px] font-medium uppercase tracking-[0.04em] text-muted-foreground">
-        Umbral tiempo
-      </p>
-      <ListFilter
-        label="Umbral tiempo"
-        value={horasId}
-        options={UMBRALES_HORAS.map((item) => ({
-          id: item.id,
-          label: item.label,
-        }))}
-        onChange={(id) => setParams({ umbralH: id === '8' ? null : id })}
-      />
-      <p className="mb-1 text-[11px] font-medium uppercase tracking-[0.04em] text-muted-foreground">
-        Umbral km
-      </p>
-      <ListFilter
-        label="Umbral km"
-        value={kmId}
-        options={UMBRALES_KM.map((item) => ({
-          id: item.id,
-          label: item.label,
-        }))}
-        onChange={(id) => setParams({ umbralKm: id === '50' ? null : id })}
-      />
-      <ListFilter
-        label="Lectura umbral"
-        value={lectura}
-        options={opcionesLecturaPatio(ciclosPeriodo, umbral)}
-        onChange={(id) =>
-          setParams({ lectura: id === 'todas' ? null : id })
-        }
-      />
-      <p className="text-xs text-muted-foreground">
-        {fraseUmbralPatio(umbral)} {resumen.linea}
-      </p>
+      <div className="ranking-toolbar">
+        <ListFilter
+          label="Vista ranking patio"
+          value={vista}
+          options={opcionesVistaPatio(ciclosPeriodo)}
+          onChange={(id) => setParams({ vista: id === 'tiempo' ? null : id })}
+        />
+        <ListFilter
+          label="Lectura umbral"
+          value={lectura}
+          options={opcionesLecturaPatio(ciclosPeriodo, umbral)}
+          onChange={(id) =>
+            setParams({ lectura: id === 'todas' ? null : id })
+          }
+        />
+      </div>
+      <FilterDisclosure
+        label="Periodo y umbral"
+        summary={etiquetaAjustePatio(periodo, horasId, kmId)}
+      >
+        <p className="filter-disclosure__kicker">Periodo</p>
+        <ListFilter
+          label="Periodo patio"
+          value={periodo}
+          options={opcionesPeriodoPatio(ciclos)}
+          onChange={(id) => setParams({ periodo: id === '30D' ? null : id })}
+        />
+        <p className="filter-disclosure__kicker">Tiempo fuera</p>
+        <ListFilter
+          label="Umbral tiempo"
+          value={horasId}
+          options={UMBRALES_HORAS.map((item) => ({
+            id: item.id,
+            label: item.label,
+          }))}
+          onChange={(id) => setParams({ umbralH: id === '8' ? null : id })}
+        />
+        <p className="filter-disclosure__kicker">Kilómetros</p>
+        <ListFilter
+          label="Umbral km"
+          value={kmId}
+          options={UMBRALES_KM.map((item) => ({
+            id: item.id,
+            label: item.label,
+          }))}
+          onChange={(id) => setParams({ umbralKm: id === '50' ? null : id })}
+        />
+        <p className="mb-2 text-xs text-muted-foreground">
+          {fraseUmbralPatio(umbral)}
+        </p>
+      </FilterDisclosure>
+      <p className="text-xs text-muted-foreground">{resumen.linea}</p>
       {fuera > 0 ? (
         <p className="text-xs text-muted-foreground">
           {fuera === 1
