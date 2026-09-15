@@ -276,6 +276,7 @@ export type TableroFlotaRow = {
   choferUltimoNombre: string | null;
   salidaAbiertaId: string | null;
   salidaAbiertaAt: string | null;
+  ultimoMovimientoAt: string | null;
   tiempoFueraMs: number | null;
   kmSalida: number | null;
   andonAbierto: boolean;
