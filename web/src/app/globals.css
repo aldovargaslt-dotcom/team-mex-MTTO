@@ -376,6 +376,26 @@
     margin-bottom: 12px;
   }
 
+  .unidades-table [data-slot='table-cell'] {
+    height: auto;
+    min-height: 44px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    vertical-align: middle;
+  }
+
+  @media (max-width: 767px) {
+    .unidades-table {
+      overflow-x: hidden;
+    }
+
+    .unidades-table [data-slot='table-cell'],
+    .unidades-table [data-slot='table-head'] {
+      padding-left: 8px;
+      padding-right: 8px;
+    }
+  }
+
   .field {
     display: flex;
     flex-direction: column;

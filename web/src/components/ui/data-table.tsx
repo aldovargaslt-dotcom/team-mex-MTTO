@@ -17,16 +17,25 @@ import {
 } from '@/components/ui/table';
 import { cn } from '@/lib/utils';
 
+function columnMetaClass(column: {
+  columnDef: { meta?: unknown };
+}): string | undefined {
+  const meta = column.columnDef.meta as { className?: string } | undefined;
+  return meta?.className;
+}
+
 export function DataTable<TData>({
   columns,
   data,
   empty,
+  className,
   getRowClassName,
   onRowClick,
 }: {
   columns: ColumnDef<TData, unknown>[];
   data: TData[];
   empty?: ReactNode;
+  className?: string;
   getRowClassName?: (row: TData) => string | undefined;
   onRowClick?: (row: TData) => void;
 }) {
@@ -37,13 +46,16 @@ export function DataTable<TData>({
   });
 
   return (
-    <div className="card overflow-x-auto">
+    <div className={cn('card overflow-x-auto', className)}>
       <Table>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id} className="hover:bg-[#fafafb]">
               {headerGroup.headers.map((header) => (
-                <TableHead key={header.id}>
+                <TableHead
+                  key={header.id}
+                  className={columnMetaClass(header.column)}
+                >
                   {header.isPlaceholder
                     ? null
                     : flexRender(
@@ -69,7 +81,10 @@ export function DataTable<TData>({
                 }
               >
                 {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id}>
+                  <TableCell
+                    key={cell.id}
+                    className={columnMetaClass(cell.column)}
+                  >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
                 ))}
