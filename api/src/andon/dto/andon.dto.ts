@@ -57,6 +57,12 @@ export class AvisoDto {
   enteradoAt: string | null;
 
   @ApiPropertyOptional({ type: String, nullable: true })
+  enteradoBy: string | null;
+
+  @ApiPropertyOptional({ type: String, nullable: true })
+  resueltoAt: string | null;
+
+  @ApiPropertyOptional({ type: String, nullable: true })
   visitaResolutoriaId: string | null;
 
   @ApiProperty()

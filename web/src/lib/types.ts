@@ -60,6 +60,7 @@ export type VisitaResumen = {
   updatedAt: string;
   cerradoAt: string | null;
   trabajosCount: number;
+  trabajos?: { categoria: CategoriaTrabajo; item: string }[];
   piezas?: { itemId: string; qty: number; origen: OrigenPieza }[];
 };
 
@@ -210,6 +211,8 @@ export type AvisoAndon = {
   estado: EstadoAviso;
   abiertaAt: string;
   enteradoAt: string | null;
+  enteradoBy: string | null;
+  resueltoAt: string | null;
   visitaResolutoriaId: string | null;
   kmAlAbrir: number;
   diasAlAbrir: number;
