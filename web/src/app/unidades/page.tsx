@@ -1,13 +1,13 @@
 'use client';
 
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { FormEvent, useEffect, useMemo, useState } from 'react';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { FormEvent, Suspense, useEffect, useMemo, useState } from 'react';
 import { ColumnDef } from '@tanstack/react-table';
+import { ListFilter } from '@/components/ListFilter';
 import { RoleGate } from '@/components/RoleGate';
-import { StatusBadge } from '@/components/StatusBadge';
+import { CondicionUnidadBadge, StatusBadge } from '@/components/StatusBadge';
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
 import { DataTable } from '@/components/ui/data-table';
 import {
   Dialog,
@@ -18,11 +18,28 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Field, FormAlert, PageHeader } from '@/components/ui/field';
-import { Input, NativeSelect } from '@/components/ui/input';
+import { Input } from '@/components/ui/input';
 import { api, HttpError } from '@/lib/api';
 import { resumenAvisoMantenimiento } from '@/lib/format';
 import { useRole } from '@/lib/role';
-import type { TipoVehiculo, UmbralAndon, Unidad } from '@/lib/types';
+import type { AvisoAndon, TipoVehiculo, UmbralAndon, Unidad } from '@/lib/types';
+import {
+  atencionDeUnidad,
+  avisosPorUnidad,
+  condicionDeUnidad,
+  emptyUnidadesListado,
+  etiquetaMotivoEstado,
+  filtraUnidades,
+  identidadSecundaria,
+  opcionesFiltroUnidades,
+  opcionesSegmentoTipo,
+  ordenaUnidades,
+  parseFiltroUnidades,
+  parseTipoUnidades,
+  resumenFlotaUnidades,
+  textoResultadosUnidades,
+  type FiltroUnidadesListado,
+} from '@/lib/unidades-listado';
 
 const DEFAULT_T_KM = 10000;
 const DEFAULT_T_DIAS = 90;
@@ -30,7 +47,9 @@ const DEFAULT_T_DIAS = 90;
 export default function UnidadesPage() {
   return (
     <RoleGate allow={['SUPERVISOR', 'ADMIN_DIRECTIVO']}>
-      <UnidadesList />
+      <Suspense fallback={<p className="muted">Cargando unidades…</p>}>
+        <UnidadesList />
+      </Suspense>
     </RoleGate>
   );
 }
@@ -38,11 +57,12 @@ export default function UnidadesPage() {
 function UnidadesList() {
   const { role, userId, isAdmin } = useRole();
   const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const [q, setQ] = useState('');
-  const [tipoFiltro, setTipoFiltro] = useState('');
-  const [estadoFiltro, setEstadoFiltro] = useState('');
   const [tipos, setTipos] = useState<TipoVehiculo[]>([]);
   const [unidades, setUnidades] = useState<Unidad[] | null>(null);
+  const [avisos, setAvisos] = useState<AvisoAndon[]>([]);
   const [umbrales, setUmbrales] = useState<Record<string, UmbralAndon>>({});
   const [error, setError] = useState<string | null>(null);
   const [loadFailed, setLoadFailed] = useState(false);
@@ -58,24 +78,33 @@ function UnidadesList() {
   >({});
   const [savingAlertas, setSavingAlertas] = useState(false);
 
+  const filtro = parseFiltroUnidades(searchParams.get('filtro'));
+  const tipoId = parseTipoUnidades(searchParams.get('tipo'), tipos);
+
   async function cargar() {
     if (!role) return;
     if (unidades == null) setLoading(true);
     setError(null);
-    const params = new URLSearchParams();
-    if (q.trim()) params.set('q', q.trim());
-    if (tipoFiltro) params.set('tipo', tipoFiltro);
-    if (estadoFiltro) params.set('estado', estadoFiltro);
-    const qs = params.toString();
+    const opts = { role, userId };
     try {
-      const [lista, catalogo, umb] = await Promise.all([
-        api<Unidad[]>(`/unidades${qs ? `?${qs}` : ''}`, { role, userId }),
-        api<TipoVehiculo[]>('/unidades/tipos', { role, userId }),
-        api<UmbralAndon[]>('/andon/umbrales', { role, userId }),
+      const [lista, catalogo, extra] = await Promise.all([
+        api<Unidad[]>('/unidades', opts),
+        api<TipoVehiculo[]>('/unidades/tipos', opts),
+        Promise.allSettled([
+          api<UmbralAndon[]>('/andon/umbrales', opts),
+          api<AvisoAndon[]>('/andon/avisos', opts),
+        ]),
       ]);
       setUnidades(lista);
       setTipos(catalogo);
-      setUmbrales(Object.fromEntries(umb.map((u) => [u.tipoVehiculoId, u])));
+      const umb = extra[0];
+      const avisosRes = extra[1];
+      setUmbrales(
+        umb.status === 'fulfilled'
+          ? Object.fromEntries(umb.value.map((u) => [u.tipoVehiculoId, u]))
+          : {},
+      );
+      setAvisos(avisosRes.status === 'fulfilled' ? avisosRes.value : []);
       setLoadFailed(false);
     } catch (err) {
       setUnidades([]);
@@ -92,14 +121,20 @@ function UnidadesList() {
 
   useEffect(() => {
     if (!role) return;
-    const handle = window.setTimeout(() => void cargar(), 200);
-    return () => window.clearTimeout(handle);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [role, q, tipoFiltro, estadoFiltro]);
-
-  function onSearch(event: FormEvent) {
-    event.preventDefault();
     void cargar();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [role, userId]);
+
+  function replaceParams(next: { filtro?: FiltroUnidadesListado; tipo?: string }) {
+    const params = new URLSearchParams(searchParams.toString());
+    const nextFiltro = next.filtro ?? filtro;
+    const nextTipo = next.tipo !== undefined ? next.tipo : tipoId;
+    if (nextFiltro === 'todas') params.delete('filtro');
+    else params.set('filtro', nextFiltro);
+    if (!nextTipo) params.delete('tipo');
+    else params.set('tipo', nextTipo);
+    const qs = params.toString();
+    router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
   }
 
   function abrirAltaFamilia() {
@@ -195,6 +230,7 @@ function UnidadesList() {
         userId,
         method: 'DELETE',
       });
+      if (tipoId === tipo.id) replaceParams({ tipo: '' });
       await cargar();
     } catch (err) {
       setError(
@@ -245,65 +281,129 @@ function UnidadesList() {
     }
   }
 
-  const buscando = Boolean(q.trim() || tipoFiltro || estadoFiltro);
-  const grupos = useMemo(() => {
-    const byTipo = new Map<string, Unidad[]>();
-    for (const unidad of unidades ?? []) {
-      const id = unidad.tipo.id;
-      const list = byTipo.get(id) ?? [];
-      list.push(unidad);
-      byTipo.set(id, list);
-    }
-    return tipos
-      .map((tipo) => ({
-        tipo,
-        unidades: byTipo.get(tipo.id) ?? [],
-        umbral: umbrales[tipo.id],
-      }))
-      .filter((grupo) => {
-        if (buscando) return grupo.unidades.length > 0;
-        if (isAdmin) return true;
-        return grupo.unidades.length > 0;
-      });
-  }, [tipos, unidades, umbrales, buscando, isAdmin]);
+  const avisosMap = useMemo(() => avisosPorUnidad(avisos), [avisos]);
+  const catalogo = useMemo(() => unidades ?? [], [unidades]);
+  const resumen = useMemo(
+    () => resumenFlotaUnidades(catalogo, avisosMap),
+    [catalogo, avisosMap],
+  );
+  const visibles = useMemo(
+    () =>
+      ordenaUnidades(
+        filtraUnidades(catalogo, avisosMap, filtro, tipoId, q),
+        avisosMap,
+      ),
+    [catalogo, avisosMap, filtro, tipoId, q],
+  );
+  const tipoSeleccionado = tipos.find((tipo) => tipo.id === tipoId) ?? null;
+  const empty = emptyUnidadesListado({
+    buscando: Boolean(q.trim()),
+    filtro,
+    tipoNombre: tipoSeleccionado?.nombre ?? null,
+    hayTipos: tipos.length > 0,
+    isAdmin,
+    hayUnidades: catalogo.length > 0,
+  });
+  const nuevaUnidadHref = tipoId
+    ? `/unidades/nueva?tipoId=${tipoId}`
+    : '/unidades/nueva';
 
   const columns: ColumnDef<Unidad, unknown>[] = useMemo(
     () => [
       {
-        accessorKey: 'numeroInterno',
-        header: 'Interno',
-        cell: ({ row }) => (
-          <span className="mono">{row.original.numeroInterno}</span>
-        ),
-      },
-      {
         id: 'unidad',
         header: 'Unidad',
         cell: ({ row }) => (
-          <span>
-            {row.original.marcaModelo
-              ? `${row.original.marcaModelo}${
-                  row.original.anio ? ` · ${row.original.anio}` : ''
-                }`
-              : '—'}
-          </span>
+          <div className="min-w-0">
+            <div className="font-semibold text-navy">
+              {row.original.numeroInterno}
+            </div>
+            <div className="truncate text-[12px] text-muted-foreground">
+              {identidadSecundaria(row.original, !tipoId)}
+            </div>
+          </div>
         ),
       },
-      { accessorKey: 'placas', header: 'Placas' },
       {
-        accessorKey: 'estado',
+        id: 'estado',
         header: 'Estado',
-        cell: ({ row }) => <StatusBadge estado={row.original.estado} />,
+        cell: ({ row }) => {
+          const motivo = etiquetaMotivoEstado(row.original);
+          return (
+            <div>
+              <StatusBadge estado={row.original.estado} />
+              {motivo ? (
+                <div className="mt-0.5 text-[12px] text-muted-foreground">
+                  {motivo}
+                </div>
+              ) : null}
+            </div>
+          );
+        },
+      },
+      {
+        id: 'condicion',
+        header: 'Condición',
+        cell: ({ row }) => {
+          const condicion = condicionDeUnidad(avisosMap.get(row.original.id));
+          return (
+            <CondicionUnidadBadge
+              label={condicion.label}
+              variant={condicion.variant}
+            />
+          );
+        },
+      },
+      {
+        id: 'atencion',
+        header: 'Atención',
+        meta: { className: 'hidden md:table-cell' },
+        cell: ({ row }) => {
+          const atencion = atencionDeUnidad(avisosMap.get(row.original.id));
+          return (
+            <div className="max-w-[220px]">
+              <div
+                className={
+                  atencion.detalle ? 'text-[13px] text-navy' : 'muted'
+                }
+              >
+                {atencion.titulo}
+              </div>
+              {atencion.detalle ? (
+                <div className="truncate text-[12px] text-muted-foreground">
+                  {atencion.detalle}
+                </div>
+              ) : null}
+            </div>
+          );
+        },
+      },
+      {
+        id: 'accion',
+        header: '',
+        meta: { className: 'hidden md:table-cell' },
+        cell: ({ row }) => (
+          <div className="flex justify-end">
+            <Button asChild variant="outline" size="compact">
+              <Link
+                href={`/unidades/${row.original.id}`}
+                onClick={(event) => event.stopPropagation()}
+              >
+                Ver ficha
+              </Link>
+            </Button>
+          </div>
+        ),
       },
     ],
-    [],
+    [avisosMap, tipoId],
   );
 
   return (
     <>
       <PageHeader
         title="Unidades"
-        lede="Flota agrupada por tipo. Busque por interno, placas o marca."
+        lede="Seleccione una unidad. El aviso Andon y el estado se ven aquí; el detalle sigue en la ficha."
         actions={
           isAdmin ? (
             tipos.length > 0 ? (
@@ -315,7 +415,7 @@ function UnidadesList() {
                   Nuevo tipo
                 </Button>
                 <Button asChild>
-                  <Link href="/unidades/nueva">Nueva unidad</Link>
+                  <Link href={nuevaUnidadHref}>Nueva unidad</Link>
                 </Button>
               </>
             ) : (
@@ -326,44 +426,6 @@ function UnidadesList() {
           ) : null
         }
       />
-
-      <form className="mb-3" onSubmit={onSearch}>
-        <Card className="filters">
-          <Field label="Buscar" htmlFor="unidadQ">
-            <Input
-              id="unidadQ"
-              value={q}
-              onChange={(e) => setQ(e.target.value)}
-              placeholder="Buscar unidad…"
-            />
-          </Field>
-          <Field label="Tipo" htmlFor="unidadTipo">
-            <NativeSelect
-              id="unidadTipo"
-              value={tipoFiltro}
-              onChange={(e) => setTipoFiltro(e.target.value)}
-            >
-              <option value="">Todos</option>
-              {tipos.map((tipo) => (
-                <option key={tipo.id} value={tipo.id}>
-                  {tipo.nombre}
-                </option>
-              ))}
-            </NativeSelect>
-          </Field>
-          <Field label="Estado" htmlFor="unidadEstado">
-            <NativeSelect
-              id="unidadEstado"
-              value={estadoFiltro}
-              onChange={(e) => setEstadoFiltro(e.target.value)}
-            >
-              <option value="">Todos</option>
-              <option value="ACTIVA">Activa</option>
-              <option value="INACTIVA">Inactiva</option>
-            </NativeSelect>
-          </Field>
-        </Card>
-      </form>
 
       {loadFailed && !dialogOpen && !alertasOpen ? (
         <div className="error-state">
@@ -378,80 +440,126 @@ function UnidadesList() {
 
       {loadFailed ? null : loading ? (
         <p className="muted">Cargando unidades…</p>
-      ) : grupos.length === 0 ? (
+      ) : tipos.length === 0 && catalogo.length === 0 ? (
         <div className="empty-state">
-          <h2>
-            {buscando
-              ? 'No hay unidades que coincidan'
-              : isAdmin
-                ? 'No hay tipos'
-                : 'No hay unidades'}
-          </h2>
-          <p className="muted">
-            {buscando
-              ? 'Ajuste la búsqueda o los filtros.'
-              : isAdmin
-                ? 'Agregue el primer tipo para clasificar la flota.'
-                : 'No hay unidades registradas.'}
-          </p>
+          <h2>{empty.title}</h2>
+          <p className="muted">{empty.body}</p>
         </div>
       ) : (
-        <div className="grid gap-3">
-          {grupos.map((grupo) => (
-            <section key={grupo.tipo.id} aria-labelledby={`tipo-${grupo.tipo.id}`}>
-              <div className="mb-1 flex min-h-11 flex-wrap items-center justify-between gap-2">
-                <div>
-                  <h2
-                    id={`tipo-${grupo.tipo.id}`}
-                    className="text-sm font-semibold text-navy"
-                  >
-                    {grupo.tipo.nombre}
-                  </h2>
-                  <p className="text-xs text-muted-foreground">
-                    {grupo.tipo.descripcion
-                      ? `${grupo.tipo.descripcion} · `
-                      : ''}
-                    {resumenAvisoMantenimiento(
-                      grupo.umbral?.tKm ?? DEFAULT_T_KM,
-                      grupo.umbral?.tDias ?? DEFAULT_T_DIAS,
-                    )}
-                  </p>
-                </div>
-                {isAdmin ? (
-                  <div className="flex flex-wrap gap-2">
-                    <Button asChild variant="outline" size="compact">
-                      <Link href={`/unidades/nueva?tipoId=${grupo.tipo.id}`}>
-                        Nueva unidad
-                      </Link>
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="secondary"
-                      size="compact"
-                      onClick={() => abrirEdicionFamilia(grupo.tipo)}
-                    >
-                      Editar
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="destructive"
-                      size="compact"
-                      onClick={() => void eliminarFamilia(grupo.tipo)}
-                    >
-                      Eliminar
-                    </Button>
-                  </div>
-                ) : null}
+        <>
+          <section aria-label="Resumen de flota">
+            <dl className="fleet-summary">
+              <div className="fleet-summary-card">
+                <dt>Unidades</dt>
+                <dd>{resumen.total}</dd>
               </div>
-              <DataTable
-                columns={columns}
-                data={grupo.unidades}
-                empty="No hay unidades en este tipo."
-                onRowClick={(unidad) => router.push(`/unidades/${unidad.id}`)}
+              <div className="fleet-summary-card">
+                <dt>Activas</dt>
+                <dd>{resumen.activas}</dd>
+              </div>
+              <div className="fleet-summary-card">
+                <dt>Inactivas</dt>
+                <dd>{resumen.inactivas}</dd>
+              </div>
+              <div
+                className={
+                  resumen.conAviso > 0
+                    ? 'fleet-summary-card tone-danger'
+                    : 'fleet-summary-card'
+                }
+              >
+                <dt>Con aviso</dt>
+                <dd>{resumen.conAviso}</dd>
+              </div>
+            </dl>
+          </section>
+
+          <div className="mb-3 space-y-2 [&_.list-filter]:mb-0">
+            <Input
+              id="unidadQ"
+              type="search"
+              value={q}
+              onChange={(e) => setQ(e.target.value)}
+              placeholder="Buscar por interno, placas o marca…"
+              aria-label="Buscar por interno, placas o marca"
+              className="max-w-md"
+            />
+            <ListFilter
+              label="Filtro de unidades"
+              value={filtro}
+              options={opcionesFiltroUnidades(catalogo, avisosMap)}
+              onChange={(id) => replaceParams({ filtro: id })}
+            />
+            {tipos.length > 0 ? (
+              <ListFilter
+                label="Tipo de unidad"
+                value={tipoId}
+                options={opcionesSegmentoTipo(catalogo, tipos)}
+                onChange={(id) => replaceParams({ tipo: id })}
               />
-            </section>
-          ))}
-        </div>
+            ) : null}
+          </div>
+
+          {tipoSeleccionado ? (
+            <div className="mb-2 flex min-h-11 flex-wrap items-center justify-between gap-2">
+              <p className="text-xs text-muted-foreground">
+                {tipoSeleccionado.descripcion
+                  ? `${tipoSeleccionado.descripcion} · `
+                  : ''}
+                {resumenAvisoMantenimiento(
+                  umbrales[tipoSeleccionado.id]?.tKm ?? DEFAULT_T_KM,
+                  umbrales[tipoSeleccionado.id]?.tDias ?? DEFAULT_T_DIAS,
+                )}
+              </p>
+              {isAdmin ? (
+                <div className="flex flex-wrap gap-2">
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    size="compact"
+                    onClick={() => abrirEdicionFamilia(tipoSeleccionado)}
+                  >
+                    Editar tipo
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    size="compact"
+                    onClick={() => void eliminarFamilia(tipoSeleccionado)}
+                  >
+                    Eliminar
+                  </Button>
+                </div>
+              ) : null}
+            </div>
+          ) : null}
+
+          <DataTable
+            className="unidades-table"
+            columns={columns}
+            data={visibles}
+            empty={
+              <>
+                <span className="block font-medium text-navy">{empty.title}</span>
+                <span>{empty.body}</span>
+              </>
+            }
+            getRowClassName={(unidad) => {
+              const aviso = avisosMap.get(unidad.id);
+              if (aviso?.estado === 'ABIERTO') {
+                return 'shadow-[inset_3px_0_0_#b42318]';
+              }
+              if (aviso?.estado === 'ENTERADO') {
+                return 'shadow-[inset_3px_0_0_#8a4b12]';
+              }
+              return undefined;
+            }}
+            onRowClick={(unidad) => router.push(`/unidades/${unidad.id}`)}
+          />
+          <p className="mt-2 text-[12px] text-muted-foreground">
+            {textoResultadosUnidades(visibles.length, catalogo.length)}
+          </p>
+        </>
       )}
 
       <Dialog

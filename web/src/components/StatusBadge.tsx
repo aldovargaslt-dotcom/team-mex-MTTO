@@ -20,6 +20,25 @@ export function ChoferEstadoBadge({ estado }: { estado: EstadoChofer }) {
   );
 }
 
+export function CondicionUnidadBadge({
+  label,
+  variant,
+}: {
+  label: string;
+  variant: 'danger' | 'warning' | null;
+}) {
+  if (!variant) {
+    return (
+      <span className="text-[12px] text-muted-foreground">{label}</span>
+    );
+  }
+  return (
+    <Badge variant={variant} className="normal-case tracking-normal">
+      {label}
+    </Badge>
+  );
+}
+
 export function StockAlertaBadge({ alerta }: { alerta: AlertaStock | null }) {
   if (!alerta) {
     return (

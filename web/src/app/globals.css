@@ -376,6 +376,60 @@
     margin-bottom: 12px;
   }
 
+  .fleet-summary {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 8px;
+    margin: 0 0 12px;
+  }
+
+  .fleet-summary-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 12px;
+    min-height: 52px;
+  }
+
+  .fleet-summary-card dt {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--muted-foreground);
+  }
+
+  .fleet-summary-card dd {
+    margin: 2px 0 0;
+    color: var(--navy);
+    font-size: 18px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    line-height: 1.2;
+  }
+
+  .fleet-summary-card.tone-warning dd {
+    color: var(--warning-fg);
+  }
+
+  .fleet-summary-card.tone-danger dd {
+    color: var(--danger);
+  }
+
+  .unidades-table [data-slot='table-cell'] {
+    height: auto;
+    min-height: 44px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    vertical-align: middle;
+  }
+
+  @media (max-width: 767px) {
+    .fleet-summary {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
   .field {
     display: flex;
     flex-direction: column;
