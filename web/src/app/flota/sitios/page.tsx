@@ -1,7 +1,6 @@
 'use client';
 
 import { FormEvent, useEffect, useMemo, useState } from 'react';
-import Link from 'next/link';
 import { ColumnDef } from '@tanstack/react-table';
 import { RoleGate } from '@/components/RoleGate';
 import { Button } from '@/components/ui/button';
@@ -118,14 +117,9 @@ function SitiosAdmin() {
         title="Sitios"
         lede="Catálogo de ubicación nominal (Patio, Taller, cliente)."
         actions={
-          <>
-            <Button asChild variant="secondary">
-              <Link href="/flota">Tablero</Link>
-            </Button>
-            <Button type="button" onClick={abrirAlta}>
-              Nuevo sitio
-            </Button>
-          </>
+          <Button type="button" onClick={abrirAlta}>
+            Nuevo sitio
+          </Button>
         }
       />
       <FormAlert>{error}</FormAlert>

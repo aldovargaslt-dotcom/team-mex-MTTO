@@ -1,13 +1,11 @@
 'use client';
 
-import Link from 'next/link';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { Suspense, useEffect, useMemo, useState } from 'react';
 import { ColumnDef } from '@tanstack/react-table';
 import { ListFilter } from '@/components/ListFilter';
 import { RoleGate } from '@/components/RoleGate';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { DataTable } from '@/components/ui/data-table';
 import { FormAlert, PageHeader } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
@@ -141,11 +139,6 @@ function FlotaTablero() {
       <PageHeader
         title="Flota"
         lede="Quién se llevó qué unidad, a qué sitio y a qué hora."
-        actions={
-          <Button asChild variant="secondary">
-            <Link href="/flota/sitios">Sitios</Link>
-          </Button>
-        }
       />
       <FormAlert>{error}</FormAlert>
       <ListFilter
