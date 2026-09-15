@@ -1,4 +1,3 @@
-import { lineasCausaAvisoAndon } from '@/lib/format';
 import type { AvisoAndon, TipoVehiculo, Unidad } from '@/lib/types';
 
 export const FILTROS_UNIDADES_LISTADO = [
@@ -141,9 +140,12 @@ export function opcionesFiltroUnidades(
 }
 
 export function opcionesSegmentoTipo(unidades: Unidad[], tipos: TipoVehiculo[]) {
+  const ordenados = [...tipos].sort((a, b) =>
+    a.nombre.localeCompare(b.nombre, 'es'),
+  );
   return [
-    { id: '', label: `Todas (${unidades.length})` },
-    ...tipos.map((tipo) => ({
+    { id: '', label: `Todos los tipos (${unidades.length})` },
+    ...ordenados.map((tipo) => ({
       id: tipo.id,
       label: `${tipo.nombre} (${unidades.filter((unidad) => unidad.tipo.id === tipo.id).length})`,
     })),
@@ -204,13 +206,28 @@ export function atencionDeUnidad(
   if (!aviso) {
     return { titulo: '—', detalle: null };
   }
-  const causas = lineasCausaAvisoAndon(aviso);
+  const partes: string[] = [];
+  if (aviso.kmAlAbrir >= aviso.umbralKm) {
+    partes.push(
+      `${aviso.kmAlAbrir.toLocaleString('es-MX')} km desde el último cierre`,
+    );
+  }
+  if (aviso.diasAlAbrir >= aviso.umbralDias) {
+    partes.push(
+      `${aviso.diasAlAbrir.toLocaleString('es-MX')} días desde el último cierre`,
+    );
+  }
+  if (partes.length === 0) {
+    partes.push(
+      `${aviso.kmAlAbrir.toLocaleString('es-MX')} km desde el último cierre`,
+    );
+  }
   return {
     titulo:
       aviso.estado === 'ENTERADO'
         ? 'Aviso enterado'
         : 'Mantenimiento vencido',
-    detalle: causas[0] ?? null,
+    detalle: partes[0] ?? null,
   };
 }
 

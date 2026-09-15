@@ -377,13 +377,15 @@
   }
 
   .fleet-summary {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    display: flex;
+    flex-wrap: wrap;
     gap: 8px;
     margin: 0 0 12px;
   }
 
   .fleet-summary-card {
+    flex: 1 1 7.5rem;
+    max-width: 11.5rem;
     background: var(--card);
     border: 1px solid var(--border);
     border-radius: 6px;
@@ -425,8 +427,15 @@
   }
 
   @media (max-width: 767px) {
-    .fleet-summary {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+    .fleet-summary-card {
+      max-width: none;
+      flex-basis: calc(50% - 4px);
+    }
+
+    .unidades-table [data-slot='table-cell'],
+    .unidades-table [data-slot='table-head'] {
+      padding-left: 8px;
+      padding-right: 8px;
     }
   }
 

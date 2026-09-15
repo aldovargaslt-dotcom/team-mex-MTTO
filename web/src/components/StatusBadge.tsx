@@ -33,7 +33,7 @@ export function CondicionUnidadBadge({
     );
   }
   return (
-    <Badge variant={variant} className="normal-case tracking-normal">
+    <Badge variant={variant} className="normal-case tracking-normal whitespace-normal">
       {label}
     </Badge>
   );
