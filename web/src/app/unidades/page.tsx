@@ -1,11 +1,13 @@
 'use client';
 
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { FormEvent, useEffect, useMemo, useState } from 'react';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { FormEvent, Suspense, useEffect, useMemo, useState } from 'react';
 import { ColumnDef } from '@tanstack/react-table';
 import { RoleGate } from '@/components/RoleGate';
+import { ListFilter } from '@/components/ListFilter';
 import { StatusBadge } from '@/components/StatusBadge';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { DataTable } from '@/components/ui/data-table';
@@ -20,9 +22,24 @@ import {
 import { Field, FormAlert, PageHeader } from '@/components/ui/field';
 import { Input, NativeSelect } from '@/components/ui/input';
 import { api, HttpError } from '@/lib/api';
-import { resumenAvisoMantenimiento } from '@/lib/format';
+import { formatFechaCorta, formatKm, resumenAvisoMantenimiento } from '@/lib/format';
+import {
+  datesForPeriodoRanking,
+  lineaSaludTipo,
+  ordenaRanking,
+  parsePeriodoRanking,
+  PERIODOS_RANKING,
+  rankingDeUnidad,
+  type RankingUnidad,
+} from '@/lib/ranking-unidades';
 import { useRole } from '@/lib/role';
-import type { TipoVehiculo, UmbralAndon, Unidad } from '@/lib/types';
+import type {
+  AvisoAndon,
+  TipoVehiculo,
+  UmbralAndon,
+  Unidad,
+  VisitaResumen,
+} from '@/lib/types';
 
 const DEFAULT_T_KM = 10000;
 const DEFAULT_T_DIAS = 90;
@@ -30,7 +47,9 @@ const DEFAULT_T_DIAS = 90;
 export default function UnidadesPage() {
   return (
     <RoleGate allow={['SUPERVISOR', 'ADMIN_DIRECTIVO']}>
-      <UnidadesList />
+      <Suspense fallback={<p className="muted">Cargando unidades…</p>}>
+        <UnidadesList />
+      </Suspense>
     </RoleGate>
   );
 }
@@ -38,12 +57,19 @@ export default function UnidadesPage() {
 function UnidadesList() {
   const { role, userId, isAdmin } = useRole();
   const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const periodo = parsePeriodoRanking(searchParams.get('periodo'));
+  const rango = useMemo(() => datesForPeriodoRanking(periodo), [periodo]);
   const [q, setQ] = useState('');
   const [tipoFiltro, setTipoFiltro] = useState('');
   const [estadoFiltro, setEstadoFiltro] = useState('');
   const [tipos, setTipos] = useState<TipoVehiculo[]>([]);
   const [unidades, setUnidades] = useState<Unidad[] | null>(null);
   const [umbrales, setUmbrales] = useState<Record<string, UmbralAndon>>({});
+  const [rankingById, setRankingById] = useState<Record<string, RankingUnidad>>(
+    {},
+  );
   const [error, setError] = useState<string | null>(null);
   const [loadFailed, setLoadFailed] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -96,6 +122,52 @@ function UnidadesList() {
     return () => window.clearTimeout(handle);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [role, q, tipoFiltro, estadoFiltro]);
+
+  useEffect(() => {
+    if (!role || !unidades) return;
+    let cancelled = false;
+    void (async () => {
+      try {
+        const [pendientes, resueltos, ...visitas] = await Promise.all([
+          api<AvisoAndon[]>('/andon/avisos', { role, userId }),
+          api<AvisoAndon[]>('/andon/avisos?estado=RESUELTO', { role, userId }),
+          ...unidades.map((unidad) =>
+            api<VisitaResumen[]>(`/unidades/${unidad.id}/visitas`, {
+              role,
+              userId,
+            }),
+          ),
+        ]);
+        if (cancelled) return;
+        const avisos = [...pendientes, ...resueltos];
+        const next: Record<string, RankingUnidad> = {};
+        unidades.forEach((unidad, index) => {
+          next[unidad.id] = rankingDeUnidad(
+            unidad,
+            visitas[index] ?? [],
+            avisos,
+            umbrales[unidad.tipo.id],
+            rango.from,
+            rango.to,
+          );
+        });
+        setRankingById(next);
+      } catch {
+        if (!cancelled) setRankingById({});
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [role, userId, unidades, umbrales, rango.from, rango.to]);
+
+  function setPeriodo(next: (typeof PERIODOS_RANKING)[number]['id']) {
+    const params = new URLSearchParams(searchParams.toString());
+    if (next === '30D') params.delete('periodo');
+    else params.set('periodo', next);
+    const qs = params.toString();
+    router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
+  }
 
   function onSearch(event: FormEvent) {
     event.preventDefault();
@@ -257,7 +329,7 @@ function UnidadesList() {
     return tipos
       .map((tipo) => ({
         tipo,
-        unidades: byTipo.get(tipo.id) ?? [],
+        unidades: ordenaRanking(byTipo.get(tipo.id) ?? [], rankingById),
         umbral: umbrales[tipo.id],
       }))
       .filter((grupo) => {
@@ -265,7 +337,7 @@ function UnidadesList() {
         if (isAdmin) return true;
         return grupo.unidades.length > 0;
       });
-  }, [tipos, unidades, umbrales, buscando, isAdmin]);
+  }, [tipos, unidades, umbrales, buscando, isAdmin, rankingById]);
 
   const columns: ColumnDef<Unidad, unknown>[] = useMemo(
     () => [
@@ -295,15 +367,75 @@ function UnidadesList() {
         header: 'Estado',
         cell: ({ row }) => <StatusBadge estado={row.original.estado} />,
       },
+      {
+        id: 'cierre',
+        header: 'Último cierre',
+        cell: ({ row }) => {
+          const r = rankingById[row.original.id];
+          if (!r) return <span className="text-muted-foreground">—</span>;
+          if (!r.ultimoCierreAt) {
+            return <span className="text-[12px] text-muted-foreground">Sin cierre</span>;
+          }
+          return (
+            <span className="text-[12px]">
+              {formatFechaCorta(r.ultimoCierreAt)}
+              <span className="block text-muted-foreground">{formatKm(r.ultimoKm)}</span>
+            </span>
+          );
+        },
+      },
+      {
+        id: 'intervalo',
+        header: 'Intervalo',
+        cell: ({ row }) => {
+          const r = rankingById[row.original.id];
+          if (!r) return <span className="text-muted-foreground">—</span>;
+          if (r.diasDesdeCierre == null) {
+            return <span className="text-[12px] text-muted-foreground">Sin cierre</span>;
+          }
+          return (
+            <span className="text-[12px]">
+              {r.diasDesdeCierre.toLocaleString('es-MX')} d · cada{' '}
+              {r.tDias.toLocaleString('es-MX')} d
+              {r.rebaso ? (
+                <Badge
+                  variant="warning"
+                  className="mt-0.5 block w-fit normal-case tracking-normal"
+                >
+                  Rebasó
+                </Badge>
+              ) : null}
+            </span>
+          );
+        },
+      },
+      {
+        id: 'correctivos',
+        header: 'Correctivos',
+        cell: ({ row }) => (
+          <span className="mono text-[12px]">
+            {rankingById[row.original.id]?.correctivosPeriodo ?? '—'}
+          </span>
+        ),
+      },
+      {
+        id: 'andon',
+        header: 'Andon',
+        cell: ({ row }) => (
+          <span className="mono text-[12px]">
+            {rankingById[row.original.id]?.avisosPeriodo ?? '—'}
+          </span>
+        ),
+      },
     ],
-    [],
+    [rankingById],
   );
 
   return (
     <>
       <PageHeader
         title="Unidades"
-        lede="Flota agrupada por tipo. Busque por interno, placas o marca."
+        lede="Flota agrupada por tipo. Quién rebasó el intervalo, sin abrir cada visita."
         actions={
           isAdmin ? (
             tipos.length > 0 ? (
@@ -365,6 +497,13 @@ function UnidadesList() {
         </Card>
       </form>
 
+      <ListFilter
+        label="Periodo"
+        value={periodo}
+        options={PERIODOS_RANKING}
+        onChange={setPeriodo}
+      />
+
       {loadFailed && !dialogOpen && !alertasOpen ? (
         <div className="error-state">
           <h2>No se pudo consultar la flota</h2>
@@ -416,6 +555,16 @@ function UnidadesList() {
                       grupo.umbral?.tDias ?? DEFAULT_T_DIAS,
                     )}
                   </p>
+                  {grupo.unidades.length > 0 &&
+                  grupo.unidades.every((u) => rankingById[u.id]) ? (
+                    <p className="text-xs text-muted-foreground">
+                      {lineaSaludTipo(
+                        grupo.unidades,
+                        rankingById,
+                        grupo.umbral?.tDias ?? DEFAULT_T_DIAS,
+                      )}
+                    </p>
+                  ) : null}
                 </div>
                 {isAdmin ? (
                   <div className="flex flex-wrap gap-2">

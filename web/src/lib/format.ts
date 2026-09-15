@@ -49,6 +49,15 @@ export function formatFecha(value: string | null | undefined) {
   });
 }
 
+export function formatFechaCorta(value: string | null | undefined) {
+  if (!value) return '—';
+  return new Date(value).toLocaleDateString('es-MX', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+  });
+}
+
 export function etiquetaTipoVisita(tipo: string | null) {
   if (tipo === 'PREDICTIVO') return 'Predictivo';
   if (tipo === 'CORRECTIVO') return 'Correctivo';
