@@ -209,9 +209,6 @@ function HubContent() {
       <div style={{ marginBottom: 12 }}>
         <AndonHubCard
           unidadId={ficha.id}
-          puedeCrearVisita={hub.puedeCrearVisita}
-          onNuevaVisita={() => void nuevaVisita()}
-          creating={creating}
         />
       </div>
 
