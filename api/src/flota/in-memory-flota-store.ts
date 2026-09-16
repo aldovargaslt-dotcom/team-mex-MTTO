@@ -47,6 +47,11 @@ export class InMemoryFlotaStore implements FlotaStore {
     this.operativas.set(row.unidadId, row);
   }
 
+  async getLatestKm(unidadId: string) {
+    const rows = await this.listMovimientos(unidadId);
+    return rows[0]?.km ?? null;
+  }
+
   putSitio(sitio: Sitio) {
     this.sitios.set(sitio.id, sitio);
   }

@@ -72,6 +72,26 @@ TDD en `api/src/flota/flota-engine.spec.ts` (fakes en memoria; sin Postgres). Sp
 - **F10** — bitácora permitida si la unidad está `INACTIVA`.
 - **F11** — no hay borrador: alta + proyección + firmas en una transacción lógica.
 
+## Salud de unidad (H1–H15)
+
+TDD en `api/src/salud/*.spec.ts` (dominio puro e in-memory fakes; sin Postgres). Spec: [unit-health-v0](../specs/unit-health-v0.md). ADR-010.
+
+- **H1** — 72/80/100 × 45/40/15 → raw 79.4 → display 79 `GOOD`.
+- **H2** — pesos 0–100, suma exactamente 100; 50+50+10 inválido; 0+100+0 válido; negativos y &gt;100 inválidos.
+- **H3** — curva de mantenimiento progresiva (sin acantilado 1001 vs 999 km); `MIN(km, tiempo)`.
+- **H4** — penalización de avisos SOURCE; `HEALTH_BELOW_THRESHOLD` (DERIVED) no cambia `alerts_score`.
+- **H5** — hard caps: SAFETY CRITICAL → max 30; `maintenance_score <= 14` → max 50.
+- **H6** — status sobre el entero redondeado: 89.5/90/74.9/75/59.9/60/39.9/40/0/100.
+- **H7** — inspecciones `NOT_APPLICABLE` renormaliza; sin visita cerrada → No disponible (no 100).
+- **H8** — `INACTIVA` no altera el score ni aplica cap de OOS.
+- **H9** — previous 70, current 59, threshold 60 → crear alerta.
+- **H10** — alerta activa y 59→55 → no duplicar.
+- **H11** — histeresis 60/65: 59→62 sigue activa; 62→66 resuelve.
+- **H12** — previous null, current 45 → crear.
+- **H13** — cambio de threshold 60→70 con health 65 → reevaluar y crear.
+- **H14** — PUT config: Admin ok; Supervisor y `LOGISTICA` 403.
+- **H15** — dominio Salud no escribe `andon.*`; cero filas de health en schema Andon.
+
 ## Outbound ops
 
 Puerto `NotifyPort`. `ANDON_NOTIFY_PROVIDER=evolution|noop` (**default noop**). Contrato lab: `POST /message/sendText/{instance}` con `number=ANDON_WA_GROUP_JID` (`@g.us`). Cableado HTTP: **otro agente**. Throwaway Baileys — **riesgo ToS, no prod**. Meta/Twilio no en este PR. Enterado in-app. Checklist: [andon-whatsapp-ops-checklist-v0](../../architecture/andon-whatsapp-ops-checklist-v0.md).

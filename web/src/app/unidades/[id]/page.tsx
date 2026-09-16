@@ -7,7 +7,15 @@ import { ColumnDef } from '@tanstack/react-table';
 import { RoleGate } from '@/components/RoleGate';
 import { StatusBadge } from '@/components/StatusBadge';
 import { AndonHubCard } from '@/components/AndonHubCard';
+import { UnitHealth } from '@/components/UnitHealth';
 import { DataTable } from '@/components/ui/data-table';
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from '@/components/ui/sheet';
 import { api, HttpError } from '@/lib/api';
 import {
   etiquetaEstadoVisita,
@@ -22,6 +30,7 @@ import type {
   ItemInventario,
   OrigenPieza,
   UnidadHub,
+  UnidadHealth,
   VisitaDetalle,
   VisitaResumen,
 } from '@/lib/types';
@@ -39,15 +48,23 @@ function HubContent() {
   const router = useRouter();
   const { role, userId, isAdmin } = useRole();
   const [hub, setHub] = useState<UnidadHub | null>(null);
+  const [health, setHealth] = useState<UnidadHealth | null>(null);
+  const [healthOpen, setHealthOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [notFound, setNotFound] = useState(false);
   const [creating, setCreating] = useState(false);
   const [busyId, setBusyId] = useState<string | null>(null);
 
   async function cargar() {
-    setHub(
-      await api<UnidadHub>(`/unidades/${params.id}/hub`, { role: role!, userId }),
-    );
+    const [nextHub, nextHealth] = await Promise.all([
+      api<UnidadHub>(`/unidades/${params.id}/hub`, { role: role!, userId }),
+      api<UnidadHealth>(`/unidades/${params.id}/health`, {
+        role: role!,
+        userId,
+      }).catch(() => null),
+    ]);
+    setHub(nextHub);
+    setHealth(nextHealth);
   }
 
   useEffect(() => {
@@ -158,9 +175,18 @@ function HubContent() {
             {ficha.marcaModelo ? ` · ${ficha.marcaModelo}` : ''}
           </p>
         </div>
-        <Link className="btn btn-secondary" href="/unidades">
-          Volver
-        </Link>
+        <div className="hub-head-aside">
+          {health ? (
+            <UnitHealth
+              health={health}
+              variant="standard"
+              onOpen={() => setHealthOpen(true)}
+            />
+          ) : null}
+          <Link className="btn btn-secondary" href="/unidades">
+            Volver
+          </Link>
+        </div>
       </div>
 
       {error ? <p className="alert" style={{ marginBottom: 12 }}>{error}</p> : null}
@@ -309,6 +335,24 @@ function HubContent() {
           ))}
         </section>
       </div>
+
+      <Sheet open={healthOpen} onOpenChange={setHealthOpen}>
+        <SheetContent side="right">
+          <SheetHeader>
+            <SheetTitle>Salud de la unidad</SheetTitle>
+            <SheetDescription>
+              {health?.available
+                ? `${health.score}% — ${health.label}`
+                : 'Cómo se calcula este indicador.'}
+            </SheetDescription>
+          </SheetHeader>
+          <div className="px-4 pb-4 overflow-y-auto">
+            {health ? (
+              <UnitHealth health={health} variant="detailed" />
+            ) : null}
+          </div>
+        </SheetContent>
+      </Sheet>
     </>
   );
 }

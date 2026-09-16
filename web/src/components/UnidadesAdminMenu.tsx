@@ -6,9 +6,11 @@ import { ChevronDown } from 'lucide-react';
 export function UnidadesAdminMenu({
   onNuevoTipo,
   onAlertas,
+  onSalud,
 }: {
   onNuevoTipo: () => void;
   onAlertas: () => void;
+  onSalud: () => void;
 }) {
   function cerrar(event: MouseEvent<HTMLButtonElement>) {
     const menu = event.currentTarget.closest('details');
@@ -41,6 +43,16 @@ export function UnidadesAdminMenu({
           }}
         >
           Configurar alertas
+        </button>
+        <button
+          type="button"
+          role="menuitem"
+          onClick={(event) => {
+            cerrar(event);
+            onSalud();
+          }}
+        >
+          Configuración de salud
         </button>
       </div>
     </details>

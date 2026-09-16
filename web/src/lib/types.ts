@@ -246,7 +246,7 @@ export type InboxItem = {
   deeplinkPath: string;
 };
 
-export type SourceModule = 'ANDON' | 'INVENTARIO';
+export type SourceModule = 'ANDON' | 'INVENTARIO' | 'SALUD';
 
 export type SubjectType = 'UNIDAD' | 'ITEM' | 'NONE';
 
@@ -318,4 +318,52 @@ export type FlotaUnidadDetalle = {
 export type ApiError = {
   statusCode: number;
   message: string;
+};
+
+export type HealthStatus =
+  | 'EXCELLENT'
+  | 'GOOD'
+  | 'ATTENTION'
+  | 'POOR'
+  | 'CRITICAL';
+
+export type HealthDimensionId = 'maintenance' | 'alerts' | 'inspections';
+
+export type HealthDimensionBreakdown = {
+  id: HealthDimensionId;
+  availability: 'APPLICABLE' | 'NOT_APPLICABLE' | 'NO_DATA';
+  score: number | null;
+  weight: number;
+  contribution: number | null;
+  governing?: string | null;
+};
+
+export type UnidadHealth = {
+  unitId: string;
+  numeroInterno: string | null;
+  available: boolean;
+  score: number | null;
+  rawScore: number | null;
+  status: HealthStatus | null;
+  label: string;
+  breakdown: HealthDimensionBreakdown[];
+  cap: { maxScore: number; reason: string } | null;
+  drivers: { type: string; message: string }[];
+  derivedAlert: { id: string; estado: string } | null;
+  message: string | null;
+  configVersion: number;
+  weights: { id: HealthDimensionId; weight: number }[];
+};
+
+export type HealthConfig = {
+  id: string;
+  version: number;
+  dimensions: { id: HealthDimensionId; weight: number }[];
+  alertEnabled: boolean;
+  alertThreshold: number;
+  recoveryThreshold: number;
+  alertSeverity: Severity;
+  isActive: boolean;
+  createdAt: string;
+  createdBy: string | null;
 };

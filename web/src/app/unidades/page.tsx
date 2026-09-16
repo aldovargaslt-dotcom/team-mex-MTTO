@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { FormEvent, useEffect, useState } from 'react';
 import { RoleGate } from '@/components/RoleGate';
+import { HealthConfigDialog } from '@/components/HealthConfigDialog';
 import { UnidadesAdminMenu } from '@/components/UnidadesAdminMenu';
 import { UnidadesCatalogo } from '@/components/UnidadesCatalogo';
 import { TipoIconoPicker } from '@/components/TipoIconoPicker';
@@ -58,6 +59,7 @@ function UnidadesList() {
   const [iconoManual, setIconoManual] = useState(false);
   const [saving, setSaving] = useState(false);
   const [alertasOpen, setAlertasOpen] = useState(false);
+  const [saludOpen, setSaludOpen] = useState(false);
   const [alertDraft, setAlertDraft] = useState<
     Record<string, { tKm: string; tDias: string }>
   >({});
@@ -272,6 +274,7 @@ function UnidadesList() {
         <UnidadesAdminMenu
           onNuevoTipo={abrirAltaFamilia}
           onAlertas={abrirAlertas}
+          onSalud={() => setSaludOpen(true)}
         />
         <Button asChild>
           <Link
@@ -295,14 +298,14 @@ function UnidadesList() {
 
   return (
     <>
-      {loadFailed && !dialogOpen && !alertasOpen ? (
+      {loadFailed && !dialogOpen && !alertasOpen && !saludOpen ? (
         <div className="error-state">
           <h2>No se pudo consultar la flota</h2>
           <FormAlert>{error}</FormAlert>
         </div>
       ) : null}
 
-      {error && !dialogOpen && !alertasOpen && !loadFailed ? (
+      {error && !dialogOpen && !alertasOpen && !saludOpen && !loadFailed ? (
         <FormAlert>{error}</FormAlert>
       ) : null}
 
@@ -531,6 +534,15 @@ function UnidadesList() {
           </form>
         </DialogContent>
       </Dialog>
+
+      {role ? (
+        <HealthConfigDialog
+          open={saludOpen}
+          onOpenChange={setSaludOpen}
+          role={role}
+          userId={userId}
+        />
+      ) : null}
     </>
   );
 }

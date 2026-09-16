@@ -14,6 +14,7 @@
 | Notifications / campanita | [ADR-006](docs/adr/006-notifications-schema.md), ADR-004 (N) |
 | UI (`web/src`) | [ADR-003](docs/adr/003-shadcn-tailwind.md) + [docs/design-system/](docs/design-system/) |
 | UX operacional (copy, existencias, filtros, hub piezas) | [ux-operacional-cortes-v0](docs/design-system/ux-operacional-cortes-v0.md) — recorte SPEC-UX-001; **no toca Flota**. Flota: [tablero viaje](docs/specs/fleet-tablero-viaje-v0.md) |
+| Salud de unidad | [ADR-010](docs/adr/010-salud-unidad.md), [spec](docs/specs/unit-health-v0.md), ADR-004 (H1–H15). No escribir `andon.*`. Dual-stack notify intacto. |
 | Notify / WhatsApp | Dual-stack abajo. Default **noop**. No “arreglar”. |
 
 Mapa de directorios: [docs/adr/context-map.md](docs/adr/context-map.md). Índice ADR: [docs/adr/README.md](docs/adr/README.md).

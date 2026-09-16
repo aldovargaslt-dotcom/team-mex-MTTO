@@ -58,6 +58,10 @@ export class FlotaService implements OnModuleInit {
     return this.sitios.find({ order: { nombre: 'ASC' } });
   }
 
+  async getLatestKm(unidadId: string): Promise<number | null> {
+    return this.store.getLatestKm(unidadId);
+  }
+
   async createSitio(dto: CreateSitioDto) {
     const nombre = requireTrimmed(
       dto.nombre,
