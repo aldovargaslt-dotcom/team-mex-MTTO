@@ -6,6 +6,7 @@ import { FormEvent, useEffect, useMemo, useState } from 'react';
 import { ColumnDef } from '@tanstack/react-table';
 import { RoleGate } from '@/components/RoleGate';
 import { StatusBadge } from '@/components/StatusBadge';
+import { HealthConfigDialog } from '@/components/HealthConfigDialog';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { DataTable } from '@/components/ui/data-table';
@@ -53,6 +54,7 @@ function UnidadesList() {
   const [descripcion, setDescripcion] = useState('');
   const [saving, setSaving] = useState(false);
   const [alertasOpen, setAlertasOpen] = useState(false);
+  const [saludOpen, setSaludOpen] = useState(false);
   const [alertDraft, setAlertDraft] = useState<
     Record<string, { tKm: string; tDias: string }>
   >({});
@@ -311,6 +313,13 @@ function UnidadesList() {
                 <Button type="button" variant="secondary" onClick={abrirAlertas}>
                   Configurar alertas
                 </Button>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  onClick={() => setSaludOpen(true)}
+                >
+                  Configuración de salud
+                </Button>
                 <Button type="button" variant="secondary" onClick={abrirAltaFamilia}>
                   Nuevo tipo
                 </Button>
@@ -365,14 +374,14 @@ function UnidadesList() {
         </Card>
       </form>
 
-      {loadFailed && !dialogOpen && !alertasOpen ? (
+      {loadFailed && !dialogOpen && !alertasOpen && !saludOpen ? (
         <div className="error-state">
           <h2>No se pudo consultar la flota</h2>
           <FormAlert>{error}</FormAlert>
         </div>
       ) : null}
 
-      {error && !dialogOpen && !alertasOpen && !loadFailed ? (
+      {error && !dialogOpen && !alertasOpen && !saludOpen && !loadFailed ? (
         <FormAlert>{error}</FormAlert>
       ) : null}
 
@@ -621,6 +630,15 @@ function UnidadesList() {
           </form>
         </DialogContent>
       </Dialog>
+
+      {role ? (
+        <HealthConfigDialog
+          open={saludOpen}
+          onOpenChange={setSaludOpen}
+          role={role}
+          userId={userId}
+        />
+      ) : null}
     </>
   );
 }

@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { Package, Wrench } from 'lucide-react';
+import { HeartPulse, Package, Wrench } from 'lucide-react';
 import { RoleGate } from '@/components/RoleGate';
 import { ListFilter } from '@/components/ListFilter';
 import { Button } from '@/components/ui/button';
@@ -106,7 +106,7 @@ function InboxContent() {
     <>
       <PageHeader
         title="Notificaciones"
-        lede="Avisos de Andon e inventario. Tocar una fila la marca leída y abre el destino."
+        lede="Avisos de Andon, inventario y salud de unidad. Tocar una fila la marca leída y abre el destino."
         actions={
           unreadCount > 0 ? (
             <Button
@@ -143,6 +143,8 @@ function InboxContent() {
                 <span className="inbox-icon" aria-hidden>
                   {item.sourceModule === 'INVENTARIO' ? (
                     <Package className="size-4" />
+                  ) : item.sourceModule === 'SALUD' ? (
+                    <HeartPulse className="size-4" />
                   ) : (
                     <Wrench className="size-4" />
                   )}
