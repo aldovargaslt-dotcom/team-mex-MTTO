@@ -1,6 +1,6 @@
 'use client';
 
-import { FormEvent, useMemo, useState } from 'react';
+import { FormEvent, useEffect, useMemo, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -81,28 +81,39 @@ export function HealthConfigDialog({
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [restoreConfirm, setRestoreConfirm] = useState(false);
 
-  async function cargar() {
+  useEffect(() => {
+    if (!open) {
+      setDraft(null);
+      setSaved(null);
+      setError(null);
+      setConfirmOpen(false);
+      setRestoreConfirm(false);
+      return;
+    }
+    let cancelled = false;
     setLoading(true);
     setError(null);
-    try {
-      const cfg = await api<HealthConfig>('/salud/config', { role, userId });
-      setSaved(cfg);
-      setDraft(toDraft(cfg));
-    } catch (err) {
-      setError(
-        err instanceof HttpError
-          ? err.message
-          : 'No se pudo cargar la configuración de salud.',
-      );
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  function onOpen(next: boolean) {
-    onOpenChange(next);
-    if (next) void cargar();
-  }
+    void (async () => {
+      try {
+        const cfg = await api<HealthConfig>('/salud/config', { role, userId });
+        if (cancelled) return;
+        setSaved(cfg);
+        setDraft(toDraft(cfg));
+      } catch (err) {
+        if (cancelled) return;
+        setError(
+          err instanceof HttpError
+            ? err.message
+            : 'No se pudo cargar la configuración de salud.',
+        );
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [open, role, userId]);
 
   const parsed = useMemo(() => {
     if (!draft) return null;
@@ -201,7 +212,7 @@ export function HealthConfigDialog({
 
   return (
     <>
-      <Dialog open={open} onOpenChange={onOpen}>
+      <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg">
           <DialogHeader>
             <DialogTitle>Configuración de salud</DialogTitle>
@@ -210,8 +221,9 @@ export function HealthConfigDialog({
               unidad.
             </DialogDescription>
           </DialogHeader>
+          {error && !draft ? <FormAlert>{error}</FormAlert> : null}
           {loading || !draft ? (
-            <p className="muted">Cargando…</p>
+            error ? null : <p className="muted">Cargando…</p>
           ) : (
             <form
               className="flex flex-col gap-3"
@@ -279,7 +291,7 @@ export function HealthConfigDialog({
                       setDraft({ ...draft, alertEnabled: e.target.checked })
                     }
                   />
-                  Generar alertas por Health
+                  Generar alertas por salud
                 </label>
                 <Field label="Generar alerta debajo de %" htmlFor="h-alert">
                   <Input
