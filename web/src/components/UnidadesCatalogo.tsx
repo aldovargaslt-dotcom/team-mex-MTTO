@@ -573,11 +573,10 @@ export function UnidadesCatalogo({
         />
       )}
 
+      {ordenadas.length > 0 ? (
       <div className="unidades-pager">
         <p className="muted">
-          {ordenadas.length === 0
-            ? 'Ninguna unidad en esta vista'
-            : `Mostrando ${from}–${to} de ${ordenadas.length} unidades`}
+          {`Mostrando ${from}–${to} de ${ordenadas.length} unidades`}
         </p>
         {pages > 1 ? (
           <div className="unidades-pager__pages">
@@ -611,6 +610,7 @@ export function UnidadesCatalogo({
           </div>
         ) : null}
       </div>
+      ) : null}
         </>
       ) : null}
 
