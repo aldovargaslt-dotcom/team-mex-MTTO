@@ -101,3 +101,15 @@ export function etiquetaSituacionAtencion(situacion: SituacionAtencion) {
   if (situacion === 'enterado') return 'Requiere inspección';
   return 'Sin aviso';
 }
+
+/** Filtros (N) en el sheet móvil: solo Estado. Tabs, búsqueda y KPI Andon se ven fuera. */
+export function cuentaFiltrosOcultos(estadoFiltro: string): number {
+  return estadoFiltro ? 1 : 0;
+}
+
+export function unidadesConAtencion(
+  unidades: Unidad[],
+  avisos: AvisoAndon[],
+): Unidad[] {
+  return unidades.filter((unidad) => Boolean(avisoDeUnidad(avisos, unidad.id)));
+}

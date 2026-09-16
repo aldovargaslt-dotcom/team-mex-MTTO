@@ -12,6 +12,7 @@ import {
   Info,
   LayoutGrid,
   LayoutList,
+  ListFilter,
   RotateCcw,
   Search,
   TriangleAlert,
@@ -20,6 +21,7 @@ import {
 } from 'lucide-react';
 import { StatusBadge } from '@/components/StatusBadge';
 import { UnidadTipoIcon, UnidadTipoMark } from '@/components/UnidadTipoMark';
+import { UnidadesTipoMenu } from '@/components/UnidadesTipoMenu';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -27,12 +29,22 @@ import { DataTable } from '@/components/ui/data-table';
 import { Field } from '@/components/ui/field';
 import { Input, NativeSelect } from '@/components/ui/input';
 import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+} from '@/components/ui/sheet';
+import {
   avisoDeUnidad,
+  cuentaFiltrosOcultos,
   etiquetaSituacionAtencion,
   kpisFlota,
   ordenarUnidades,
   pctDelTotal,
   situacionAtencion,
+  unidadesConAtencion,
   UNIDADES_PAGE_SIZE,
   type UnidadesSort,
   type UnidadesVista,
@@ -90,6 +102,28 @@ function CeldaAtencion({
   );
 }
 
+function EstadoSelect({
+  id,
+  value,
+  onChange,
+}: {
+  id: string;
+  value: string;
+  onChange: (value: string) => void;
+}) {
+  return (
+    <NativeSelect
+      id={id}
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+    >
+      <option value="">Todos</option>
+      <option value="ACTIVA">Activa</option>
+      <option value="INACTIVA">Inactiva</option>
+    </NativeSelect>
+  );
+}
+
 const SORT_OPTIONS: { id: UnidadesSort; label: string }[] = [
   { id: 'interno-asc', label: 'Interno (A-Z)' },
   { id: 'interno-desc', label: 'Interno (Z-A)' },
@@ -104,12 +138,14 @@ export function UnidadesCatalogo({
   q,
   tipoFiltro,
   estadoFiltro,
+  atencionFiltro,
   buscando,
   isAdmin,
   actions,
   onQ,
   onTipoFiltro,
   onEstadoFiltro,
+  onAtencionFiltro,
   onSearch,
   onOpenUnidad,
   onEditarTipo,
@@ -122,12 +158,14 @@ export function UnidadesCatalogo({
   q: string;
   tipoFiltro: string;
   estadoFiltro: string;
+  atencionFiltro: boolean;
   buscando: boolean;
   isAdmin: boolean;
   actions?: ReactNode;
   onQ: (value: string) => void;
   onTipoFiltro: (value: string) => void;
   onEstadoFiltro: (value: string) => void;
+  onAtencionFiltro: (value: boolean) => void;
   onSearch: (event: FormEvent) => void;
   onOpenUnidad: (unidad: Unidad) => void;
   onEditarTipo: (tipo: TipoVehiculo) => void;
@@ -137,13 +175,21 @@ export function UnidadesCatalogo({
   const [vista, setVista] = useState<UnidadesVista>('tabla');
   const [page, setPage] = useState(1);
   const [consejo, setConsejo] = useState(true);
+  const [filtrosOpen, setFiltrosOpen] = useState(false);
 
   const kpis = useMemo(() => kpisFlota(flota, avisos), [flota, avisos]);
   const tipoSeleccionado = tipos.find((t) => t.id === tipoFiltro) ?? null;
+  const filtrosOcultos = cuentaFiltrosOcultos(estadoFiltro);
+  const kpiTotalActivo = !estadoFiltro && !atencionFiltro;
 
+  const visibles = useMemo(
+    () =>
+      atencionFiltro ? unidadesConAtencion(unidades, avisos) : unidades,
+    [unidades, avisos, atencionFiltro],
+  );
   const ordenadas = useMemo(
-    () => ordenarUnidades(unidades, sort),
-    [unidades, sort],
+    () => ordenarUnidades(visibles, sort),
+    [visibles, sort],
   );
   const pages = Math.max(1, Math.ceil(ordenadas.length / UNIDADES_PAGE_SIZE));
   const pagina = Math.min(page, pages);
@@ -154,12 +200,28 @@ export function UnidadesCatalogo({
 
   useEffect(() => {
     setPage(1);
-  }, [unidades, sort]);
+  }, [visibles, sort]);
+
+  useEffect(() => {
+    if (window.matchMedia('(max-width: 767px)').matches) {
+      setVista('tarjetas');
+    }
+  }, []);
+
+  function limpiarKpi() {
+    onEstadoFiltro('');
+    onAtencionFiltro(false);
+  }
 
   function limpiarFiltros() {
     onQ('');
     onTipoFiltro('');
-    onEstadoFiltro('');
+    limpiarKpi();
+  }
+
+  function aplicarEstado(value: string) {
+    onAtencionFiltro(false);
+    onEstadoFiltro(value);
   }
 
   const columns: ColumnDef<Unidad, unknown>[] = useMemo(
@@ -268,11 +330,9 @@ export function UnidadesCatalogo({
       <div className="unidades-kpis">
         <button
           type="button"
-          className={cn(
-            'unidades-kpi',
-            !estadoFiltro && !tipoFiltro && !q.trim() && 'is-active',
-          )}
-          onClick={limpiarFiltros}
+          className={cn('unidades-kpi', kpiTotalActivo && 'is-active')}
+          aria-pressed={kpiTotalActivo}
+          onClick={limpiarKpi}
         >
           <span className="unidades-kpi__icon unidades-kpi__icon--total">
             <Truck className="size-5" aria-hidden />
@@ -288,8 +348,9 @@ export function UnidadesCatalogo({
             'unidades-kpi',
             estadoFiltro === 'ACTIVA' && 'is-active',
           )}
+          aria-pressed={estadoFiltro === 'ACTIVA'}
           onClick={() =>
-            onEstadoFiltro(estadoFiltro === 'ACTIVA' ? '' : 'ACTIVA')
+            aplicarEstado(estadoFiltro === 'ACTIVA' ? '' : 'ACTIVA')
           }
         >
           <span className="unidades-kpi__icon unidades-kpi__icon--ok">
@@ -309,8 +370,9 @@ export function UnidadesCatalogo({
             'unidades-kpi',
             estadoFiltro === 'INACTIVA' && 'is-active',
           )}
+          aria-pressed={estadoFiltro === 'INACTIVA'}
           onClick={() =>
-            onEstadoFiltro(estadoFiltro === 'INACTIVA' ? '' : 'INACTIVA')
+            aplicarEstado(estadoFiltro === 'INACTIVA' ? '' : 'INACTIVA')
           }
         >
           <span className="unidades-kpi__icon unidades-kpi__icon--off">
@@ -324,7 +386,15 @@ export function UnidadesCatalogo({
             </span>
           </span>
         </button>
-        <Link href="/andon" className="unidades-kpi">
+        <button
+          type="button"
+          className={cn('unidades-kpi', atencionFiltro && 'is-active')}
+          aria-pressed={atencionFiltro}
+          onClick={() => {
+            onEstadoFiltro('');
+            onAtencionFiltro(!atencionFiltro);
+          }}
+        >
           <span className="unidades-kpi__icon unidades-kpi__icon--alert">
             <TriangleAlert className="size-5" aria-hidden />
           </span>
@@ -335,7 +405,7 @@ export function UnidadesCatalogo({
               {pctDelTotal(kpis.conAviso, kpis.total)}% del total
             </span>
           </span>
-        </Link>
+        </button>
       </div>
 
       <form onSubmit={onSearch}>
@@ -355,16 +425,16 @@ export function UnidadesCatalogo({
               />
             </div>
           </Field>
-          <Field label="Estado" htmlFor="unidadEstado">
-            <NativeSelect
+          <Field
+            label="Estado"
+            htmlFor="unidadEstado"
+            className="unidades-filters__estado"
+          >
+            <EstadoSelect
               id="unidadEstado"
               value={estadoFiltro}
-              onChange={(e) => onEstadoFiltro(e.target.value)}
-            >
-              <option value="">Todos</option>
-              <option value="ACTIVA">Activa</option>
-              <option value="INACTIVA">Inactiva</option>
-            </NativeSelect>
+              onChange={aplicarEstado}
+            />
           </Field>
           <div className="unidades-filters__actions">
             <Button
@@ -385,8 +455,58 @@ export function UnidadesCatalogo({
               Buscar
             </Button>
           </div>
+          <div className="unidades-filters__mobile">
+            <Button
+              type="button"
+              variant="secondary"
+              aria-expanded={filtrosOpen}
+              aria-controls="unidades-filtros-sheet"
+              onClick={() => setFiltrosOpen(true)}
+            >
+              <ListFilter className="size-4" aria-hidden />
+              {filtrosOcultos > 0 ? `Filtros (${filtrosOcultos})` : 'Filtros'}
+            </Button>
+          </div>
         </Card>
       </form>
+
+      <Sheet open={filtrosOpen} onOpenChange={setFiltrosOpen}>
+        <SheetContent
+          id="unidades-filtros-sheet"
+          side="bottom"
+          className="sm:max-w-none"
+        >
+          <SheetHeader>
+            <SheetTitle>Filtros</SheetTitle>
+            <SheetDescription>
+              El tipo se elige en las pestañas, no aquí.
+            </SheetDescription>
+          </SheetHeader>
+          <div className="grid gap-3 px-4">
+            <Field label="Estado" htmlFor="unidadEstadoSheet">
+              <EstadoSelect
+                id="unidadEstadoSheet"
+                value={estadoFiltro}
+                onChange={aplicarEstado}
+              />
+            </Field>
+          </div>
+          <SheetFooter>
+            <Button
+              type="button"
+              variant="quiet"
+              disabled={!estadoFiltro}
+              onClick={() => {
+                aplicarEstado('');
+                setFiltrosOpen(false);
+              }}
+            >
+              <RotateCcw className="size-3.5" aria-hidden />
+              Limpiar
+            </Button>
+          </SheetFooter>
+        </SheetContent>
+      </Sheet>
 
       {tipos.length > 0 ? (
         <div className="unidades-toolbar">
@@ -401,19 +521,26 @@ export function UnidadesCatalogo({
             </button>
             {tipos.map((tipo) => {
               const n = flota.filter((u) => u.tipo.id === tipo.id).length;
+              const activo = tipoFiltro === tipo.id;
               return (
-                <button
-                  key={tipo.id}
-                  type="button"
-                  aria-pressed={tipoFiltro === tipo.id}
-                  className={tipoFiltro === tipo.id ? 'active' : ''}
-                  onClick={() =>
-                    onTipoFiltro(tipoFiltro === tipo.id ? '' : tipo.id)
-                  }
-                >
-                  <UnidadTipoIcon nombre={tipo.nombre} icono={tipo.icono} />
-                  {tipo.nombre} ({n})
-                </button>
+                <span key={tipo.id} className="unidades-tipo-chip">
+                  <button
+                    type="button"
+                    aria-pressed={activo}
+                    className={activo ? 'active' : ''}
+                    onClick={() => onTipoFiltro(activo ? '' : tipo.id)}
+                  >
+                    <UnidadTipoIcon nombre={tipo.nombre} icono={tipo.icono} />
+                    {tipo.nombre} ({n})
+                  </button>
+                  {isAdmin && activo ? (
+                    <UnidadesTipoMenu
+                      tipoNombre={tipo.nombre}
+                      onEditar={() => onEditarTipo(tipo)}
+                      onEliminar={() => onEliminarTipo(tipo)}
+                    />
+                  ) : null}
+                </span>
               );
             })}
           </div>
@@ -570,9 +697,7 @@ export function UnidadesCatalogo({
           columns={columns}
           data={slice}
           getRowClassName={(unidad) =>
-            avisoDeUnidad(avisos, unidad.id)
-              ? 'unidades-row--aviso hover:bg-[#fff3f1]'
-              : undefined
+            avisoDeUnidad(avisos, unidad.id) ? 'unidades-row--aviso' : undefined
           }
           empty={
             buscando ? (

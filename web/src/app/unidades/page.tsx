@@ -41,6 +41,7 @@ function UnidadesList() {
   const [q, setQ] = useState('');
   const [tipoFiltro, setTipoFiltro] = useState('');
   const [estadoFiltro, setEstadoFiltro] = useState('');
+  const [atencionFiltro, setAtencionFiltro] = useState(false);
   const [tipos, setTipos] = useState<TipoVehiculo[]>([]);
   const [unidades, setUnidades] = useState<Unidad[] | null>(null);
   const [flota, setFlota] = useState<Unidad[]>([]);
@@ -262,7 +263,9 @@ function UnidadesList() {
     }
   }
 
-  const buscando = Boolean(q.trim() || tipoFiltro || estadoFiltro);
+  const buscando = Boolean(
+    q.trim() || tipoFiltro || estadoFiltro || atencionFiltro,
+  );
   const adminActions = isAdmin ? (
     tipos.length > 0 ? (
       <>
@@ -315,12 +318,14 @@ function UnidadesList() {
             q={q}
             tipoFiltro={tipoFiltro}
             estadoFiltro={estadoFiltro}
+            atencionFiltro={atencionFiltro}
             buscando={buscando}
             isAdmin={isAdmin}
             actions={adminActions}
             onQ={setQ}
             onTipoFiltro={setTipoFiltro}
             onEstadoFiltro={setEstadoFiltro}
+            onAtencionFiltro={setAtencionFiltro}
             onSearch={onSearch}
             onOpenUnidad={(unidad) => router.push(`/unidades/${unidad.id}`)}
             onEditarTipo={abrirEdicionFamilia}
