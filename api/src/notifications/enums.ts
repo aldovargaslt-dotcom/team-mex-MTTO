@@ -3,6 +3,7 @@ export const NOTIFICATIONS_SCHEMA = 'notifications';
 export enum SourceModule {
   ANDON = 'ANDON',
   INVENTARIO = 'INVENTARIO',
+  SALUD = 'SALUD',
 }
 
 export enum SourceEvent {
@@ -11,6 +12,8 @@ export enum SourceEvent {
   STOCK_BAJO = 'StockBajo',
   STOCK_REABASTECIDO = 'StockReabastecido',
   PENDIENTE_COMPROBANTE = 'PendienteComprobante',
+  HEALTH_BELOW_THRESHOLD = 'HealthBelowThreshold',
+  HEALTH_RECOVERED = 'HealthRecovered',
 }
 
 export enum SubjectType {

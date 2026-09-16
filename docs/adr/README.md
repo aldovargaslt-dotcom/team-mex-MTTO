@@ -15,6 +15,7 @@ El archivo 004 se llama `ADR-004-…` (histórico). No renombrar en un overlay d
 | 006 | [006-notifications-schema.md](006-notifications-schema.md) | Schema `notifications` (inbox) |
 | 007 | [007-inventario-stock-bajo.md](007-inventario-stock-bajo.md) | `min_qty` / `StockBajo` |
 | 008 | [008-flota-schema.md](008-flota-schema.md) | Schema `flota`, rol `LOGISTICA`, envío especial |
+| 009 | [009-salud-unidad.md](009-salud-unidad.md) | Schema `salud`, Health Score, alerta derivada |
 
 Mapa de bounded contexts → directorios: [context-map.md](context-map.md). UI visual: [docs/design-system/](../design-system/).
 

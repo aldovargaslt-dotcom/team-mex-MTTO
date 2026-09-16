@@ -1,10 +1,10 @@
 # team-mex-MTTO
 
-Team Mex — Mantenimiento + Inventario + Andon v0.
+Team Mex — Mantenimiento + Inventario + Andon + Salud de unidad v0.
 
-Cubre el kernel delgado (unidades, tipos, choferes, roles), visitas de mantenimiento, Inventario (schema `inventario`) con el paso **Piezas**, **Andon** (schema `andon`: avisos de mantenimiento vencido), **Notifications** (schema `notifications`: campanita + inbox) y **Flota** (schema `flota`: bitácora de patio). Quedan fuera: multi-almacén, lotes, costeo, OC formal, kardex pesado, ítem↔placa, reserva de stock en borrador, GPS/rutas.
+Cubre el kernel delgado (unidades, tipos, choferes, roles), visitas de mantenimiento, Inventario (schema `inventario`) con el paso **Piezas**, **Andon** (schema `andon`: avisos de mantenimiento vencido), **Notifications** (schema `notifications`: campanita + inbox), **Flota** (schema `flota`: bitácora de patio) y **Salud** (schema `salud`: Health Score). Quedan fuera: multi-almacén, lotes, costeo, OC formal, kardex pesado, ítem↔placa, reserva de stock en borrador, GPS/rutas.
 
-Arquitectura: [ADR-000](docs/adr/000-thin-kernel.md), [ADR-001](docs/adr/001-visita-cerrada-outbox.md), [ADR-002](docs/adr/002-schema-per-module.md), [ADR-003](docs/adr/003-shadcn-tailwind.md), [ADR-004](docs/adr/ADR-004-tdd-test-bar-andon-v0.md), [ADR-005](docs/adr/005-andon-no-stock-alerts.md), [ADR-006](docs/adr/006-notifications-schema.md), [ADR-007](docs/adr/007-inventario-stock-bajo.md), [ADR-008](docs/adr/008-flota-schema.md). Spec Flota: [docs/specs/fleet-manager-v0.md](docs/specs/fleet-manager-v0.md).
+Arquitectura: [ADR-000](docs/adr/000-thin-kernel.md), [ADR-001](docs/adr/001-visita-cerrada-outbox.md), [ADR-002](docs/adr/002-schema-per-module.md), [ADR-003](docs/adr/003-shadcn-tailwind.md), [ADR-004](docs/adr/ADR-004-tdd-test-bar-andon-v0.md), [ADR-005](docs/adr/005-andon-no-stock-alerts.md), [ADR-006](docs/adr/006-notifications-schema.md), [ADR-007](docs/adr/007-inventario-stock-bajo.md), [ADR-008](docs/adr/008-flota-schema.md), [ADR-009](docs/adr/009-salud-unidad.md). Spec Flota: [docs/specs/fleet-manager-v0.md](docs/specs/fleet-manager-v0.md). Spec Salud: [docs/specs/unit-health-v0.md](docs/specs/unit-health-v0.md).
 
 ## Stack
 
