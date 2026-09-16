@@ -1,6 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { MaxLength } from 'class-validator';
+import { IsEnum, IsOptional, MaxLength } from 'class-validator';
 import { OptionalTrimmed, RequiredTrimmed } from '../../common/trim';
+import { IconoTipoVehiculo } from '../icono-tipo-vehiculo.enum';
 
 export class CreateTipoVehiculoDto {
   @ApiProperty({ example: 'Camión' })
@@ -12,4 +13,9 @@ export class CreateTipoVehiculoDto {
   @OptionalTrimmed()
   @MaxLength(255)
   descripcion?: string;
+
+  @ApiPropertyOptional({ enum: IconoTipoVehiculo, example: IconoTipoVehiculo.TRUCK })
+  @IsOptional()
+  @IsEnum(IconoTipoVehiculo, { message: 'El icono del tipo no es válido.' })
+  icono?: IconoTipoVehiculo;
 }

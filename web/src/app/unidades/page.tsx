@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { FormEvent, useEffect, useState } from 'react';
 import { RoleGate } from '@/components/RoleGate';
 import { UnidadesCatalogo } from '@/components/UnidadesCatalogo';
+import { TipoIconoPicker } from '@/components/TipoIconoPicker';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -18,6 +19,7 @@ import { Field, FormAlert } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { api, HttpError } from '@/lib/api';
 import { resumenAvisoMantenimiento } from '@/lib/format';
+import { glyphTipo, inferGlyphTipo, type TipoGlyph } from '@/lib/unidades-catalogo';
 import { useRole } from '@/lib/role';
 import type { AvisoAndon, TipoVehiculo, UmbralAndon, Unidad } from '@/lib/types';
 
@@ -50,6 +52,8 @@ function UnidadesList() {
   const [editing, setEditing] = useState<TipoVehiculo | null>(null);
   const [nombre, setNombre] = useState('');
   const [descripcion, setDescripcion] = useState('');
+  const [icono, setIcono] = useState<TipoGlyph>('truck');
+  const [iconoManual, setIconoManual] = useState(false);
   const [saving, setSaving] = useState(false);
   const [alertasOpen, setAlertasOpen] = useState(false);
   const [alertDraft, setAlertDraft] = useState<
@@ -113,6 +117,8 @@ function UnidadesList() {
     setEditing(null);
     setNombre('');
     setDescripcion('');
+    setIcono('truck');
+    setIconoManual(false);
     setError(null);
     setDialogOpen(true);
   }
@@ -121,6 +127,8 @@ function UnidadesList() {
     setEditing(tipo);
     setNombre(tipo.nombre);
     setDescripcion(tipo.descripcion ?? '');
+    setIcono(glyphTipo(tipo.nombre, tipo.icono));
+    setIconoManual(true);
     setError(null);
     setDialogOpen(true);
   }
@@ -149,6 +157,7 @@ function UnidadesList() {
       const payload = {
         nombre: nombre.trim(),
         descripcion: descripcion.trim() || undefined,
+        icono,
       };
       const saved = editing
         ? await api<TipoVehiculo>(`/unidades/tipos/${editing.id}`, {
@@ -332,6 +341,8 @@ function UnidadesList() {
             setEditing(null);
             setNombre('');
             setDescripcion('');
+            setIcono('truck');
+            setIconoManual(false);
           }
         }}
       >
@@ -342,7 +353,7 @@ function UnidadesList() {
                 {editing ? 'Editar tipo' : 'Nuevo tipo'}
               </DialogTitle>
               <DialogDescription>
-                Nombre y descripción del tipo de unidad.
+                Nombre, icono y descripción del tipo de unidad.
               </DialogDescription>
             </DialogHeader>
             <div className="grid gap-3 py-3">
@@ -351,9 +362,27 @@ function UnidadesList() {
                   id="familiaNombre"
                   required
                   value={nombre}
-                  onChange={(e) => setNombre(e.target.value)}
+                  onChange={(e) => {
+                    const next = e.target.value;
+                    setNombre(next);
+                    if (!iconoManual) setIcono(inferGlyphTipo(next));
+                  }}
                   placeholder="Camión"
                   autoFocus
+                />
+              </Field>
+              <Field
+                label="Icono"
+                htmlFor="familiaIcono"
+                help="Se muestra en el listado de unidades."
+              >
+                <TipoIconoPicker
+                  id="familiaIcono"
+                  value={icono}
+                  onChange={(id) => {
+                    setIconoManual(true);
+                    setIcono(id);
+                  }}
                 />
               </Field>
               <Field label="Descripción" htmlFor="familiaDescripcion">

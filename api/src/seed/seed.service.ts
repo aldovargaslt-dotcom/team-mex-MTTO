@@ -6,6 +6,7 @@ import { Chofer } from '../choferes/chofer.entity';
 import { EstadoUnidad } from '../common/estado-unidad.enum';
 import { AndonService } from '../andon/andon.service';
 import { InventarioService } from '../inventario/inventario.service';
+import { IconoTipoVehiculo } from '../unidades/icono-tipo-vehiculo.enum';
 import { TipoVehiculo } from '../unidades/tipo-vehiculo.entity';
 import { Unidad } from '../unidades/unidad.entity';
 import {
@@ -18,9 +19,21 @@ import { Visita } from '../visitas/visita.entity';
 import { VisitasService } from '../visitas/visitas.service';
 
 const TIPOS_SEED = [
-  { nombre: 'Camión', descripcion: 'Unidad de carga pesada' },
-  { nombre: 'Camioneta', descripcion: 'Unidad ligera de apoyo' },
-  { nombre: 'Van', descripcion: 'Unidad de pasajeros' },
+  {
+    nombre: 'Camión',
+    descripcion: 'Unidad de carga pesada',
+    icono: IconoTipoVehiculo.TRUCK,
+  },
+  {
+    nombre: 'Camioneta',
+    descripcion: 'Unidad ligera de apoyo',
+    icono: IconoTipoVehiculo.CAR,
+  },
+  {
+    nombre: 'Van',
+    descripcion: 'Unidad de pasajeros',
+    icono: IconoTipoVehiculo.VAN,
+  },
 ];
 
 const SEED_ANDON_OBS = 'Semilla Andon';
@@ -90,6 +103,9 @@ export class SeedService implements OnModuleInit {
       });
       if (!exists) {
         await this.tipos.save(this.tipos.create(tipo));
+      } else if (exists.icono == null && tipo.icono) {
+        exists.icono = tipo.icono;
+        await this.tipos.save(exists);
       }
     }
 

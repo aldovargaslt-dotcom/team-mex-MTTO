@@ -151,7 +151,10 @@ export function UnidadesCatalogo({
         header: 'Unidad',
         cell: ({ row }) => (
           <div className="unidades-unidad">
-            <UnidadTipoMark nombre={row.original.tipo.nombre} />
+            <UnidadTipoMark
+              nombre={row.original.tipo.nombre}
+              icono={row.original.tipo.icono}
+            />
             <div>
               <div className="mono">{row.original.numeroInterno}</div>
               <div className="muted">{etiquetaUnidad(row.original)}</div>
@@ -167,7 +170,10 @@ export function UnidadesCatalogo({
             variant="outline"
             className="gap-1 normal-case tracking-normal"
           >
-            <UnidadTipoIcon nombre={row.original.tipo.nombre} />
+            <UnidadTipoIcon
+              nombre={row.original.tipo.nombre}
+              icono={row.original.tipo.icono}
+            />
             {row.original.tipo.nombre}
           </Badge>
         ),
@@ -403,7 +409,7 @@ export function UnidadesCatalogo({
                     onTipoFiltro(tipoFiltro === tipo.id ? '' : tipo.id)
                   }
                 >
-                  <UnidadTipoIcon nombre={tipo.nombre} />
+                  <UnidadTipoIcon nombre={tipo.nombre} icono={tipo.icono} />
                   {tipo.nombre} ({n})
                 </button>
               );
@@ -518,7 +524,10 @@ export function UnidadesCatalogo({
                 tabIndex={0}
               >
                 <div className="unidades-unidad">
-                  <UnidadTipoMark nombre={unidad.tipo.nombre} />
+                  <UnidadTipoMark
+                    nombre={unidad.tipo.nombre}
+                    icono={unidad.tipo.icono}
+                  />
                   <div>
                     <div className="mono">{unidad.numeroInterno}</div>
                     <div className="muted">{etiquetaUnidad(unidad)}</div>
@@ -529,7 +538,10 @@ export function UnidadesCatalogo({
                     variant="outline"
                     className="gap-1 normal-case tracking-normal"
                   >
-                    <UnidadTipoIcon nombre={unidad.tipo.nombre} />
+                    <UnidadTipoIcon
+                      nombre={unidad.tipo.nombre}
+                      icono={unidad.tipo.icono}
+                    />
                     {unidad.tipo.nombre}
                   </Badge>
                   <StatusBadge

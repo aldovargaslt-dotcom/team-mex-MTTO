@@ -11,12 +11,14 @@ const ICONS: Record<TipoGlyph, LucideIcon> = {
 
 export function UnidadTipoMark({
   nombre,
+  icono,
   size = 'md',
 }: {
   nombre: string;
+  icono?: string | null;
   size?: 'sm' | 'md';
 }) {
-  const Icon = ICONS[glyphTipo(nombre)];
+  const Icon = ICONS[glyphTipo(nombre, icono)];
   return (
     <span
       className={cn(
@@ -35,12 +37,14 @@ export function UnidadTipoMark({
 
 export function UnidadTipoIcon({
   nombre,
+  icono,
   className,
 }: {
   nombre: string;
+  icono?: string | null;
   className?: string;
 }) {
-  const Icon = ICONS[glyphTipo(nombre)];
+  const Icon = ICONS[glyphTipo(nombre, icono)];
   return (
     <Icon
       className={className ?? 'size-3.5'}

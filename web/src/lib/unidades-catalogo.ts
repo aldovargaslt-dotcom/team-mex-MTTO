@@ -1,14 +1,28 @@
-import type { AvisoAndon, Unidad } from './types';
+import type { AvisoAndon, IconoTipoVehiculo, Unidad } from './types';
 
 export type UnidadesSort = 'interno-asc' | 'interno-desc' | 'placas-asc';
 
 export type UnidadesVista = 'tabla' | 'tarjetas';
 
-export type TipoGlyph = 'truck' | 'car' | 'bus' | 'van';
+export type TipoGlyph = IconoTipoVehiculo;
+
+export const ICONOS_TIPO: {
+  id: TipoGlyph;
+  label: string;
+}[] = [
+  { id: 'truck', label: 'Carga' },
+  { id: 'car', label: 'Ligera' },
+  { id: 'van', label: 'Van' },
+  { id: 'bus', label: 'Pasajeros' },
+];
 
 export const UNIDADES_PAGE_SIZE = 5;
 
-export function glyphTipo(nombre: string): TipoGlyph {
+export function isTipoGlyph(value: string | null | undefined): value is TipoGlyph {
+  return ICONOS_TIPO.some((item) => item.id === value);
+}
+
+export function inferGlyphTipo(nombre: string): TipoGlyph {
   const n = nombre
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
@@ -19,6 +33,14 @@ export function glyphTipo(nombre: string): TipoGlyph {
     return 'bus';
   }
   return 'truck';
+}
+
+export function glyphTipo(
+  nombre: string,
+  icono?: string | null,
+): TipoGlyph {
+  if (isTipoGlyph(icono)) return icono;
+  return inferGlyphTipo(nombre);
 }
 
 export function pctDelTotal(parte: number, total: number) {

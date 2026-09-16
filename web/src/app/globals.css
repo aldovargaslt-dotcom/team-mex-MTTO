@@ -1784,6 +1784,40 @@
     color: var(--navy);
   }
 
+  .unidades-icono-picker {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .unidades-icono-picker button {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    min-width: var(--tap);
+    min-height: var(--tap);
+    padding: 8px 10px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: var(--white);
+    color: var(--navy);
+    font-size: 11px;
+    cursor: pointer;
+  }
+
+  .unidades-icono-picker button:hover {
+    border-color: #c5c7d4;
+    background: #f7f7fa;
+  }
+
+  .unidades-icono-picker button.active {
+    border-color: var(--navy);
+    background: var(--muted-bg);
+    font-weight: 500;
+  }
+
   @media (max-width: 800px) {
     .unidades-filters {
       grid-template-columns: 1fr;

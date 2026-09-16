@@ -24,10 +24,13 @@ export type AlertaStock = 'OK' | 'BAJO' | 'AGOTADO';
 
 export type EstadoAviso = 'ABIERTO' | 'ENTERADO' | 'RESUELTO';
 
+export type IconoTipoVehiculo = 'truck' | 'car' | 'van' | 'bus';
+
 export type TipoVehiculo = {
   id: string;
   nombre: string;
   descripcion: string | null;
+  icono?: IconoTipoVehiculo | null;
 };
 
 export type Chofer = {

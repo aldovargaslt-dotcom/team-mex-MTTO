@@ -9,6 +9,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { Unidad } from './unidad.entity';
+import { IconoTipoVehiculo } from './icono-tipo-vehiculo.enum';
 
 @Entity('tipos_vehiculo')
 export class TipoVehiculo {
@@ -20,6 +21,9 @@ export class TipoVehiculo {
 
   @Column({ type: 'text', nullable: true })
   descripcion: string | null;
+
+  @Column({ type: 'varchar', length: 16, nullable: true })
+  icono: IconoTipoVehiculo | null;
 
   @OneToMany(() => Unidad, (unidad) => unidad.tipo)
   unidades: Unidad[];
