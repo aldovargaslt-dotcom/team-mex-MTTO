@@ -1759,6 +1759,12 @@
     outline-offset: -2px;
   }
 
+  .unidades-empty {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
   @media (max-width: 767px) {
     .unidades-kpis {
       grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1770,6 +1776,20 @@
 
     .unidades-filters-mobile {
       display: flex;
+    }
+
+    .unidades-board-toolbar {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .unidades-board-toolbar .list-filter {
+      flex: 1 1 auto;
+      width: 100%;
+    }
+
+    .unidades-sort-view {
+      margin-left: 0;
     }
 
     .unidades-view-toggle {

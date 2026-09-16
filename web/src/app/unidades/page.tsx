@@ -45,6 +45,16 @@ function etiquetaModelo(unidad: Unidad) {
   return unidad.anio ? `${unidad.marcaModelo} · ${unidad.anio}` : unidad.marcaModelo;
 }
 
+function resumenDeFlota(lista: Unidad[], conAviso: Set<string>) {
+  const activas = lista.filter((unidad) => unidad.estado === 'ACTIVA').length;
+  return {
+    total: lista.length,
+    activas,
+    inactivas: lista.length - activas,
+    avisos: lista.filter((unidad) => conAviso.has(unidad.id)).length,
+  };
+}
+
 function ordenarUnidades(
   lista: Unidad[],
   orden: OrdenUnidades,
@@ -131,6 +141,12 @@ function UnidadesList() {
   const [filtrosOpen, setFiltrosOpen] = useState(false);
   const [tipos, setTipos] = useState<TipoVehiculo[]>([]);
   const [unidades, setUnidades] = useState<Unidad[] | null>(null);
+  const [resumen, setResumen] = useState({
+    total: 0,
+    activas: 0,
+    inactivas: 0,
+    avisos: 0,
+  });
   const [avisosUnidadIds, setAvisosUnidadIds] = useState<Set<string>>(new Set());
   const [umbrales, setUmbrales] = useState<Record<string, UmbralAndon>>({});
   const [error, setError] = useState<string | null>(null);
@@ -156,19 +172,25 @@ function UnidadesList() {
     if (q.trim()) params.set('q', q.trim());
     if (estadoFiltro) params.set('estado', estadoFiltro);
     const qs = params.toString();
+    const filtrando = Boolean(q.trim() || estadoFiltro);
     try {
-      const [lista, catalogo, umb, avisos] = await Promise.all([
+      const [lista, catalogo, umb, avisos, flota] = await Promise.all([
         api<Unidad[]>(`/unidades${qs ? `?${qs}` : ''}`, { role, userId }),
         api<TipoVehiculo[]>('/unidades/tipos', { role, userId }),
         api<UmbralAndon[]>('/andon/umbrales', { role, userId }),
         api<AvisoAndon[]>('/andon/avisos', { role, userId }).catch(
           () => [] as AvisoAndon[],
         ),
+        filtrando
+          ? api<Unidad[]>('/unidades', { role, userId })
+          : Promise.resolve(null),
       ]);
+      const avisoIds = new Set(avisos.map((aviso) => aviso.unidadId));
       setUnidades(lista);
       setTipos(catalogo);
       setUmbrales(Object.fromEntries(umb.map((u) => [u.tipoVehiculoId, u])));
-      setAvisosUnidadIds(new Set(avisos.map((aviso) => aviso.unidadId)));
+      setAvisosUnidadIds(avisoIds);
+      setResumen(resumenDeFlota(flota ?? lista, avisoIds));
       setLoadFailed(false);
     } catch (err) {
       setUnidades([]);
@@ -367,18 +389,6 @@ function UnidadesList() {
   const filtrosActivos = estadoFiltro ? 1 : 0;
   const conAviso = avisosUnidadIds;
 
-  const kpis = useMemo(() => {
-    const lista = unidades ?? [];
-    const activas = lista.filter((unidad) => unidad.estado === 'ACTIVA').length;
-    const avisos = lista.filter((unidad) => conAviso.has(unidad.id)).length;
-    return {
-      total: lista.length,
-      activas,
-      inactivas: lista.length - activas,
-      avisos,
-    };
-  }, [unidades, conAviso]);
-
   const conteoPorTipo = useMemo(() => {
     const counts = new Map<string, number>();
     for (const unidad of unidades ?? []) {
@@ -472,23 +482,23 @@ function UnidadesList() {
       {!loadFailed && unidades != null ? (
         <div className="unidades-kpis" aria-label="Resumen de unidades">
           <div className="unidades-kpi">
-            <span className="unidades-kpi__value">{kpis.total}</span>
+            <span className="unidades-kpi__value">{resumen.total}</span>
             <span className="unidades-kpi__label">Total</span>
           </div>
           <div className="unidades-kpi">
-            <span className="unidades-kpi__value">{kpis.activas}</span>
+            <span className="unidades-kpi__value">{resumen.activas}</span>
             <span className="unidades-kpi__label">Activas</span>
           </div>
           <div className="unidades-kpi">
-            <span className="unidades-kpi__value">{kpis.inactivas}</span>
+            <span className="unidades-kpi__value">{resumen.inactivas}</span>
             <span className="unidades-kpi__label">Inactivas</span>
           </div>
           <div
             className={
-              kpis.avisos > 0 ? 'unidades-kpi unidades-kpi--aviso' : 'unidades-kpi'
+              resumen.avisos > 0 ? 'unidades-kpi unidades-kpi--aviso' : 'unidades-kpi'
             }
           >
-            <span className="unidades-kpi__value">{kpis.avisos}</span>
+            <span className="unidades-kpi__value">{resumen.avisos}</span>
             <span className="unidades-kpi__label">Avisos</span>
           </div>
         </div>
@@ -607,7 +617,7 @@ function UnidadesList() {
           </div>
 
           {visibles.length === 0 ? (
-            <div className="empty-state">
+            <div className="empty-state unidades-empty">
               <h2>
                 {buscando
                   ? 'No hay unidades que coincidan'
