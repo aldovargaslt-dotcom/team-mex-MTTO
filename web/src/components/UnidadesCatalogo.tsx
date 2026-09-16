@@ -678,7 +678,7 @@ export function UnidadesCatalogo({
                       )}
                     >
                       <UnidadIdentidad unidad={unidad} />
-                      <p className="unidades-card__meta">
+                      <div className="unidades-card__meta">
                         <span>{unidad.tipo.nombre}</span>
                         <span className="unidades-card__dot" aria-hidden>
                           ·
@@ -688,7 +688,7 @@ export function UnidadesCatalogo({
                           ·
                         </span>
                         <span className="unidades-placas">{unidad.placas}</span>
-                      </p>
+                      </div>
                       <CeldaAtencion unidad={unidad} avisos={avisos} />
                       <Button
                         asChild
