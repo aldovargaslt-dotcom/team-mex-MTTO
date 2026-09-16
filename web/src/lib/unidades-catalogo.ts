@@ -1,5 +1,10 @@
 import type { AvisoAndon, IconoTipoVehiculo, Unidad } from './types';
 
+export type SituacionAtencion =
+  | 'requiere_inspeccion'
+  | 'enterado'
+  | 'sin_aviso';
+
 export type UnidadesSort = 'interno-asc' | 'interno-desc' | 'placas-asc';
 
 export type UnidadesVista = 'tabla' | 'tarjetas';
@@ -62,11 +67,17 @@ export function ordenarUnidades(list: Unidad[], sort: UnidadesSort): Unidad[] {
   return copy;
 }
 
+export function avisosPendientes(avisos: AvisoAndon[]) {
+  return avisos.filter((aviso) => aviso.estado !== 'RESUELTO');
+}
+
 export function kpisFlota(flota: Unidad[], avisos: AvisoAndon[]) {
   const total = flota.length;
   const activas = flota.filter((u) => u.estado === 'ACTIVA').length;
   const inactivas = flota.filter((u) => u.estado === 'INACTIVA').length;
-  const conAviso = new Set(avisos.map((a) => a.unidadId)).size;
+  const conAviso = new Set(
+    avisosPendientes(avisos).map((aviso) => aviso.unidadId),
+  ).size;
   return { total, activas, inactivas, conAviso };
 }
 
@@ -74,5 +85,19 @@ export function avisoDeUnidad(
   avisos: AvisoAndon[],
   unidadId: string,
 ): AvisoAndon | undefined {
-  return avisos.find((a) => a.unidadId === unidadId);
+  return avisosPendientes(avisos).find((aviso) => aviso.unidadId === unidadId);
+}
+
+export function situacionAtencion(
+  aviso: AvisoAndon | undefined,
+): SituacionAtencion {
+  if (!aviso) return 'sin_aviso';
+  if (aviso.estado === 'ENTERADO') return 'enterado';
+  return 'requiere_inspeccion';
+}
+
+export function etiquetaSituacionAtencion(situacion: SituacionAtencion) {
+  if (situacion === 'requiere_inspeccion') return 'Requiere inspección';
+  if (situacion === 'enterado') return 'Requiere inspección';
+  return 'Sin aviso';
 }

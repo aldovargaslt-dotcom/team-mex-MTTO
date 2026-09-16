@@ -28,25 +28,66 @@ import { Field } from '@/components/ui/field';
 import { Input, NativeSelect } from '@/components/ui/input';
 import {
   avisoDeUnidad,
+  etiquetaSituacionAtencion,
   kpisFlota,
   ordenarUnidades,
   pctDelTotal,
+  situacionAtencion,
   UNIDADES_PAGE_SIZE,
   type UnidadesSort,
   type UnidadesVista,
 } from '@/lib/unidades-catalogo';
-import { resumenAvisoMantenimiento } from '@/lib/format';
 import { cn } from '@/lib/utils';
-import type { AvisoAndon, TipoVehiculo, UmbralAndon, Unidad } from '@/lib/types';
-
-const DEFAULT_T_KM = 10000;
-const DEFAULT_T_DIAS = 90;
+import type { AvisoAndon, TipoVehiculo, Unidad } from '@/lib/types';
 
 function etiquetaUnidad(unidad: Unidad) {
   if (!unidad.marcaModelo) return '—';
   return unidad.anio
     ? `${unidad.marcaModelo} · ${unidad.anio}`
     : unidad.marcaModelo;
+}
+
+function EstadoUnidadMark({ unidad }: { unidad: Unidad }) {
+  return (
+    <div className="unidades-estado">
+      <StatusBadge estado={unidad.estado} />
+      {unidad.motivoInactivacion === 'ENVIO_ESPECIAL' ? (
+        <Badge variant="info" className="normal-case tracking-normal">
+          Envío especial
+        </Badge>
+      ) : null}
+    </div>
+  );
+}
+
+function CeldaAtencion({
+  unidad,
+  avisos,
+}: {
+  unidad: Unidad;
+  avisos: AvisoAndon[];
+}) {
+  const aviso = avisoDeUnidad(avisos, unidad.id);
+  const situacion = situacionAtencion(aviso);
+  const etiqueta = etiquetaSituacionAtencion(situacion);
+  if (situacion === 'sin_aviso') {
+    return (
+      <p className="unidades-atencion unidades-atencion--quiet">{etiqueta}</p>
+    );
+  }
+  return (
+    <p
+      className={cn(
+        'unidades-atencion',
+        situacion === 'enterado'
+          ? 'unidades-atencion--warn'
+          : 'unidades-atencion--alert',
+      )}
+    >
+      <TriangleAlert className="size-3.5 shrink-0" aria-hidden />
+      {etiqueta}
+    </p>
+  );
 }
 
 const SORT_OPTIONS: { id: UnidadesSort; label: string }[] = [
@@ -59,7 +100,6 @@ export function UnidadesCatalogo({
   unidades,
   flota,
   tipos,
-  umbrales,
   avisos,
   q,
   tipoFiltro,
@@ -78,7 +118,6 @@ export function UnidadesCatalogo({
   unidades: Unidad[];
   flota: Unidad[];
   tipos: TipoVehiculo[];
-  umbrales: Record<string, UmbralAndon>;
   avisos: AvisoAndon[];
   q: string;
   tipoFiltro: string;
@@ -123,27 +162,6 @@ export function UnidadesCatalogo({
     onEstadoFiltro('');
   }
 
-  function celdaMantenimiento(unidad: Unidad) {
-    const aviso = avisoDeUnidad(avisos, unidad.id);
-    const umbral = umbrales[unidad.tipo.id];
-    if (aviso) {
-      return (
-        <p className="unidades-aviso">
-          <TriangleAlert className="size-3.5 shrink-0" aria-hidden />
-          Requiere inspección
-        </p>
-      );
-    }
-    return (
-      <p className="muted">
-        {resumenAvisoMantenimiento(
-          umbral?.tKm ?? DEFAULT_T_KM,
-          umbral?.tDias ?? DEFAULT_T_DIAS,
-        )}
-      </p>
-    );
-  }
-
   const columns: ColumnDef<Unidad, unknown>[] = useMemo(
     () => [
       {
@@ -156,8 +174,8 @@ export function UnidadesCatalogo({
               icono={row.original.tipo.icono}
             />
             <div>
-              <div className="mono">{row.original.numeroInterno}</div>
-              <div className="muted">{etiquetaUnidad(row.original)}</div>
+              <div className="unidades-interno">{row.original.numeroInterno}</div>
+              <div className="unidades-modelo">{etiquetaUnidad(row.original)}</div>
             </div>
           </div>
         ),
@@ -168,7 +186,7 @@ export function UnidadesCatalogo({
         cell: ({ row }) => (
           <Badge
             variant="outline"
-            className="gap-1 normal-case tracking-normal"
+            className="gap-1 font-normal normal-case tracking-normal"
           >
             <UnidadTipoIcon
               nombre={row.original.tipo.nombre}
@@ -178,21 +196,24 @@ export function UnidadesCatalogo({
           </Badge>
         ),
       },
-      { accessorKey: 'placas', header: 'Placas' },
       {
-        accessorKey: 'estado',
-        header: 'Estado',
+        accessorKey: 'placas',
+        header: 'Placas',
         cell: ({ row }) => (
-          <StatusBadge
-            estado={row.original.estado}
-            className="normal-case tracking-normal"
-          />
+          <span className="unidades-placas">{row.original.placas}</span>
         ),
       },
       {
-        id: 'mantenimiento',
-        header: 'Mantenimiento',
-        cell: ({ row }) => celdaMantenimiento(row.original),
+        accessorKey: 'estado',
+        header: 'Estado',
+        cell: ({ row }) => <EstadoUnidadMark unidad={row.original} />,
+      },
+      {
+        id: 'atencion',
+        header: 'Atención',
+        cell: ({ row }) => (
+          <CeldaAtencion unidad={row.original} avisos={avisos} />
+        ),
       },
       {
         id: 'acciones',
@@ -215,9 +236,7 @@ export function UnidadesCatalogo({
         ),
       },
     ],
-    // celdaMantenimiento cierra sobre avisos/umbrales
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [avisos, umbrales],
+    [avisos],
   );
 
   const from = ordenadas.length === 0 ? 0 : (pagina - 1) * UNIDADES_PAGE_SIZE + 1;
@@ -229,23 +248,20 @@ export function UnidadesCatalogo({
         <div className="min-w-0 flex-1">
           <h1>Unidades</h1>
           <p className="lede">
-            Seleccione una unidad para ver su ficha.
+            Busque y abra la unidad que necesita atención.
           </p>
           {actions ? (
             <div className="mt-2 flex flex-wrap gap-2">{actions}</div>
           ) : null}
         </div>
-        <aside className="unidades-hero-aside" aria-label="Resumen de flota">
+        <aside className="unidades-hero-aside" aria-label="Flota de mantenimiento">
           <span className="unidades-hero-aside__icon" aria-hidden>
-            <Truck className="size-5" strokeWidth={1.75} />
+            <Truck className="size-4" strokeWidth={1.75} />
           </span>
           <span>
-            <strong>Flota en operación</strong>
-            <span>
-              {kpis.activas} activas · {kpis.conAviso} con aviso
-            </span>
+            <strong>Flota de mantenimiento</strong>
+            <span>Abra una ficha para visitas y avisos.</span>
           </span>
-          <Truck className="unidades-hero-aside__mark" aria-hidden />
         </aside>
       </div>
 
@@ -338,20 +354,6 @@ export function UnidadesCatalogo({
                 className="pl-9"
               />
             </div>
-          </Field>
-          <Field label="Tipo de unidad" htmlFor="unidadTipo">
-            <NativeSelect
-              id="unidadTipo"
-              value={tipoFiltro}
-              onChange={(e) => onTipoFiltro(e.target.value)}
-            >
-              <option value="">Todos</option>
-              {tipos.map((tipo) => (
-                <option key={tipo.id} value={tipo.id}>
-                  {tipo.nombre}
-                </option>
-              ))}
-            </NativeSelect>
           </Field>
           <Field label="Estado" htmlFor="unidadEstado">
             <NativeSelect
@@ -455,37 +457,33 @@ export function UnidadesCatalogo({
       ) : null}
 
       {isAdmin && tipoSeleccionado ? (
-        <div className="mb-3 flex min-h-11 flex-wrap items-center justify-between gap-2">
-          <p className="text-xs text-muted-foreground">
-            {tipoSeleccionado.descripcion
-              ? `${tipoSeleccionado.descripcion} · `
-              : ''}
-            {resumenAvisoMantenimiento(
-              umbrales[tipoSeleccionado.id]?.tKm ?? DEFAULT_T_KM,
-              umbrales[tipoSeleccionado.id]?.tDias ?? DEFAULT_T_DIAS,
-            )}
-          </p>
+        <div className="unidades-tipo-bar">
+          <div className="min-w-0">
+            <p className="unidades-tipo-bar__title">
+              Tipo {tipoSeleccionado.nombre}
+            </p>
+            <p className="muted">
+              {tipoSeleccionado.descripcion
+                ? tipoSeleccionado.descripcion
+                : 'Editar o eliminar aplica a este tipo, no a una unidad.'}
+            </p>
+          </div>
           <div className="flex flex-wrap gap-2">
-            <Button asChild variant="outline" size="compact">
-              <Link href={`/unidades/nueva?tipoId=${tipoSeleccionado.id}`}>
-                Nueva unidad
-              </Link>
-            </Button>
             <Button
               type="button"
               variant="secondary"
               size="compact"
               onClick={() => onEditarTipo(tipoSeleccionado)}
             >
-              Editar
+              Editar tipo
             </Button>
             <Button
               type="button"
-              variant="destructive"
+              variant="dangerSoft"
               size="compact"
               onClick={() => onEliminarTipo(tipoSeleccionado)}
             >
-              Eliminar
+              Eliminar tipo
             </Button>
           </div>
         </div>
@@ -512,7 +510,10 @@ export function UnidadesCatalogo({
             {slice.map((unidad) => (
               <article
                 key={unidad.id}
-                className="unidades-card"
+                className={cn(
+                  'unidades-card',
+                  avisoDeUnidad(avisos, unidad.id) && 'unidades-card--aviso',
+                )}
                 onClick={() => onOpenUnidad(unidad)}
                 onKeyDown={(event) => {
                   if (event.key === 'Enter' || event.key === ' ') {
@@ -529,14 +530,14 @@ export function UnidadesCatalogo({
                     icono={unidad.tipo.icono}
                   />
                   <div>
-                    <div className="mono">{unidad.numeroInterno}</div>
-                    <div className="muted">{etiquetaUnidad(unidad)}</div>
+                    <div className="unidades-interno">{unidad.numeroInterno}</div>
+                    <div className="unidades-modelo">{etiquetaUnidad(unidad)}</div>
                   </div>
                 </div>
                 <div className="flex flex-wrap items-center gap-2">
                   <Badge
                     variant="outline"
-                    className="gap-1 normal-case tracking-normal"
+                    className="gap-1 font-normal normal-case tracking-normal"
                   >
                     <UnidadTipoIcon
                       nombre={unidad.tipo.nombre}
@@ -544,13 +545,10 @@ export function UnidadesCatalogo({
                     />
                     {unidad.tipo.nombre}
                   </Badge>
-                  <StatusBadge
-                    estado={unidad.estado}
-                    className="normal-case tracking-normal"
-                  />
-                  <span className="muted">{unidad.placas}</span>
+                  <EstadoUnidadMark unidad={unidad} />
+                  <span className="unidades-placas">{unidad.placas}</span>
                 </div>
-                {celdaMantenimiento(unidad)}
+                <CeldaAtencion unidad={unidad} avisos={avisos} />
                 <Button
                   asChild
                   size="compact"
@@ -571,6 +569,11 @@ export function UnidadesCatalogo({
         <DataTable
           columns={columns}
           data={slice}
+          getRowClassName={(unidad) =>
+            avisoDeUnidad(avisos, unidad.id)
+              ? 'unidades-row--aviso hover:bg-[#fff3f1]'
+              : undefined
+          }
           empty={
             buscando ? (
               <>

@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { FormEvent, useEffect, useState } from 'react';
 import { RoleGate } from '@/components/RoleGate';
+import { UnidadesAdminMenu } from '@/components/UnidadesAdminMenu';
 import { UnidadesCatalogo } from '@/components/UnidadesCatalogo';
 import { TipoIconoPicker } from '@/components/TipoIconoPicker';
 import { Button } from '@/components/ui/button';
@@ -265,14 +266,20 @@ function UnidadesList() {
   const adminActions = isAdmin ? (
     tipos.length > 0 ? (
       <>
-        <Button type="button" variant="secondary" onClick={abrirAlertas}>
-          Configurar alertas
-        </Button>
-        <Button type="button" variant="secondary" onClick={abrirAltaFamilia}>
-          Nuevo tipo
-        </Button>
+        <UnidadesAdminMenu
+          onNuevoTipo={abrirAltaFamilia}
+          onAlertas={abrirAlertas}
+        />
         <Button asChild>
-          <Link href="/unidades/nueva">Nueva unidad</Link>
+          <Link
+            href={
+              tipoFiltro
+                ? `/unidades/nueva?tipoId=${tipoFiltro}`
+                : '/unidades/nueva'
+            }
+          >
+            Nueva unidad
+          </Link>
         </Button>
       </>
     ) : (
@@ -304,7 +311,6 @@ function UnidadesList() {
             unidades={unidades ?? []}
             flota={flota}
             tipos={tipos}
-            umbrales={umbrales}
             avisos={avisos}
             q={q}
             tipoFiltro={tipoFiltro}
