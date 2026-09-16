@@ -2,10 +2,16 @@ import type { AlertaStock, EstadoChofer, EstadoUnidad } from '@/lib/types';
 import { Badge } from '@/components/ui/badge';
 import { etiquetaAlertaStock, etiquetaEstadoChofer } from '@/lib/format';
 
-export function StatusBadge({ estado }: { estado: EstadoUnidad }) {
+export function StatusBadge({
+  estado,
+  className,
+}: {
+  estado: EstadoUnidad;
+  className?: string;
+}) {
   const activa = estado === 'ACTIVA';
   return (
-    <Badge variant={activa ? 'success' : 'muted'}>
+    <Badge variant={activa ? 'success' : 'muted'} className={className}>
       {activa ? 'Activa' : 'Inactiva'}
     </Badge>
   );

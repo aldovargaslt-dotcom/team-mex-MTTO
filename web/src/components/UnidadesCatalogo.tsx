@@ -35,7 +35,7 @@ import {
   type UnidadesSort,
   type UnidadesVista,
 } from '@/lib/unidades-catalogo';
-import { lineasCausaAvisoAndon, resumenAvisoMantenimiento } from '@/lib/format';
+import { resumenAvisoMantenimiento } from '@/lib/format';
 import { cn } from '@/lib/utils';
 import type { AvisoAndon, TipoVehiculo, UmbralAndon, Unidad } from '@/lib/types';
 
@@ -127,15 +127,11 @@ export function UnidadesCatalogo({
     const aviso = avisoDeUnidad(avisos, unidad.id);
     const umbral = umbrales[unidad.tipo.id];
     if (aviso) {
-      const causa = lineasCausaAvisoAndon(aviso)[0];
       return (
-        <div>
-          <p className="unidades-aviso">
-            <TriangleAlert className="size-3.5 shrink-0" aria-hidden />
-            Requiere inspección
-          </p>
-          {causa ? <p className="muted">{causa}</p> : null}
-        </div>
+        <p className="unidades-aviso">
+          <TriangleAlert className="size-3.5 shrink-0" aria-hidden />
+          Requiere inspección
+        </p>
       );
     }
     return (
@@ -180,7 +176,12 @@ export function UnidadesCatalogo({
       {
         accessorKey: 'estado',
         header: 'Estado',
-        cell: ({ row }) => <StatusBadge estado={row.original.estado} />,
+        cell: ({ row }) => (
+          <StatusBadge
+            estado={row.original.estado}
+            className="normal-case tracking-normal"
+          />
+        ),
       },
       {
         id: 'mantenimiento',
@@ -222,8 +223,7 @@ export function UnidadesCatalogo({
         <div className="min-w-0 flex-1">
           <h1>Unidades</h1>
           <p className="lede">
-            Seleccione una unidad para ver su ficha. El listado usa interno,
-            placas, marca y el aviso Andon ya cargado.
+            Seleccione una unidad para ver su ficha.
           </p>
           {actions ? (
             <div className="mt-2 flex flex-wrap gap-2">{actions}</div>
@@ -248,7 +248,7 @@ export function UnidadesCatalogo({
           type="button"
           className={cn(
             'unidades-kpi',
-            !estadoFiltro && !tipoFiltro && 'is-active',
+            !estadoFiltro && !tipoFiltro && !q.trim() && 'is-active',
           )}
           onClick={limpiarFiltros}
         >
@@ -320,12 +320,16 @@ export function UnidadesCatalogo({
         <Card className="unidades-filters">
           <Field label="Buscar unidad" htmlFor="unidadQ">
             <div className="unidades-search">
-              <Search className="unidades-search__icon" aria-hidden />
+              <Search
+                className="pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground"
+                aria-hidden
+              />
               <Input
                 id="unidadQ"
                 value={q}
                 onChange={(e) => onQ(e.target.value)}
                 placeholder="Interno, placas, marca o modelo…"
+                className="pl-9"
               />
             </div>
           </Field>
@@ -528,7 +532,10 @@ export function UnidadesCatalogo({
                     <UnidadTipoIcon nombre={unidad.tipo.nombre} />
                     {unidad.tipo.nombre}
                   </Badge>
-                  <StatusBadge estado={unidad.estado} />
+                  <StatusBadge
+                    estado={unidad.estado}
+                    className="normal-case tracking-normal"
+                  />
                   <span className="muted">{unidad.placas}</span>
                 </div>
                 {celdaMantenimiento(unidad)}
