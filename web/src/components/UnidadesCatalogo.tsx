@@ -14,6 +14,7 @@ import {
   LayoutList,
   RotateCcw,
   Search,
+  SlidersHorizontal,
   TriangleAlert,
   Truck,
   X,
@@ -27,7 +28,16 @@ import { DataTable } from '@/components/ui/data-table';
 import { Field } from '@/components/ui/field';
 import { Input, NativeSelect } from '@/components/ui/input';
 import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+} from '@/components/ui/sheet';
+import {
   avisoDeUnidad,
+  contarFiltrosSecundarios,
   etiquetaSituacionAtencion,
   kpisFlota,
   ordenarUnidades,
@@ -45,6 +55,26 @@ function etiquetaUnidad(unidad: Unidad) {
   return unidad.anio
     ? `${unidad.marcaModelo} · ${unidad.anio}`
     : unidad.marcaModelo;
+}
+
+function fichaHref(unidad: Unidad) {
+  return `/unidades/${unidad.id}`;
+}
+
+function UnidadIdentidad({ unidad }: { unidad: Unidad }) {
+  return (
+    <Link
+      href={fichaHref(unidad)}
+      className="unidades-unidad unidades-unidad--link"
+      onClick={(event) => event.stopPropagation()}
+    >
+      <UnidadTipoMark nombre={unidad.tipo.nombre} icono={unidad.tipo.icono} />
+      <span className="unidades-unidad__copy">
+        <span className="unidades-interno">{unidad.numeroInterno}</span>
+        <span className="unidades-modelo">{etiquetaUnidad(unidad)}</span>
+      </span>
+    </Link>
+  );
 }
 
 function EstadoUnidadMark({ unidad }: { unidad: Unidad }) {
@@ -87,6 +117,36 @@ function CeldaAtencion({
       <TriangleAlert className="size-3.5 shrink-0" aria-hidden />
       {etiqueta}
     </p>
+  );
+}
+
+function UnidadesVacio({
+  buscando,
+  onLimpiar,
+}: {
+  buscando: boolean;
+  onLimpiar: () => void;
+}) {
+  return (
+    <div className="empty-state">
+      <div>
+        <h2>
+          {buscando
+            ? 'No encontramos unidades con estos filtros.'
+            : 'No hay unidades'}
+        </h2>
+        <p className="muted">
+          {buscando
+            ? 'Ajuste la búsqueda o los filtros.'
+            : 'No hay unidades en este filtro.'}
+        </p>
+      </div>
+      {buscando ? (
+        <Button type="button" variant="secondary" size="compact" onClick={onLimpiar}>
+          Limpiar filtros
+        </Button>
+      ) : null}
+    </div>
   );
 }
 
@@ -137,9 +197,13 @@ export function UnidadesCatalogo({
   const [vista, setVista] = useState<UnidadesVista>('tabla');
   const [page, setPage] = useState(1);
   const [consejo, setConsejo] = useState(true);
+  const [filtrosOpen, setFiltrosOpen] = useState(false);
+  const [draftEstado, setDraftEstado] = useState(estadoFiltro);
+  const [draftTipo, setDraftTipo] = useState(tipoFiltro);
 
   const kpis = useMemo(() => kpisFlota(flota, avisos), [flota, avisos]);
   const tipoSeleccionado = tipos.find((t) => t.id === tipoFiltro) ?? null;
+  const filtrosActivos = contarFiltrosSecundarios(estadoFiltro, tipoFiltro);
 
   const ordenadas = useMemo(
     () => ordenarUnidades(unidades, sort),
@@ -156,10 +220,30 @@ export function UnidadesCatalogo({
     setPage(1);
   }, [unidades, sort]);
 
+  useEffect(() => {
+    if (!filtrosOpen) return;
+    setDraftEstado(estadoFiltro);
+    setDraftTipo(tipoFiltro);
+  }, [filtrosOpen, estadoFiltro, tipoFiltro]);
+
   function limpiarFiltros() {
     onQ('');
     onTipoFiltro('');
     onEstadoFiltro('');
+  }
+
+  function aplicarFiltrosMovil() {
+    onEstadoFiltro(draftEstado);
+    onTipoFiltro(draftTipo);
+    setFiltrosOpen(false);
+  }
+
+  function limpiarFiltrosMovil() {
+    setDraftEstado('');
+    setDraftTipo('');
+    onEstadoFiltro('');
+    onTipoFiltro('');
+    setFiltrosOpen(false);
   }
 
   const columns: ColumnDef<Unidad, unknown>[] = useMemo(
@@ -167,18 +251,7 @@ export function UnidadesCatalogo({
       {
         id: 'unidad',
         header: 'Unidad',
-        cell: ({ row }) => (
-          <div className="unidades-unidad">
-            <UnidadTipoMark
-              nombre={row.original.tipo.nombre}
-              icono={row.original.tipo.icono}
-            />
-            <div>
-              <div className="unidades-interno">{row.original.numeroInterno}</div>
-              <div className="unidades-modelo">{etiquetaUnidad(row.original)}</div>
-            </div>
-          </div>
-        ),
+        cell: ({ row }) => <UnidadIdentidad unidad={row.original} />,
       },
       {
         id: 'tipo',
@@ -227,7 +300,7 @@ export function UnidadesCatalogo({
               className="border-navy bg-navy text-white hover:bg-[#1c2040] hover:text-white"
               onClick={(event) => event.stopPropagation()}
             >
-              <Link href={`/unidades/${row.original.id}`}>
+              <Link href={fichaHref(row.original)}>
                 Ver ficha
                 <ArrowRight className="size-3.5" aria-hidden />
               </Link>
@@ -245,24 +318,15 @@ export function UnidadesCatalogo({
   return (
     <div className="unidades-page">
       <div className="unidades-hero">
-        <div className="min-w-0 flex-1">
+        <div className="unidades-hero__copy">
           <h1>Unidades</h1>
           <p className="lede">
             Busque y abra la unidad que necesita atención.
           </p>
-          {actions ? (
-            <div className="mt-2 flex flex-wrap gap-2">{actions}</div>
-          ) : null}
         </div>
-        <aside className="unidades-hero-aside" aria-label="Flota de mantenimiento">
-          <span className="unidades-hero-aside__icon" aria-hidden>
-            <Truck className="size-4" strokeWidth={1.75} />
-          </span>
-          <span>
-            <strong>Flota de mantenimiento</strong>
-            <span>Abra una ficha para visitas y avisos.</span>
-          </span>
-        </aside>
+        {actions ? (
+          <div className="unidades-hero__actions">{actions}</div>
+        ) : null}
       </div>
 
       <div className="unidades-kpis">
@@ -355,7 +419,11 @@ export function UnidadesCatalogo({
               />
             </div>
           </Field>
-          <Field label="Estado" htmlFor="unidadEstado">
+          <Field
+            label="Estado"
+            htmlFor="unidadEstado"
+            className="max-[800px]:hidden"
+          >
             <NativeSelect
               id="unidadEstado"
               value={estadoFiltro}
@@ -369,8 +437,23 @@ export function UnidadesCatalogo({
           <div className="unidades-filters__actions">
             <Button
               type="button"
+              variant="secondary"
+              className={cn(
+                'hidden w-full max-[800px]:inline-flex',
+                filtrosActivos > 0 && 'border-navy',
+              )}
+              aria-expanded={filtrosOpen}
+              aria-controls="unidades-filtros-sheet"
+              onClick={() => setFiltrosOpen(true)}
+            >
+              <SlidersHorizontal className="size-3.5" aria-hidden />
+              {filtrosActivos > 0 ? `Filtros (${filtrosActivos})` : 'Filtros'}
+            </Button>
+            <Button
+              type="button"
               variant="quiet"
               size="compact"
+              className="max-[800px]:hidden"
               disabled={!buscando}
               onClick={limpiarFiltros}
             >
@@ -387,6 +470,67 @@ export function UnidadesCatalogo({
           </div>
         </Card>
       </form>
+
+      <Sheet open={filtrosOpen} onOpenChange={setFiltrosOpen}>
+        <SheetContent
+          side="bottom"
+          id="unidades-filtros-sheet"
+          className="sm:max-w-none"
+        >
+          <SheetHeader>
+            <SheetTitle>Filtros</SheetTitle>
+            <SheetDescription>
+              Refine la lista por estado y tipo. La búsqueda permanece visible.
+            </SheetDescription>
+          </SheetHeader>
+          <div className="grid gap-3 px-4">
+            <Field label="Estado" htmlFor="unidadEstadoSheet">
+              <NativeSelect
+                id="unidadEstadoSheet"
+                value={draftEstado}
+                onChange={(e) => setDraftEstado(e.target.value)}
+              >
+                <option value="">Todos</option>
+                <option value="ACTIVA">Activa</option>
+                <option value="INACTIVA">Inactiva</option>
+              </NativeSelect>
+            </Field>
+            {tipos.length > 0 ? (
+              <Field label="Tipo" htmlFor="unidadTipoSheet">
+                <NativeSelect
+                  id="unidadTipoSheet"
+                  value={draftTipo}
+                  onChange={(e) => setDraftTipo(e.target.value)}
+                >
+                  <option value="">Todos</option>
+                  {tipos.map((tipo) => (
+                    <option key={tipo.id} value={tipo.id}>
+                      {tipo.nombre}
+                    </option>
+                  ))}
+                </NativeSelect>
+              </Field>
+            ) : null}
+          </div>
+          <SheetFooter className="grid grid-cols-2 gap-2">
+            <Button
+              type="button"
+              variant="quiet"
+              onClick={limpiarFiltrosMovil}
+            >
+              Limpiar filtros
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              className="border-navy bg-navy text-white hover:bg-[#1c2040] hover:text-white"
+              onClick={aplicarFiltrosMovil}
+            >
+              Aplicar filtros
+            </Button>
+          </SheetFooter>
+        </SheetContent>
+      </Sheet>
 
       {tipos.length > 0 ? (
         <div className="unidades-toolbar">
@@ -432,11 +576,11 @@ export function UnidadesCatalogo({
                 ))}
               </NativeSelect>
             </label>
-            <div className="unidades-vista" role="group" aria-label="Vista">
+            <div className="unidades-vista max-md:hidden" role="group" aria-label="Vista">
               <button
                 type="button"
                 aria-pressed={vista === 'tabla'}
-                aria-label="Vista tabla"
+                aria-label="Vista lista"
                 className={vista === 'tabla' ? 'active' : ''}
                 onClick={() => setVista('tabla')}
               >
@@ -491,141 +635,117 @@ export function UnidadesCatalogo({
 
       {tipos.length > 0 ? (
         <>
-      {vista === 'tarjetas' ? (
-        slice.length === 0 ? (
-          <div className="empty-state">
-            <h2>
-              {buscando
-                ? 'No hay unidades que coincidan'
-                : 'No hay unidades'}
-            </h2>
-            <p className="muted">
-              {buscando
-                ? 'Ajuste la búsqueda o los filtros.'
-                : 'No hay unidades en este filtro.'}
-            </p>
-          </div>
-        ) : (
-          <div className="unidades-cards">
-            {slice.map((unidad) => (
-              <article
-                key={unidad.id}
+          {slice.length === 0 ? (
+            <UnidadesVacio buscando={buscando} onLimpiar={limpiarFiltros} />
+          ) : (
+            <div
+              className={cn(
+                'unidades-results',
+                vista === 'tarjetas' && 'is-cards',
+              )}
+            >
+              <div
                 className={cn(
-                  'unidades-card',
-                  avisoDeUnidad(avisos, unidad.id) && 'unidades-card--aviso',
+                  'unidades-results__table max-md:hidden',
+                  vista === 'tarjetas' && 'hidden',
                 )}
-                onClick={() => onOpenUnidad(unidad)}
-                onKeyDown={(event) => {
-                  if (event.key === 'Enter' || event.key === ' ') {
-                    event.preventDefault();
-                    onOpenUnidad(unidad);
+              >
+                <DataTable
+                  columns={columns}
+                  data={slice}
+                  getRowClassName={(unidad) =>
+                    avisoDeUnidad(avisos, unidad.id)
+                      ? 'unidades-row--aviso hover:bg-[#fff3f1]'
+                      : undefined
                   }
-                }}
-                role="link"
-                tabIndex={0}
+                  onRowClick={onOpenUnidad}
+                />
+              </div>
+              <div
+                className={cn(
+                  'unidades-results__cards hidden max-md:block',
+                  vista === 'tarjetas' && 'block',
+                )}
               >
-                <div className="unidades-unidad">
-                  <UnidadTipoMark
-                    nombre={unidad.tipo.nombre}
-                    icono={unidad.tipo.icono}
-                  />
-                  <div>
-                    <div className="unidades-interno">{unidad.numeroInterno}</div>
-                    <div className="unidades-modelo">{etiquetaUnidad(unidad)}</div>
-                  </div>
+                <div className="unidades-cards">
+                  {slice.map((unidad) => (
+                    <article
+                      key={unidad.id}
+                      className={cn(
+                        'unidades-card',
+                        avisoDeUnidad(avisos, unidad.id) &&
+                          'unidades-card--aviso',
+                      )}
+                    >
+                      <UnidadIdentidad unidad={unidad} />
+                      <p className="unidades-card__meta">
+                        <span>{unidad.tipo.nombre}</span>
+                        <span className="unidades-card__dot" aria-hidden>
+                          ·
+                        </span>
+                        <EstadoUnidadMark unidad={unidad} />
+                        <span className="unidades-card__dot" aria-hidden>
+                          ·
+                        </span>
+                        <span className="unidades-placas">{unidad.placas}</span>
+                      </p>
+                      <CeldaAtencion unidad={unidad} avisos={avisos} />
+                      <Button
+                        asChild
+                        size="compact"
+                        variant="outline"
+                        className="mt-1 w-full border-navy bg-navy text-white hover:bg-[#1c2040] hover:text-white"
+                      >
+                        <Link href={fichaHref(unidad)}>
+                          Ver ficha
+                          <ArrowRight className="size-3.5" aria-hidden />
+                        </Link>
+                      </Button>
+                    </article>
+                  ))}
                 </div>
-                <div className="flex flex-wrap items-center gap-2">
-                  <Badge
-                    variant="outline"
-                    className="gap-1 font-normal normal-case tracking-normal"
-                  >
-                    <UnidadTipoIcon
-                      nombre={unidad.tipo.nombre}
-                      icono={unidad.tipo.icono}
-                    />
-                    {unidad.tipo.nombre}
-                  </Badge>
-                  <EstadoUnidadMark unidad={unidad} />
-                  <span className="unidades-placas">{unidad.placas}</span>
-                </div>
-                <CeldaAtencion unidad={unidad} avisos={avisos} />
-                <Button
-                  asChild
-                  size="compact"
-                  variant="outline"
-                  className="mt-1 w-full border-navy bg-navy text-white hover:bg-[#1c2040] hover:text-white"
-                  onClick={(event) => event.stopPropagation()}
-                >
-                  <Link href={`/unidades/${unidad.id}`}>
-                    Ver ficha
-                    <ArrowRight className="size-3.5" aria-hidden />
-                  </Link>
-                </Button>
-              </article>
-            ))}
-          </div>
-        )
-      ) : (
-        <DataTable
-          columns={columns}
-          data={slice}
-          getRowClassName={(unidad) =>
-            avisoDeUnidad(avisos, unidad.id)
-              ? 'unidades-row--aviso hover:bg-[#fff3f1]'
-              : undefined
-          }
-          empty={
-            buscando ? (
-              <>
-                No hay unidades que coincidan.{' '}
-                <span className="muted">Ajuste la búsqueda o los filtros.</span>
-              </>
-            ) : (
-              'No hay unidades.'
-            )
-          }
-          onRowClick={onOpenUnidad}
-        />
-      )}
+              </div>
+            </div>
+          )}
 
-      {ordenadas.length > 0 ? (
-      <div className="unidades-pager">
-        <p className="muted">
-          {`Mostrando ${from}–${to} de ${ordenadas.length} unidades`}
-        </p>
-        {pages > 1 ? (
-          <div className="unidades-pager__pages">
-            <button
-              type="button"
-              aria-label="Página anterior"
-              disabled={pagina <= 1}
-              onClick={() => setPage((p) => Math.max(1, p - 1))}
-            >
-              <ChevronLeft className="size-4" />
-            </button>
-            {Array.from({ length: pages }, (_, i) => i + 1).map((n) => (
-              <button
-                key={n}
-                type="button"
-                aria-current={n === pagina ? 'page' : undefined}
-                className={n === pagina ? 'active' : ''}
-                onClick={() => setPage(n)}
-              >
-                {n}
-              </button>
-            ))}
-            <button
-              type="button"
-              aria-label="Página siguiente"
-              disabled={pagina >= pages}
-              onClick={() => setPage((p) => Math.min(pages, p + 1))}
-            >
-              <ChevronRight className="size-4" />
-            </button>
-          </div>
-        ) : null}
-      </div>
-      ) : null}
+          {ordenadas.length > 0 ? (
+            <div className="unidades-pager">
+              <p className="muted">
+                {`Mostrando ${from}–${to} de ${ordenadas.length} unidades`}
+              </p>
+              {pages > 1 ? (
+                <div className="unidades-pager__pages">
+                  <button
+                    type="button"
+                    aria-label="Página anterior"
+                    disabled={pagina <= 1}
+                    onClick={() => setPage((p) => Math.max(1, p - 1))}
+                  >
+                    <ChevronLeft className="size-4" />
+                  </button>
+                  {Array.from({ length: pages }, (_, i) => i + 1).map((n) => (
+                    <button
+                      key={n}
+                      type="button"
+                      aria-current={n === pagina ? 'page' : undefined}
+                      className={n === pagina ? 'active' : ''}
+                      onClick={() => setPage(n)}
+                    >
+                      {n}
+                    </button>
+                  ))}
+                  <button
+                    type="button"
+                    aria-label="Página siguiente"
+                    disabled={pagina >= pages}
+                    onClick={() => setPage((p) => Math.min(pages, p + 1))}
+                  >
+                    <ChevronRight className="size-4" />
+                  </button>
+                </div>
+              ) : null}
+            </div>
+          ) : null}
         </>
       ) : null}
 

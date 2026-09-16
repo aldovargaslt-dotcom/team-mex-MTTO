@@ -53,6 +53,11 @@ export function pctDelTotal(parte: number, total: number) {
   return Math.round((parte / total) * 100);
 }
 
+/** Estado y tipo; la búsqueda de texto no cuenta. */
+export function contarFiltrosSecundarios(estado: string, tipo: string) {
+  return Number(Boolean(estado)) + Number(Boolean(tipo));
+}
+
 export function ordenarUnidades(list: Unidad[], sort: UnidadesSort): Unidad[] {
   const copy = [...list];
   copy.sort((a, b) => {

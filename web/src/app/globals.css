@@ -1354,7 +1354,7 @@
     align-items: flex-start;
     justify-content: space-between;
     gap: 12px;
-    margin-bottom: 12px;
+    margin-bottom: 10px;
   }
 
   .unidades-hero h1 {
@@ -1363,47 +1363,18 @@
     color: var(--navy);
   }
 
-  .unidades-hero-aside {
-    display: none;
-    min-width: 200px;
-    max-width: 260px;
+  .unidades-hero__copy {
+    min-width: 0;
+    flex: 1;
+  }
+
+  .unidades-hero__actions {
+    display: flex;
+    flex-wrap: wrap;
     align-items: center;
+    justify-content: flex-end;
     gap: 8px;
-    padding: 8px 10px;
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    background: var(--card);
-    color: var(--navy);
-  }
-
-  .unidades-hero-aside strong {
-    display: block;
-    font-size: 12px;
-    font-weight: 600;
-  }
-
-  .unidades-hero-aside span span {
-    display: block;
-    font-size: 11px;
-    color: var(--muted-foreground);
-  }
-
-  .unidades-hero-aside__icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 28px;
-    height: 28px;
-    border-radius: 6px;
-    background: var(--muted-bg);
-    color: var(--navy);
     flex-shrink: 0;
-  }
-
-  @media (min-width: 768px) {
-    .unidades-hero-aside {
-      display: flex;
-    }
   }
 
   .unidades-kpis {
@@ -1627,7 +1598,28 @@
     min-width: 0;
   }
 
+  .unidades-unidad__copy {
+    display: block;
+    min-width: 0;
+  }
+
+  .unidades-unidad--link {
+    color: inherit;
+    text-decoration: none;
+    border-radius: 4px;
+  }
+
+  .unidades-unidad--link:hover .unidades-interno {
+    text-decoration: underline;
+  }
+
+  .unidades-unidad--link:focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+
   .unidades-interno {
+    display: block;
     font-variant-numeric: tabular-nums;
     font-weight: 600;
     font-size: 13px;
@@ -1636,6 +1628,7 @@
   }
 
   .unidades-modelo {
+    display: block;
     font-size: 12px;
     font-weight: 400;
     color: var(--muted-foreground);
@@ -1848,16 +1841,36 @@
     background: var(--card);
     border: 1px solid var(--border);
     border-radius: 8px;
-    cursor: pointer;
   }
 
   .unidades-card:hover {
     background: #fafafb;
   }
 
-  .unidades-card:focus-visible {
-    outline: 2px solid var(--ring);
-    outline-offset: 2px;
+  .unidades-card__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    margin: 0;
+    font-size: 12px;
+    color: var(--text);
+  }
+
+  .unidades-card__dot {
+    color: var(--muted-foreground);
+  }
+
+  .unidades-results__cards {
+    display: none;
+  }
+
+  .unidades-results.is-cards .unidades-results__table {
+    display: none;
+  }
+
+  .unidades-results.is-cards .unidades-results__cards {
+    display: block;
   }
 
   .unidades-pager {
@@ -1974,21 +1987,59 @@
   }
 
   @media (max-width: 800px) {
+    .unidades-hero {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .unidades-hero__actions {
+      justify-content: stretch;
+      width: 100%;
+    }
+
+    .unidades-hero__actions > [data-slot='button'] {
+      flex: 1 1 auto;
+    }
+
+    .unidades-admin-menu summary {
+      padding-inline: 10px;
+    }
+
     .unidades-filters {
       grid-template-columns: 1fr;
+      padding: 10px;
     }
 
     .unidades-filters__actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
       justify-content: stretch;
     }
 
     .unidades-filters__actions [data-slot='button'] {
-      flex: 1;
+      width: 100%;
     }
 
     .unidades-toolbar {
       flex-direction: column;
       align-items: stretch;
+    }
+
+    .unidades-toolbar .list-filter {
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      overflow-y: hidden;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+
+    .unidades-toolbar .list-filter::-webkit-scrollbar {
+      display: none;
+    }
+
+    .unidades-toolbar .list-filter button {
+      flex: 0 0 auto;
+      white-space: nowrap;
     }
 
     .unidades-toolbar__tools {
@@ -1999,11 +2050,30 @@
     .unidades-sort {
       flex: 1;
       min-width: 0;
+      font-size: 11px;
+    }
+
+    .unidades-sort span {
+      white-space: nowrap;
     }
 
     .unidades-sort select {
       flex: 1;
       min-width: 0;
+    }
+  }
+
+  @media (max-width: 767px) {
+    .unidades-results__table {
+      display: none;
+    }
+
+    .unidades-results__cards {
+      display: block;
+    }
+
+    .unidades-vista {
+      display: none;
     }
   }
 }
