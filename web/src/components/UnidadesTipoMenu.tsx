@@ -1,7 +1,16 @@
 'use client';
 
-import type { MouseEvent } from 'react';
+import { useState } from 'react';
 import { MoreHorizontal } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+} from '@/components/ui/sheet';
 
 export function UnidadesTipoMenu({
   tipoNombre,
@@ -12,38 +21,52 @@ export function UnidadesTipoMenu({
   onEditar: () => void;
   onEliminar: () => void;
 }) {
-  function cerrar(event: MouseEvent<HTMLButtonElement>) {
-    const menu = event.currentTarget.closest('details');
-    if (menu) menu.open = false;
-  }
+  const [open, setOpen] = useState(false);
 
   return (
-    <details className="unidades-tipo-menu">
-      <summary aria-label={`Acciones del tipo ${tipoNombre}`}>
+    <>
+      <button
+        type="button"
+        className="unidades-tipo-menu__trigger"
+        aria-label={`Acciones del tipo ${tipoNombre}`}
+        aria-expanded={open}
+        aria-haspopup="dialog"
+        onClick={() => setOpen(true)}
+      >
         <MoreHorizontal className="size-4" aria-hidden />
-      </summary>
-      <div className="unidades-tipo-menu__panel" role="menu">
-        <button
-          type="button"
-          role="menuitem"
-          onClick={(event) => {
-            cerrar(event);
-            onEditar();
-          }}
-        >
-          Editar tipo
-        </button>
-        <button
-          type="button"
-          role="menuitem"
-          onClick={(event) => {
-            cerrar(event);
-            onEliminar();
-          }}
-        >
-          Eliminar tipo
-        </button>
-      </div>
-    </details>
+      </button>
+      <Sheet open={open} onOpenChange={setOpen}>
+        <SheetContent side="bottom" className="sm:max-w-none pb-8">
+          <SheetHeader>
+            <SheetTitle>Tipo {tipoNombre}</SheetTitle>
+            <SheetDescription>
+              Editar o eliminar aplica a este tipo, no a una unidad.
+            </SheetDescription>
+          </SheetHeader>
+          <SheetFooter>
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={() => {
+                setOpen(false);
+                onEditar();
+              }}
+            >
+              Editar tipo
+            </Button>
+            <Button
+              type="button"
+              variant="dangerSoft"
+              onClick={() => {
+                setOpen(false);
+                onEliminar();
+              }}
+            >
+              Eliminar tipo
+            </Button>
+          </SheetFooter>
+        </SheetContent>
+      </Sheet>
+    </>
   );
 }

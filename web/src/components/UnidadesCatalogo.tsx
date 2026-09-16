@@ -176,6 +176,7 @@ export function UnidadesCatalogo({
   const [page, setPage] = useState(1);
   const [consejo, setConsejo] = useState(true);
   const [filtrosOpen, setFiltrosOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
   const kpis = useMemo(() => kpisFlota(flota, avisos), [flota, avisos]);
   const tipoSeleccionado = tipos.find((t) => t.id === tipoFiltro) ?? null;
@@ -203,9 +204,14 @@ export function UnidadesCatalogo({
   }, [visibles, sort]);
 
   useEffect(() => {
-    if (window.matchMedia('(max-width: 767px)').matches) {
-      setVista('tarjetas');
+    const mq = window.matchMedia('(max-width: 767px)');
+    function apply() {
+      setIsMobile(mq.matches);
+      if (mq.matches) setVista('tarjetas');
     }
+    apply();
+    mq.addEventListener('change', apply);
+    return () => mq.removeEventListener('change', apply);
   }, []);
 
   function limpiarKpi() {
@@ -425,17 +431,15 @@ export function UnidadesCatalogo({
               />
             </div>
           </Field>
-          <Field
-            label="Estado"
-            htmlFor="unidadEstado"
-            className="unidades-filters__estado"
-          >
-            <EstadoSelect
-              id="unidadEstado"
-              value={estadoFiltro}
-              onChange={aplicarEstado}
-            />
-          </Field>
+          <div className="unidades-filters__estado">
+            <Field label="Estado" htmlFor="unidadEstado">
+              <EstadoSelect
+                id="unidadEstado"
+                value={estadoFiltro}
+                onChange={aplicarEstado}
+              />
+            </Field>
+          </div>
           <div className="unidades-filters__actions">
             <Button
               type="button"
@@ -474,13 +478,11 @@ export function UnidadesCatalogo({
         <SheetContent
           id="unidades-filtros-sheet"
           side="bottom"
-          className="sm:max-w-none"
+          className="sm:max-w-none pb-8"
         >
           <SheetHeader>
             <SheetTitle>Filtros</SheetTitle>
-            <SheetDescription>
-              El tipo se elige en las pestañas, no aquí.
-            </SheetDescription>
+            <SheetDescription>Estado de la unidad.</SheetDescription>
           </SheetHeader>
           <div className="grid gap-3 px-4">
             <Field label="Estado" htmlFor="unidadEstadoSheet">
@@ -533,7 +535,7 @@ export function UnidadesCatalogo({
                     <UnidadTipoIcon nombre={tipo.nombre} icono={tipo.icono} />
                     {tipo.nombre} ({n})
                   </button>
-                  {isAdmin && activo ? (
+                  {isAdmin && activo && isMobile ? (
                     <UnidadesTipoMenu
                       tipoNombre={tipo.nombre}
                       onEditar={() => onEditarTipo(tipo)}
