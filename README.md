@@ -169,3 +169,5 @@ npm run test:e2e
 ## Marca
 
 CTA `#EA7515`, shell `#24284D`, superficies `#F3F3F3` / blanco, tipografía Roboto.
+
+UI nueva o cambio visual: [docs/design/README.md](docs/design/README.md). Briefs Must/Don’t de corte: [docs/design-system/](docs/design-system/).

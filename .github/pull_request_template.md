@@ -2,6 +2,10 @@
 
 <!-- Qué cambia y qué queda igual. “WO” = wizard de visita, no este brief. -->
 
+## UX spec
+
+<!-- Si cambia layout, jerarquía o acciones: plantilla `docs/design/UX_SPEC_TEMPLATE.md` (o n/a si copy puntual). -->
+
 ## Must
 
 -
@@ -25,7 +29,11 @@
 ## Proof
 
 - API: `cd api && npm test && npm run test:e2e` — _N_ unit / _M_ e2e
-- UI (si aplica): `docs/screenshots/…` — skill `proof-ui` (click-through, no página estática)
+- UI (si aplica): `docs/screenshots/…` — skill `proof-ui` (click-through, `d1440` / `m390` WO; no página estática)
+
+## Visual QA
+
+<!-- Subagente `ux-auditor` (otro pase): OK / no OK + 3–5 hallazgos, o n/a si no hubo UI. -->
 
 ## Hold
 
