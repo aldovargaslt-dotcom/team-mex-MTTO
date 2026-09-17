@@ -12,4 +12,5 @@ export interface FlotaStore {
   ): Promise<boolean>;
   insertMovimiento(mov: MovimientoFlota): Promise<void>;
   upsertOperativa(row: UnidadOperativa): Promise<void>;
+  getLatestKm(unidadId: string): Promise<number | null>;
 }

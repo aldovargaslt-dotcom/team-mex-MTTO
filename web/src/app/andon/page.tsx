@@ -77,7 +77,7 @@ function estadoDeVista(vista: VistaAndon): EstadoAviso | null {
 export default function AndonPage() {
   return (
     <RoleGate allow={['SUPERVISOR', 'ADMIN_DIRECTIVO']}>
-      <Suspense fallback={<p className="muted">Cargando avisos…</p>}>
+      <Suspense fallback={<p className="muted">Cargando alertas…</p>}>
         <AndonContent />
       </Suspense>
     </RoleGate>
@@ -130,7 +130,7 @@ function AndonContent() {
       setError(
         err instanceof HttpError
           ? err.message
-          : 'No se pudieron cargar los avisos.',
+          : 'No se pudieron cargar las alertas.',
       );
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -197,12 +197,14 @@ function AndonContent() {
         ),
       },
       {
-        header: 'Último cierre',
+        header: 'Último servicio',
         id: 'ultimo',
         cell: ({ row }) => (
           <span className="text-[12px] text-muted-foreground">
-            {formatKm(row.original.lastClosedKm)}
             <span className="block">{formatFecha(row.original.lastClosedAt)}</span>
+            <span className="block">
+              Odómetro {formatKm(row.original.lastClosedKm)}
+            </span>
           </span>
         ),
       },
@@ -341,19 +343,19 @@ function AndonContent() {
 
   const emptyTitle =
     vista === 'pendientes'
-      ? 'No hay avisos pendientes.'
+      ? 'No hay alertas pendientes.'
       : vista === 'enterados'
-        ? 'No hay avisos enterados.'
+        ? 'No hay alertas enteradas.'
         : vista === 'resueltos'
-          ? 'No hay avisos resueltos.'
-          : 'No hay avisos en este periodo.';
+          ? 'No hay alertas resueltas.'
+          : 'No hay alertas en este periodo.';
 
   const emptyLede =
     vista === 'pendientes'
       ? 'Aparecen cuando una unidad rebase el intervalo de km o de días desde su última visita cerrada.'
       : vista === 'reincidentes'
-        ? 'Se agrupan por unidad. Reincidente = dos o más avisos en el periodo.'
-        : 'Cambie el filtro para ver otros avisos.';
+        ? 'Se agrupan por unidad. Reincidente = dos o más alertas en el periodo.'
+        : 'Cambie el filtro para ver otras alertas.';
 
   const tablaVacia =
     vista === 'reincidentes' ? ranking.length === 0 : avisosPeriodo.length === 0;
@@ -361,8 +363,8 @@ function AndonContent() {
   return (
     <>
       <PageHeader
-        title="Andon"
-        lede="Avisos de mantenimiento vencido. Enterado es in-app; solo una visita cerrada resuelve."
+        title="Alerta"
+        lede="Alertas de mantenimiento vencido. Enterado es in-app; solo una visita cerrada resuelve."
         actions={
           isAdmin ? (
             <Button asChild variant="secondary">
@@ -372,7 +374,7 @@ function AndonContent() {
         }
       />
       <ListFilter
-        label="Filtro Andon"
+        label="Filtro de alertas"
         value={vista}
         options={VISTAS_ANDON}
         onChange={(next) =>
@@ -394,7 +396,7 @@ function AndonContent() {
       ) : null}
       <FormAlert>{error}</FormAlert>
       {avisos == null ? (
-        <p className="muted">Cargando avisos…</p>
+        <p className="muted">Cargando alertas…</p>
       ) : tablaVacia ? (
         <div className="empty-state">
           <h2>{emptyTitle}</h2>

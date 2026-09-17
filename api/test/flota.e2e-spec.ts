@@ -245,7 +245,7 @@ describe('Flota v0 (e2e)', () => {
         ],
       })
       .expect(201);
-    expect(salida.body.avisos.some((a: string) => /Andon abierto/i.test(a))).toBe(
+    expect(salida.body.avisos.some((a: string) => /alerta abierta/i.test(a))).toBe(
       true,
     );
 

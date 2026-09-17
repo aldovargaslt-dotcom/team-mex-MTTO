@@ -15,6 +15,10 @@ export function avisoAbiertoDedupeKey(unidadId: string) {
   return `ANDON:AvisoAbierto:${unidadId}`;
 }
 
+export function healthBelowDedupeKey(unidadId: string) {
+  return `SALUD:HealthBelow:${unidadId}`;
+}
+
 export function stockBajoDedupeKey(itemId: string) {
   return `INV:stock-bajo:${itemId}`;
 }
@@ -48,7 +52,7 @@ export function avisoAbiertoCommand(input: AvisoAbiertoInput): IngestCommand {
     subjectRef: input.unidadId,
     severity: Severity.WARNING,
     title: `Mantenimiento vencido — ${numero}`,
-    body: `${numero} superó el umbral (${input.kmAlAbrir.toLocaleString('es-MX')} km / ${input.diasAlAbrir} d desde el último cierre). Revisar el aviso en el hub.`,
+    body: `${numero} superó el umbral (${input.kmAlAbrir.toLocaleString('es-MX')} km / ${input.diasAlAbrir} d desde el último cierre). Revisar la alerta en el hub.`,
     dedupeKey: avisoAbiertoDedupeKey(input.unidadId),
     createdAt: new Date(input.abiertaAt),
   };
@@ -81,6 +85,41 @@ export function stockBajoCommand(input: StockBajoInput): IngestCommand {
         : `${who} requiere reabastecimiento.`,
     dedupeKey: stockBajoDedupeKey(input.itemId),
     createdAt: input.occurredAt ? new Date(input.occurredAt) : undefined,
+  };
+}
+
+export type HealthBelowInput = {
+  alertId: string;
+  unidadId: string;
+  numeroInterno?: string | null;
+  score: number;
+  threshold: number;
+  drivers?: { message: string }[];
+  severity: Severity;
+  openedAt: string;
+};
+
+export function healthBelowCommand(input: HealthBelowInput): IngestCommand {
+  const numero = input.numeroInterno?.trim() || 'Unidad';
+  const factores =
+    input.drivers
+      ?.slice(0, 3)
+      .map((d) => d.message)
+      .filter(Boolean)
+      .join(' · ') || null;
+  return {
+    sourceModule: SourceModule.SALUD,
+    sourceEvent: SourceEvent.HEALTH_BELOW_THRESHOLD,
+    sourceRef: input.alertId,
+    subjectType: SubjectType.UNIDAD,
+    subjectRef: input.unidadId,
+    severity: input.severity,
+    title: `Salud de unidad baja — ${numero}`,
+    body: factores
+      ? `${numero} tiene una salud de ${input.score}%. El límite es ${input.threshold}%. ${factores}`
+      : `${numero} tiene una salud de ${input.score}%. El límite configurado es ${input.threshold}%.`,
+    dedupeKey: healthBelowDedupeKey(input.unidadId),
+    createdAt: new Date(input.openedAt),
   };
 }
 

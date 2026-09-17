@@ -36,6 +36,7 @@ export class TiposVehiculoService {
         'El nombre del tipo no puede estar vacío.',
       ),
       descripcion: dto.descripcion?.trim() || null,
+      icono: dto.icono ?? null,
     });
     return this.repo.save(tipo);
   }
@@ -50,6 +51,9 @@ export class TiposVehiculoService {
     }
     if (dto.descripcion !== undefined) {
       tipo.descripcion = dto.descripcion.trim() || null;
+    }
+    if (dto.icono !== undefined) {
+      tipo.icono = dto.icono;
     }
     return this.repo.save(tipo);
   }

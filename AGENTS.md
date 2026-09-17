@@ -15,6 +15,7 @@
 | UI (`web/src`) | [ADR-003](docs/adr/003-shadcn-tailwind.md) + briefs [docs/design-system/](docs/design-system/) + sistema [docs/design/README.md](docs/design/README.md) |
 | UX operacional (copy, existencias, filtros, hub piezas) | [ux-operacional-cortes-v0](docs/design-system/ux-operacional-cortes-v0.md) — recorte SPEC-UX-001; **no toca Flota**. Flota: [tablero viaje](docs/specs/fleet-tablero-viaje-v0.md) |
 | Consulta / conducta (cadencia, ranking, consumo, Andon reincidencia, patio) | [ux-consulta-conducta-cortes-v0](docs/design-system/ux-consulta-conducta-cortes-v0.md) — **no** fusionar con A–E ni con el tablero viaje |
+| Salud de unidad | [ADR-010](docs/adr/010-salud-unidad.md), [spec](docs/specs/unit-health-v0.md), ADR-004 (H1–H15). No escribir `andon.*`. Dual-stack notify intacto. |
 | Notify / WhatsApp | Dual-stack abajo. Default **noop**. No “arreglar”. |
 
 Mapa de directorios: [docs/adr/context-map.md](docs/adr/context-map.md). Índice ADR: [docs/adr/README.md](docs/adr/README.md).

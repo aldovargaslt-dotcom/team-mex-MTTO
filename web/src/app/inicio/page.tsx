@@ -122,7 +122,7 @@ function InicioContent() {
       ) : rows.length === 0 && !error ? (
         <div className="empty-state">
           <h2>Nada requiere atención</h2>
-          <p className="muted">Andon, existencias y por recibir están al día.</p>
+          <p className="muted">Alertas, existencias y por recibir están al día.</p>
         </div>
       ) : rows.length === 0 ? null : (
         <section aria-labelledby="requiere-atencion">
