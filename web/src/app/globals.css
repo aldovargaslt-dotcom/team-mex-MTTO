@@ -414,22 +414,47 @@
     height: 56px;
   }
 
-  .hub-salud-alerta__head {
-    display: flex;
+  .health-note-help {
+    display: inline-flex;
     align-items: center;
-    justify-content: space-between;
+    gap: 4px;
+    color: var(--muted);
+  }
+
+  .hub-ops-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
     gap: 12px;
     margin-bottom: 12px;
-    padding-bottom: 12px;
-    border-bottom: 1px solid var(--line);
   }
 
-  .hub-salud-alerta__head h2 {
-    margin-bottom: 0;
+  .hub-ops-title {
+    font-size: 14px;
+    font-weight: 600;
+    margin: 0 0 4px;
   }
 
-  .hub-salud-alerta .subhead {
-    margin-top: 0;
+  .hub-ops-status {
+    font-size: 14px;
+    margin: 0 0 8px;
+  }
+
+  .hub-ops-dl {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 4px 12px;
+    font-size: 13px;
+    margin: 8px 0 0;
+  }
+
+  .hub-ops-dl dt {
+    color: var(--muted-foreground);
+  }
+
+  .hub-activity {
+    list-style: none;
+    display: grid;
+    gap: 10px;
   }
 
   .health-copy {
@@ -1492,9 +1517,8 @@
       grid-template-columns: 1fr;
     }
 
-    .hub-salud-alerta__head {
-      flex-direction: column;
-      align-items: stretch;
+    .hub-ops-grid {
+      grid-template-columns: 1fr;
     }
 
     .list-head {

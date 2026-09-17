@@ -1,12 +1,13 @@
 'use client';
 
 import Link from 'next/link';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 import { ColumnDef } from '@tanstack/react-table';
 import { RoleGate } from '@/components/RoleGate';
 import { StatusBadge } from '@/components/StatusBadge';
 import { AndonHubCard } from '@/components/AndonHubCard';
+import { HubFichaNav, parseHubVista } from '@/components/HubFichaNav';
 import { UnitHealth } from '@/components/UnitHealth';
 import { DataTable } from '@/components/ui/data-table';
 import {
@@ -23,6 +24,7 @@ import {
   etiquetaTipoVisita,
   etiquetaUom,
   formatFecha,
+  formatFechaCorta,
   formatKm,
 } from '@/lib/format';
 import { useRole } from '@/lib/role';
@@ -46,6 +48,8 @@ export default function HubPage() {
 function HubContent() {
   const params = useParams<{ id: string }>();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const vista = parseHubVista(searchParams.get('vista'));
   const { role, userId, isAdmin } = useRole();
   const [hub, setHub] = useState<UnidadHub | null>(null);
   const [health, setHealth] = useState<UnidadHealth | null>(null);
@@ -163,6 +167,11 @@ function HubContent() {
       /inactiva|administrador|choferes/i.test(m) && !hub.puedeCrearVisita
       || /choferes/i.test(m),
   );
+  const ultimoServicioAt = hub.historialCerrado[0]?.cerradoAt ?? null;
+  const maintenanceHint =
+    health?.drivers.find(
+      (d) => d.type === 'MAINTENANCE_DUE' || d.type === 'MAINTENANCE_OVERDUE',
+    )?.message ?? null;
 
   return (
     <>
@@ -172,34 +181,145 @@ function HubContent() {
             {ficha.numeroInterno} <StatusBadge estado={ficha.estado} />
           </h1>
           <p className="lede">
-            {ficha.tipoNombre}
-            {ficha.marcaModelo ? ` · ${ficha.marcaModelo}` : ''}
+            {ficha.marcaModelo
+              ? `${ficha.marcaModelo}${ficha.anio ? ` · ${ficha.anio}` : ''}`
+              : ficha.tipoNombre}
           </p>
+          {ficha.marcaModelo ? (
+            <p className="muted" style={{ marginTop: 2 }}>
+              {ficha.tipoNombre}
+            </p>
+          ) : ficha.anio ? (
+            <p className="muted" style={{ marginTop: 2 }}>
+              {ficha.anio}
+            </p>
+          ) : null}
         </div>
         <div className="hub-head-aside">
+          {health ? (
+            <UnitHealth
+              health={health}
+              variant="standard"
+              onOpen={() => setHealthOpen(true)}
+            />
+          ) : null}
           <Link className="btn btn-secondary" href="/unidades">
             Volver
           </Link>
         </div>
       </div>
 
+      <HubFichaNav unidadId={ficha.id} vista={vista} />
+
       {error ? <p className="alert" style={{ marginBottom: 12 }}>{error}</p> : null}
 
-      <div style={{ marginBottom: 12 }}>
-        <AndonHubCard
-          unidadId={ficha.id}
-          health={health}
-          onOpenHealth={() => setHealthOpen(true)}
-          onAvisoChange={(aviso) => setAlertaEnCard(aviso != null)}
-          puedeCrearVisita={hub.puedeCrearVisita}
-          onNuevaVisita={() => void nuevaVisita()}
-          creating={creating}
-        />
-      </div>
+      {vista === 'resumen' ? (
+        <>
+          <AndonHubCard
+            unidadId={ficha.id}
+            onAvisoChange={(aviso) => setAlertaEnCard(aviso != null)}
+            puedeCrearVisita={hub.puedeCrearVisita}
+            onNuevaVisita={() => void nuevaVisita()}
+            creating={creating}
+            ultimoServicioAt={ultimoServicioAt}
+            ultimoServicioKm={ficha.ultimoKm}
+            maintenanceHint={maintenanceHint}
+          />
+          <section className="card panel" style={{ marginBottom: 12 }}>
+            <h2>Estado y operación</h2>
+            <dl className="dl">
+              <dt>Placas</dt>
+              <dd>{ficha.placas}</dd>
+              <dt>Último km</dt>
+              <dd>
+                {ficha.ultimoKm != null
+                  ? formatKm(ficha.ultimoKm)
+                  : 'Sin registro'}
+              </dd>
+              <dt>Último servicio</dt>
+              <dd>{formatFechaCorta(ultimoServicioAt)}</dd>
+              <dt>Estado</dt>
+              <dd>
+                <StatusBadge estado={ficha.estado} />
+                {ficha.motivoInactivacion === 'ENVIO_ESPECIAL' ? (
+                  <span className="ml-2 text-[12px] text-muted-foreground">
+                    Envío especial
+                  </span>
+                ) : null}
+              </dd>
+            </dl>
+          </section>
+          <section className="card panel">
+            <h2>Actividad reciente</h2>
+            <ul className="hub-activity">
+              {hub.historialCerrado[0] ? (
+                <li>
+                  <Link href={`/unidades/${ficha.id}/visitas/${hub.historialCerrado[0].id}`}>
+                    <strong>Último mantenimiento</strong>
+                    <div className="muted">
+                      {etiquetaTipoVisita(hub.historialCerrado[0].tipo)}
+                      {' · '}
+                      {formatKm(hub.historialCerrado[0].km)}
+                      {' · '}
+                      {formatFechaCorta(hub.historialCerrado[0].cerradoAt)}
+                    </div>
+                  </Link>
+                </li>
+              ) : (
+                <li>
+                  <span className="muted">Aún no hay visitas cerradas.</span>
+                </li>
+              )}
+              {hub.borradores[0] ? (
+                <li>
+                  <Link href={`/unidades/${ficha.id}/visitas/${hub.borradores[0].id}`}>
+                    <strong>Última visita</strong>
+                    <div className="muted">
+                      Borrador · {etiquetaTipoVisita(hub.borradores[0].tipo)}
+                      {' · '}
+                      {formatFechaCorta(hub.borradores[0].updatedAt)}
+                    </div>
+                  </Link>
+                </li>
+              ) : hub.historialCerrado[0] ? (
+                <li>
+                  <Link href={`/unidades/${ficha.id}/visitas/${hub.historialCerrado[0].id}`}>
+                    <strong>Última visita</strong>
+                    <div className="muted">
+                      {etiquetaEstadoVisita(hub.historialCerrado[0].estado)}
+                      {' · '}
+                      {formatFechaCorta(hub.historialCerrado[0].cerradoAt)}
+                    </div>
+                  </Link>
+                </li>
+              ) : null}
+              {alertaEnCard ? (
+                <li>
+                  <strong>Última alerta</strong>
+                  <div className="muted">Mantenimiento atrasado</div>
+                </li>
+              ) : (
+                <li>
+                  <strong>Última alerta</strong>
+                  <div className="muted">Sin alerta de mantenimiento vencido</div>
+                </li>
+              )}
+            </ul>
+          </section>
+          {hub.mensajes.map((mensaje) => (
+            <p
+              key={mensaje}
+              className={warn ? 'note note-warn' : 'note'}
+            >
+              {mensaje}
+            </p>
+          ))}
+        </>
+      ) : null}
 
-      <div className="hub-grid">
+      {vista === 'tecnica' ? (
         <section className="card panel">
-          <h2>Ficha corta</h2>
+          <h2>Información técnica</h2>
           <dl className="dl">
             <dt>Número interno</dt>
             <dd className="mono">{ficha.numeroInterno}</dd>
@@ -226,10 +346,10 @@ function HubContent() {
             <dd>{ficha.marcaModelo || 'Sin marca / modelo'}</dd>
             <dt>Año</dt>
             <dd>{ficha.anio ?? 'Sin año registrado'}</dd>
-            <dt>Último km (visita cerrada)</dt>
+            <dt>Odómetro registrado</dt>
             <dd>
               {ficha.ultimoKm != null
-                ? `${ficha.ultimoKm.toLocaleString('es-MX')} km`
+                ? formatKm(ficha.ultimoKm)
                 : 'Sin registro'}
             </dd>
           </dl>
@@ -244,12 +364,14 @@ function HubContent() {
             </div>
           ) : null}
         </section>
+      ) : null}
 
+      {vista === 'mantenimiento' ? (
         <section className="card panel">
           <h2>Mantenimiento</h2>
           {!isAdmin ? (
             <>
-              <h3 className="subhead">Borradores</h3>
+              <h3 className="subhead">Visitas abiertas</h3>
               {hub.borradores.length === 0 ? (
                 <p className="muted">No hay visitas en borrador en esta unidad.</p>
               ) : (
@@ -291,7 +413,7 @@ function HubContent() {
                 <button
                   type="button"
                   className={
-                    hub.borradores.length > 0 || alertaEnCard
+                    hub.borradores.length > 0
                       ? 'btn btn-outline'
                       : 'btn btn-primary'
                   }
@@ -302,9 +424,25 @@ function HubContent() {
                 </button>
               </div>
             </>
-          ) : null}
+          ) : (
+            <p className="muted">
+              El historial de servicios está en Historial.
+            </p>
+          )}
+          {hub.mensajes.map((mensaje) => (
+            <p
+              key={mensaje}
+              className={warn ? 'note note-warn' : 'note'}
+            >
+              {mensaje}
+            </p>
+          ))}
+        </section>
+      ) : null}
 
-          <h3 className="subhead">Historial</h3>
+      {vista === 'historial' ? (
+        <section className="card panel">
+          <h2>Historial de servicios</h2>
           {hub.historialCerrado.length === 0 ? (
             <p className="muted">Aún no hay visitas de mantenimiento registradas.</p>
           ) : (
@@ -318,27 +456,21 @@ function HubContent() {
               ))}
             </ul>
           )}
-
           <HubRefacciones
             unidadId={ficha.id}
             historial={hub.historialCerrado}
           />
-
-          {hub.mensajes.map((mensaje) => (
-            <p
-              key={mensaje}
-              className={warn ? 'note note-warn' : 'note'}
-            >
-              {mensaje}
-            </p>
-          ))}
         </section>
-      </div>
+      ) : null}
 
       <Sheet open={healthOpen} onOpenChange={setHealthOpen}>
         <SheetContent side="right">
           <SheetHeader>
-            <SheetTitle>Salud de la unidad</SheetTitle>
+            <SheetTitle>
+              {health?.available && health.score != null
+                ? `Salud de la unidad — ${health.score}%`
+                : 'Salud de la unidad'}
+            </SheetTitle>
             <SheetDescription>
               {health?.available
                 ? `${health.score}% — ${health.label}`

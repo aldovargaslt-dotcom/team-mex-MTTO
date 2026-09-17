@@ -111,12 +111,14 @@ function AndonContent() {
         ),
       },
       {
-        header: 'Último cierre',
+        header: 'Último servicio',
         id: 'ultimo',
         cell: ({ row }) => (
           <span className="text-[12px] text-muted-foreground">
-            {formatKm(row.original.lastClosedKm)}
             <span className="block">{formatFecha(row.original.lastClosedAt)}</span>
+            <span className="block">
+              Odómetro {formatKm(row.original.lastClosedKm)}
+            </span>
           </span>
         ),
       },

@@ -8,33 +8,84 @@ export function resumenAvisoMantenimiento(km: number, dias: number) {
   return `Avisa a los ${km.toLocaleString('es-MX')} km o a los ${dias} días`;
 }
 
-/** Causa operacional del aviso con campos ya en el DTO. Sin “faltan N”. */
+export type ExplicacionAlertaAndon = {
+  titulo: string;
+  vencido: string | null;
+  vencidoHace: string | null;
+  pasados: string[];
+  intervalos: string[];
+};
+
+/** Traduce km/días del DTO a copy de taller. Sin “umbral” ni “faltan N”. */
+export function explicacionAlertaAndon(aviso: {
+  kmAlAbrir: number;
+  diasAlAbrir: number;
+  umbralKm: number;
+  umbralDias: number;
+}): ExplicacionAlertaAndon {
+  const kmVencio = aviso.kmAlAbrir >= aviso.umbralKm;
+  const diasVencio = aviso.diasAlAbrir >= aviso.umbralDias;
+  const extraKm = aviso.kmAlAbrir - aviso.umbralKm;
+  const extraDias = aviso.diasAlAbrir - aviso.umbralDias;
+  const pasados: string[] = [];
+  const intervalos: string[] = [];
+  let vencido: string | null = null;
+  let vencidoHace: string | null = null;
+
+  if (diasVencio) {
+    pasados.push(
+      `Han pasado ${aviso.diasAlAbrir.toLocaleString('es-MX')} días desde el último servicio.`,
+    );
+    intervalos.push(
+      `Intervalo configurado: ${aviso.umbralDias.toLocaleString('es-MX')} días.`,
+    );
+    vencido = `${extraDias.toLocaleString('es-MX')} ${extraDias === 1 ? 'día' : 'días'} vencido`;
+    vencidoHace =
+      extraDias === 1
+        ? 'Vencido hace 1 día'
+        : `Vencido hace ${extraDias.toLocaleString('es-MX')} días`;
+  }
+  if (kmVencio) {
+    pasados.push(
+      `Han pasado ${aviso.kmAlAbrir.toLocaleString('es-MX')} km desde el último servicio.`,
+    );
+    intervalos.push(
+      `Intervalo configurado: ${aviso.umbralKm.toLocaleString('es-MX')} km.`,
+    );
+    const kmVencido = `${extraKm.toLocaleString('es-MX')} km vencido`;
+    if (!vencido) vencido = kmVencido;
+    if (!vencidoHace) {
+      vencidoHace = `Vencido por ${extraKm.toLocaleString('es-MX')} km`;
+    }
+  }
+  if (!kmVencio && !diasVencio) {
+    pasados.push(
+      `Han pasado ${aviso.diasAlAbrir.toLocaleString('es-MX')} días desde el último servicio.`,
+    );
+    intervalos.push(
+      `Intervalo configurado: ${aviso.umbralDias.toLocaleString('es-MX')} días.`,
+    );
+  }
+
+  return {
+    titulo: 'Mantenimiento atrasado',
+    vencido,
+    vencidoHace,
+    pasados,
+    intervalos,
+  };
+}
+
+/** Causa compacta para listados. Sin “umbral”. */
 export function lineasCausaAvisoAndon(aviso: {
   kmAlAbrir: number;
   diasAlAbrir: number;
   umbralKm: number;
   umbralDias: number;
 }): string[] {
-  const lines: string[] = [];
-  if (aviso.kmAlAbrir >= aviso.umbralKm) {
-    lines.push(
-      `${aviso.kmAlAbrir.toLocaleString('es-MX')} km desde el último cierre (umbral ${aviso.umbralKm.toLocaleString('es-MX')} km)`,
-    );
-  }
-  if (aviso.diasAlAbrir >= aviso.umbralDias) {
-    lines.push(
-      `${aviso.diasAlAbrir.toLocaleString('es-MX')} días desde el último cierre (umbral ${aviso.umbralDias.toLocaleString('es-MX')} días)`,
-    );
-  }
-  if (lines.length === 0) {
-    lines.push(
-      `${aviso.kmAlAbrir.toLocaleString('es-MX')} km desde el último cierre (umbral ${aviso.umbralKm.toLocaleString('es-MX')} km)`,
-    );
-    lines.push(
-      `${aviso.diasAlAbrir.toLocaleString('es-MX')} días desde el último cierre (umbral ${aviso.umbralDias.toLocaleString('es-MX')} días)`,
-    );
-  }
-  return lines;
+  const e = explicacionAlertaAndon(aviso);
+  const head = e.vencido ? `${e.titulo} · ${e.vencido}` : e.titulo;
+  return [head, ...e.pasados];
 }
 
 export function formatFecha(value: string | null | undefined) {
@@ -43,6 +94,26 @@ export function formatFecha(value: string | null | undefined) {
     day: '2-digit',
     month: '2-digit',
     year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  });
+}
+
+export function formatFechaCorta(value: string | null | undefined) {
+  if (!value) return '—';
+  return new Date(value).toLocaleDateString('es-MX', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  });
+}
+
+export function formatFechaHoraCorta(value: string | null | undefined) {
+  if (!value) return '—';
+  return new Date(value).toLocaleString('es-MX', {
+    day: 'numeric',
+    month: 'short',
     hour: '2-digit',
     minute: '2-digit',
     hour12: false,

@@ -1,6 +1,7 @@
 'use client';
 
 import type { CSSProperties } from 'react';
+import { CircleHelp } from 'lucide-react';
 import { getHealthSemantic } from '@/lib/health-semantic';
 import type { HealthStatus, UnidadHealth } from '@/lib/types';
 import { cn } from '@/lib/utils';
@@ -131,61 +132,56 @@ export function UnitHealth({
       ) : null}
       <span className="health-score">{health.score}%</span>
       <span className="health-label">{health.label}</span>
-      {health.derivedAlert ? (
+      {variant === 'standard' ? (
+        <span className="health-note health-note-help">
+          <CircleHelp className="size-3.5" aria-hidden />
+          Por qué
+        </span>
+      ) : health.derivedAlert ? (
         <span className="health-note">Alerta activa</span>
       ) : null}
     </span>
   );
 
   if (variant === 'detailed') {
+    const principal = health.drivers.find((d) => d.type !== 'CAP');
     return (
       <div className="flex flex-col gap-3" style={style}>
         <div className="flex items-center gap-3">
           {ring}
           {headline}
         </div>
-        {health.cap ? (
-          <p className="text-[13px]">
-            Score calculado: {Math.round(health.rawScore ?? health.score)}% ·
-            Resultado final: {health.score}%.{' '}
-            {health.drivers.find((d) => d.type === 'CAP')?.message}
-          </p>
-        ) : null}
-        <ul className="flex flex-col gap-3">
+        <ul className="flex flex-col gap-2">
           {health.breakdown.map((dim) => (
-            <li key={dim.id}>
-              <div className="flex justify-between text-[13px] font-medium">
-                <span>{DIM_LABEL[dim.id] ?? dim.id}</span>
-                <span>
-                  {dim.availability === 'APPLICABLE' && dim.score != null
-                    ? `${Math.round(dim.score)}/100`
-                    : dim.availability === 'NOT_APPLICABLE'
-                      ? 'No aplica'
-                      : 'Sin datos'}
-                </span>
-              </div>
-              <p className="muted text-[12px]">
-                Peso: {dim.weight}%
-                {dim.contribution != null
-                  ? ` · Contribución: ${dim.contribution.toFixed(1)} puntos`
-                  : null}
-              </p>
+            <li
+              key={dim.id}
+              className="flex justify-between gap-3 text-[13px]"
+            >
+              <span className="font-medium">
+                {DIM_LABEL[dim.id] ?? dim.id}
+              </span>
+              <span className="tabular-nums text-right">
+                {dim.availability === 'APPLICABLE' && dim.score != null
+                  ? `${Math.round(dim.score)}/100 × ${dim.weight}%`
+                  : dim.availability === 'NOT_APPLICABLE'
+                    ? `No aplica × ${dim.weight}%`
+                    : 'Sin datos'}
+              </span>
             </li>
           ))}
         </ul>
-        {health.rawScore != null ? (
-          <p className="text-[12px] text-muted-foreground">
-            Resultado: {health.rawScore.toFixed(1)} → {health.score}%
+        {principal ? (
+          <p className="text-[13px]">
+            <span className="font-medium">Factor principal: </span>
+            {principal.message}
           </p>
         ) : null}
-        <div>
-          <h3 className="subhead">Principales factores</h3>
-          <ul className="flex flex-col gap-1 text-[13px]">
-            {health.drivers.map((d) => (
-              <li key={`${d.type}-${d.message}`}>{d.message}</li>
-            ))}
-          </ul>
-        </div>
+        {health.cap ? (
+          <p className="text-[13px]">
+            {health.drivers.find((d) => d.type === 'CAP')?.message ??
+              'Health limitado por una condición crítica.'}
+          </p>
+        ) : null}
       </div>
     );
   }
