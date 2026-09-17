@@ -1581,7 +1581,6 @@
     display: inline-flex;
     border: 1px solid var(--line);
     border-radius: 6px;
-    overflow: hidden;
     background: var(--white);
   }
 
@@ -1596,6 +1595,14 @@
     background: transparent;
     color: var(--muted-foreground);
     cursor: pointer;
+  }
+
+  .unidades-vista button:first-child {
+    border-radius: 5px 0 0 5px;
+  }
+
+  .unidades-vista button:last-child {
+    border-radius: 0 5px 5px 0;
   }
 
   .unidades-vista button + button {
