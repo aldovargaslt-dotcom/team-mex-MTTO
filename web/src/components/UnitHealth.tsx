@@ -173,7 +173,9 @@ export function UnitHealth({
         {principal ? (
           <p className="text-[13px]">
             <span className="font-medium">Factor principal: </span>
-            {principal.message}
+            {principal.type === 'MAINTENANCE_OVERDUE'
+              ? 'Mantenimiento vencido'
+              : principal.message}
           </p>
         ) : null}
         {health.cap ? (
