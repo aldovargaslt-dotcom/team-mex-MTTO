@@ -113,7 +113,7 @@ describe('NotifyPort noop + Evolution', () => {
     expect(payload.number).toBe(GROUP);
     expect(payload.number.endsWith('@g.us')).toBe(true);
     expect(payload.text).toMatch(/unidad-1/);
-    expect(payload.text).toMatch(/aviso/i);
+    expect(payload.text).toMatch(/alerta/i);
   });
 
   it('HTTP 5xx no lanza (no bloquea apertura Andon)', async () => {
