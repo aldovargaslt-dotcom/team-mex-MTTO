@@ -82,9 +82,23 @@ Si el log de Railway dice `Railpack could not determine how to build` y lista `a
    `PORT` lo pone Railway. No copie `DB_HOST` local.
 5. **Settings → Networking → Generate Domain.** Pruebe `https://<api>.up.railway.app/health` → `{"status":"ok",...}`.
 
-El boot crea schemas `inventario` / `andon` / `notifications`, sincroniza tablas y siembra U-101 / stock bajo.
+El boot crea schemas `inventario` / `andon` / `notifications` / `flota` / `salud`, sincroniza tablas y siembra U-101 / stock bajo.
 
-### 2. Vercel — UI
+### 2. Railway — UI (probar sin SSO de Vercel)
+
+Segundo servicio del mismo repo, **Root Directory = `web`**, builder Dockerfile (`web/Dockerfile`).
+
+| Variable | Valor |
+|----------|--------|
+| `API_URL` | `https://<api>.up.railway.app` (sin `/` final; en Railway: `https://${{team-mex-MTTO.RAILWAY_PUBLIC_DOMAIN}}`) |
+| `NEXT_PUBLIC_API_BASE` | `/backend` |
+| `HOSTNAME` | `0.0.0.0` |
+
+No fije `PORT` ni el target port del dominio a 3000: Next escucha el `PORT` que inyecta Railway (suele ser 8080). Generate Domain **sin** target port, o apunte al puerto del proceso.
+
+`API_URL` entra en el **build** (rewrite `/backend` → API).
+
+### 3. Vercel — UI
 
 Si el log repite `Using TypeScript 5.9.3 (local user-provided)` cada ~2 s, Vercel está compilando **`api/`** (Nest), no la UI. En el proyecto: **Settings → General → Root Directory = `web`** → Save → Redeploy. Un build bueno dice Next.js y ~369 paquetes, no 726 ni cientos de líneas de TypeScript.
 
@@ -102,9 +116,9 @@ Si el log repite `Using TypeScript 5.9.3 (local user-provided)` cada ~2 s, Verce
 
 Auth sigue siendo el stub `X-Role`. Use Protection de Vercel o no indexe la URL si es solo demo.
 
-### 3. Orden
+### 4. Orden
 
-Postgres → API (health ok) → Vercel con esa `API_URL` → (opcional) endurecer CORS.
+Postgres → API (health ok) → UI (Railway y/o Vercel) con esa `API_URL` → (opcional) endurecer CORS.
 
 ## Semilla
 
