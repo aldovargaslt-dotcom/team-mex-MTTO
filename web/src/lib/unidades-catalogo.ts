@@ -102,6 +102,10 @@ export function etiquetaSituacionAtencion(situacion: SituacionAtencion) {
   return 'Sin aviso';
 }
 
+export function etiquetaOrigenAndon(cantidad: number) {
+  return cantidad === 1 ? '1 aviso Andon' : `${cantidad} avisos Andon`;
+}
+
 /** Filtros (N) en el sheet móvil: solo Estado. Tabs, búsqueda y KPI Andon se ven fuera. */
 export function cuentaFiltrosOcultos(estadoFiltro: string): number {
   return estadoFiltro ? 1 : 0;

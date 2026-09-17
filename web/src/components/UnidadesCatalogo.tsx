@@ -9,7 +9,6 @@ import {
   ChevronRight,
   CircleCheck,
   CirclePause,
-  Info,
   LayoutGrid,
   LayoutList,
   ListFilter,
@@ -17,7 +16,6 @@ import {
   Search,
   TriangleAlert,
   Truck,
-  X,
 } from 'lucide-react';
 import { StatusBadge } from '@/components/StatusBadge';
 import { UnidadTipoIcon, UnidadTipoMark } from '@/components/UnidadTipoMark';
@@ -39,6 +37,7 @@ import {
 import {
   avisoDeUnidad,
   cuentaFiltrosOcultos,
+  etiquetaOrigenAndon,
   etiquetaSituacionAtencion,
   kpisFlota,
   ordenarUnidades,
@@ -174,7 +173,6 @@ export function UnidadesCatalogo({
   const [sort, setSort] = useState<UnidadesSort>('interno-asc');
   const [vista, setVista] = useState<UnidadesVista>('tabla');
   const [page, setPage] = useState(1);
-  const [consejo, setConsejo] = useState(true);
   const [filtrosOpen, setFiltrosOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -319,18 +317,9 @@ export function UnidadesCatalogo({
             Busque y abra la unidad que necesita atención.
           </p>
           {actions ? (
-            <div className="mt-2 flex flex-wrap gap-2">{actions}</div>
+            <div className="unidades-hero__actions">{actions}</div>
           ) : null}
         </div>
-        <aside className="unidades-hero-aside" aria-label="Flota de mantenimiento">
-          <span className="unidades-hero-aside__icon" aria-hidden>
-            <Truck className="size-4" strokeWidth={1.75} />
-          </span>
-          <span>
-            <strong>Flota de mantenimiento</strong>
-            <span>Abra una ficha para visitas y avisos.</span>
-          </span>
-        </aside>
       </div>
 
       <div className="unidades-kpis">
@@ -338,6 +327,7 @@ export function UnidadesCatalogo({
           type="button"
           className={cn('unidades-kpi', kpiTotalActivo && 'is-active')}
           aria-pressed={kpiTotalActivo}
+          title="Mostrar todas las unidades"
           onClick={limpiarKpi}
         >
           <span className="unidades-kpi__icon unidades-kpi__icon--total">
@@ -355,6 +345,7 @@ export function UnidadesCatalogo({
             estadoFiltro === 'ACTIVA' && 'is-active',
           )}
           aria-pressed={estadoFiltro === 'ACTIVA'}
+          title="Mostrar unidades activas"
           onClick={() =>
             aplicarEstado(estadoFiltro === 'ACTIVA' ? '' : 'ACTIVA')
           }
@@ -377,6 +368,7 @@ export function UnidadesCatalogo({
             estadoFiltro === 'INACTIVA' && 'is-active',
           )}
           aria-pressed={estadoFiltro === 'INACTIVA'}
+          title="Mostrar unidades inactivas"
           onClick={() =>
             aplicarEstado(estadoFiltro === 'INACTIVA' ? '' : 'INACTIVA')
           }
@@ -396,6 +388,7 @@ export function UnidadesCatalogo({
           type="button"
           className={cn('unidades-kpi', atencionFiltro && 'is-active')}
           aria-pressed={atencionFiltro}
+          title="Mostrar unidades que requieren atención"
           onClick={() => {
             onEstadoFiltro('');
             onAtencionFiltro(!atencionFiltro);
@@ -405,10 +398,10 @@ export function UnidadesCatalogo({
             <TriangleAlert className="size-5" aria-hidden />
           </span>
           <span className="unidades-kpi__copy">
-            <span className="unidades-kpi__label">Avisos Andon</span>
+            <span className="unidades-kpi__label">Requieren atención</span>
             <span className="unidades-kpi__value">{kpis.conAviso}</span>
             <span className="unidades-kpi__meta">
-              {pctDelTotal(kpis.conAviso, kpis.total)}% del total
+              {etiquetaOrigenAndon(kpis.conAviso)}
             </span>
           </span>
         </button>
@@ -565,7 +558,8 @@ export function UnidadesCatalogo({
               <button
                 type="button"
                 aria-pressed={vista === 'tabla'}
-                aria-label="Vista tabla"
+                aria-label="Vista de lista"
+                data-tip="Vista de lista"
                 className={vista === 'tabla' ? 'active' : ''}
                 onClick={() => setVista('tabla')}
               >
@@ -574,7 +568,8 @@ export function UnidadesCatalogo({
               <button
                 type="button"
                 aria-pressed={vista === 'tarjetas'}
-                aria-label="Vista tarjetas"
+                aria-label="Vista de tarjetas"
+                data-tip="Vista de tarjetas"
                 className={vista === 'tarjetas' ? 'active' : ''}
                 onClick={() => setVista('tarjetas')}
               >
@@ -754,23 +749,6 @@ export function UnidadesCatalogo({
       </div>
       ) : null}
         </>
-      ) : null}
-
-      {consejo ? (
-        <div className="unidades-consejo" role="note">
-          <Info className="size-4 shrink-0" aria-hidden />
-          <p>
-            <strong>Consejo:</strong> puede buscar por número interno, placas,
-            marca o modelo para encontrar una unidad más rápido.
-          </p>
-          <button
-            type="button"
-            aria-label="Cerrar consejo"
-            onClick={() => setConsejo(false)}
-          >
-            <X className="size-4" />
-          </button>
-        </div>
       ) : null}
     </div>
   );

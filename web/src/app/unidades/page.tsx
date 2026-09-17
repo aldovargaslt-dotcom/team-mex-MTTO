@@ -273,7 +273,7 @@ function UnidadesList() {
           onNuevoTipo={abrirAltaFamilia}
           onAlertas={abrirAlertas}
         />
-        <Button asChild>
+        <Button asChild size="compact" className="unidades-cta-nueva">
           <Link
             href={
               tipoFiltro
