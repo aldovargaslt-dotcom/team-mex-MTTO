@@ -7,6 +7,7 @@ import { ColumnDef } from '@tanstack/react-table';
 import { RoleGate } from '@/components/RoleGate';
 import { StatusBadge } from '@/components/StatusBadge';
 import { AndonHubCard } from '@/components/AndonHubCard';
+import { IndicadoresStrip } from '@/components/IndicadoresStrip';
 import { DataTable } from '@/components/ui/data-table';
 import { api, HttpError } from '@/lib/api';
 import {
@@ -16,11 +17,15 @@ import {
   etiquetaUom,
   formatFecha,
   formatKm,
+  resumenAvisoMantenimiento,
 } from '@/lib/format';
+import { indicadoresDeHub } from '@/lib/hub-indicadores';
 import { useRole } from '@/lib/role';
 import type {
+  AvisoAndon,
   ItemInventario,
   OrigenPieza,
+  UmbralAndon,
   UnidadHub,
   VisitaDetalle,
   VisitaResumen,
@@ -39,14 +44,32 @@ function HubContent() {
   const router = useRouter();
   const { role, userId, isAdmin } = useRole();
   const [hub, setHub] = useState<UnidadHub | null>(null);
+  const [avisos, setAvisos] = useState<AvisoAndon[]>([]);
+  const [umbral, setUmbral] = useState<UmbralAndon | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [notFound, setNotFound] = useState(false);
   const [creating, setCreating] = useState(false);
   const [busyId, setBusyId] = useState<string | null>(null);
 
   async function cargar() {
-    setHub(
-      await api<UnidadHub>(`/unidades/${params.id}/hub`, { role: role!, userId }),
+    const data = await api<UnidadHub>(
+      `/unidades/${params.id}/hub`,
+      { role: role!, userId },
+    );
+    setHub(data);
+    const [listaAvisos, umbrales] = await Promise.all([
+      api<AvisoAndon[]>(
+        `/andon/avisos?unidadId=${encodeURIComponent(params.id)}`,
+        { role: role!, userId },
+      ).catch(() => [] as AvisoAndon[]),
+      api<UmbralAndon[]>('/andon/umbrales', { role: role!, userId }).catch(
+        () => [] as UmbralAndon[],
+      ),
+    ]);
+    setAvisos(listaAvisos);
+    setUmbral(
+      umbrales.find((row) => row.tipoVehiculoId === data.fichaCorta.tipoId) ??
+        null,
     );
   }
 
@@ -145,17 +168,25 @@ function HubContent() {
       /inactiva|administrador|choferes/i.test(m) && !hub.puedeCrearVisita
       || /choferes/i.test(m),
   );
+  const indicadores = indicadoresDeHub({
+    ultimoKm: ficha.ultimoKm,
+    historialCerrado: hub.historialCerrado,
+    avisos,
+    umbral,
+  });
 
   return (
     <>
       <div className="page-head">
         <div>
+          <p className="text-xs text-muted-foreground">Ficha de unidad</p>
           <h1>
             {ficha.numeroInterno} <StatusBadge estado={ficha.estado} />
           </h1>
           <p className="lede">
             {ficha.tipoNombre}
             {ficha.marcaModelo ? ` · ${ficha.marcaModelo}` : ''}
+            {` · ${ficha.placas}`}
           </p>
         </div>
         <Link className="btn btn-secondary" href="/unidades">
@@ -165,18 +196,25 @@ function HubContent() {
 
       {error ? <p className="alert" style={{ marginBottom: 12 }}>{error}</p> : null}
 
+      <IndicadoresStrip
+        label="Indicadores de la unidad"
+        items={indicadores}
+      />
+      {umbral ? (
+        <p className="mb-3 text-xs text-muted-foreground">
+          {resumenAvisoMantenimiento(umbral.tKm, umbral.tDias)}
+        </p>
+      ) : null}
+
       <div style={{ marginBottom: 12 }}>
         <AndonHubCard
           unidadId={ficha.id}
-          puedeCrearVisita={hub.puedeCrearVisita}
-          onNuevaVisita={() => void nuevaVisita()}
-          creating={creating}
         />
       </div>
 
       <div className="hub-grid">
         <section className="card panel">
-          <h2>Ficha corta</h2>
+          <h2>Datos de la unidad</h2>
           <dl className="dl">
             <dt>Número interno</dt>
             <dd className="mono">{ficha.numeroInterno}</dd>

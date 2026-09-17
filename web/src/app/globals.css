@@ -599,6 +599,59 @@
     font-size: 12px;
   }
 
+  .indicadores {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 8px;
+    margin: 0 0 12px;
+  }
+
+  .indicador {
+    min-width: 0;
+    padding: 10px 12px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: var(--white);
+  }
+
+  .indicador--warn {
+    border-color: #f0c7a0;
+    background: #fffaf4;
+  }
+
+  .indicador--muted .indicador__value {
+    color: var(--muted-foreground);
+    font-weight: 500;
+  }
+
+  .indicador__label {
+    margin: 0 0 4px;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--muted-foreground);
+    line-height: 1.2;
+  }
+
+  .indicador__value {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--navy);
+    line-height: 1.25;
+    word-break: break-word;
+  }
+
+  .indicador__detalle {
+    margin: 4px 0 0;
+    font-size: 12px;
+    color: var(--muted-foreground);
+    line-height: 1.35;
+  }
+
+  .panel .indicadores {
+    margin-bottom: 0;
+  }
+
   .hub-grid {
     display: grid;
     grid-template-columns: 1.1fr 0.9fr;
@@ -1052,6 +1105,46 @@
     background: #e4e6f0;
   }
 
+  /* Facetas siempre visibles: etiqueta a la izquierda, chips a la derecha. */
+  .filter-facets {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 0 0 8px;
+  }
+
+  .filter-facet {
+    display: grid;
+    grid-template-columns: 7.25rem minmax(0, 1fr);
+    gap: 4px 12px;
+    align-items: start;
+  }
+
+  .filter-facet__kicker {
+    margin: 0;
+    padding-top: 11px;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--muted-foreground);
+    line-height: 1.2;
+  }
+
+  .filter-facet__controls {
+    min-width: 0;
+  }
+
+  .filter-facet .list-filter {
+    margin: 0;
+  }
+
+  .filter-range {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 11.5rem));
+    gap: 8px;
+    margin-top: 8px;
+    justify-content: start;
+  }
+
   .data-table {
     width: 100%;
     border-collapse: collapse;
@@ -1340,8 +1433,22 @@
     .filters,
     .form-grid,
     .hub-grid,
-    .list-row {
+    .list-row,
+    .filter-range {
       grid-template-columns: 1fr;
+    }
+
+    .indicadores {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .filter-facet {
+      grid-template-columns: 1fr;
+      gap: 4px;
+    }
+
+    .filter-facet__kicker {
+      padding-top: 0;
     }
 
     .list-head {
