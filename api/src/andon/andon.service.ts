@@ -183,6 +183,8 @@ export class AndonService implements OnModuleInit, AndonAbiertoPort {
       estado: aviso.estado,
       abiertaAt: aviso.abiertaAt,
       enteradoAt: aviso.enteradoAt,
+      enteradoBy: aviso.enteradoBy,
+      resueltoAt: aviso.resueltoAt,
       visitaResolutoriaId: aviso.visitaResolutoriaId,
       kmAlAbrir: aviso.kmAlAbrir,
       diasAlAbrir: aviso.diasAlAbrir,

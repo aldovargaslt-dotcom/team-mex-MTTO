@@ -247,12 +247,31 @@ describe('Inventario v0 + piezas en visita (e2e)', () => {
       hub.body.historialCerrado as {
         id: string;
         piezas: { itemId: string; qty: number; origen: string }[];
+        trabajos: { categoria: string; item: string }[];
       }[]
     ).find((v) => v.id === draft.body.id);
     expect(enHistorial?.piezas).toEqual([
       { itemId: filtro.id, qty: 2, origen: 'DESDE_STOCK' },
     ]);
     expect(enHistorial?.piezas[0]).not.toHaveProperty('sku');
+    expect(enHistorial?.trabajos).toEqual([
+      { categoria: 'A', item: 'Afinación / filtros de aceite' },
+    ]);
+
+    const resueltos = await request(server)
+      .get('/andon/avisos')
+      .query({ estado: 'RESUELTO' })
+      .set(SUPERVISOR)
+      .expect(200);
+    const resuelto = (
+      resueltos.body as {
+        visitaResolutoriaId: string | null;
+        resueltoAt: string | null;
+        enteradoBy: string | null;
+      }[]
+    ).find((a) => a.visitaResolutoriaId === draft.body.id);
+    expect(resuelto).toBeTruthy();
+    expect(resuelto!.resueltoAt).toBeTruthy();
   });
 
   it('I2/I3 stock insuficiente bloquea el cierre salvo COMPRA_EXTERNA (pendiente, sin movimiento)', async () => {
