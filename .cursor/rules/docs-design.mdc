@@ -1,0 +1,11 @@
+---
+description: Sistema de ingeniería UI en docs/design; no duplicar briefs de corte.
+globs: docs/design/**
+alwaysApply: false
+---
+
+# docs/design
+
+Sistema de ingeniería (jerarquía, primitivas, spec UX, Visual QA). Briefs Must/Don’t de un corte viven en [docs/design-system/](docs/design-system/). No recopiar ADRs ni esos briefs aquí.
+
+No rediseñar `web/src` desde un PR que solo toca estos docs. No añadir Playwright. No crear `work-orders/`.

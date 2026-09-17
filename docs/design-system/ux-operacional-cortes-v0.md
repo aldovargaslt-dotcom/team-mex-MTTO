@@ -285,9 +285,9 @@ No fusionar cortes en un solo PR. D no bloquea E.
 
 ## Verificación por corte
 
-- Visual: skill `proof-ui` (click-through; Supervisor **y** Admin donde el listado es compartido). Logística: no es audiencia de estos cortes.
+- Visual: skill `proof-ui` (click-through; Supervisor **y** Admin donde el listado es compartido). Logística: no es audiencia de estos cortes. Viewports: [SCREENSHOT_WORKFLOW.md](../design/SCREENSHOT_WORKFLOW.md).
 - API (C/D/E): skill `verify-api` (`cd api && npm test && npm run test:e2e`). Sin `lint --fix`.
-- Subagentes al review: `ux-auditor` + `sd-scope` (fuera de v0 + Andon no stock + no dual-stack).
+- Subagentes al review: `ux-auditor` (Visual QA, otro pase) + `sd-scope` (fuera de v0 + Andon no stock + no dual-stack). Implementar con `ui-implementer`; no auto-aprobar.
 
 ## Hold
 

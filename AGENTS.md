@@ -12,7 +12,7 @@
 | Andon | ADR-004, [ADR-005](docs/adr/005-andon-no-stock-alerts.md), [ops checklist](architecture/andon-whatsapp-ops-checklist-v0.md) |
 | Inventario | ADR-002, [ADR-007](docs/adr/007-inventario-stock-bajo.md), ADR-004 (I/S) |
 | Notifications / campanita | [ADR-006](docs/adr/006-notifications-schema.md), ADR-004 (N) |
-| UI (`web/src`) | [ADR-003](docs/adr/003-shadcn-tailwind.md) + [docs/design-system/](docs/design-system/) |
+| UI (`web/src`) | [ADR-003](docs/adr/003-shadcn-tailwind.md) + briefs [docs/design-system/](docs/design-system/) + sistema [docs/design/README.md](docs/design/README.md) |
 | UX operacional (copy, existencias, filtros, hub piezas) | [ux-operacional-cortes-v0](docs/design-system/ux-operacional-cortes-v0.md) — recorte SPEC-UX-001; **no toca Flota**. Flota: [tablero viaje](docs/specs/fleet-tablero-viaje-v0.md) |
 | Notify / WhatsApp | Dual-stack abajo. Default **noop**. No “arreglar”. |
 
@@ -29,7 +29,7 @@ El [checklist de ops](architecture/andon-whatsapp-ops-checklist-v0.md) todavía 
 
 ## WO UI ≠ brief de ingeniería
 
-“WO” en este repo es el **wizard de visita** (Supervisor). El artefacto de ingeniería es el **brief** / **corte** del PR: [`.github/pull_request_template.md`](.github/pull_request_template.md). No hay carpeta `work-orders/`.
+“WO” en este repo es el **wizard de visita** (Supervisor). El artefacto de ingeniería es el **brief** / **corte** del PR ([`.github/pull_request_template.md`](.github/pull_request_template.md)) y, si cambia layout o jerarquía, la spec UX ([plantilla](docs/design/UX_SPEC_TEMPLATE.md)). No hay carpeta `work-orders/`.
 
 ## Fuera de v0
 
@@ -38,11 +38,11 @@ README: multi-almacén, lotes, costeo, OC formal, kardex pesado, ítem↔placa, 
 ## Verificación
 
 - API: skill [`verify-api`](.cursor/skills/verify-api/SKILL.md) o [`script/verify.sh`](script/verify.sh) (`cd api` / `cd web`; no hay `package.json` raíz).
-- UI: skill [`proof-ui`](.cursor/skills/proof-ui/SKILL.md) (click-through + screenshots; **sin** Playwright).
+- UI: skill [`ui-implementer`](.cursor/skills/ui-implementer/SKILL.md) → skill [`proof-ui`](.cursor/skills/proof-ui/SKILL.md) (click-through + screenshots; **sin** Playwright) → subagente `ux-auditor` (Visual QA; **otro pase**).
 - CI: [`.github/workflows/verify.yml`](.github/workflows/verify.yml) — Jest unit+e2e y web lint+build. No correr `api` `lint --fix`.
 - Humanos: Postgres con `docker compose` (README). Cloud Agents: [`.cursor/environment.json`](.cursor/environment.json) (Postgres nativo). No inventar un tercer camino.
 
 ## Subagentes (solo lectura de docs)
 
-- `ux-auditor` — Must/Don’t de design-system + heurísticas `proof-ui`
+- `ux-auditor` — Visual QA: Must/Don’t de design-system + [VISUAL_QA.md](docs/design/VISUAL_QA.md) + heurísticas `proof-ui`. No implementa.
 - `sd-scope` — fuera de v0 + ownership ADR + aviso dual-stack
