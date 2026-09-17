@@ -5,20 +5,18 @@ import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { RoleGate } from '@/components/RoleGate';
 import { SignaturePad } from '@/components/SignaturePad';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Field, FormAlert, Note, PageHeader } from '@/components/ui/field';
 import { Input, NativeSelect, Textarea } from '@/components/ui/input';
+import { IndicadoresStrip } from '@/components/IndicadoresStrip';
 import { api, HttpError } from '@/lib/api';
 import {
-  choferDeFila,
   ciclosDeHistorial,
   detalleCicloFlota,
   etiquetaAdminFlota,
   fraseCicloFlota,
-  viajeDeFila,
 } from '@/lib/flota-viaje';
-import { formatKm } from '@/lib/format';
+import { indicadoresDePatio } from '@/lib/hub-indicadores';
 import { useRole } from '@/lib/role';
 import type {
   Chofer,
@@ -202,8 +200,6 @@ function FlotaUnidad() {
 
   const { unidad, tablero } = detalle;
   const sitiosActivos = sitios;
-  const viaje = tablero ? viajeDeFila(tablero) : null;
-  const chofer = tablero ? choferDeFila(tablero) : null;
   const admin = etiquetaAdminFlota(unidad);
 
   return (
@@ -243,57 +239,14 @@ function FlotaUnidad() {
 
       <section className="card panel">
         <h2>Situación</h2>
-        <dl className="dl">
-          <dt>Viaje</dt>
-          <dd>
-            {viaje ? (
-              <>
-                <div>{viaje.titulo}</div>
-                {viaje.detalle ? (
-                  <div className="muted">{viaje.detalle}</div>
-                ) : null}
-              </>
-            ) : (
-              'Sin registro de patio'
-            )}
-          </dd>
-          <dt>Chofer</dt>
-          <dd>
-            {chofer ? (
-              <>
-                <div className={chofer.asignado ? undefined : 'muted'}>
-                  {chofer.principal}
-                </div>
-                {chofer.secundario ? (
-                  <div className="muted">{chofer.secundario}</div>
-                ) : null}
-              </>
-            ) : (
-              <span className="muted">Sin asignar</span>
-            )}
-          </dd>
-          {tablero?.salidaAbiertaId ? (
-            <>
-              <dt>Atención</dt>
-              <dd>
-                <Badge variant="warning" className="normal-case tracking-normal">
-                  Registrar entrada
-                </Badge>
-              </dd>
-            </>
-          ) : null}
-          {admin ? (
-            <>
-              <dt>Estado</dt>
-              <dd className="muted">{admin}</dd>
-            </>
-          ) : null}
-          <dt>Último km visita</dt>
-          <dd>{formatKm(unidad.ultimoKmVisita)}</dd>
-        </dl>
+        <IndicadoresStrip
+          label="Indicadores de patio"
+          items={indicadoresDePatio(detalle)}
+        />
+        {admin ? <p className="muted mt-2">{admin}</p> : null}
         {tablero?.andonAbierto ? (
           <Note variant="warn">
-            Hay un aviso Andon abierto. La salida no se bloquea.
+            Hay una alerta de mantenimiento abierta. La salida no se bloquea.
           </Note>
         ) : null}
       </section>

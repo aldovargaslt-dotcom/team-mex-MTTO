@@ -125,8 +125,8 @@ export class TwilioWhatsAppAdapter implements AndonNotifier {
         .replaceAll('{avisoId}', message.avisoId);
     }
     if (message.kind === WhatsAppKind.AVISO) {
-      return `Andon: aviso de mantenimiento vencido para teléfonos ops. unidad=${message.unidadId}`;
+      return `Alerta: mantenimiento vencido para teléfonos ops. unidad=${message.unidadId}`;
     }
-    return `Andon: recordatorio a teléfonos ops. unidad=${message.unidadId}`;
+    return `Alerta: recordatorio a teléfonos ops. unidad=${message.unidadId}`;
   }
 }

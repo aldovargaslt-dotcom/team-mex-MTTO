@@ -154,7 +154,7 @@ export class AndonEngine {
     }
     const aviso = await this.deps.store.getAviso(avisoId);
     if (!aviso) {
-      throw new AndonNotFoundError('No se encontró el aviso.');
+      throw new AndonNotFoundError('No se encontró la alerta.');
     }
     if (aviso.estado === EstadoAviso.RESUELTO) {
       return aviso;

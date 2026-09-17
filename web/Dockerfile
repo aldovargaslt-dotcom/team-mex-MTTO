@@ -11,7 +11,8 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NEXT_PUBLIC_API_BASE=/backend
-# El rewrite /backend → API se resuelve dentro de la red de Compose.
+# Compose pasa http://api:3001. Railway pasa la URL pública de la API
+# (mismo nombre de ARG = variable de entorno del servicio).
 ARG API_URL=http://api:3001
 ENV API_URL=$API_URL
 RUN npm run build

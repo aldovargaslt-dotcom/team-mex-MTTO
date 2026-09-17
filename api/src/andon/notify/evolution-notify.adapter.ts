@@ -83,8 +83,8 @@ export class EvolutionNotifyAdapter implements NotifyPort {
 
   private textFor(message: WhatsAppMessage): string {
     if (message.kind === WhatsAppKind.AVISO) {
-      return `Andon: aviso de mantenimiento vencido. unidad=${message.unidadId}`;
+      return `Alerta: mantenimiento vencido. unidad=${message.unidadId}`;
     }
-    return `Andon: recordatorio. unidad=${message.unidadId}`;
+    return `Alerta: recordatorio. unidad=${message.unidadId}`;
   }
 }

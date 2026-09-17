@@ -111,6 +111,14 @@ export class TypeOrmFlotaStore implements FlotaStore {
     await this.operativas.save(entity);
   }
 
+  async getLatestKm(unidadId: string): Promise<number | null> {
+    const row = await this.movimientos.findOne({
+      where: { unidadId },
+      order: { occurredAt: 'DESC' },
+    });
+    return row?.km ?? null;
+  }
+
   private toSitio(row: SitioEntity): Sitio {
     return { id: row.id, nombre: row.nombre, estado: row.estado as EstadoSitio };
   }

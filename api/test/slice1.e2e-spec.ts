@@ -199,6 +199,34 @@ describe('Slice 1 (e2e)', () => {
       .expect(200);
   });
 
+  it('admin guarda icono de tipo (catálogo cerrado)', async () => {
+    const created = await request(server)
+      .post('/unidades/tipos')
+      .set(ADMIN)
+      .send({ nombre: 'Plataforma', icono: 'car' })
+      .expect(201);
+    expect(created.body.icono).toBe('car');
+
+    const updated = await request(server)
+      .patch(`/unidades/tipos/${created.body.id}`)
+      .set(ADMIN)
+      .send({ icono: 'bus' })
+      .expect(200);
+    expect(updated.body.icono).toBe('bus');
+
+    const invalid = await request(server)
+      .post('/unidades/tipos')
+      .set(ADMIN)
+      .send({ nombre: 'Motocicleta', icono: 'bike' })
+      .expect(400);
+    expect(String(invalid.body.message)).toMatch(/icono/i);
+
+    await request(server)
+      .delete(`/unidades/tipos/${created.body.id}`)
+      .set(ADMIN)
+      .expect(200);
+  });
+
   it('admin crea y actualiza unidades', async () => {
     const tipos = await request(server).get('/unidades/tipos').set(ADMIN);
     const tipoId = tipos.body[0].id as string;
@@ -278,6 +306,10 @@ describe('Slice 1 (e2e)', () => {
     expect(res.body.historialCerrado).toHaveLength(1);
     expect(res.body.historialCerrado[0].km).toBe(100);
     expect(res.body.historialCerrado[0].piezas).toEqual([]);
+    expect(res.body.historialCerrado[0].trabajosCount).toBe(1);
+    expect(res.body.historialCerrado[0].trabajos).toEqual([
+      { categoria: 'A', item: 'Afinación / filtros de aceite' },
+    ]);
     expect(res.body.mensajes[0]).toMatch(/visita/i);
     expect(res.body.mantenimiento).toBeUndefined();
   });

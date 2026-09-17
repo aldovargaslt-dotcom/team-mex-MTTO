@@ -190,7 +190,7 @@ describe('Flota v0 (ADR-004 F1–F11)', () => {
       andonAbierto: true,
       ultimoKmVisita: 900,
     });
-    expect(res.avisos.some((a) => /Andon abierto/i.test(a))).toBe(true);
+    expect(res.avisos.some((a) => /alerta abierta/i.test(a))).toBe(true);
     expect(res.avisos.some((a) => /último km de visita/i.test(a))).toBe(true);
     expect(res.movimiento.firmas).toHaveLength(2);
     const op = await store.getOperativa(UNIDAD);

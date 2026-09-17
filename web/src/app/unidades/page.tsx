@@ -2,13 +2,13 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { FormEvent, useEffect, useMemo, useState } from 'react';
-import { ColumnDef } from '@tanstack/react-table';
+import { FormEvent, useEffect, useState } from 'react';
 import { RoleGate } from '@/components/RoleGate';
-import { StatusBadge } from '@/components/StatusBadge';
+import { HealthConfigDialog } from '@/components/HealthConfigDialog';
+import { UnidadesAdminMenu } from '@/components/UnidadesAdminMenu';
+import { UnidadesCatalogo } from '@/components/UnidadesCatalogo';
+import { TipoIconoPicker } from '@/components/TipoIconoPicker';
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { DataTable } from '@/components/ui/data-table';
 import {
   Dialog,
   DialogContent,
@@ -17,12 +17,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Field, FormAlert, PageHeader } from '@/components/ui/field';
-import { Input, NativeSelect } from '@/components/ui/input';
+import { Field, FormAlert } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
 import { api, HttpError } from '@/lib/api';
 import { resumenAvisoMantenimiento } from '@/lib/format';
+import { glyphTipo, inferGlyphTipo, type TipoGlyph } from '@/lib/unidades-catalogo';
 import { useRole } from '@/lib/role';
-import type { TipoVehiculo, UmbralAndon, Unidad } from '@/lib/types';
+import type { AvisoAndon, TipoVehiculo, UmbralAndon, Unidad } from '@/lib/types';
 
 const DEFAULT_T_KM = 10000;
 const DEFAULT_T_DIAS = 90;
@@ -41,8 +42,11 @@ function UnidadesList() {
   const [q, setQ] = useState('');
   const [tipoFiltro, setTipoFiltro] = useState('');
   const [estadoFiltro, setEstadoFiltro] = useState('');
+  const [atencionFiltro, setAtencionFiltro] = useState(false);
   const [tipos, setTipos] = useState<TipoVehiculo[]>([]);
   const [unidades, setUnidades] = useState<Unidad[] | null>(null);
+  const [flota, setFlota] = useState<Unidad[]>([]);
+  const [avisos, setAvisos] = useState<AvisoAndon[]>([]);
   const [umbrales, setUmbrales] = useState<Record<string, UmbralAndon>>({});
   const [error, setError] = useState<string | null>(null);
   const [loadFailed, setLoadFailed] = useState(false);
@@ -51,8 +55,11 @@ function UnidadesList() {
   const [editing, setEditing] = useState<TipoVehiculo | null>(null);
   const [nombre, setNombre] = useState('');
   const [descripcion, setDescripcion] = useState('');
+  const [icono, setIcono] = useState<TipoGlyph>('truck');
+  const [iconoManual, setIconoManual] = useState(false);
   const [saving, setSaving] = useState(false);
   const [alertasOpen, setAlertasOpen] = useState(false);
+  const [saludOpen, setSaludOpen] = useState(false);
   const [alertDraft, setAlertDraft] = useState<
     Record<string, { tKm: string; tDias: string }>
   >({});
@@ -67,18 +74,26 @@ function UnidadesList() {
     if (tipoFiltro) params.set('tipo', tipoFiltro);
     if (estadoFiltro) params.set('estado', estadoFiltro);
     const qs = params.toString();
+    const opts = { role, userId };
+    const filteredPath = `/unidades${qs ? `?${qs}` : ''}`;
     try {
-      const [lista, catalogo, umb] = await Promise.all([
-        api<Unidad[]>(`/unidades${qs ? `?${qs}` : ''}`, { role, userId }),
-        api<TipoVehiculo[]>('/unidades/tipos', { role, userId }),
-        api<UmbralAndon[]>('/andon/umbrales', { role, userId }),
+      const [lista, catalogo, umb, avisosList, flotaList] = await Promise.all([
+        api<Unidad[]>(filteredPath, opts),
+        api<TipoVehiculo[]>('/unidades/tipos', opts),
+        api<UmbralAndon[]>('/andon/umbrales', opts),
+        api<AvisoAndon[]>('/andon/avisos', opts).catch(() => [] as AvisoAndon[]),
+        qs ? api<Unidad[]>('/unidades', opts) : Promise.resolve(null),
       ]);
       setUnidades(lista);
+      setFlota(flotaList ?? lista);
+      setAvisos(avisosList);
       setTipos(catalogo);
       setUmbrales(Object.fromEntries(umb.map((u) => [u.tipoVehiculoId, u])));
       setLoadFailed(false);
     } catch (err) {
       setUnidades([]);
+      setFlota([]);
+      setAvisos([]);
       setLoadFailed(true);
       setError(
         err instanceof HttpError
@@ -106,6 +121,8 @@ function UnidadesList() {
     setEditing(null);
     setNombre('');
     setDescripcion('');
+    setIcono('truck');
+    setIconoManual(false);
     setError(null);
     setDialogOpen(true);
   }
@@ -114,6 +131,8 @@ function UnidadesList() {
     setEditing(tipo);
     setNombre(tipo.nombre);
     setDescripcion(tipo.descripcion ?? '');
+    setIcono(glyphTipo(tipo.nombre, tipo.icono));
+    setIconoManual(true);
     setError(null);
     setDialogOpen(true);
   }
@@ -142,6 +161,7 @@ function UnidadesList() {
       const payload = {
         nombre: nombre.trim(),
         descripcion: descripcion.trim() || undefined,
+        icono,
       };
       const saved = editing
         ? await api<TipoVehiculo>(`/unidades/tipos/${editing.id}`, {
@@ -245,213 +265,86 @@ function UnidadesList() {
     }
   }
 
-  const buscando = Boolean(q.trim() || tipoFiltro || estadoFiltro);
-  const grupos = useMemo(() => {
-    const byTipo = new Map<string, Unidad[]>();
-    for (const unidad of unidades ?? []) {
-      const id = unidad.tipo.id;
-      const list = byTipo.get(id) ?? [];
-      list.push(unidad);
-      byTipo.set(id, list);
-    }
-    return tipos
-      .map((tipo) => ({
-        tipo,
-        unidades: byTipo.get(tipo.id) ?? [],
-        umbral: umbrales[tipo.id],
-      }))
-      .filter((grupo) => {
-        if (buscando) return grupo.unidades.length > 0;
-        if (isAdmin) return true;
-        return grupo.unidades.length > 0;
-      });
-  }, [tipos, unidades, umbrales, buscando, isAdmin]);
-
-  const columns: ColumnDef<Unidad, unknown>[] = useMemo(
-    () => [
-      {
-        accessorKey: 'numeroInterno',
-        header: 'Interno',
-        cell: ({ row }) => (
-          <span className="mono">{row.original.numeroInterno}</span>
-        ),
-      },
-      {
-        id: 'unidad',
-        header: 'Unidad',
-        cell: ({ row }) => (
-          <span>
-            {row.original.marcaModelo
-              ? `${row.original.marcaModelo}${
-                  row.original.anio ? ` · ${row.original.anio}` : ''
-                }`
-              : '—'}
-          </span>
-        ),
-      },
-      { accessorKey: 'placas', header: 'Placas' },
-      {
-        accessorKey: 'estado',
-        header: 'Estado',
-        cell: ({ row }) => <StatusBadge estado={row.original.estado} />,
-      },
-    ],
-    [],
+  const buscando = Boolean(
+    q.trim() || tipoFiltro || estadoFiltro || atencionFiltro,
   );
+  const adminActions = isAdmin ? (
+    tipos.length > 0 ? (
+      <>
+        <UnidadesAdminMenu
+          onNuevoTipo={abrirAltaFamilia}
+          onAlertas={abrirAlertas}
+          onSalud={() => setSaludOpen(true)}
+        />
+        <Button asChild>
+          <Link
+            href={
+              tipoFiltro
+                ? `/unidades/nueva?tipoId=${tipoFiltro}`
+                : '/unidades/nueva'
+            }
+          >
+            Nueva unidad
+          </Link>
+        </Button>
+      </>
+    ) : (
+      <Button type="button" onClick={abrirAltaFamilia}>
+        Nuevo tipo
+      </Button>
+    )
+  ) : null;
+  const sinTipos = !buscando && tipos.length === 0;
 
   return (
     <>
-      <PageHeader
-        title="Unidades"
-        lede="Flota agrupada por tipo. Busque por interno, placas o marca."
-        actions={
-          isAdmin ? (
-            tipos.length > 0 ? (
-              <>
-                <Button type="button" variant="secondary" onClick={abrirAlertas}>
-                  Configurar alertas
-                </Button>
-                <Button type="button" variant="secondary" onClick={abrirAltaFamilia}>
-                  Nuevo tipo
-                </Button>
-                <Button asChild>
-                  <Link href="/unidades/nueva">Nueva unidad</Link>
-                </Button>
-              </>
-            ) : (
-              <Button type="button" onClick={abrirAltaFamilia}>
-                Nuevo tipo
-              </Button>
-            )
-          ) : null
-        }
-      />
-
-      <form className="mb-3" onSubmit={onSearch}>
-        <Card className="filters">
-          <Field label="Buscar" htmlFor="unidadQ">
-            <Input
-              id="unidadQ"
-              value={q}
-              onChange={(e) => setQ(e.target.value)}
-              placeholder="Buscar unidad…"
-            />
-          </Field>
-          <Field label="Tipo" htmlFor="unidadTipo">
-            <NativeSelect
-              id="unidadTipo"
-              value={tipoFiltro}
-              onChange={(e) => setTipoFiltro(e.target.value)}
-            >
-              <option value="">Todos</option>
-              {tipos.map((tipo) => (
-                <option key={tipo.id} value={tipo.id}>
-                  {tipo.nombre}
-                </option>
-              ))}
-            </NativeSelect>
-          </Field>
-          <Field label="Estado" htmlFor="unidadEstado">
-            <NativeSelect
-              id="unidadEstado"
-              value={estadoFiltro}
-              onChange={(e) => setEstadoFiltro(e.target.value)}
-            >
-              <option value="">Todos</option>
-              <option value="ACTIVA">Activa</option>
-              <option value="INACTIVA">Inactiva</option>
-            </NativeSelect>
-          </Field>
-        </Card>
-      </form>
-
-      {loadFailed && !dialogOpen && !alertasOpen ? (
+      {loadFailed && !dialogOpen && !alertasOpen && !saludOpen ? (
         <div className="error-state">
           <h2>No se pudo consultar la flota</h2>
           <FormAlert>{error}</FormAlert>
         </div>
       ) : null}
 
-      {error && !dialogOpen && !alertasOpen && !loadFailed ? (
+      {error && !dialogOpen && !alertasOpen && !saludOpen && !loadFailed ? (
         <FormAlert>{error}</FormAlert>
       ) : null}
 
       {loadFailed ? null : loading ? (
         <p className="muted">Cargando unidades…</p>
-      ) : grupos.length === 0 ? (
-        <div className="empty-state">
-          <h2>
-            {buscando
-              ? 'No hay unidades que coincidan'
-              : isAdmin
-                ? 'No hay tipos'
-                : 'No hay unidades'}
-          </h2>
-          <p className="muted">
-            {buscando
-              ? 'Ajuste la búsqueda o los filtros.'
-              : isAdmin
-                ? 'Agregue el primer tipo para clasificar la flota.'
-                : 'No hay unidades registradas.'}
-          </p>
-        </div>
       ) : (
-        <div className="grid gap-3">
-          {grupos.map((grupo) => (
-            <section key={grupo.tipo.id} aria-labelledby={`tipo-${grupo.tipo.id}`}>
-              <div className="mb-1 flex min-h-11 flex-wrap items-center justify-between gap-2">
-                <div>
-                  <h2
-                    id={`tipo-${grupo.tipo.id}`}
-                    className="text-sm font-semibold text-navy"
-                  >
-                    {grupo.tipo.nombre}
-                  </h2>
-                  <p className="text-xs text-muted-foreground">
-                    {grupo.tipo.descripcion
-                      ? `${grupo.tipo.descripcion} · `
-                      : ''}
-                    {resumenAvisoMantenimiento(
-                      grupo.umbral?.tKm ?? DEFAULT_T_KM,
-                      grupo.umbral?.tDias ?? DEFAULT_T_DIAS,
-                    )}
-                  </p>
-                </div>
-                {isAdmin ? (
-                  <div className="flex flex-wrap gap-2">
-                    <Button asChild variant="outline" size="compact">
-                      <Link href={`/unidades/nueva?tipoId=${grupo.tipo.id}`}>
-                        Nueva unidad
-                      </Link>
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="secondary"
-                      size="compact"
-                      onClick={() => abrirEdicionFamilia(grupo.tipo)}
-                    >
-                      Editar
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="destructive"
-                      size="compact"
-                      onClick={() => void eliminarFamilia(grupo.tipo)}
-                    >
-                      Eliminar
-                    </Button>
-                  </div>
-                ) : null}
-              </div>
-              <DataTable
-                columns={columns}
-                data={grupo.unidades}
-                empty="No hay unidades en este tipo."
-                onRowClick={(unidad) => router.push(`/unidades/${unidad.id}`)}
-              />
-            </section>
-          ))}
-        </div>
+        <>
+          <UnidadesCatalogo
+            unidades={unidades ?? []}
+            flota={flota}
+            tipos={tipos}
+            avisos={avisos}
+            q={q}
+            tipoFiltro={tipoFiltro}
+            estadoFiltro={estadoFiltro}
+            atencionFiltro={atencionFiltro}
+            buscando={buscando}
+            isAdmin={isAdmin}
+            actions={adminActions}
+            onQ={setQ}
+            onTipoFiltro={setTipoFiltro}
+            onEstadoFiltro={setEstadoFiltro}
+            onAtencionFiltro={setAtencionFiltro}
+            onSearch={onSearch}
+            onOpenUnidad={(unidad) => router.push(`/unidades/${unidad.id}`)}
+            onEditarTipo={abrirEdicionFamilia}
+            onEliminarTipo={(tipo) => void eliminarFamilia(tipo)}
+          />
+          {sinTipos ? (
+            <div className="empty-state">
+              <h2>{isAdmin ? 'No hay tipos' : 'No hay unidades'}</h2>
+              <p className="muted">
+                {isAdmin
+                  ? 'Agregue el primer tipo para clasificar la flota.'
+                  : 'No hay unidades registradas.'}
+              </p>
+            </div>
+          ) : null}
+        </>
       )}
 
       <Dialog
@@ -462,6 +355,8 @@ function UnidadesList() {
             setEditing(null);
             setNombre('');
             setDescripcion('');
+            setIcono('truck');
+            setIconoManual(false);
           }
         }}
       >
@@ -472,7 +367,7 @@ function UnidadesList() {
                 {editing ? 'Editar tipo' : 'Nuevo tipo'}
               </DialogTitle>
               <DialogDescription>
-                Nombre y descripción del tipo de unidad.
+                Nombre, icono y descripción del tipo de unidad.
               </DialogDescription>
             </DialogHeader>
             <div className="grid gap-3 py-3">
@@ -481,9 +376,27 @@ function UnidadesList() {
                   id="familiaNombre"
                   required
                   value={nombre}
-                  onChange={(e) => setNombre(e.target.value)}
+                  onChange={(e) => {
+                    const next = e.target.value;
+                    setNombre(next);
+                    if (!iconoManual) setIcono(inferGlyphTipo(next));
+                  }}
                   placeholder="Camión"
                   autoFocus
+                />
+              </Field>
+              <Field
+                label="Icono"
+                htmlFor="familiaIcono"
+                help="Se muestra en el listado de unidades."
+              >
+                <TipoIconoPicker
+                  id="familiaIcono"
+                  value={icono}
+                  onChange={(id) => {
+                    setIconoManual(true);
+                    setIcono(id);
+                  }}
                 />
               </Field>
               <Field label="Descripción" htmlFor="familiaDescripcion">
@@ -621,6 +534,15 @@ function UnidadesList() {
           </form>
         </DialogContent>
       </Dialog>
+
+      {role ? (
+        <HealthConfigDialog
+          open={saludOpen}
+          onOpenChange={setSaludOpen}
+          role={role}
+          userId={userId}
+        />
+      ) : null}
     </>
   );
 }

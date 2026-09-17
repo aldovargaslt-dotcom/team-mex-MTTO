@@ -16,6 +16,7 @@ import { OutboxModule } from './kernel/outbox/outbox.module';
 import { SeedModule } from './seed/seed.module';
 import { UnidadesModule } from './unidades/unidades.module';
 import { VisitasModule } from './visitas/visitas.module';
+import { SaludModule } from './salud/salud.module';
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { VisitasModule } from './visitas/visitas.module';
     NotificationsModule,
     AndonModule,
     VisitasModule,
+    SaludModule,
     SeedModule,
   ],
   controllers: [HealthController],

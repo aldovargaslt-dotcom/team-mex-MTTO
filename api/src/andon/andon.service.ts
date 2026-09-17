@@ -168,6 +168,14 @@ export class AndonService implements OnModuleInit, AndonAbiertoPort {
     await this.engine().evaluarTodas();
   }
 
+  async getLastClosed(unidadId: string) {
+    return this.store.getLastClosed(unidadId);
+  }
+
+  async getUmbral(tipoVehiculoId: string) {
+    return this.store.getUmbral(tipoVehiculoId);
+  }
+
   private async toDto(aviso: Aviso): Promise<AvisoDto> {
     const [unidad, lastClosed] = await Promise.all([
       this.catalog.get(aviso.unidadId),
@@ -183,6 +191,8 @@ export class AndonService implements OnModuleInit, AndonAbiertoPort {
       estado: aviso.estado,
       abiertaAt: aviso.abiertaAt,
       enteradoAt: aviso.enteradoAt,
+      enteradoBy: aviso.enteradoBy,
+      resueltoAt: aviso.resueltoAt,
       visitaResolutoriaId: aviso.visitaResolutoriaId,
       kmAlAbrir: aviso.kmAlAbrir,
       diasAlAbrir: aviso.diasAlAbrir,

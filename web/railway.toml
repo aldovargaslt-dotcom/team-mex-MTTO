@@ -1,0 +1,13 @@
+# Servicio UI cuando Railway apunta Root Directory = web.
+# Compose local sigue usando web/Dockerfile con ARG API_URL=http://api:3001.
+
+[build]
+builder = "DOCKERFILE"
+dockerfilePath = "Dockerfile"
+watchPatterns = ["web/**"]
+
+[deploy]
+startCommand = "node server.js"
+healthcheckPath = "/"
+healthcheckTimeout = 300
+restartPolicyType = "ON_FAILURE"

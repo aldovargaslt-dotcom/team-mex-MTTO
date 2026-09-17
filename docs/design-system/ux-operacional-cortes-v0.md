@@ -2,6 +2,8 @@
 
 Estado: **propuesto** (plan; un PR por corte). Recorte de la auditoría `SPEC-UX-001`. No es el spec completo.
 
+Hermano (no fusionar): [consulta / conducta](ux-consulta-conducta-cortes-v0.md) — cadencia, ranking, consumo, Andon reincidencia, patio. Flota tablero: [fleet-tablero-viaje-v0](../specs/fleet-tablero-viaje-v0.md).
+
 Lee primero: [nav vs filtro vs Inicio](ui-nav-filter-action-inicio-v0.md), [anti-generic](ui-polish-anti-generic-v0.md), [pasteles](ui-semantic-button-pastels-v0.md), [ADR-003](../adr/003-shadcn-tailwind.md), [ADR-005](../adr/005-andon-no-stock-alerts.md), [ADR-007](../adr/007-inventario-stock-bajo.md), [ADR-008](../adr/008-flota-schema.md).
 
 ## Norte
@@ -40,6 +42,7 @@ Prioridad: copy operacional, menos verbos por fila, consulta ≠ edición, filtr
 - Renombrar schema/API (`t_km`, `items`, `familias`, estados `OPEN`…).
 - Meter stock en Andon empty states.
 - Tocar Flota / `LOGISTICA` / dual-stack notify. Flota tiene plan propio: [fleet-tablero-viaje-v0](../specs/fleet-tablero-viaje-v0.md).
+- Cadencia / ranking / reportes de conducta: otro programa ([ux-consulta-conducta-cortes-v0](ux-consulta-conducta-cortes-v0.md)).
 
 Cada PR de implementación copia Must / Don’t / Fuera del corte a [`.github/pull_request_template.md`](../../.github/pull_request_template.md).
 
@@ -285,9 +288,9 @@ No fusionar cortes en un solo PR. D no bloquea E.
 
 ## Verificación por corte
 
-- Visual: skill `proof-ui` (click-through; Supervisor **y** Admin donde el listado es compartido). Logística: no es audiencia de estos cortes.
+- Visual: skill `proof-ui` (click-through; Supervisor **y** Admin donde el listado es compartido). Logística: no es audiencia de estos cortes. Viewports: [SCREENSHOT_WORKFLOW.md](../design/SCREENSHOT_WORKFLOW.md).
 - API (C/D/E): skill `verify-api` (`cd api && npm test && npm run test:e2e`). Sin `lint --fix`.
-- Subagentes al review: `ux-auditor` + `sd-scope` (fuera de v0 + Andon no stock + no dual-stack).
+- Subagentes al review: `ux-auditor` (Visual QA, otro pase) + `sd-scope` (fuera de v0 + Andon no stock + no dual-stack). Implementar con `ui-implementer`; no auto-aprobar.
 
 ## Hold
 

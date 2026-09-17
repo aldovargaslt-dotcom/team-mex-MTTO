@@ -1,10 +1,10 @@
 # team-mex-MTTO
 
-Team Mex — Mantenimiento + Inventario + Andon v0.
+Team Mex — Mantenimiento + Inventario + Andon + Salud de unidad v0.
 
-Cubre el kernel delgado (unidades, tipos, choferes, roles), visitas de mantenimiento, Inventario (schema `inventario`) con el paso **Piezas**, **Andon** (schema `andon`: avisos de mantenimiento vencido), **Notifications** (schema `notifications`: campanita + inbox) y **Flota** (schema `flota`: bitácora de patio). Quedan fuera: multi-almacén, lotes, costeo, OC formal, kardex pesado, ítem↔placa, reserva de stock en borrador, GPS/rutas.
+Cubre el kernel delgado (unidades, tipos, choferes, roles), visitas de mantenimiento, Inventario (schema `inventario`) con el paso **Piezas**, **Andon** (schema `andon`: avisos de mantenimiento vencido), **Notifications** (schema `notifications`: campanita + inbox), **Flota** (schema `flota`: bitácora de patio) y **Salud** (schema `salud`: Health Score). Quedan fuera: multi-almacén, lotes, costeo, OC formal, kardex pesado, ítem↔placa, reserva de stock en borrador, GPS/rutas.
 
-Arquitectura: [ADR-000](docs/adr/000-thin-kernel.md), [ADR-001](docs/adr/001-visita-cerrada-outbox.md), [ADR-002](docs/adr/002-schema-per-module.md), [ADR-003](docs/adr/003-shadcn-tailwind.md), [ADR-004](docs/adr/ADR-004-tdd-test-bar-andon-v0.md), [ADR-005](docs/adr/005-andon-no-stock-alerts.md), [ADR-006](docs/adr/006-notifications-schema.md), [ADR-007](docs/adr/007-inventario-stock-bajo.md), [ADR-008](docs/adr/008-flota-schema.md). Spec Flota: [docs/specs/fleet-manager-v0.md](docs/specs/fleet-manager-v0.md).
+Arquitectura: [ADR-000](docs/adr/000-thin-kernel.md), [ADR-001](docs/adr/001-visita-cerrada-outbox.md), [ADR-002](docs/adr/002-schema-per-module.md), [ADR-003](docs/adr/003-shadcn-tailwind.md), [ADR-004](docs/adr/ADR-004-tdd-test-bar-andon-v0.md), [ADR-005](docs/adr/005-andon-no-stock-alerts.md), [ADR-006](docs/adr/006-notifications-schema.md), [ADR-007](docs/adr/007-inventario-stock-bajo.md), [ADR-008](docs/adr/008-flota-schema.md), [ADR-009](docs/adr/009-icono-tipo-vehiculo.md), [ADR-010](docs/adr/010-salud-unidad.md). Spec Flota: [docs/specs/fleet-manager-v0.md](docs/specs/fleet-manager-v0.md). Spec Salud: [docs/specs/unit-health-v0.md](docs/specs/unit-health-v0.md).
 
 ## Stack
 
@@ -82,9 +82,23 @@ Si el log de Railway dice `Railpack could not determine how to build` y lista `a
    `PORT` lo pone Railway. No copie `DB_HOST` local.
 5. **Settings → Networking → Generate Domain.** Pruebe `https://<api>.up.railway.app/health` → `{"status":"ok",...}`.
 
-El boot crea schemas `inventario` / `andon` / `notifications`, sincroniza tablas y siembra U-101 / stock bajo.
+El boot crea schemas `inventario` / `andon` / `notifications` / `flota` / `salud`, sincroniza tablas y siembra U-101 / stock bajo.
 
-### 2. Vercel — UI
+### 2. Railway — UI (probar sin SSO de Vercel)
+
+Segundo servicio del mismo repo, **Root Directory = `web`**, builder Dockerfile (`web/Dockerfile`).
+
+| Variable | Valor |
+|----------|--------|
+| `API_URL` | `https://<api>.up.railway.app` (sin `/` final; en Railway: `https://${{team-mex-MTTO.RAILWAY_PUBLIC_DOMAIN}}`) |
+| `NEXT_PUBLIC_API_BASE` | `/backend` |
+| `HOSTNAME` | `0.0.0.0` |
+
+No fije `PORT` ni el target port del dominio a 3000: Next escucha el `PORT` que inyecta Railway (suele ser 8080). Generate Domain **sin** target port, o apunte al puerto del proceso.
+
+`API_URL` entra en el **build** (rewrite `/backend` → API).
+
+### 3. Vercel — UI
 
 Si el log repite `Using TypeScript 5.9.3 (local user-provided)` cada ~2 s, Vercel está compilando **`api/`** (Nest), no la UI. En el proyecto: **Settings → General → Root Directory = `web`** → Save → Redeploy. Un build bueno dice Next.js y ~369 paquetes, no 726 ni cientos de líneas de TypeScript.
 
@@ -102,9 +116,9 @@ Si el log repite `Using TypeScript 5.9.3 (local user-provided)` cada ~2 s, Verce
 
 Auth sigue siendo el stub `X-Role`. Use Protection de Vercel o no indexe la URL si es solo demo.
 
-### 3. Orden
+### 4. Orden
 
-Postgres → API (health ok) → Vercel con esa `API_URL` → (opcional) endurecer CORS.
+Postgres → API (health ok) → UI (Railway y/o Vercel) con esa `API_URL` → (opcional) endurecer CORS.
 
 ## Semilla
 
@@ -169,3 +183,5 @@ npm run test:e2e
 ## Marca
 
 CTA `#EA7515`, shell `#24284D`, superficies `#F3F3F3` / blanco, tipografía Roboto.
+
+UI nueva o cambio visual: [docs/design/README.md](docs/design/README.md). Briefs Must/Don’t de corte: [docs/design-system/](docs/design-system/).

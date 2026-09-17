@@ -107,7 +107,7 @@ export function avisosSuaves(opts: {
   const avisos: string[] = [];
   if (opts.tipo === TipoMovimientoFlota.SALIDA && opts.andonAbierto) {
     avisos.push(
-      'La unidad tiene mantenimiento vencido (Andon abierto). El registro no se bloquea.',
+      'La unidad tiene mantenimiento vencido (alerta abierta). El registro no se bloquea.',
     );
   }
   if (opts.ultimoKmVisita != null && opts.km < opts.ultimoKmVisita) {

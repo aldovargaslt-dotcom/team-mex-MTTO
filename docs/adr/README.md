@@ -15,8 +15,10 @@ El archivo 004 se llama `ADR-004-…` (histórico). No renombrar en un overlay d
 | 006 | [006-notifications-schema.md](006-notifications-schema.md) | Schema `notifications` (inbox) |
 | 007 | [007-inventario-stock-bajo.md](007-inventario-stock-bajo.md) | `min_qty` / `StockBajo` |
 | 008 | [008-flota-schema.md](008-flota-schema.md) | Schema `flota`, rol `LOGISTICA`, envío especial |
+| 009 | [009-icono-tipo-vehiculo.md](009-icono-tipo-vehiculo.md) | `tipos_vehiculo.icono` (glifo del catálogo) |
+| 010 | [010-salud-unidad.md](010-salud-unidad.md) | Schema `salud`, Health Score, alerta derivada |
 
-Mapa de bounded contexts → directorios: [context-map.md](context-map.md). UI visual: [docs/design-system/](../design-system/).
+Mapa de bounded contexts → directorios: [context-map.md](context-map.md). Briefs visuales de corte: [docs/design-system/](../design-system/). Sistema de ingeniería UI (spec UX, Visual QA): [docs/design/](../design/).
 
 ## Cuándo escribir un ADR
 
@@ -26,6 +28,6 @@ Nuevo ADR (o el existente pasa a *superseded*) cuando cambie:
 - un **envelope** de evento (`VisitaCerrada`, `StockBajo`, …)
 - el **ownership** de un bounded context (quién escribe qué tablas / puertos)
 
-No hace falta ADR para copy, tokens CSS, CI, o plantillas de PR. Cortes **visual only**: brief en `docs/design-system/*` y “ninguno — visual only” en el PR.
+No hace falta ADR para copy, tokens CSS, CI, o plantillas de PR. Cortes **visual only**: brief en `docs/design-system/*` (Must/Don’t) + spec UX en [docs/design/](../design/) si cambia jerarquía; “ninguno — visual only” en el PR.
 
 No reescribir en silencio un ADR aceptado. Ver regla en `.cursor/rules/docs-adr.mdc`.
