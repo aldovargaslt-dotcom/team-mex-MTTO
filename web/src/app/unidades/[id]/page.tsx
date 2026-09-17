@@ -176,13 +176,6 @@ function HubContent() {
           </p>
         </div>
         <div className="hub-head-aside">
-          {health ? (
-            <UnitHealth
-              health={health}
-              variant="standard"
-              onOpen={() => setHealthOpen(true)}
-            />
-          ) : null}
           <Link className="btn btn-secondary" href="/unidades">
             Volver
           </Link>
@@ -194,6 +187,8 @@ function HubContent() {
       <div style={{ marginBottom: 12 }}>
         <AndonHubCard
           unidadId={ficha.id}
+          health={health}
+          onOpenHealth={() => setHealthOpen(true)}
           puedeCrearVisita={hub.puedeCrearVisita}
           onNuevaVisita={() => void nuevaVisita()}
           creating={creating}

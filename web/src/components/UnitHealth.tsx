@@ -61,9 +61,11 @@ export function UnitHealth({
   onOpen,
 }: {
   health: UnidadHealth | null;
-  variant?: 'compact' | 'standard' | 'detailed';
+  variant?: 'compact' | 'standard' | 'detailed' | 'embedded';
   onOpen?: () => void;
 }) {
+  const showKicker = variant === 'standard';
+
   if (!health) {
     return <p className="muted">Cargando salud…</p>;
   }
@@ -72,7 +74,7 @@ export function UnitHealth({
     const body = (
       <>
         <span className="health-copy">
-          {variant === 'standard' ? (
+          {showKicker ? (
             <span className="health-kicker">Salud de la unidad</span>
           ) : null}
           <span className="health-label">{health.label}</span>
@@ -87,7 +89,11 @@ export function UnitHealth({
       return <div className="flex flex-col gap-2">{body}</div>;
     }
     return (
-      <button type="button" className="health-display" onClick={onOpen}>
+      <button
+        type="button"
+        className={cn('health-display', variant === 'embedded' && 'embedded')}
+        onClick={onOpen}
+      >
         {body}
       </button>
     );
@@ -114,13 +120,13 @@ export function UnitHealth({
     <Ring
       pct={health.score}
       fg={semantic.fg}
-      size={variant === 'standard' ? 56 : 48}
+      size={variant === 'detailed' ? 48 : 56}
     />
   );
 
   const headline = (
     <span className="health-copy">
-      {variant === 'standard' ? (
+      {showKicker ? (
         <span className="health-kicker">Salud de la unidad</span>
       ) : null}
       <span className="health-score">{health.score}%</span>
@@ -187,7 +193,10 @@ export function UnitHealth({
   return (
     <button
       type="button"
-      className={cn('health-display', 'standard')}
+      className={cn(
+        'health-display',
+        variant === 'embedded' ? 'embedded' : 'standard',
+      )}
       style={style}
       onClick={onOpen}
       aria-label={`Salud de la unidad: ${health.score}% ${health.label}`}

@@ -396,6 +396,42 @@
     height: 56px;
   }
 
+  .health-display.embedded {
+    border: none;
+    background: transparent;
+    padding: 4px 8px;
+    margin: -4px -8px;
+    min-width: 0;
+    border-radius: 6px;
+  }
+
+  .health-display.embedded:hover {
+    background: var(--surface);
+  }
+
+  .health-display.embedded .health-ring {
+    width: 56px;
+    height: 56px;
+  }
+
+  .hub-salud-alerta__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .hub-salud-alerta__head h2 {
+    margin-bottom: 0;
+  }
+
+  .hub-salud-alerta .subhead {
+    margin-top: 0;
+  }
+
   .health-copy {
     min-width: 0;
   }
@@ -1454,6 +1490,11 @@
     .hub-grid,
     .list-row {
       grid-template-columns: 1fr;
+    }
+
+    .hub-salud-alerta__head {
+      flex-direction: column;
+      align-items: stretch;
     }
 
     .list-head {

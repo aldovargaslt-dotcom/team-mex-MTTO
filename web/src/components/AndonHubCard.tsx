@@ -4,18 +4,23 @@ import { useEffect, useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Note } from '@/components/ui/field';
+import { UnitHealth } from '@/components/UnitHealth';
 import { api, HttpError } from '@/lib/api';
 import { etiquetaEstadoAviso, formatFecha, lineasCausaAvisoAndon } from '@/lib/format';
 import { useRole } from '@/lib/role';
-import type { AvisoAndon } from '@/lib/types';
+import type { AvisoAndon, UnidadHealth } from '@/lib/types';
 
 export function AndonHubCard({
   unidadId,
+  health,
+  onOpenHealth,
   puedeCrearVisita,
   onNuevaVisita,
   creating,
 }: {
   unidadId: string;
+  health?: UnidadHealth | null;
+  onOpenHealth?: () => void;
   puedeCrearVisita?: boolean;
   onNuevaVisita?: () => void;
   creating?: boolean;
@@ -67,8 +72,18 @@ export function AndonHubCard({
   }
 
   return (
-    <section className="card panel">
-      <h2>Alerta</h2>
+    <section className="card panel hub-salud-alerta">
+      <div className="hub-salud-alerta__head">
+        <h2>Salud de la unidad</h2>
+        {health ? (
+          <UnitHealth
+            health={health}
+            variant="embedded"
+            onOpen={onOpenHealth}
+          />
+        ) : null}
+      </div>
+      <h3 className="subhead">Alerta</h3>
       {aviso === undefined ? (
         <p className="muted">Cargando alerta…</p>
       ) : aviso == null ? (
