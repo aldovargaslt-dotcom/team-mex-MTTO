@@ -50,6 +50,7 @@ function HubContent() {
   const [hub, setHub] = useState<UnidadHub | null>(null);
   const [health, setHealth] = useState<UnidadHealth | null>(null);
   const [healthOpen, setHealthOpen] = useState(false);
+  const [alertaEnCard, setAlertaEnCard] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [notFound, setNotFound] = useState(false);
   const [creating, setCreating] = useState(false);
@@ -189,6 +190,7 @@ function HubContent() {
           unidadId={ficha.id}
           health={health}
           onOpenHealth={() => setHealthOpen(true)}
+          onAvisoChange={(aviso) => setAlertaEnCard(aviso != null)}
           puedeCrearVisita={hub.puedeCrearVisita}
           onNuevaVisita={() => void nuevaVisita()}
           creating={creating}
@@ -289,7 +291,9 @@ function HubContent() {
                 <button
                   type="button"
                   className={
-                    hub.borradores.length > 0 ? 'btn btn-outline' : 'btn btn-primary'
+                    hub.borradores.length > 0 || alertaEnCard
+                      ? 'btn btn-outline'
+                      : 'btn btn-primary'
                   }
                   disabled={!hub.puedeCrearVisita || creating}
                   onClick={() => void nuevaVisita()}

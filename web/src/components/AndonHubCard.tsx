@@ -14,6 +14,7 @@ export function AndonHubCard({
   unidadId,
   health,
   onOpenHealth,
+  onAvisoChange,
   puedeCrearVisita,
   onNuevaVisita,
   creating,
@@ -21,6 +22,7 @@ export function AndonHubCard({
   unidadId: string;
   health?: UnidadHealth | null;
   onOpenHealth?: () => void;
+  onAvisoChange?: (aviso: AvisoAndon | null) => void;
   puedeCrearVisita?: boolean;
   onNuevaVisita?: () => void;
   creating?: boolean;
@@ -35,7 +37,9 @@ export function AndonHubCard({
       `/andon/avisos?unidadId=${encodeURIComponent(unidadId)}`,
       { role: role!, userId },
     );
-    setAviso(list[0] ?? null);
+    const next = list[0] ?? null;
+    setAviso(next);
+    onAvisoChange?.(next);
   }
 
   useEffect(() => {
@@ -47,6 +51,7 @@ export function AndonHubCard({
           : 'No se pudo cargar la alerta.',
       );
       setAviso(null);
+      onAvisoChange?.(null);
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [role, userId, unidadId]);
