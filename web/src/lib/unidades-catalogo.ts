@@ -99,7 +99,7 @@ export function situacionAtencion(
 export function etiquetaSituacionAtencion(situacion: SituacionAtencion) {
   if (situacion === 'requiere_inspeccion') return 'Requiere inspección';
   if (situacion === 'enterado') return 'Requiere inspección';
-  return 'Sin aviso';
+  return 'Sin alerta';
 }
 
 /** Filtros (N) en el sheet móvil: solo Estado. Tabs, búsqueda y KPI Andon se ven fuera. */

@@ -39,7 +39,7 @@ export function AndonHubCard({
       setError(
         err instanceof HttpError
           ? err.message
-          : 'No se pudo cargar Andon.',
+          : 'No se pudo cargar la alerta.',
       );
       setAviso(null);
     });
@@ -68,11 +68,11 @@ export function AndonHubCard({
 
   return (
     <section className="card panel">
-      <h2>Andon</h2>
+      <h2>Alerta</h2>
       {aviso === undefined ? (
-        <p className="muted">Cargando aviso…</p>
+        <p className="muted">Cargando alerta…</p>
       ) : aviso == null ? (
-        <p className="muted">Sin aviso de mantenimiento vencido.</p>
+        <p className="muted">Sin alerta de mantenimiento vencido.</p>
       ) : (
         <>
           <div className="flex flex-wrap items-center gap-2">
@@ -119,7 +119,7 @@ export function AndonHubCard({
           </div>
           {aviso.estado === 'ENTERADO' ? (
             <Note>
-              Enterado: el aviso queda visto in-app. La visita cerrada
+              Enterado: la alerta queda vista in-app. La visita cerrada
               resuelve.
             </Note>
           ) : null}

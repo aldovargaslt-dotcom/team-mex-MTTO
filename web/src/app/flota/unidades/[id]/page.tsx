@@ -293,7 +293,7 @@ function FlotaUnidad() {
         </dl>
         {tablero?.andonAbierto ? (
           <Note variant="warn">
-            Hay un aviso Andon abierto. La salida no se bloquea.
+            Hay una alerta de mantenimiento abierta. La salida no se bloquea.
           </Note>
         ) : null}
       </section>

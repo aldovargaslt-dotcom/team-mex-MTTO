@@ -106,7 +106,7 @@ function InboxContent() {
     <>
       <PageHeader
         title="Notificaciones"
-        lede="Avisos de Andon, inventario y salud de unidad. Tocar una fila la marca leída y abre el destino."
+        lede="Alertas de mantenimiento, inventario y salud de unidad. Tocar una fila la marca leída y abre el destino."
         actions={
           unreadCount > 0 ? (
             <Button

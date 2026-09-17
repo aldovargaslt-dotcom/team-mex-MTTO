@@ -52,7 +52,7 @@ export function avisoAbiertoCommand(input: AvisoAbiertoInput): IngestCommand {
     subjectRef: input.unidadId,
     severity: Severity.WARNING,
     title: `Mantenimiento vencido — ${numero}`,
-    body: `${numero} superó el umbral (${input.kmAlAbrir.toLocaleString('es-MX')} km / ${input.diasAlAbrir} d desde el último cierre). Revisar el aviso en el hub.`,
+    body: `${numero} superó el umbral (${input.kmAlAbrir.toLocaleString('es-MX')} km / ${input.diasAlAbrir} d desde el último cierre). Revisar la alerta en el hub.`,
     dedupeKey: avisoAbiertoDedupeKey(input.unidadId),
     createdAt: new Date(input.abiertaAt),
   };

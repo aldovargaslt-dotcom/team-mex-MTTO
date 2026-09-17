@@ -57,7 +57,7 @@ function AndonContent() {
       setError(
         err instanceof HttpError
           ? err.message
-          : 'No se pudieron cargar los avisos.',
+          : 'No se pudieron cargar las alertas.',
       );
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -168,8 +168,8 @@ function AndonContent() {
   return (
     <>
       <PageHeader
-        title="Andon"
-        lede="Avisos de mantenimiento vencido. Enterado es in-app; solo una visita cerrada resuelve."
+        title="Alerta"
+        lede="Alertas de mantenimiento vencido. Enterado es in-app; solo una visita cerrada resuelve."
         actions={
           isAdmin ? (
             <Button asChild variant="secondary">
@@ -179,27 +179,27 @@ function AndonContent() {
         }
       />
       <ListFilter
-        label="Filtro Andon"
+        label="Filtro de alertas"
         value={filtro}
         options={FILTROS}
         onChange={setFiltro}
       />
       <FormAlert>{error}</FormAlert>
       {avisos == null ? (
-        <p className="muted">Cargando avisos…</p>
+        <p className="muted">Cargando alertas…</p>
       ) : avisos.length === 0 ? (
         <div className="empty-state">
           <h2>
             {filtro === 'pendientes'
-              ? 'No hay avisos pendientes.'
+              ? 'No hay alertas pendientes.'
               : filtro === 'enterados'
-                ? 'No hay avisos enterados.'
-                : 'No hay avisos resueltos.'}
+                ? 'No hay alertas enteradas.'
+                : 'No hay alertas resueltas.'}
           </h2>
           <p className="muted">
             {filtro === 'pendientes'
               ? 'Aparecen cuando una unidad rebase el intervalo de km o de días desde su última visita cerrada.'
-              : 'Cambie el filtro para ver otros avisos.'}
+              : 'Cambie el filtro para ver otras alertas.'}
           </p>
         </div>
       ) : (

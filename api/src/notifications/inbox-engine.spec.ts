@@ -58,7 +58,7 @@ describe('Notifications inbox (ADR-004 N1–N4 / ADR-006)', () => {
         ...cmd,
         sourceRef: 'otro-aviso',
         title: 'Mantenimiento vencido — U-101',
-        body: 'U-101 sigue vencida. Revisar el aviso en el hub.',
+        body: 'U-101 sigue vencida. Revisar la alerta en el hub.',
       });
       expect(second.id).toBe(first.id);
       expect(store.items.size).toBe(1);

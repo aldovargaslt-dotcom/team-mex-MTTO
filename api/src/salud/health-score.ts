@@ -280,7 +280,7 @@ export function computeUnitHealth(
   if (hasAndon) {
     drivers.push({
       type: HealthDriverType.ANDON_OPEN,
-      message: '1 aviso de mantenimiento vencido',
+      message: '1 alerta de mantenimiento vencido',
     });
   } else {
     drivers.push({

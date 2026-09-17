@@ -36,7 +36,7 @@ const TIPOS_SEED = [
   },
 ];
 
-const SEED_ANDON_OBS = 'Semilla Andon';
+const SEED_ANDON_OBS = 'Semilla de mantenimiento';
 const SEED_ANDON_KM = 100;
 const SEED_ANDON_DAYS_AGO = 120;
 const SEED_FIRMA_PNG =

@@ -278,7 +278,7 @@ export function UnidadesCatalogo({
       },
       {
         id: 'atencion',
-        header: 'Atención',
+        header: 'Alerta',
         cell: ({ row }) => (
           <CeldaAtencion unidad={row.original} avisos={avisos} />
         ),
@@ -316,7 +316,7 @@ export function UnidadesCatalogo({
         <div className="min-w-0 flex-1">
           <h1>Unidades</h1>
           <p className="lede">
-            Busque y abra la unidad que necesita atención.
+            Busque y abra la ficha de la unidad.
           </p>
           {actions ? (
             <div className="mt-2 flex flex-wrap gap-2">{actions}</div>
@@ -328,7 +328,7 @@ export function UnidadesCatalogo({
           </span>
           <span>
             <strong>Flota de mantenimiento</strong>
-            <span>Abra una ficha para visitas y avisos.</span>
+            <span>Abra una ficha para visitas y alertas.</span>
           </span>
         </aside>
       </div>
@@ -405,7 +405,7 @@ export function UnidadesCatalogo({
             <TriangleAlert className="size-5" aria-hidden />
           </span>
           <span className="unidades-kpi__copy">
-            <span className="unidades-kpi__label">Avisos Andon</span>
+            <span className="unidades-kpi__label">Alertas</span>
             <span className="unidades-kpi__value">{kpis.conAviso}</span>
             <span className="unidades-kpi__meta">
               {pctDelTotal(kpis.conAviso, kpis.total)}% del total

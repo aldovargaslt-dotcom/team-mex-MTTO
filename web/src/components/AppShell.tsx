@@ -27,7 +27,7 @@ const NAV_ITEMS: {
   { href: '/inicio', label: 'Inicio', roles: ['SUPERVISOR', 'ADMIN_DIRECTIVO'] },
   { href: '/flota', label: 'Flota', roles: ['LOGISTICA', 'ADMIN_DIRECTIVO'] },
   { href: '/unidades', label: 'Unidades', roles: ['SUPERVISOR', 'ADMIN_DIRECTIVO'] },
-  { href: '/andon', label: 'Andon', roles: ['SUPERVISOR', 'ADMIN_DIRECTIVO'] },
+  { href: '/andon', label: 'Alerta', roles: ['SUPERVISOR', 'ADMIN_DIRECTIVO'] },
   {
     href: '/inventario',
     label: 'Inventario',
