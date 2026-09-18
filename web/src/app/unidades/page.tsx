@@ -45,7 +45,6 @@ function UnidadesList() {
   const [atencionFiltro, setAtencionFiltro] = useState(false);
   const [tipos, setTipos] = useState<TipoVehiculo[]>([]);
   const [unidades, setUnidades] = useState<Unidad[] | null>(null);
-  const [flota, setFlota] = useState<Unidad[]>([]);
   const [avisos, setAvisos] = useState<AvisoAndon[]>([]);
   const [umbrales, setUmbrales] = useState<Record<string, UmbralAndon>>({});
   const [error, setError] = useState<string | null>(null);
@@ -77,22 +76,19 @@ function UnidadesList() {
     const opts = { role, userId };
     const filteredPath = `/unidades${qs ? `?${qs}` : ''}`;
     try {
-      const [lista, catalogo, umb, avisosList, flotaList] = await Promise.all([
+      const [lista, catalogo, umb, avisosList] = await Promise.all([
         api<Unidad[]>(filteredPath, opts),
         api<TipoVehiculo[]>('/unidades/tipos', opts),
         api<UmbralAndon[]>('/andon/umbrales', opts),
         api<AvisoAndon[]>('/andon/avisos', opts).catch(() => [] as AvisoAndon[]),
-        qs ? api<Unidad[]>('/unidades', opts) : Promise.resolve(null),
       ]);
       setUnidades(lista);
-      setFlota(flotaList ?? lista);
       setAvisos(avisosList);
       setTipos(catalogo);
       setUmbrales(Object.fromEntries(umb.map((u) => [u.tipoVehiculoId, u])));
       setLoadFailed(false);
     } catch (err) {
       setUnidades([]);
-      setFlota([]);
       setAvisos([]);
       setLoadFailed(true);
       setError(
@@ -315,7 +311,6 @@ function UnidadesList() {
         <>
           <UnidadesCatalogo
             unidades={unidades ?? []}
-            flota={flota}
             tipos={tipos}
             avisos={avisos}
             q={q}

@@ -90,7 +90,6 @@ type EstadoChip = 'TODOS' | 'ACTIVA' | 'INACTIVA' | 'ATENCION';
 
 export function UnidadesCatalogo({
   unidades,
-  flota,
   tipos,
   avisos,
   q,
@@ -110,7 +109,6 @@ export function UnidadesCatalogo({
   onEliminarTipo,
 }: {
   unidades: Unidad[];
-  flota: Unidad[];
   tipos: TipoVehiculo[];
   avisos: AvisoAndon[];
   q: string;
