@@ -4,7 +4,7 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 
 const buttonVariants = cva(
-  'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors touch-manipulation focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:cursor-not-allowed disabled:bg-[#d8d8de] disabled:text-[#5c5c66] disabled:border-[#d8d8de] [&_svg]:pointer-events-none [&_svg]:size-4 shrink-0',
+  'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors touch-manipulation focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 disabled:pointer-events-none disabled:cursor-not-allowed disabled:bg-[#d8d8de] disabled:text-[#5c5c66] disabled:border-[#d8d8de] [&_svg]:pointer-events-none [&_svg]:size-4 shrink-0',
   {
     variants: {
       variant: {
@@ -14,7 +14,8 @@ const buttonVariants = cva(
           'bg-card text-navy border border-border hover:bg-muted',
         outline:
           'bg-card text-navy border-[1.5px] border-navy hover:bg-muted',
-        ghost: 'bg-transparent text-white/70 hover:bg-white/10 hover:text-white min-h-8 text-[12px] font-normal',
+        ghost:
+          'bg-transparent text-white/70 hover:bg-white/10 hover:text-white focus-visible:ring-offset-0 min-h-9 text-[12px] font-normal',
         destructive:
           'bg-transparent text-destructive border border-[#f0c7c3] hover:bg-red-50',
         link: 'text-navy underline-offset-4 hover:underline h-auto min-h-0 min-w-0 px-0',

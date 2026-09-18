@@ -96,3 +96,30 @@ export function PageHeader({
     </div>
   );
 }
+
+export function ListChrome({
+  title,
+  count,
+  filters,
+  actions,
+}: {
+  title: ReactNode;
+  count?: number;
+  filters?: ReactNode;
+  actions?: ReactNode;
+}) {
+  return (
+    <div className="list-chrome">
+      <div className="list-chrome__title">
+        <h1>
+          {title}
+          {count != null ? (
+            <span className="list-chrome__count">{count}</span>
+          ) : null}
+        </h1>
+      </div>
+      {filters ? <div className="list-chrome__filters">{filters}</div> : null}
+      {actions ? <div className="list-chrome__actions">{actions}</div> : null}
+    </div>
+  );
+}

@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { FormEvent, Suspense, useEffect, useMemo, useState } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { ColumnDef } from '@tanstack/react-table';
@@ -23,7 +24,7 @@ import { RefaccionFicha } from '@/components/RefaccionFicha';
 import { StockAlertaBadge } from '@/components/StatusBadge';
 import { Button } from '@/components/ui/button';
 import { DataTable } from '@/components/ui/data-table';
-import { Field, FormAlert, PageHeader } from '@/components/ui/field';
+import { Field, FormAlert, ListChrome } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import {
   Dialog,
@@ -45,30 +46,27 @@ function parseAlerta(raw: string | null): 'TODOS' | AlertaStock {
   return 'TODOS';
 }
 
-function emptyExistencias(filtro: 'TODOS' | AlertaStock) {
+function emptyExistencias(
+  filtro: 'TODOS' | AlertaStock,
+  opts?: { cta?: boolean },
+) {
   if (filtro === 'BAJO') {
-    return (
-      <>
-        <span className="block font-medium text-navy">Nada en Bajo.</span>
-        <span>
-          El badge Bajo aparece cuando la cantidad es igual o menor al mínimo y
-          aún hay piezas.
-        </span>
-      </>
-    );
+    return 'Nada en Bajo — cantidad ≤ mínimo y aún hay piezas.';
   }
   if (filtro === 'AGOTADO') {
+    return 'Nada en Agotado — cantidad 0 con mínimo configurado.';
+  }
+  if (opts?.cta) {
     return (
-      <>
-        <span className="block font-medium text-navy">Nada en Agotado.</span>
-        <span>
-          El badge Agotado aparece cuando la cantidad es 0 y hay un mínimo
-          configurado.
-        </span>
-      </>
+      <span className="inline-flex flex-wrap items-center gap-2">
+        Aún no hay existencias.
+        <Link href="/inventario" className="btn btn-quiet btn-compact">
+          Ver refacciones
+        </Link>
+      </span>
     );
   }
-  return 'Aún no hay existencias.';
+  return 'Aún no hay existencias. Cargue refacciones y registre una entrada.';
 }
 
 export default function StockPage() {
@@ -232,13 +230,30 @@ function StockContent() {
 
   return (
     <>
-      <PageHeader
+      <ListChrome
         title="Existencias"
+        count={filtered.length}
+        filters={
+          <ListFilter
+            label="Filtro de existencias"
+            value={filtro}
+            options={FILTROS}
+            onChange={(next) => {
+              const params = new URLSearchParams(searchParams.toString());
+              if (next === 'TODOS') params.delete('alerta');
+              else params.set('alerta', next);
+              const qs = params.toString();
+              router.replace(qs ? `${pathname}?${qs}` : pathname, {
+                scroll: false,
+              });
+            }}
+          />
+        }
         actions={
           <>
             <Button
               type="button"
-              variant="secondary"
+              variant="quiet"
               onClick={() => {
                 setMode(null);
                 setItemId('');
@@ -259,25 +274,14 @@ function StockContent() {
           </>
         }
       />
-      <ListFilter
-        label="Filtro de existencias"
-        value={filtro}
-        options={FILTROS}
-        onChange={(next) => {
-          const params = new URLSearchParams(searchParams.toString());
-          if (next === 'TODOS') params.delete('alerta');
-          else params.set('alerta', next);
-          const qs = params.toString();
-          router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
-        }}
-      />
       <FormAlert>{error}</FormAlert>
       {rows.length > 0 || !error ? (
         <DataTable
           columns={columns}
           data={filtered}
-          empty={emptyExistencias(filtro)}
+          empty={emptyExistencias(filtro, { cta: rows.length === 0 })}
           onRowClick={(row) => void abrirFicha(row)}
+          rowAffordance
         />
       ) : null}
 

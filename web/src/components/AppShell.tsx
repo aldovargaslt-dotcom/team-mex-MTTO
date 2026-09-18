@@ -144,7 +144,7 @@ export function AppShell({ children }: { children: ReactNode }) {
               })}
             </nav>
             <SheetFooter>
-              <Button type="button" variant="secondary" onClick={cambiarRol}>
+              <Button type="button" variant="quiet" onClick={cambiarRol}>
                 Cambiar rol
               </Button>
             </SheetFooter>

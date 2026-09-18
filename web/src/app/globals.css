@@ -256,6 +256,13 @@
 
     .shell-header__role-switch {
       display: inline-flex;
+      color: rgb(255 255 255 / 0.7);
+      background: transparent;
+    }
+
+    .shell-header__role-switch:hover {
+      background: rgb(255 255 255 / 0.1);
+      color: #fff;
     }
 
     .shell-header__menu {
@@ -601,6 +608,11 @@
     font-size: 14px;
   }
 
+  .btn:focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+
   .btn:disabled {
     cursor: not-allowed;
     background: #d8d8de;
@@ -621,6 +633,10 @@
     background: var(--card);
     color: var(--navy);
     border: 1px solid var(--border);
+  }
+
+  .btn-secondary:hover:not(:disabled) {
+    background: var(--muted-bg);
   }
 
   .btn-outline {
@@ -753,11 +769,11 @@
     background: transparent;
     border: 0;
     border-radius: 0;
-    padding: 8px 0;
+    padding: 4px 0;
     text-align: left;
     display: flex;
     flex-wrap: wrap;
-    gap: 8px 12px;
+    gap: 6px 10px;
     align-items: center;
   }
 
@@ -1201,12 +1217,70 @@
   }
 
   /* Filtro ≠ sección: chips con borde/fill, nunca subrayado naranja de .subnav. */
+  .list-chrome {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 12px;
+    margin-bottom: 8px;
+  }
+
+  .list-chrome__title {
+    min-width: 0;
+  }
+
+  .list-chrome h1 {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 8px;
+    margin: 0;
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--navy);
+    line-height: 1.2;
+  }
+
+  .list-chrome__count {
+    font-size: 13px;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+    color: var(--muted-foreground);
+  }
+
+  .list-chrome__filters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .list-chrome__filters .list-filter {
+    margin: 0;
+  }
+
+  .list-chrome__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin-left: auto;
+  }
+
+  .list-chrome__search {
+    position: relative;
+    min-width: 160px;
+    max-width: 220px;
+    flex: 1 1 160px;
+  }
+
   .list-filter {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     gap: 6px;
-    margin: 0 0 12px;
+    margin: 0 0 8px;
   }
 
   .subnav a {
@@ -1350,6 +1424,32 @@
     flex-wrap: wrap;
     gap: 6px;
     justify-content: flex-end;
+  }
+
+  .row-affordance {
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-end;
+    color: var(--muted-foreground);
+  }
+
+  .row-affordance svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  tr[data-slot='table-row'].row-clickable:hover {
+    background: #eef2f6;
+  }
+
+  tr[data-slot='table-row'].row-clickable:hover .row-affordance {
+    color: var(--navy);
+  }
+
+  tr[data-slot='table-row'].row-clickable:focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: -2px;
+    background: #eef2f6;
   }
 
   .btn-compact {
@@ -1838,7 +1938,7 @@
     align-items: center;
     justify-content: space-between;
     gap: 8px 12px;
-    margin-bottom: 12px;
+    margin-bottom: 8px;
     min-width: 0;
   }
 
@@ -1860,15 +1960,15 @@
   }
 
   .unidades-page .list-filter button.active {
-    background: var(--navy);
-    color: #fff;
+    background: var(--muted-bg);
+    color: var(--navy);
     border-color: var(--navy);
   }
 
   .unidades-page .list-filter button.active:hover {
-    background: #1c2040;
-    color: #fff;
-    border-color: #1c2040;
+    background: #e4e6f0;
+    color: var(--navy);
+    border-color: var(--navy);
   }
 
   .unidades-toolbar__tools {
@@ -1999,7 +2099,7 @@
   }
 
   .unidades-row--aviso:hover {
-    background: #fafafb;
+    background: #eef2f6;
   }
 
   .unidades-tipo-chip {
@@ -2075,6 +2175,11 @@
 
   .unidades-admin-menu summary:hover {
     background: var(--muted-bg);
+  }
+
+  .unidades-admin-menu summary:focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
   }
 
   .unidades-admin-menu[open] summary {
