@@ -9,6 +9,13 @@ import {
   assertVisitaCerradaOutbox,
   countVisitaCerradaOutbox,
 } from './assert-visita-cerrada-outbox';
+import {
+  CHOFER_ANDON_DEMO,
+  CHOFER_SEGUNDO_DEMO,
+  TIPO_CAMIONES_3_Y_MEDIA,
+  TIPO_STOCK,
+  UNIDAD_ANDON_DEMO,
+} from '../src/seed/catalogo-demo';
 
 const SUPERVISOR = { 'X-Role': 'SUPERVISOR', 'X-User-Id': 'sup-inv' };
 const ADMIN = { 'X-Role': 'ADMIN_DIRECTIVO', 'X-User-Id': 'adm-inv' };
@@ -119,7 +126,7 @@ describe('Inventario v0 + piezas en visita (e2e)', () => {
       .expect(201);
     expect(adminFamilia.body.nombre).toBe('Lubricantes');
 
-    const camion = await tipoPorNombre('Camión');
+    const camion = await tipoPorNombre(TIPO_CAMIONES_3_Y_MEDIA);
     const item = await request(server)
       .post('/inventario/items')
       .set(ADMIN)
@@ -150,7 +157,7 @@ describe('Inventario v0 + piezas en visita (e2e)', () => {
     );
     expect(row?.qty).toBe(4);
 
-    const u101 = await unidadPorNumero('U-101');
+    const u101 = await unidadPorNumero(UNIDAD_ANDON_DEMO);
     const crear = await request(server)
       .post(`/unidades/${u101.id}/visitas`)
       .set(ADMIN)
@@ -159,8 +166,8 @@ describe('Inventario v0 + piezas en visita (e2e)', () => {
   });
 
   it('entrada aumenta stock y SKUs se filtran por compatibilidad del tipo', async () => {
-    const camion = await tipoPorNombre('Camión');
-    const van = await tipoPorNombre('Van');
+    const camion = await tipoPorNombre(TIPO_CAMIONES_3_Y_MEDIA);
+    const van = await tipoPorNombre(TIPO_STOCK);
     const skusCamion = await request(server)
       .get('/inventario/skus')
       .query({ tipoVehiculoId: camion.id })
@@ -182,8 +189,8 @@ describe('Inventario v0 + piezas en visita (e2e)', () => {
   });
 
   it('I1/I4 cierre DESDE_STOCK descuenta stock; pieza opaca sin sku/stock', async () => {
-    const u101 = await unidadPorNumero('U-101');
-    const chofer = await choferPorNombre('Juan Pérez');
+    const u101 = await unidadPorNumero(UNIDAD_ANDON_DEMO);
+    const chofer = await choferPorNombre(CHOFER_ANDON_DEMO);
     const filtro = await itemPorSku('FIL-ACEITE-01');
     const stockAntes = filtro.stock;
 
@@ -275,8 +282,8 @@ describe('Inventario v0 + piezas en visita (e2e)', () => {
   });
 
   it('I2/I3 stock insuficiente bloquea el cierre salvo COMPRA_EXTERNA (pendiente, sin movimiento)', async () => {
-    const u101 = await unidadPorNumero('U-101');
-    const chofer = await choferPorNombre('María López');
+    const u101 = await unidadPorNumero(UNIDAD_ANDON_DEMO);
+    const chofer = await choferPorNombre(CHOFER_SEGUNDO_DEMO);
     const pastillas = await itemPorSku('PAST-FR-01');
     expect(pastillas.stock).toBeLessThan(50);
 
@@ -406,7 +413,7 @@ describe('Inventario v0 + piezas en visita (e2e)', () => {
       .expect(400);
     expect(mal.body.message).toMatch(/negativo/i);
 
-    const u101 = await unidadPorNumero('U-101');
+    const u101 = await unidadPorNumero(UNIDAD_ANDON_DEMO);
     const draft = await request(server)
       .post(`/unidades/${u101.id}/visitas`)
       .set(SUPERVISOR)

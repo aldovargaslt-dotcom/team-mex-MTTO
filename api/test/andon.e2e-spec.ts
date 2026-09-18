@@ -4,6 +4,7 @@ import request from 'supertest';
 import { App } from 'supertest/types';
 import { AppModule } from '../src/app.module';
 import { configureApp } from '../src/configure-app';
+import { UNIDAD_ANDON_DEMO } from '../src/seed/catalogo-demo';
 
 const SUPERVISOR = { 'X-Role': 'SUPERVISOR', 'X-User-Id': 'sup-1' };
 
@@ -25,15 +26,15 @@ describe('Andon v0 (e2e)', () => {
     await app.close();
   });
 
-  it('A1: aviso ABIERTO de U-101 tiene visita cerrada real (historial + último km)', async () => {
+  it('A1: aviso ABIERTO de FOTON tiene visita cerrada real (historial + último km)', async () => {
     const unidades = await request(server)
       .get('/unidades')
-      .query({ numeroInterno: 'U-101' })
+      .query({ numeroInterno: UNIDAD_ANDON_DEMO })
       .set(SUPERVISOR)
       .expect(200);
     const u101 = (
       unidades.body as { id: string; numeroInterno: string }[]
-    ).find((u) => u.numeroInterno === 'U-101');
+    ).find((u) => u.numeroInterno === UNIDAD_ANDON_DEMO);
     expect(u101).toBeTruthy();
 
     const hub = await request(server)
@@ -49,7 +50,7 @@ describe('Andon v0 (e2e)', () => {
       .expect(200);
     const enDefault = (
       defaultList.body as { numeroInterno: string; estado: string }[]
-    ).find((a) => a.numeroInterno === 'U-101');
+    ).find((a) => a.numeroInterno === UNIDAD_ANDON_DEMO);
     expect(enDefault).toBeTruthy();
     expect(enDefault!.estado).not.toBe('RESUELTO');
 
@@ -68,7 +69,7 @@ describe('Andon v0 (e2e)', () => {
         resueltoAt: string | null;
         enteradoBy: string | null;
       }[]
-    ).find((a) => a.numeroInterno === 'U-101');
+    ).find((a) => a.numeroInterno === UNIDAD_ANDON_DEMO);
     expect(abierto).toBeTruthy();
     expect(abierto!.estado).toBe('ABIERTO');
     expect(abierto!.lastClosedKm).toBe(100);

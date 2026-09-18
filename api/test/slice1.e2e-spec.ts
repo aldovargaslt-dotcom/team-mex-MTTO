@@ -5,6 +5,13 @@ import { App } from 'supertest/types';
 import { AppModule } from '../src/app.module';
 import { configureApp } from '../src/configure-app';
 import { EstadoUnidad } from '../src/common/estado-unidad.enum';
+import {
+  PLACAS_ANDON_DEMO,
+  TIPO_STOCK,
+  UNIDAD_ANDON_DEMO,
+  UNIDAD_SEGUNDA_DEMO,
+  UNIDADES_DEMO,
+} from '../src/seed/catalogo-demo';
 
 const SUPERVISOR = { 'X-Role': 'SUPERVISOR', 'X-User-Id': 'sup-1' };
 const ADMIN = { 'X-Role': 'ADMIN_DIRECTIVO', 'X-User-Id': 'adm-1' };
@@ -69,7 +76,7 @@ describe('Slice 1 (e2e)', () => {
     expect(res.body.message).toMatch(/no es válido/i);
   });
 
-  it('siembra U-101 y U-102 ACTIVA y U-103 INACTIVA', async () => {
+  it('siembra 13 unidades ACTIVA del catálogo Aldo', async () => {
     const res = await request(server).get('/unidades').set(SUPERVISOR).expect(200);
     const unidades = res.body as {
       numeroInterno: string;
@@ -78,55 +85,69 @@ describe('Slice 1 (e2e)', () => {
     const mapa = Object.fromEntries(
       unidades.map((u) => [u.numeroInterno, u.estado]),
     );
-    expect(mapa['U-101']).toBe(EstadoUnidad.ACTIVA);
-    expect(mapa['U-102']).toBe(EstadoUnidad.ACTIVA);
-    expect(mapa['U-103']).toBe(EstadoUnidad.INACTIVA);
+    expect(unidades).toHaveLength(UNIDADES_DEMO.length);
+    expect(mapa[UNIDAD_ANDON_DEMO]).toBe(EstadoUnidad.ACTIVA);
+    expect(mapa[UNIDAD_SEGUNDA_DEMO]).toBe(EstadoUnidad.ACTIVA);
+    expect(mapa['CHATO NUEVO']).toBe(EstadoUnidad.ACTIVA);
   });
 
   it('filtra unidades por numeroInterno, placas y tipo', async () => {
     const porNumero = await request(server)
       .get('/unidades')
-      .query({ numeroInterno: 'U-101' })
+      .query({ numeroInterno: UNIDAD_ANDON_DEMO })
       .set(SUPERVISOR)
       .expect(200);
     expect(porNumero.body).toHaveLength(1);
-    expect(porNumero.body[0].numeroInterno).toBe('U-101');
+    expect(porNumero.body[0].numeroInterno).toBe(UNIDAD_ANDON_DEMO);
 
     const porPlacas = await request(server)
       .get('/unidades')
-      .query({ placas: '102' })
+      .query({ placas: '2632' })
       .set(SUPERVISOR)
       .expect(200);
     expect(porPlacas.body).toHaveLength(1);
-    expect(porPlacas.body[0].placas).toContain('102');
+    expect(porPlacas.body[0].placas).toContain('2632');
 
     const porTipo = await request(server)
       .get('/unidades')
-      .query({ tipo: 'Van' })
+      .query({ tipo: TIPO_STOCK })
       .set(ADMIN)
       .expect(200);
-    expect(porTipo.body.some((u: { numeroInterno: string }) => u.numeroInterno === 'U-103')).toBe(
-      true,
-    );
+    expect(
+      porTipo.body.some(
+        (u: { numeroInterno: string }) => u.numeroInterno === 'URVAN',
+      ),
+    ).toBe(true);
   });
 
-  it('filtra unidades por q (marca) y estado INACTIVA', async () => {
-    const porMarca = await request(server)
+  it('filtra unidades por q (nombre) y estado INACTIVA', async () => {
+    const porNombre = await request(server)
       .get('/unidades')
-      .query({ q: 'Ranger' })
+      .query({ q: 'REDILAS' })
       .set(SUPERVISOR)
       .expect(200);
-    expect(porMarca.body).toHaveLength(1);
-    expect(porMarca.body[0].numeroInterno).toBe('U-102');
-    expect(porMarca.body[0].marcaModelo).toMatch(/Ranger/i);
+    expect(porNombre.body).toHaveLength(1);
+    expect(porNombre.body[0].numeroInterno).toBe(UNIDAD_SEGUNDA_DEMO);
 
     const porInterno = await request(server)
       .get('/unidades')
-      .query({ q: 'U-101' })
+      .query({ q: UNIDAD_ANDON_DEMO })
       .set(SUPERVISOR)
       .expect(200);
     expect(porInterno.body).toHaveLength(1);
-    expect(porInterno.body[0].numeroInterno).toBe('U-101');
+    expect(porInterno.body[0].numeroInterno).toBe(UNIDAD_ANDON_DEMO);
+
+    const tipos = await request(server).get('/unidades/tipos').set(ADMIN);
+    await request(server)
+      .post('/unidades')
+      .set(ADMIN)
+      .send({
+        numeroInterno: 'U-INACT-Q',
+        placas: 'TEST-INACT-Q',
+        tipoId: tipos.body[0].id,
+        estado: EstadoUnidad.INACTIVA,
+      })
+      .expect(201);
 
     const inactivas = await request(server)
       .get('/unidades')
@@ -140,15 +161,20 @@ describe('Slice 1 (e2e)', () => {
     ).toBe(true);
     expect(
       (inactivas.body as { numeroInterno: string }[]).some(
-        (u) => u.numeroInterno === 'U-101',
+        (u) => u.numeroInterno === UNIDAD_ANDON_DEMO,
       ),
     ).toBe(false);
+    expect(
+      (inactivas.body as { numeroInterno: string }[]).some(
+        (u) => u.numeroInterno === 'U-INACT-Q',
+      ),
+    ).toBe(true);
   });
 
   it('supervisor no puede crear ni actualizar unidades (403)', async () => {
     const tipos = await request(server).get('/unidades/tipos').set(SUPERVISOR);
     const tipoId = tipos.body[0].id as string;
-    const u101 = await unidadPorNumero('U-101');
+    const u101 = await unidadPorNumero(UNIDAD_ANDON_DEMO);
 
     const crear = await request(server)
       .post('/unidades')
@@ -264,7 +290,7 @@ describe('Slice 1 (e2e)', () => {
       .post('/unidades')
       .set(ADMIN)
       .send({
-        numeroInterno: 'U-101',
+        numeroInterno: UNIDAD_ANDON_DEMO,
         placas: 'TMX-NEW-1',
         tipoId,
       })
@@ -276,7 +302,7 @@ describe('Slice 1 (e2e)', () => {
       .set(ADMIN)
       .send({
         numeroInterno: 'U-198',
-        placas: 'TMX-101-A',
+        placas: PLACAS_ANDON_DEMO,
         tipoId,
       })
       .expect(409);
@@ -285,22 +311,21 @@ describe('Slice 1 (e2e)', () => {
     const dupTipo = await request(server)
       .post('/unidades/tipos')
       .set(ADMIN)
-      .send({ nombre: 'Camión' })
+      .send({ nombre: TIPO_STOCK })
       .expect(409);
     expect(dupTipo.body.message).toMatch(/tipo de vehículo/i);
   });
 
-  it('hub U-101 supervisor: puedeCrearVisita true', async () => {
-    const u101 = await unidadPorNumero('U-101');
+  it('hub FOTON supervisor: puedeCrearVisita true', async () => {
+    const u101 = await unidadPorNumero(UNIDAD_ANDON_DEMO);
     const res = await request(server)
       .get(`/unidades/${u101.id}/hub`)
       .set(SUPERVISOR)
       .expect(200);
     expect(res.body.puedeCrearVisita).toBe(true);
-    expect(res.body.fichaCorta.numeroInterno).toBe('U-101');
+    expect(res.body.fichaCorta.numeroInterno).toBe(UNIDAD_ANDON_DEMO);
     expect(res.body.fichaCorta.estado).toBe(EstadoUnidad.ACTIVA);
-    expect(res.body.fichaCorta.vin).toBeTruthy();
-    expect(res.body.fichaCorta.marcaModelo).toMatch(/International/i);
+    expect(res.body.fichaCorta.vin).toBeNull();
     expect(res.body.fichaCorta.ultimoKm).toBe(100);
     expect(res.body.borradores).toEqual([]);
     expect(res.body.historialCerrado).toHaveLength(1);
@@ -314,18 +339,28 @@ describe('Slice 1 (e2e)', () => {
     expect(res.body.mantenimiento).toBeUndefined();
   });
 
-  it('hub U-103 supervisor: bloqueado (inactiva)', async () => {
-    const u103 = await unidadPorNumero('U-103');
+  it('hub unidad inactiva supervisor: bloqueado', async () => {
+    const tipos = await request(server).get('/unidades/tipos').set(ADMIN);
+    const created = await request(server)
+      .post('/unidades')
+      .set(ADMIN)
+      .send({
+        numeroInterno: 'U-INACT-H',
+        placas: 'TEST-INACT-H',
+        tipoId: tipos.body[0].id,
+        estado: EstadoUnidad.INACTIVA,
+      })
+      .expect(201);
     const res = await request(server)
-      .get(`/unidades/${u103.id}/hub`)
+      .get(`/unidades/${created.body.id}/hub`)
       .set(SUPERVISOR)
       .expect(200);
     expect(res.body.puedeCrearVisita).toBe(false);
     expect(res.body.mensajes[0]).toMatch(/inactiva/i);
   });
 
-  it('hub U-101 admin: puedeCrearVisita nunca true', async () => {
-    const u101 = await unidadPorNumero('U-101');
+  it('hub FOTON admin: puedeCrearVisita nunca true', async () => {
+    const u101 = await unidadPorNumero(UNIDAD_ANDON_DEMO);
     const res = await request(server)
       .get(`/unidades/${u101.id}/hub`)
       .set(ADMIN)
@@ -397,7 +432,7 @@ describe('Slice 1 (e2e)', () => {
   it('rechaza número interno, placas y nombre de tipo solo con espacios', async () => {
     const tipos = await request(server).get('/unidades/tipos').set(ADMIN);
     const tipoId = tipos.body[0].id as string;
-    const u101 = await unidadPorNumero('U-101');
+    const u101 = await unidadPorNumero(UNIDAD_ANDON_DEMO);
 
     const numeroVacio = await request(server)
       .post('/unidades')
