@@ -146,7 +146,7 @@ export function AndonHubCard({
         {intervalo ? (
           <p className="muted">Intervalo: {intervalo}</p>
         ) : null}
-        {aviso && aviso.umbralKm > 0 ? (
+        {aviso && aviso.kmAlAbrir > 0 && aviso.umbralKm > 0 ? (
           <p className="hub-ops-progress">
             <span className="mono">
               {formatKm(aviso.kmAlAbrir)} / {formatKm(aviso.umbralKm)}
