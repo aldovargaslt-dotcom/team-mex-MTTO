@@ -286,25 +286,21 @@ export function PiezasStep({
 }
 
 export function PiezasReadonly({ piezas }: { piezas: PiezaLinea[] }) {
-  if (!piezas.length) {
-    return (
-      <Card className="mt-3 p-3">
-        <h2 className="text-[13px] font-semibold">Piezas</h2>
-        <p className="mt-1 text-xs text-muted-foreground">Sin piezas.</p>
-      </Card>
-    );
-  }
   return (
-    <Card className="mt-3 p-3">
-      <h2 className="text-[13px] font-semibold">Piezas</h2>
-      <ul className="plain-list mt-2">
-        {piezas.map((pieza) => (
-          <li key={pieza.itemId}>
-            <span className="mono">{pieza.sku}</span> {pieza.nombre} · {pieza.qty}{' '}
-            {etiquetaUom(pieza.uom)} · {etiquetaOrigenPieza(pieza.origen)}
-          </li>
-        ))}
-      </ul>
-    </Card>
+    <section className="doc-section">
+      <h2>Piezas</h2>
+      {!piezas.length ? (
+        <p className="muted">Sin piezas.</p>
+      ) : (
+        <ul className="plain-list">
+          {piezas.map((pieza) => (
+            <li key={pieza.itemId}>
+              <span className="mono">{pieza.sku}</span> {pieza.nombre} · {pieza.qty}{' '}
+              {etiquetaUom(pieza.uom)} · {etiquetaOrigenPieza(pieza.origen)}
+            </li>
+          ))}
+        </ul>
+      )}
+    </section>
   );
 }

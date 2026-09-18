@@ -92,9 +92,9 @@ function VisitaContent() {
     return (
       <div className="empty-state">
         <h2>No se encontró la visita.</h2>
-        <Link className="btn btn-outline" href={`/unidades/${params.id}`}>
-          Volver al hub
-        </Link>
+        <Button asChild variant="outline">
+          <Link href={`/unidades/${params.id}`}>Volver al hub</Link>
+        </Button>
       </div>
     );
   }
@@ -170,73 +170,75 @@ function VisitaReadonly({
       />
 
       <Card className="p-3">
-        <h2 className="text-[13px] font-semibold">Datos</h2>
-        <dl className="dl mt-2">
-          <dt>Chofer</dt>
-          <dd>{visita.chofer?.nombre ?? 'Sin chofer'}</dd>
-          <dt>Kilometraje</dt>
-          <dd>{formatKm(visita.km)}</dd>
-          <dt>Tipo</dt>
-          <dd>{etiquetaTipoVisita(visita.tipo)}</dd>
-        </dl>
-      </Card>
+        <section className="doc-section">
+          <h2>Datos</h2>
+          <dl className="dl">
+            <dt>Chofer</dt>
+            <dd>{visita.chofer?.nombre ?? 'Sin chofer'}</dd>
+            <dt>Kilometraje</dt>
+            <dd>{formatKm(visita.km)}</dd>
+            <dt>Tipo</dt>
+            <dd>{etiquetaTipoVisita(visita.tipo)}</dd>
+          </dl>
+        </section>
 
-      <Card className="mt-3 p-3">
-        <h2 className="text-[13px] font-semibold">Trabajos</h2>
-        {visita.trabajos.length === 0 ? (
-          <p className="muted mt-2">No se registraron trabajos.</p>
-        ) : (
-          <ul className="plain-list mt-2">
-            {visita.trabajos.map((t) => (
-              <li key={t.id}>
-                <span className="cat">{t.categoria}</span> {t.item}
-              </li>
-            ))}
-          </ul>
-        )}
-      </Card>
+        <section className="doc-section">
+          <h2>Trabajos</h2>
+          {visita.trabajos.length === 0 ? (
+            <p className="muted">No se registraron trabajos.</p>
+          ) : (
+            <ul className="plain-list">
+              {visita.trabajos.map((t) => (
+                <li key={t.id}>
+                  <span className="cat">{t.categoria}</span> {t.item}
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
 
-      <Card className="mt-3 p-3">
-        <h2 className="text-[13px] font-semibold">Observaciones</h2>
-        <p className="mt-2">{visita.observaciones || 'Sin observaciones.'}</p>
-      </Card>
+        <section className="doc-section">
+          <h2>Observaciones</h2>
+          <p>{visita.observaciones || 'Sin observaciones.'}</p>
+        </section>
 
-      <Card className="mt-3 p-3">
-        <h2 className="text-[13px] font-semibold">Fotos</h2>
-        {visita.fotos.length === 0 ? (
-          <p className="muted mt-2">Sin fotos.</p>
-        ) : (
-          <div className="photo-grid">
-            {visita.fotos.map((foto) => (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img key={foto.id} src={foto.dataUrl} alt="Foto de la visita" />
-            ))}
+        <section className="doc-section">
+          <h2>Fotos</h2>
+          {visita.fotos.length === 0 ? (
+            <p className="muted">Sin fotos.</p>
+          ) : (
+            <div className="photo-grid">
+              {visita.fotos.map((foto) => (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img key={foto.id} src={foto.dataUrl} alt="Foto de la visita" />
+              ))}
+            </div>
+          )}
+        </section>
+
+        <PiezasReadonly piezas={piezas} />
+
+        <section className="doc-section">
+          <h2>Firmas</h2>
+          <div className="firmas-grid">
+            {(['CHOFER', 'JEFE'] as TipoFirma[]).map((tipo) => {
+              const firma = visita.firmas.find((f) => f.tipo === tipo);
+              return (
+                <div key={tipo}>
+                  <p className="muted">
+                    {tipo === 'CHOFER' ? 'Chofer' : 'Jefe de mecánicos / taller'}
+                  </p>
+                  {firma ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img className="signature-img" src={firma.dataUrl} alt={tipo} />
+                  ) : (
+                    <p className="muted">Sin firma</p>
+                  )}
+                </div>
+              );
+            })}
           </div>
-        )}
-      </Card>
-
-      <PiezasReadonly piezas={piezas} />
-
-      <Card className="mt-3 p-3">
-        <h2 className="text-[13px] font-semibold">Firmas</h2>
-        <div className="firmas-grid mt-2">
-          {(['CHOFER', 'JEFE'] as TipoFirma[]).map((tipo) => {
-            const firma = visita.firmas.find((f) => f.tipo === tipo);
-            return (
-              <div key={tipo}>
-                <p className="muted">
-                  {tipo === 'CHOFER' ? 'Chofer' : 'Jefe de mecánicos / taller'}
-                </p>
-                {firma ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img className="signature-img" src={firma.dataUrl} alt={tipo} />
-                ) : (
-                  <p className="muted">Sin firma</p>
-                )}
-              </div>
-            );
-          })}
-        </div>
+        </section>
       </Card>
     </>
   );

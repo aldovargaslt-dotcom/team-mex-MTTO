@@ -421,34 +421,27 @@
     color: var(--muted);
   }
 
-  .hub-ops-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    margin-bottom: 12px;
-  }
-
-  .hub-ops-title {
-    font-size: 14px;
-    font-weight: 600;
-    margin: 0 0 4px;
-  }
-
   .hub-ops-status {
     font-size: 14px;
     margin: 0 0 8px;
   }
 
-  .hub-ops-dl {
-    display: grid;
-    grid-template-columns: auto 1fr;
-    gap: 4px 12px;
-    font-size: 13px;
-    margin: 8px 0 0;
+  .doc-section {
+    padding-bottom: 16px;
+    margin-bottom: 16px;
+    border-bottom: 1px solid var(--border);
   }
 
-  .hub-ops-dl dt {
-    color: var(--muted-foreground);
+  .doc-section:last-child {
+    border-bottom: 0;
+    margin-bottom: 0;
+    padding-bottom: 0;
+  }
+
+  .doc-section h2 {
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 8px;
   }
 
   .hub-activity {
@@ -1622,10 +1615,6 @@
 
     .filter-facet__kicker {
       padding-top: 0;
-    }
-
-    .hub-ops-grid {
-      grid-template-columns: 1fr;
     }
 
     .list-head {
