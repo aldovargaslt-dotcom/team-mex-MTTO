@@ -298,7 +298,20 @@ function LogisticaAsignacion() {
           if (!open) setSheet(null);
         }}
       >
-        <SheetContent side="right" className="sm:max-w-md">
+        <SheetContent
+          side="right"
+          className="sm:max-w-md"
+          onOpenAutoFocus={(event) => {
+            const root = event.currentTarget as HTMLElement;
+            const title = root.querySelector<HTMLElement>(
+              '[data-slot="sheet-title"]',
+            );
+            if (!title) return;
+            event.preventDefault();
+            title.setAttribute('tabindex', '-1');
+            title.focus();
+          }}
+        >
           {enRutaSheet ? (
             <div className="flex flex-col">
               <SheetHeader>
