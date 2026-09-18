@@ -110,6 +110,7 @@ export class UnidadesService {
       tipo,
       estado: dto.estado,
       motivoInactivacion: null,
+      choferId: null,
       marcaModelo: dto.marcaModelo?.trim() || null,
       anio: dto.anio ?? null,
     });

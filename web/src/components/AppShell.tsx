@@ -25,6 +25,7 @@ const NAV_ITEMS: {
   roles: Role[];
 }[] = [
   { href: '/inicio', label: 'Inicio', roles: ['SUPERVISOR', 'ADMIN_DIRECTIVO'] },
+  { href: '/logistica', label: 'Logística', roles: ['LOGISTICA', 'ADMIN_DIRECTIVO'] },
   { href: '/flota', label: 'Flota', roles: ['LOGISTICA', 'ADMIN_DIRECTIVO'] },
   { href: '/unidades', label: 'Unidades', roles: ['SUPERVISOR', 'ADMIN_DIRECTIVO'] },
   { href: '/andon', label: 'Alerta', roles: ['SUPERVISOR', 'ADMIN_DIRECTIVO'] },

@@ -42,6 +42,10 @@ export class Unidad {
   })
   motivoInactivacion: MotivoInactivacion | null;
 
+  /** Standing assignment (ADR-008 logistica). Opaque chofer id; unique if set. */
+  @Column({ name: 'chofer_id', type: 'uuid', nullable: true, unique: true })
+  choferId: string | null;
+
   @Column({ name: 'marca_modelo', type: 'varchar', nullable: true })
   marcaModelo: string | null;
 

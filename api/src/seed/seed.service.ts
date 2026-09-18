@@ -138,8 +138,9 @@ export class SeedService implements OnModuleInit {
   }
 
   /**
-   * Usual driver lives in flota.unidad_operativa (ADR-008), not public.unidades.
-   * Does not invent SALIDA/ENTRADA. Skips if the unit already has patio history.
+   * Usual driver lives in flota.unidad_operativa (patio), not as SALIDA/ENTRADA.
+   * Standing despacho assignment is Kernel unidades.chofer_id (logistica); seed
+   * leaves it null so the UI starts DISPONIBLE.
    */
   private async upsertChoferUsual(
     unidad: Unidad,

@@ -138,6 +138,10 @@ export function etiquetaEstadoChofer(estado: string) {
   return estado === 'INACTIVO' ? 'Inactivo' : 'Activo';
 }
 
+export function etiquetaOpsChofer(ops: string) {
+  return ops === 'EN_RUTA' ? 'En ruta' : 'Disponible';
+}
+
 export function etiquetaOrigenPieza(origen: string) {
   return origen === 'COMPRA_EXTERNA' ? 'Compra externa' : 'Desde stock';
 }

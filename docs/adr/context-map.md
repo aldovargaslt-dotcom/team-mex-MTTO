@@ -10,8 +10,9 @@
 | Andon | `andon` | `api/src/andon` | `web/src/app/andon` |
 | Notifications | `notifications` | `api/src/notifications` | `web/src/app/notificaciones`, `Campanita` |
 | Flota | `flota` | `api/src/flota` | `web/src/app/flota` |
+| Logística (asignación) | `public` (`unidades.chofer_id`) | `api/src/logistica` | `web/src/app/logistica` |
 | Salud | `salud` | `api/src/salud` | hub `web/src/app/unidades/[id]`, config en Unidades (Admin) |
 
-Seams (puertos): `NotifyPort`, `StockAlertPort`, `AvisoInboxPort`, `AndonAbiertoPort` (Flota lee aviso Andon abierto; sin UI Andon), `HealthAlertPort` (Salud → inbox; sin WhatsApp). IDs opacos; sin FKs/JOINs cruzadas (ADR-002).
+Seams (puertos): `NotifyPort`, `StockAlertPort`, `AvisoInboxPort`, `AndonAbiertoPort` (Flota lee aviso Andon abierto; sin UI Andon), `HealthAlertPort` (Salud → inbox; sin WhatsApp), `UnidadChoferAssignmentPort` (Logística escribe Kernel `unidad.choferId`; sin schema propio). IDs opacos; sin FKs/JOINs cruzadas (ADR-002).
 
 Notify dual-stack (no unificar): `andon-notifier.factory.ts` vs `andon/notify/` — [AGENTS.md](../../AGENTS.md).

@@ -46,10 +46,28 @@ export type Unidad = {
   vin: string | null;
   estado: EstadoUnidad;
   motivoInactivacion?: MotivoInactivacion | null;
+  choferId?: string | null;
   tipo: TipoVehiculo;
   marcaModelo: string | null;
   anio: number | null;
   updatedAt?: string;
+};
+
+export type OpsChofer = 'DISPONIBLE' | 'EN_RUTA';
+
+export type ChipLogistica = 'DISPONIBLE' | 'EN_RUTA' | 'TODOS';
+
+export type LogisticaChoferRow = {
+  choferId: string;
+  nombre: string;
+  ops: OpsChofer;
+  unidadId?: string;
+  placas?: string;
+};
+
+export type LogisticaChoferesResponse = {
+  items: LogisticaChoferRow[];
+  kpis: { enRuta: number; disponibles: number; total: number };
 };
 
 export type VisitaResumen = {

@@ -22,6 +22,7 @@ type RoleContextValue = {
   isAdmin: boolean;
   isLogistica: boolean;
   canFlota: boolean;
+  canLogistica: boolean;
 };
 
 const RoleContext = createContext<RoleContextValue | null>(null);
@@ -71,6 +72,7 @@ export function RoleProvider({ children }: { children: React.ReactNode }) {
       isAdmin: role === 'ADMIN_DIRECTIVO',
       isLogistica: role === 'LOGISTICA',
       canFlota: role === 'LOGISTICA' || role === 'ADMIN_DIRECTIVO',
+      canLogistica: role === 'LOGISTICA' || role === 'ADMIN_DIRECTIVO',
     }),
     [role, userId, ready, setRole, clearRole],
   );

@@ -92,6 +92,15 @@ TDD en `api/src/salud/*.spec.ts` (dominio puro e in-memory fakes; sin Postgres).
 - **H14** — PUT config: Admin ok; Supervisor y `LOGISTICA` 403.
 - **H15** — dominio Salud no escribe `andon.*`; cero filas de health en schema Andon.
 
+## Logística asignación (L1–L4)
+
+TDD en `api/src/logistica/logistica-rules.spec.ts` (dominio puro; sin Postgres) + e2e de HTTP. ADR-008 (puerto `UnidadChoferAssignmentPort`).
+
+- **L1** — 1:0..1: un chofer no se asigna a dos unidades; una unidad no toma segundo chofer sin `unassign`.
+- **L2** — solo chofer `ACTIVO` es asignable; `INACTIVO` no aparece en `GET /logistica/choferes`.
+- **L3** — soft-block: `PATCH` a `INACTIVO` falla si el chofer tiene `unidad.choferId`.
+- **L4** — escritura síncrona a Kernel `unidades.chofer_id`; cero filas nuevas en `outbox_events`.
+
 ## Outbound ops
 
 Puerto `NotifyPort`. `ANDON_NOTIFY_PROVIDER=evolution|noop` (**default noop**). Contrato lab: `POST /message/sendText/{instance}` con `number=ANDON_WA_GROUP_JID` (`@g.us`). Cableado HTTP: **otro agente**. Throwaway Baileys — **riesgo ToS, no prod**. Meta/Twilio no en este PR. Enterado in-app. Checklist: [andon-whatsapp-ops-checklist-v0](../../architecture/andon-whatsapp-ops-checklist-v0.md).

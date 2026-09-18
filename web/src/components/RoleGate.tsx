@@ -46,7 +46,7 @@ export function RoleGate({
           {role === 'LOGISTICA'
             ? 'Este módulo no está disponible para logística.'
             : allow?.includes('LOGISTICA')
-              ? 'La bitácora de patio es para logística y administración.'
+              ? 'Esta vista es para logística y administración.'
               : 'Acceso restringido al administrador directivo.'}
         </h2>
         <Button asChild variant="secondary">

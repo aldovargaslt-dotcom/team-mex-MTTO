@@ -10,6 +10,7 @@ import { ensureModuleSchemas } from './db/ensure-schemas';
 import { typeormRootOptions } from './db/postgres-options';
 import { AndonModule } from './andon/andon.module';
 import { FlotaModule } from './flota/flota.module';
+import { LogisticaModule } from './logistica/logistica.module';
 import { InventarioModule } from './inventario/inventario.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { OutboxModule } from './kernel/outbox/outbox.module';
@@ -32,6 +33,7 @@ import { SaludModule } from './salud/salud.module';
     UnidadesModule,
     ChoferesModule,
     FlotaModule,
+    LogisticaModule,
     InventarioModule,
     NotificationsModule,
     AndonModule,

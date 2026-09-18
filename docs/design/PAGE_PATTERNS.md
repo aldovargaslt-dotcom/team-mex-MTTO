@@ -28,7 +28,7 @@ No gráficas, no KPIs, no feed, no campanita duplicada.
 
 ## 3. Listado denso + filtro
 
-**Rutas:** Andon, Existencias, Refacciones, Movimientos, Por recibir, Flota, Choferes, Sitios, Notificaciones.
+**Rutas:** Andon, Existencias, Refacciones, Movimientos, Por recibir, Flota, Logística (asignación), Choferes, Sitios, Notificaciones.
 
 ```
 PageHeader (H1 + lede + acciones)

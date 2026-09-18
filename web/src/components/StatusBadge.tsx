@@ -1,6 +1,6 @@
-import type { AlertaStock, EstadoChofer, EstadoUnidad } from '@/lib/types';
+import type { AlertaStock, EstadoChofer, EstadoUnidad, OpsChofer } from '@/lib/types';
 import { Badge } from '@/components/ui/badge';
-import { etiquetaAlertaStock, etiquetaEstadoChofer } from '@/lib/format';
+import { etiquetaAlertaStock, etiquetaEstadoChofer, etiquetaOpsChofer } from '@/lib/format';
 import { cn } from '@/lib/utils';
 
 export function StatusBadge({
@@ -30,6 +30,17 @@ export function ChoferEstadoBadge({ estado }: { estado: EstadoChofer }) {
   return (
     <Badge variant={activo ? 'success' : 'muted'}>
       {etiquetaEstadoChofer(estado)}
+    </Badge>
+  );
+}
+
+export function ChoferOpsBadge({ ops }: { ops: OpsChofer }) {
+  return (
+    <Badge
+      variant={ops === 'EN_RUTA' ? 'warning' : 'success'}
+      className="normal-case tracking-normal"
+    >
+      {etiquetaOpsChofer(ops)}
     </Badge>
   );
 }
