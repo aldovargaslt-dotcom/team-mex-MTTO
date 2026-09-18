@@ -31,12 +31,12 @@ describe('Salud v0 (e2e H14 H15)', () => {
   async function u101Id(): Promise<string> {
     const unidades = await request(server)
       .get('/unidades')
-      .query({ numeroInterno: 'U-101' })
+      .query({ numeroInterno: 'FOTON' })
       .set(SUPERVISOR)
       .expect(200);
     const u101 = (
       unidades.body as { id: string; numeroInterno: string }[]
-    ).find((u) => u.numeroInterno === 'U-101');
+    ).find((u) => u.numeroInterno === 'FOTON');
     expect(u101).toBeTruthy();
     return u101!.id;
   }

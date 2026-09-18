@@ -82,7 +82,7 @@ Si el log de Railway dice `Railpack could not determine how to build` y lista `a
    `PORT` lo pone Railway. No copie `DB_HOST` local.
 5. **Settings → Networking → Generate Domain.** Pruebe `https://<api>.up.railway.app/health` → `{"status":"ok",...}`.
 
-El boot crea schemas `inventario` / `andon` / `notifications` / `flota` / `salud`, sincroniza tablas y siembra U-101 / stock bajo.
+El boot crea schemas `inventario` / `andon` / `notifications` / `flota` / `salud`, sincroniza tablas y siembra el catálogo demo (STOCK / RUTAS / CAMIONES 3 Y MEDIA) + stock bajo.
 
 ### 2. Railway — UI (probar sin SSO de Vercel)
 
@@ -122,15 +122,51 @@ Postgres → API (health ok) → UI (Railway y/o Vercel) con esa `API_URL` → (
 
 ## Semilla
 
-| Número | Estado   | Uso previsto                                      |
-|--------|----------|---------------------------------------------------|
-| U-101  | ACTIVA   | Hub: visita cerrada real (100 km, ~120 d) para Andon ABIERTO |
-| U-102  | ACTIVA   | Segunda unidad activa                             |
-| U-103  | INACTIVA | Hub bloqueado: no se puede crear visita           |
+El catálogo demo (tipos + choferes + unidades de Aldo) se siembra al arrancar la API (`SeedService`, Nest + TypeORM; no hay Prisma). Idempotente: upsert por `tipos_vehiculo.nombre`, `choferes.nombre` y `unidades.placas`. Re-ejecutar no duplica filas.
 
-Choferes: Juan Pérez, María López, Carlos Ruiz (default **ACTIVO**). INACTIVO los oculta del select de visita; el historial cerrado conserva nombre/id.
+```bash
+# Arranque (siembra sola)
+cd api && npm run start:dev
 
-Inventario: familias Filtros/Frenos; SKUs `FIL-ACEITE-01` (stock 10, Camión/Camioneta), `PAST-FR-01` (stock 2, **min_qty 5** → Bajo, Camión), `FIL-CAB-01` (stock 5, Van); proveedor Refacciones del Norte.
+# Re-sembrar una DB ya existente (mismo upsert)
+cd api && npm run seed
+```
+
+Postgres tiene que estar arriba (`docker compose up -d` o el Postgres nativo del Cloud Agent). `npm run seed` usa las mismas `DB_*` / `DATABASE_URL` que la API.
+
+### Tipos (grupos operativos, no modelos)
+
+`STOCK` · `RUTAS` · `CAMIONES 3 Y MEDIA`
+
+### Choferes (7, todos ACTIVO)
+
+`WERO` · `DON NOE` · `DON MIGUEL` · `JULIO` · `JOEL` · `BRYAN` · `RUBEN`
+
+No hay choferes placeholder. INACTIVO los oculta del select de visita; el historial cerrado conserva nombre/id.
+
+### Unidades (13) — nombre = número interno, upsert por placas
+
+| Nombre | Placas | Tipo | Chofer usual |
+|--------|--------|------|----------------|
+| FOTON | VU2625C | STOCK | — |
+| NISSAN REDILAS | VU2632C | STOCK | — |
+| URVAN | VU2629C | STOCK | — |
+| NISSAN CERRADA | VU2630C | RUTAS | WERO |
+| URVAN 2018 | VU2634C | RUTAS | DON NOE |
+| TOYOTA 2017 | VU2628C | RUTAS | DON MIGUEL |
+| DUCATO 2021 | VU2626C | RUTAS | JULIO |
+| TRANSIT 2023 | WH9236C | RUTAS | JOEL |
+| DUCATO 2023 | VU2627C | RUTAS | BRYAN |
+| RAM CODISA | VU2622C | CAMIONES 3 Y MEDIA | — |
+| RAM FORANEO | 63AL5K | CAMIONES 3 Y MEDIA | — |
+| FORD 2017 | VU2624C | CAMIONES 3 Y MEDIA | RUBEN |
+| CHATO NUEVO | WR2023C | CAMIONES 3 Y MEDIA | — |
+
+`FOTON` lleva la visita cerrada demo (100 km, ~120 d) para Andon ABIERTO. El chofer usual (si hay) se proyecta en `flota.unidad_operativa.chofer_ultimo_id` (ADR-008: no hay `choferId` en `public.unidades`); no inventa SALIDA/ENTRADA.
+
+Si la DB ya tenía la semilla placeholder (`U-101` / Juan Pérez / Camión), `npm run seed` la retira por placas/nombre. No borra unidades reales ajenas a esas claves.
+
+Inventario: familias Filtros/Frenos; SKUs `FIL-ACEITE-01` (stock 10, CAMIONES 3 Y MEDIA / RUTAS), `PAST-FR-01` (stock 2, **min_qty 5** → Bajo, CAMIONES 3 Y MEDIA), `FIL-CAB-01` (stock 5, STOCK); proveedor Refacciones del Norte.
 
 ## API
 

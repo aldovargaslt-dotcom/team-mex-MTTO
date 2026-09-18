@@ -1,12 +1,13 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { Rol } from '../auth/roles.enum';
 import { Chofer } from '../choferes/chofer.entity';
+import { EstadoChofer } from '../choferes/estado-chofer.enum';
 import { EstadoUnidad } from '../common/estado-unidad.enum';
 import { AndonService } from '../andon/andon.service';
+import { UnidadOperativaEntity } from '../flota/entities/unidad-operativa.entity';
 import { InventarioService } from '../inventario/inventario.service';
-import { IconoTipoVehiculo } from '../unidades/icono-tipo-vehiculo.enum';
 import { TipoVehiculo } from '../unidades/tipo-vehiculo.entity';
 import { Unidad } from '../unidades/unidad.entity';
 import {
@@ -17,62 +18,26 @@ import {
 } from '../visitas/enums';
 import { Visita } from '../visitas/visita.entity';
 import { VisitasService } from '../visitas/visitas.service';
-
-const TIPOS_SEED = [
-  {
-    nombre: 'Camión',
-    descripcion: 'Unidad de carga pesada',
-    icono: IconoTipoVehiculo.TRUCK,
-  },
-  {
-    nombre: 'Camioneta',
-    descripcion: 'Unidad ligera de apoyo',
-    icono: IconoTipoVehiculo.CAR,
-  },
-  {
-    nombre: 'Van',
-    descripcion: 'Unidad de pasajeros',
-    icono: IconoTipoVehiculo.VAN,
-  },
-];
+import {
+  CHOFERES_DEMO,
+  CHOFER_ANDON_DEMO,
+  LEGACY_CHOFERES_DEMO,
+  LEGACY_TIPOS_DEMO,
+  LEGACY_UNIDADES_PLACAS,
+  TIPOS_DEMO,
+  TIPO_CAMIONES_3_Y_MEDIA,
+  TIPO_RUTAS,
+  TIPO_STOCK,
+  UNIDADES_DEMO,
+  UNIDAD_ANDON_DEMO,
+  type UnidadDemoSeed,
+} from './catalogo-demo';
 
 const SEED_ANDON_OBS = 'Semilla de mantenimiento';
 const SEED_ANDON_KM = 100;
 const SEED_ANDON_DAYS_AGO = 120;
 const SEED_FIRMA_PNG =
   'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==';
-
-const CHOFERES_SEED = ['Juan Pérez', 'María López', 'Carlos Ruiz'];
-
-const UNIDADES_SEED = [
-  {
-    numeroInterno: 'U-101',
-    placas: 'TMX-101-A',
-    vin: '3HSDZAPR5NN101001',
-    tipoNombre: 'Camión',
-    estado: EstadoUnidad.ACTIVA,
-    marcaModelo: 'International MV',
-    anio: 2022,
-  },
-  {
-    numeroInterno: 'U-102',
-    placas: 'TMX-102-B',
-    vin: '1FTER4EH5PL102002',
-    tipoNombre: 'Camioneta',
-    estado: EstadoUnidad.ACTIVA,
-    marcaModelo: 'Ford Ranger',
-    anio: 2023,
-  },
-  {
-    numeroInterno: 'U-103',
-    placas: 'TMX-103-C',
-    vin: 'WDB9066331N103003',
-    tipoNombre: 'Van',
-    estado: EstadoUnidad.INACTIVA,
-    marcaModelo: 'Mercedes-Benz Sprinter',
-    anio: 2019,
-  },
-];
 
 @Injectable()
 export class SeedService implements OnModuleInit {
@@ -87,6 +52,8 @@ export class SeedService implements OnModuleInit {
     private readonly choferes: Repository<Chofer>,
     @InjectRepository(Visita)
     private readonly visitas: Repository<Visita>,
+    @InjectRepository(UnidadOperativaEntity)
+    private readonly operativas: Repository<UnidadOperativaEntity>,
     private readonly inventario: InventarioService,
     private readonly andon: AndonService,
     private readonly visitasService: VisitasService,
@@ -97,68 +64,158 @@ export class SeedService implements OnModuleInit {
   }
 
   async seed() {
-    for (const tipo of TIPOS_SEED) {
+    await this.seedCatalogo();
+    await this.seedInventario();
+    await this.seedAndonDemo();
+
+    this.logger.log(
+      'Semilla lista (catálogo Aldo: tipos, choferes, unidades; inventario v0, andon v0).',
+    );
+  }
+
+  /** Idempotent upsert by tipo.nombre, chofer.nombre, unidad.placas. */
+  async seedCatalogo() {
+    for (const tipo of TIPOS_DEMO) {
       const exists = await this.tipos.findOne({
         where: { nombre: tipo.nombre },
       });
       if (!exists) {
-        await this.tipos.save(this.tipos.create(tipo));
+        await this.tipos.save(this.tipos.create({ ...tipo }));
       } else if (exists.icono == null && tipo.icono) {
         exists.icono = tipo.icono;
         await this.tipos.save(exists);
       }
     }
 
-    for (const nombre of CHOFERES_SEED) {
+    for (const nombre of CHOFERES_DEMO) {
       const exists = await this.choferes.findOne({ where: { nombre } });
       if (!exists) {
-        await this.choferes.save(this.choferes.create({ nombre }));
+        await this.choferes.save(
+          this.choferes.create({ nombre, estado: EstadoChofer.ACTIVO }),
+        );
+      } else if (exists.estado !== EstadoChofer.ACTIVO) {
+        exists.estado = EstadoChofer.ACTIVO;
+        await this.choferes.save(exists);
       }
     }
 
-    for (const item of UNIDADES_SEED) {
-      const tipo = await this.tipos.findOneByOrFail({
-        nombre: item.tipoNombre,
-      });
-      const exists = await this.unidades.findOne({
-        where: { numeroInterno: item.numeroInterno },
-      });
-      if (exists) {
-        exists.placas = item.placas;
-        exists.vin = item.vin;
-        exists.tipo = tipo;
-        exists.estado = item.estado;
-        exists.marcaModelo = item.marcaModelo;
-        exists.anio = item.anio;
-        exists.motivoInactivacion = exists.motivoInactivacion ?? null;
-        await this.unidades.save(exists);
-        continue;
-      }
-      await this.unidades.save(
-        this.unidades.create({
-          numeroInterno: item.numeroInterno,
-          placas: item.placas,
-          vin: item.vin,
-          tipo,
-          estado: item.estado,
-          marcaModelo: item.marcaModelo,
-          anio: item.anio,
-        }),
-      );
+    for (const item of UNIDADES_DEMO) {
+      const unidad = await this.upsertUnidad(item);
+      await this.upsertChoferUsual(unidad, item.choferNombre);
     }
 
-    await this.seedInventario();
-    await this.seedAndonDemo();
+    await this.retireLegacyPlaceholderCatalog();
+  }
 
-    this.logger.log(
-      'Semilla lista (unidades, choferes, inventario v0, andon v0).',
+  private async upsertUnidad(item: UnidadDemoSeed): Promise<Unidad> {
+    const tipo = await this.tipos.findOneByOrFail({
+      nombre: item.tipoNombre,
+    });
+    const placas = item.placas.toUpperCase();
+    let exists = await this.unidades.findOne({ where: { placas } });
+    if (!exists) {
+      exists = await this.unidades.findOne({
+        where: { numeroInterno: item.nombre },
+      });
+    }
+    if (exists) {
+      exists.numeroInterno = item.nombre;
+      exists.placas = placas;
+      exists.tipo = tipo;
+      exists.estado = EstadoUnidad.ACTIVA;
+      exists.motivoInactivacion = null;
+      return this.unidades.save(exists);
+    }
+    return this.unidades.save(
+      this.unidades.create({
+        numeroInterno: item.nombre,
+        placas,
+        vin: null,
+        tipo,
+        estado: EstadoUnidad.ACTIVA,
+      }),
     );
   }
 
+  /**
+   * Usual driver lives in flota.unidad_operativa (ADR-008), not public.unidades.
+   * Does not invent SALIDA/ENTRADA. Skips if the unit already has patio history.
+   */
+  private async upsertChoferUsual(
+    unidad: Unidad,
+    choferNombre: string | null,
+  ) {
+    if (!choferNombre) return;
+    const chofer = await this.choferes.findOneByOrFail({ nombre: choferNombre });
+    const op = await this.operativas.findOne({
+      where: { unidadId: unidad.id },
+    });
+    if (op?.salidaAbiertaId || op?.ultimoMovimientoAt) {
+      return;
+    }
+    const row = op ?? this.operativas.create({ unidadId: unidad.id });
+    row.choferUltimoId = chofer.id;
+    await this.operativas.save(row);
+  }
+
+  /**
+   * Drop the previous Camión/U-101/Juan Pérez placeholder catalog by natural key.
+   * Visitas on those units are demo-only (RESTRICT); children cascade.
+   */
+  private async retireLegacyPlaceholderCatalog() {
+    try {
+      await this.retireLegacyPlaceholderCatalogUnsafe();
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      this.logger.warn(`No se pudo retirar semilla placeholder: ${message}`);
+    }
+  }
+
+  private async retireLegacyPlaceholderCatalogUnsafe() {
+    const legacyUnidades = await this.unidades.find({
+      where: { placas: In([...LEGACY_UNIDADES_PLACAS]) },
+    });
+    for (const unidad of legacyUnidades) {
+      const visitas = await this.visitas.find({
+        where: { unidad: { id: unidad.id } },
+      });
+      if (visitas.length) {
+        await this.visitas.remove(visitas);
+      }
+      const op = await this.operativas.findOne({
+        where: { unidadId: unidad.id },
+      });
+      if (op) {
+        await this.operativas.remove(op);
+      }
+      await this.unidades.remove(unidad);
+    }
+
+    for (const nombre of LEGACY_CHOFERES_DEMO) {
+      const chofer = await this.choferes.findOne({ where: { nombre } });
+      if (!chofer) continue;
+      const used = await this.visitas.count({
+        where: { chofer: { id: chofer.id } },
+      });
+      if (used > 0) continue;
+      await this.choferes.remove(chofer);
+    }
+
+    for (const nombre of LEGACY_TIPOS_DEMO) {
+      const tipo = await this.tipos.findOne({ where: { nombre } });
+      if (!tipo) continue;
+      const used = await this.unidades.count({ where: { tipo: { id: tipo.id } } });
+      if (used > 0) continue;
+      await this.tipos.remove(tipo);
+    }
+  }
+
   private async seedInventario() {
-    const camion = await this.tipos.findOneByOrFail({ nombre: 'Camión' });
-    const camioneta = await this.tipos.findOneByOrFail({ nombre: 'Camioneta' });
-    const van = await this.tipos.findOneByOrFail({ nombre: 'Van' });
+    const camiones = await this.tipos.findOneByOrFail({
+      nombre: TIPO_CAMIONES_3_Y_MEDIA,
+    });
+    const rutas = await this.tipos.findOneByOrFail({ nombre: TIPO_RUTAS });
+    const stock = await this.tipos.findOneByOrFail({ nombre: TIPO_STOCK });
 
     const familiaFiltros = await this.ensureFamilia('Filtros');
     const familiaFrenos = await this.ensureFamilia('Frenos');
@@ -170,7 +227,7 @@ export class SeedService implements OnModuleInit {
       nombre: 'Filtro de aceite',
       familiaId: familiaFiltros.id,
       oem: 'OEM-FIL-01',
-      tipos: [camion.id, camioneta.id],
+      tipos: [camiones.id, rutas.id],
       stock: 10,
       codigoProveedor: 'PN-FIL-100',
       proveedorId: proveedor.id,
@@ -181,7 +238,7 @@ export class SeedService implements OnModuleInit {
       nombre: 'Pastillas de freno',
       familiaId: familiaFrenos.id,
       oem: 'OEM-PAST-01',
-      tipos: [camion.id],
+      tipos: [camiones.id],
       stock: 2,
       minQty: 5,
       codigoProveedor: 'PN-PAST-20',
@@ -193,7 +250,7 @@ export class SeedService implements OnModuleInit {
       nombre: 'Filtro de cabina',
       familiaId: familiaFiltros.id,
       oem: undefined,
-      tipos: [van.id],
+      tipos: [stock.id],
       stock: 5,
       codigoProveedor: 'PN-CAB-05',
       proveedorId: proveedor.id,
@@ -265,29 +322,29 @@ export class SeedService implements OnModuleInit {
   }
 
   /**
-   * Demo Andon: una VisitaCerrada real en U-101 (historial + último km),
+   * Demo Andon: una VisitaCerrada real en FOTON (historial + último km),
    * retrodatada para vencer t_dias. No se inventa proyección Andon sin visita.
    */
   private async seedAndonDemo() {
     await this.andon.seedUmbrales();
 
-    const u101 = await this.unidades.findOne({
-      where: { numeroInterno: 'U-101' },
+    const foton = await this.unidades.findOne({
+      where: { numeroInterno: UNIDAD_ANDON_DEMO },
       relations: { tipo: true },
     });
-    if (!u101) {
+    if (!foton) {
       await this.andon.evaluarPendientes();
       return;
     }
 
     const latestClosed = await this.visitas.findOne({
-      where: { unidad: { id: u101.id }, estado: EstadoVisita.CERRADO },
+      where: { unidad: { id: foton.id }, estado: EstadoVisita.CERRADO },
       order: { cerradoAt: 'DESC' },
     });
 
     let prior = latestClosed;
     if (!prior) {
-      prior = await this.createAndCloseSeedVisit(u101);
+      prior = await this.createAndCloseSeedVisit(foton);
       const cerradoAt = new Date();
       cerradoAt.setUTCDate(cerradoAt.getUTCDate() - SEED_ANDON_DAYS_AGO);
       prior.cerradoAt = cerradoAt;
@@ -300,9 +357,9 @@ export class SeedService implements OnModuleInit {
     }
 
     await this.andon.alignLastClosed({
-      unidadId: u101.id,
+      unidadId: foton.id,
       visitaId: prior.id,
-      tipoVehiculoId: u101.tipo.id,
+      tipoVehiculoId: foton.tipo.id,
       km: prior.km ?? SEED_ANDON_KM,
       cerradoAt: (prior.cerradoAt ?? new Date()).toISOString(),
     });
@@ -312,7 +369,7 @@ export class SeedService implements OnModuleInit {
 
   private async createAndCloseSeedVisit(unidad: Unidad) {
     const chofer = await this.choferes.findOneByOrFail({
-      nombre: CHOFERES_SEED[0],
+      nombre: CHOFER_ANDON_DEMO,
     });
     const user = { rol: Rol.SUPERVISOR, userId: 'seed' };
     const draft = await this.visitasService.createDraft(unidad.id, user);

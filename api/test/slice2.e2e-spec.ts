@@ -5,6 +5,13 @@ import { App } from 'supertest/types';
 import { AppModule } from '../src/app.module';
 import { configureApp } from '../src/configure-app';
 import { assertVisitaCerradaOutbox, countVisitaCerradaOutbox } from './assert-visita-cerrada-outbox';
+import { EstadoUnidad } from '../src/common/estado-unidad.enum';
+import {
+  CHOFER_ANDON_DEMO,
+  CHOFER_SEGUNDO_DEMO,
+  UNIDAD_ANDON_DEMO,
+  UNIDAD_SEGUNDA_DEMO,
+} from '../src/seed/catalogo-demo';
 
 const SUPERVISOR = { 'X-Role': 'SUPERVISOR', 'X-User-Id': 'sup-1' };
 const ADMIN = { 'X-Role': 'ADMIN_DIRECTIVO', 'X-User-Id': 'adm-1' };
@@ -119,8 +126,8 @@ describe('Slice 2 visitas y choferes (e2e)', () => {
   });
 
   it('v0 chofer ACTIVO/INACTIVO: filtro visita, no baja física, historial conserva nombre', async () => {
-    const juan = await choferPorNombre('Juan Pérez');
-    const u101 = await unidadPorNumero('U-101');
+    const juan = await choferPorNombre(CHOFER_ANDON_DEMO);
+    const u101 = await unidadPorNumero(UNIDAD_ANDON_DEMO);
 
     const created = await request(server)
       .post('/choferes')
@@ -174,14 +181,14 @@ describe('Slice 2 visitas y choferes (e2e)', () => {
         choferNombre: string | null;
       }[]
     ).find((v) => v.choferId === juan.id);
-    expect(historialJuan?.choferNombre).toBe('Juan Pérez');
+    expect(historialJuan?.choferNombre).toBe(CHOFER_ANDON_DEMO);
 
     const detalleCerrado = await request(server)
       .get(`/visitas/${hub.body.historialCerrado[0].id}`)
       .set(SUPERVISOR)
       .expect(200);
     if (detalleCerrado.body.chofer?.id === juan.id) {
-      expect(detalleCerrado.body.chofer.nombre).toBe('Juan Pérez');
+      expect(detalleCerrado.body.chofer.nombre).toBe(CHOFER_ANDON_DEMO);
     }
 
     const del = await request(server)
@@ -241,7 +248,7 @@ describe('Slice 2 visitas y choferes (e2e)', () => {
       .expect(200);
     expect(vacio.body).toEqual([]);
 
-    const u101 = await unidadPorNumero('U-101');
+    const u101 = await unidadPorNumero(UNIDAD_ANDON_DEMO);
     const hub = await request(server)
       .get(`/unidades/${u101.id}/hub`)
       .set(SUPERVISOR)
@@ -263,7 +270,7 @@ describe('Slice 2 visitas y choferes (e2e)', () => {
   });
 
   it('admin no puede crear ni cerrar visitas', async () => {
-    const u101 = await unidadPorNumero('U-101');
+    const u101 = await unidadPorNumero(UNIDAD_ANDON_DEMO);
     const crear = await request(server)
       .post(`/unidades/${u101.id}/visitas`)
       .set(ADMIN)
@@ -285,7 +292,7 @@ describe('Slice 2 visitas y choferes (e2e)', () => {
   });
 
   it('admin hub oculta borradores y nunca puedeCrearVisita', async () => {
-    const u101 = await unidadPorNumero('U-101');
+    const u101 = await unidadPorNumero(UNIDAD_ANDON_DEMO);
     const draft = await request(server)
       .post(`/unidades/${u101.id}/visitas`)
       .set(SUPERVISOR)
@@ -311,17 +318,27 @@ describe('Slice 2 visitas y choferes (e2e)', () => {
   });
 
   it('no crea visita en unidad inactiva', async () => {
-    const u103 = await unidadPorNumero('U-103');
+    const tipos = await request(server).get('/unidades/tipos').set(ADMIN);
+    const created = await request(server)
+      .post('/unidades')
+      .set(ADMIN)
+      .send({
+        numeroInterno: 'U-INACT-V',
+        placas: 'TEST-INACT-V',
+        tipoId: tipos.body[0].id,
+        estado: EstadoUnidad.INACTIVA,
+      })
+      .expect(201);
     const res = await request(server)
-      .post(`/unidades/${u103.id}/visitas`)
+      .post(`/unidades/${created.body.id}/visitas`)
       .set(SUPERVISOR)
       .expect(400);
     expect(res.body.message).toMatch(/inactiva/i);
   });
 
   it('C2 rechaza km menor al último cerrado incluso en borrador y chofer inexistente', async () => {
-    const u101 = await unidadPorNumero('U-101');
-    const chofer = await choferPorNombre('Juan Pérez');
+    const u101 = await unidadPorNumero(UNIDAD_ANDON_DEMO);
+    const chofer = await choferPorNombre(CHOFER_ANDON_DEMO);
     const draft = await request(server)
       .post(`/unidades/${u101.id}/visitas`)
       .set(SUPERVISOR)
@@ -376,8 +393,8 @@ describe('Slice 2 visitas y choferes (e2e)', () => {
   });
 
   it('C1 cierra solo con las 6 reglas y actualiza último km; C3/C4 outbox solo en CERRADO', async () => {
-    const u102 = await unidadPorNumero('U-102');
-    const chofer = await choferPorNombre('María López');
+    const u102 = await unidadPorNumero(UNIDAD_SEGUNDA_DEMO);
+    const chofer = await choferPorNombre(CHOFER_SEGUNDO_DEMO);
     const a = await request(server)
       .post(`/unidades/${u102.id}/visitas`)
       .set(SUPERVISOR)
@@ -497,7 +514,7 @@ describe('Slice 2 visitas y choferes (e2e)', () => {
   });
 
   it('rechaza trabajo fuera del catálogo A–E', async () => {
-    const u101 = await unidadPorNumero('U-101');
+    const u101 = await unidadPorNumero(UNIDAD_ANDON_DEMO);
     const draft = await request(server)
       .post(`/unidades/${u101.id}/visitas`)
       .set(SUPERVISOR)

@@ -5,6 +5,10 @@ import { App } from 'supertest/types';
 import { AppModule } from '../src/app.module';
 import { configureApp } from '../src/configure-app';
 import { MotivoInactivacion } from '../src/common/motivo-inactivacion.enum';
+import {
+  UNIDAD_ANDON_DEMO,
+  UNIDAD_SEGUNDA_DEMO,
+} from '../src/seed/catalogo-demo';
 
 const SUPERVISOR = { 'X-Role': 'SUPERVISOR', 'X-User-Id': 'sup-1' };
 const ADMIN = { 'X-Role': 'ADMIN_DIRECTIVO', 'X-User-Id': 'adm-1' };
@@ -57,7 +61,7 @@ describe('Flota v0 (e2e)', () => {
     await request(server).get('/notifications/badge').set(LOGISTICA).expect(403);
     await request(server).post('/unidades').set(LOGISTICA).send({}).expect(403);
     await request(server).post('/choferes').set(LOGISTICA).send({}).expect(403);
-    const u101 = await unidad('U-101');
+    const u101 = await unidad(UNIDAD_ANDON_DEMO);
     await request(server)
       .post(`/unidades/${u101.id}/visitas`)
       .set(LOGISTICA)
@@ -88,7 +92,7 @@ describe('Flota v0 (e2e)', () => {
       .set(LOGISTICA)
       .expect(200);
     const chofer = (choferes.body as { id: string }[])[0];
-    const u102 = await unidad('U-102');
+    const u102 = await unidad(UNIDAD_SEGUNDA_DEMO);
 
     const occurredSalida = new Date(Date.now() - 2 * 3600_000).toISOString();
     const salida = await request(server)
@@ -123,7 +127,7 @@ describe('Flota v0 (e2e)', () => {
         salidaAbiertaId: string | null;
         ultimoMovimientoAt: string | null;
       }[]
-    ).find((r) => r.numeroInterno === 'U-102');
+    ).find((r) => r.numeroInterno === UNIDAD_SEGUNDA_DEMO);
     expect(filaFuera?.salidaAbiertaId).toBeTruthy();
     expect(filaFuera?.ultimoMovimientoAt).toMatch(/^\d{4}-\d{2}-\d{2}T/);
 
@@ -156,12 +160,12 @@ describe('Flota v0 (e2e)', () => {
         ultimoMovimientoAt: string | null;
         sitioNombre: string | null;
       }[]
-    ).find((r) => r.numeroInterno === 'U-102');
+    ).find((r) => r.numeroInterno === UNIDAD_SEGUNDA_DEMO);
     expect(filaCerrada?.salidaAbiertaId).toBeFalsy();
     expect(filaCerrada?.ultimoMovimientoAt).toBe(occurredEntrada);
     expect(filaCerrada?.sitioNombre).toBe('Patio');
 
-    const u103 = await unidad('U-103');
+    const u103 = await unidad('RAM CODISA');
     const especial = await request(server)
       .post(`/flota/unidades/${u103.id}/envio-especial`)
       .set(LOGISTICA)
@@ -207,7 +211,7 @@ describe('Flota v0 (e2e)', () => {
       .set(LOGISTICA)
       .expect(200);
     const chofer = (choferes.body as { id: string }[])[1] ?? (choferes.body as { id: string }[])[0];
-    const u101 = await unidad('U-101');
+    const u101 = await unidad(UNIDAD_ANDON_DEMO);
     const gif =
       'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
 
