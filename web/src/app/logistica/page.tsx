@@ -133,7 +133,7 @@ function LogisticaAsignacion() {
   }
 
   const kpis = data?.kpis ?? { enRuta: 0, disponibles: 0, total: 0 };
-  const allItems = data?.items ?? [];
+  const allItems = useMemo(() => data?.items ?? [], [data]);
   const items = useMemo(() => {
     const needle = qParam.trim().toLowerCase();
     return allItems.filter((row) => {

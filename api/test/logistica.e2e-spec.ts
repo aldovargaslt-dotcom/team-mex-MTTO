@@ -61,7 +61,12 @@ describe('Logística asignación chofer↔unidad (e2e L1–L4)', () => {
       .set(LOGISTICA)
       .expect(200);
     const found = (
-      res.body as { id: string; numeroInterno: string; choferId: string | null }[]
+      res.body as {
+        id: string;
+        numeroInterno: string;
+        placas: string;
+        choferId: string | null;
+      }[]
     ).find((u) => u.numeroInterno === numeroInterno);
     if (!found) throw new Error(`No se sembró ${numeroInterno}`);
     return found;
