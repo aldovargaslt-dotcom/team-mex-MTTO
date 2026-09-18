@@ -38,6 +38,8 @@ DataTable | inbox-list
 empty-state | “Cargando …”
 ```
 
+Mode B Despacho (Unidades, Existencias, Logística asignación): `ListChrome` (H1 + count + `ListFilter` segmented en `filters` + un CTA) en lugar de `PageHeader`. Búsqueda en fila aparte. Chip activo = quiet fill + navy underline, no naranja.
+
 - Un naranja en header si hay alta/entrada; Flota Sitios / Configurar alertas = secondary.
 - Fila clickeable → ficha o hub. Evitar “Detalle”.
 - Filtros enumerados = `ListFilter` (chips). Búsqueda de texto = `Input` en el header o una fila, **sin** card de un solo campo (Choferes es deuda).

@@ -227,10 +227,19 @@ function LogisticaAsignacion() {
   );
 
   return (
-    <>
+    <div className="unidades-page">
       <ListChrome
         title="Logística"
         countLabel={`${items.length} ${items.length === 1 ? 'chofer' : 'choferes'}`}
+        filters={
+          <ListFilter
+            label="Estado operativo"
+            segmented
+            value={chip}
+            options={CHIPS}
+            onChange={(next) => setParams({ chip: next })}
+          />
+        }
         actions={
           <Button type="button" onClick={abrirCta}>
             Asignar a unidad
@@ -273,13 +282,6 @@ function LogisticaAsignacion() {
             className="pl-9"
           />
         </div>
-        <ListFilter
-          label="Estado operativo"
-          segmented
-          value={chip}
-          options={CHIPS}
-          onChange={(next) => setParams({ chip: next })}
-        />
       </form>
 
       <FormAlert>{error && !sheet ? error : null}</FormAlert>
@@ -409,6 +411,6 @@ function LogisticaAsignacion() {
           )}
         </SheetContent>
       </Sheet>
-    </>
+    </div>
   );
 }

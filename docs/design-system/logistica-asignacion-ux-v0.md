@@ -31,16 +31,16 @@ Despacho asigna o quita un chofer ACTIVO a una unidad libre (1:0..1).
 
 ## Information hierarchy
 
-P0: H1 Logística + count + CTA Asignar a unidad.  
+P0: H1 Logística + count + chips Disponibles | En ruta | Todos + CTA Asignar a unidad.  
 P1: KPI En ruta / Disponibles / Total (ACTIVO); fila clicable.  
-P2: chips, búsqueda, badge ops, placas.  
+P2: búsqueda, badge ops, placas.  
 P3: nada (sin VIN, sin Ver ficha, sin historial).
 
 Qué se calla: tipos STOCK|RUTAS, tip banner, alta chofer, bitácora SALIDA/ENTRADA, Health, Andon.
 
 ## Pattern
 
-[PAGE_PATTERNS](../design/PAGE_PATTERNS.md) **3** (listado denso + filtro) + sheet patrón **7**. KPI strip quieto (tres celdas borde, sin iconos pastel, sin segundo naranja). Chrome Mode B: `ListChrome` + `DataTable` `rowAffordance`.
+[PAGE_PATTERNS](../design/PAGE_PATTERNS.md) **3** (listado denso + filtro) + sheet patrón **7**. KPI strip quieto (tres celdas borde, sin iconos pastel, sin segundo naranja). Chrome Mode B Slice 1: `ListChrome` (`filters` = `ListFilter` segmented; un CTA) + búsqueda en fila + `DataTable` `rowAffordance`. Active chip = quiet fill + navy underline, no naranja.
 
 ## States
 

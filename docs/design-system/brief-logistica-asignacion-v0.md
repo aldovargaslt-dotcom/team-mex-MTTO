@@ -8,10 +8,10 @@ Seam: [ADR-008](../adr/008-flota-schema.md) — módulo Nest delgado `logistica`
 
 Audiencia: `LOGISTICA` (+ espejo `ADMIN_DIRECTIVO`). Supervisor fuera.
 
-- Toolbar: `Logística` + count + **un** CTA naranja `Asignar a unidad`
+- Toolbar Mode B (`ListChrome`): `Logística` + count + chips Disponibles | En ruta | Todos + **un** CTA naranja `Asignar a unidad`
 - KPI strip: En ruta / Disponibles / Total (**ACTIVO** only)
 - Búsqueda por nombre de chofer
-- Chips: Disponibles | En ruta | Todos (**no** tipos de unidad STOCK|RUTAS)
+- Chips en `ListChrome.filters` (**no** tipos de unidad STOCK|RUTAS; active = quiet fill + navy underline)
 - Lista: fila + › → sheet asignar/quitar (**no** navy Ver ficha)
 - Fila: nombre · badge ops · placas/unidad si asignado
 - Soft-block: no pasar a INACTIVO un chofer asignado
