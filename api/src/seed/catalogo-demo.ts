@@ -109,6 +109,19 @@ export const UNIDADES_DEMO: readonly UnidadDemoSeed[] = [
   },
 ];
 
+/** Previous placeholder seed — retired on upsert so a reused demo DB matches Aldo. */
+export const LEGACY_TIPOS_DEMO = ['Camión', 'Camioneta', 'Van'] as const;
+export const LEGACY_CHOFERES_DEMO = [
+  'Juan Pérez',
+  'María López',
+  'Carlos Ruiz',
+] as const;
+export const LEGACY_UNIDADES_PLACAS = [
+  'TMX-101-A',
+  'TMX-102-B',
+  'TMX-103-C',
+] as const;
+
 /** Unit that carries the demo VisitaCerrada so Andon opens on a fresh DB. */
 export const UNIDAD_ANDON_DEMO = 'FOTON';
 export const PLACAS_ANDON_DEMO = 'VU2625C';

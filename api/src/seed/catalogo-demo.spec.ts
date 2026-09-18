@@ -38,6 +38,13 @@ describe('catalogo-demo (Aldo fleet, Slice 1)', () => {
     expect(joined).not.toMatch(/Juan|María|Maria|Pérez|placeholder|N\/A|test/i);
   });
 
+  it('does not include the previous placeholder catalog keys', () => {
+    const placas = UNIDADES_DEMO.map((u) => u.placas);
+    expect(placas).not.toContain('TMX-101-A');
+    expect([...CHOFERES_DEMO]).not.toContain('Juan Pérez');
+    expect(TIPOS_DEMO.map((t) => t.nombre)).not.toContain('Camión');
+  });
+
   it('locks 13 unidades: exact nombre|placas|tipo|chofer', () => {
     expect(UNIDADES_DEMO).toHaveLength(13);
     expect(

@@ -164,6 +164,8 @@ No hay choferes placeholder. INACTIVO los oculta del select de visita; el histor
 
 `FOTON` lleva la visita cerrada demo (100 km, ~120 d) para Andon ABIERTO. El chofer usual (si hay) se proyecta en `flota.unidad_operativa.chofer_ultimo_id` (ADR-008: no hay `choferId` en `public.unidades`); no inventa SALIDA/ENTRADA.
 
+Si la DB ya tenía la semilla placeholder (`U-101` / Juan Pérez / Camión), `npm run seed` la retira por placas/nombre. No borra unidades reales ajenas a esas claves.
+
 Inventario: familias Filtros/Frenos; SKUs `FIL-ACEITE-01` (stock 10, CAMIONES 3 Y MEDIA / RUTAS), `PAST-FR-01` (stock 2, **min_qty 5** → Bajo, CAMIONES 3 Y MEDIA), `FIL-CAB-01` (stock 5, STOCK); proveedor Refacciones del Norte.
 
 ## API

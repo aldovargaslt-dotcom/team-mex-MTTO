@@ -1,6 +1,6 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { Rol } from '../auth/roles.enum';
 import { Chofer } from '../choferes/chofer.entity';
 import { EstadoChofer } from '../choferes/estado-chofer.enum';
@@ -21,6 +21,9 @@ import { VisitasService } from '../visitas/visitas.service';
 import {
   CHOFERES_DEMO,
   CHOFER_ANDON_DEMO,
+  LEGACY_CHOFERES_DEMO,
+  LEGACY_TIPOS_DEMO,
+  LEGACY_UNIDADES_PLACAS,
   TIPOS_DEMO,
   TIPO_CAMIONES_3_Y_MEDIA,
   TIPO_RUTAS,
@@ -100,6 +103,8 @@ export class SeedService implements OnModuleInit {
       const unidad = await this.upsertUnidad(item);
       await this.upsertChoferUsual(unidad, item.choferNombre);
     }
+
+    await this.retireLegacyPlaceholderCatalog();
   }
 
   private async upsertUnidad(item: UnidadDemoSeed): Promise<Unidad> {
@@ -151,6 +156,58 @@ export class SeedService implements OnModuleInit {
     const row = op ?? this.operativas.create({ unidadId: unidad.id });
     row.choferUltimoId = chofer.id;
     await this.operativas.save(row);
+  }
+
+  /**
+   * Drop the previous Camión/U-101/Juan Pérez placeholder catalog by natural key.
+   * Visitas on those units are demo-only (RESTRICT); children cascade.
+   */
+  private async retireLegacyPlaceholderCatalog() {
+    try {
+      await this.retireLegacyPlaceholderCatalogUnsafe();
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      this.logger.warn(`No se pudo retirar semilla placeholder: ${message}`);
+    }
+  }
+
+  private async retireLegacyPlaceholderCatalogUnsafe() {
+    const legacyUnidades = await this.unidades.find({
+      where: { placas: In([...LEGACY_UNIDADES_PLACAS]) },
+    });
+    for (const unidad of legacyUnidades) {
+      const visitas = await this.visitas.find({
+        where: { unidad: { id: unidad.id } },
+      });
+      if (visitas.length) {
+        await this.visitas.remove(visitas);
+      }
+      const op = await this.operativas.findOne({
+        where: { unidadId: unidad.id },
+      });
+      if (op) {
+        await this.operativas.remove(op);
+      }
+      await this.unidades.remove(unidad);
+    }
+
+    for (const nombre of LEGACY_CHOFERES_DEMO) {
+      const chofer = await this.choferes.findOne({ where: { nombre } });
+      if (!chofer) continue;
+      const used = await this.visitas.count({
+        where: { chofer: { id: chofer.id } },
+      });
+      if (used > 0) continue;
+      await this.choferes.remove(chofer);
+    }
+
+    for (const nombre of LEGACY_TIPOS_DEMO) {
+      const tipo = await this.tipos.findOne({ where: { nombre } });
+      if (!tipo) continue;
+      const used = await this.unidades.count({ where: { tipo: { id: tipo.id } } });
+      if (used > 0) continue;
+      await this.tipos.remove(tipo);
+    }
   }
 
   private async seedInventario() {

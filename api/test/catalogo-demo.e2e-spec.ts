@@ -64,6 +64,10 @@ describe('Catálogo demo Aldo (e2e)', () => {
     );
     expect(choferes.every((c) => c.estado === EstadoChofer.ACTIVO)).toBe(true);
     expect(unidades).toHaveLength(UNIDADES_DEMO.length);
+    expect(
+      unidades.some((u) => u.numeroInterno === 'U-101' || u.placas.startsWith('TMX-')),
+    ).toBe(false);
+    expect(choferes.some((c) => c.nombre === 'Juan Pérez')).toBe(false);
     expect(unidades.every((u) => u.estado === EstadoUnidad.ACTIVA)).toBe(true);
 
     const byPlacas = Object.fromEntries(
