@@ -170,7 +170,7 @@ function NavLink({
       href={href}
       aria-current={active ? 'page' : undefined}
       className={cn(
-        'inline-flex min-h-9 items-center rounded-none px-2.5 text-[13px] text-white/65 hover:text-white',
+        'inline-flex min-h-9 items-center rounded-none px-2.5 text-[13px] text-white/65 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
         active &&
           'font-medium text-white shadow-[inset_0_-2px_0_#ea7515]',
       )}

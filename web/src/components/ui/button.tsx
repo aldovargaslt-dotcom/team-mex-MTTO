@@ -22,7 +22,7 @@ const buttonVariants = cva(
         entrada:
           'bg-btn-entrada text-btn-entrada-foreground border border-btn-entrada-border hover:bg-btn-entrada-hover',
         quiet:
-          'bg-btn-quiet text-btn-quiet-foreground border border-btn-quiet-border hover:bg-btn-quiet-hover',
+          'bg-btn-quiet text-btn-quiet-foreground border border-btn-quiet-border hover:bg-btn-quiet-hover md:min-h-9',
         dangerSoft:
           'bg-btn-danger-soft text-btn-danger-soft-foreground border border-btn-danger-soft-border hover:bg-btn-danger-soft-hover',
       },

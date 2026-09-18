@@ -263,7 +263,7 @@ export function UnidadesCatalogo({
       <form onSubmit={onSearch}>
         <ListChrome
           title="Unidades"
-          count={ordenadas.length}
+          countLabel={`${ordenadas.length} ${ordenadas.length === 1 ? 'unidad' : 'unidades'}`}
           filters={
             <>
               <div className="list-chrome__search">
@@ -281,6 +281,7 @@ export function UnidadesCatalogo({
               </div>
               <ListFilter
                 label="Estado"
+                segmented
                 value={estadoChip}
                 options={[
                   { id: 'TODOS', label: `Todas (${kpis.total})` },
@@ -294,7 +295,6 @@ export function UnidadesCatalogo({
                 <Button
                   type="button"
                   variant="quiet"
-                  size="compact"
                   onClick={limpiarFiltros}
                 >
                   <RotateCcw className="size-3.5" aria-hidden />

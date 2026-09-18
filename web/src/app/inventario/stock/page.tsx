@@ -232,10 +232,11 @@ function StockContent() {
     <>
       <ListChrome
         title="Existencias"
-        count={filtered.length}
+        countLabel={`${filtered.length} ${filtered.length === 1 ? 'existencia' : 'existencias'}`}
         filters={
           <ListFilter
             label="Filtro de existencias"
+            segmented
             value={filtro}
             options={FILTROS}
             onChange={(next) => {
