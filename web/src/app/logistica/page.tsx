@@ -27,7 +27,6 @@ import type {
   LogisticaChoferRow,
   Unidad,
 } from '@/lib/types';
-import { cn } from '@/lib/utils';
 
 const CHIPS: { id: ChipLogistica; label: string }[] = [
   { id: 'DISPONIBLE', label: 'Disponibles' },
@@ -239,31 +238,19 @@ function LogisticaAsignacion() {
         }
       />
 
-      <div className="ops-kpis" role="group" aria-label="Resumen de choferes activos">
-        <button
-          type="button"
-          className={cn('ops-kpi', chip === 'EN_RUTA' && 'is-active')}
-          onClick={() => setParams({ chip: 'EN_RUTA' })}
-        >
+      <div className="ops-kpis" aria-label="Resumen de choferes activos">
+        <div className="ops-kpi">
           <span className="ops-kpi__label">En ruta</span>
           <span className="ops-kpi__value">{kpis.enRuta}</span>
-        </button>
-        <button
-          type="button"
-          className={cn('ops-kpi', chip === 'DISPONIBLE' && 'is-active')}
-          onClick={() => setParams({ chip: 'DISPONIBLE' })}
-        >
+        </div>
+        <div className="ops-kpi">
           <span className="ops-kpi__label">Disponibles</span>
           <span className="ops-kpi__value">{kpis.disponibles}</span>
-        </button>
-        <button
-          type="button"
-          className={cn('ops-kpi', chip === 'TODOS' && 'is-active')}
-          onClick={() => setParams({ chip: 'TODOS' })}
-        >
+        </div>
+        <div className="ops-kpi">
           <span className="ops-kpi__label">Total</span>
           <span className="ops-kpi__value">{kpis.total}</span>
-        </button>
+        </div>
       </div>
 
       <form
@@ -313,7 +300,7 @@ function LogisticaAsignacion() {
       >
         <SheetContent side="right" className="sm:max-w-md">
           {enRutaSheet ? (
-            <>
+            <div className="flex flex-col">
               <SheetHeader>
                 <SheetTitle>{sheetRow.nombre}</SheetTitle>
                 <SheetDescription>
@@ -328,7 +315,7 @@ function LogisticaAsignacion() {
                 </p>
                 <FormAlert>{sheet ? error : null}</FormAlert>
               </div>
-              <SheetFooter>
+              <SheetFooter className="mt-3">
                 <Button
                   type="button"
                   variant="secondary"
@@ -345,9 +332,9 @@ function LogisticaAsignacion() {
                   {saving ? 'Quitando…' : 'Quitar de la unidad'}
                 </Button>
               </SheetFooter>
-            </>
+            </div>
           ) : (
-            <form className="flex h-full flex-col" onSubmit={asignar}>
+            <form className="flex flex-col" onSubmit={asignar}>
               <SheetHeader>
                 <SheetTitle>Asignar a unidad</SheetTitle>
                 <SheetDescription>
@@ -390,7 +377,7 @@ function LogisticaAsignacion() {
                 ) : null}
                 <FormAlert>{sheet ? error : null}</FormAlert>
               </div>
-              <SheetFooter>
+              <SheetFooter className="mt-3">
                 <Button
                   type="button"
                   variant="secondary"
