@@ -1981,9 +1981,9 @@
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-end;
     gap: 8px 12px;
-    margin-bottom: 8px;
+    margin: -4px 0 8px;
     min-width: 0;
   }
 
@@ -1996,6 +1996,12 @@
     overflow-x: auto;
     overscroll-behavior-x: contain;
     -webkit-overflow-scrolling: touch;
+  }
+
+  .unidades-page .list-chrome__filters .list-filter--segmented {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    max-width: 100%;
   }
 
   .unidades-page .list-filter button {
@@ -2080,7 +2086,7 @@
 
   .unidades-interno {
     font-variant-numeric: tabular-nums;
-    font-weight: 600;
+    font-weight: 500;
     font-size: 13px;
     line-height: 1.2;
     color: var(--navy);
@@ -2095,10 +2101,10 @@
 
   .unidades-placas {
     font-variant-numeric: tabular-nums;
-    font-size: 13px;
-    font-weight: 500;
-    letter-spacing: 0.02em;
-    color: var(--text);
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: var(--navy);
   }
 
   .unidades-estado {

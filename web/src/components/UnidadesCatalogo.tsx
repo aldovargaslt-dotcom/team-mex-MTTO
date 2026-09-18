@@ -5,8 +5,6 @@ import { ColumnDef } from '@tanstack/react-table';
 import {
   ChevronLeft,
   ChevronRight,
-  LayoutGrid,
-  LayoutList,
   RotateCcw,
   Search,
   TriangleAlert,
@@ -14,7 +12,6 @@ import {
 import { ListFilter } from '@/components/ListFilter';
 import { StatusBadge } from '@/components/StatusBadge';
 import { UnidadTipoIcon, UnidadTipoMark } from '@/components/UnidadTipoMark';
-import { UnidadesTipoMenu } from '@/components/UnidadesTipoMenu';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { DataTable } from '@/components/ui/data-table';
@@ -24,12 +21,12 @@ import {
   avisoDeUnidad,
   etiquetaSituacionAtencion,
   kpisFlota,
+  ordenarTiposChip,
   ordenarUnidades,
   situacionAtencion,
   unidadesConAtencion,
   UNIDADES_PAGE_SIZE,
   type UnidadesSort,
-  type UnidadesVista,
 } from '@/lib/unidades-catalogo';
 import { cn } from '@/lib/utils';
 import type { AvisoAndon, TipoVehiculo, Unidad } from '@/lib/types';
@@ -85,9 +82,9 @@ function CeldaAtencion({
 }
 
 const SORT_OPTIONS: { id: UnidadesSort; label: string }[] = [
+  { id: 'placas-asc', label: 'Placas (A-Z)' },
   { id: 'interno-asc', label: 'Interno (A-Z)' },
   { id: 'interno-desc', label: 'Interno (Z-A)' },
-  { id: 'placas-asc', label: 'Placas (A-Z)' },
 ];
 
 type EstadoChip = 'TODOS' | 'ACTIVA' | 'INACTIVA' | 'ATENCION';
@@ -133,8 +130,7 @@ export function UnidadesCatalogo({
   onEditarTipo: (tipo: TipoVehiculo) => void;
   onEliminarTipo: (tipo: TipoVehiculo) => void;
 }) {
-  const [sort, setSort] = useState<UnidadesSort>('interno-asc');
-  const [vista, setVista] = useState<UnidadesVista>('tabla');
+  const [sort, setSort] = useState<UnidadesSort>('placas-asc');
   const [page, setPage] = useState(1);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -170,7 +166,6 @@ export function UnidadesCatalogo({
     const mq = window.matchMedia('(max-width: 767px)');
     function apply() {
       setIsMobile(mq.matches);
-      if (mq.matches) setVista('tarjetas');
     }
     apply();
     mq.addEventListener('change', apply);
@@ -198,8 +193,18 @@ export function UnidadesCatalogo({
     aplicarEstado('TODOS');
   }
 
+  const tiposChip = useMemo(() => ordenarTiposChip(tipos), [tipos]);
+  const tipoChipValue = tipoFiltro || 'TODAS';
+
   const columns: ColumnDef<Unidad, unknown>[] = useMemo(
     () => [
+      {
+        accessorKey: 'placas',
+        header: 'Placas',
+        cell: ({ row }) => (
+          <span className="unidades-placas">{row.original.placas}</span>
+        ),
+      },
       {
         id: 'unidad',
         header: 'Unidad',
@@ -230,13 +235,6 @@ export function UnidadesCatalogo({
             />
             {row.original.tipo.nombre}
           </Badge>
-        ),
-      },
-      {
-        accessorKey: 'placas',
-        header: 'Placas',
-        cell: ({ row }) => (
-          <span className="unidades-placas">{row.original.placas}</span>
         ),
       },
       {
@@ -291,6 +289,23 @@ export function UnidadesCatalogo({
                 ]}
                 onChange={aplicarEstado}
               />
+              {tiposChip.length > 0 ? (
+                <ListFilter
+                  label="Tipo"
+                  segmented
+                  value={tipoChipValue}
+                  options={[
+                    { id: 'TODAS', label: 'Todas' },
+                    ...tiposChip.map((tipo) => ({
+                      id: tipo.id,
+                      label: tipo.nombre,
+                    })),
+                  ]}
+                  onChange={(next) =>
+                    onTipoFiltro(next === 'TODAS' ? '' : next)
+                  }
+                />
+              ) : null}
               {buscando ? (
                 <Button
                   type="button"
@@ -301,86 +316,25 @@ export function UnidadesCatalogo({
                   Limpiar
                 </Button>
               ) : null}
+              <label className="unidades-sort">
+                <span>Ordenar por</span>
+                <NativeSelect
+                  value={sort}
+                  onChange={(e) => setSort(e.target.value as UnidadesSort)}
+                  aria-label="Ordenar por"
+                >
+                  {SORT_OPTIONS.map((option) => (
+                    <option key={option.id} value={option.id}>
+                      {option.label}
+                    </option>
+                  ))}
+                </NativeSelect>
+              </label>
             </>
           }
           actions={actions}
         />
       </form>
-
-      {tipos.length > 0 ? (
-        <div className="unidades-toolbar">
-          <div className="list-filter" role="group" aria-label="Tipo">
-            <button
-              type="button"
-              aria-pressed={!tipoFiltro}
-              className={!tipoFiltro ? 'active' : ''}
-              onClick={() => onTipoFiltro('')}
-            >
-              Todas ({flota.length})
-            </button>
-            {tipos.map((tipo) => {
-              const n = flota.filter((u) => u.tipo.id === tipo.id).length;
-              const activo = tipoFiltro === tipo.id;
-              return (
-                <span key={tipo.id} className="unidades-tipo-chip">
-                  <button
-                    type="button"
-                    aria-pressed={activo}
-                    className={activo ? 'active' : ''}
-                    onClick={() => onTipoFiltro(activo ? '' : tipo.id)}
-                  >
-                    <UnidadTipoIcon nombre={tipo.nombre} icono={tipo.icono} />
-                    {tipo.nombre} ({n})
-                  </button>
-                  {isAdmin && activo && isMobile ? (
-                    <UnidadesTipoMenu
-                      tipoNombre={tipo.nombre}
-                      onEditar={() => onEditarTipo(tipo)}
-                      onEliminar={() => onEliminarTipo(tipo)}
-                    />
-                  ) : null}
-                </span>
-              );
-            })}
-          </div>
-          <div className="unidades-toolbar__tools">
-            <label className="unidades-sort">
-              <span>Ordenar por</span>
-              <NativeSelect
-                value={sort}
-                onChange={(e) => setSort(e.target.value as UnidadesSort)}
-                aria-label="Ordenar por"
-              >
-                {SORT_OPTIONS.map((option) => (
-                  <option key={option.id} value={option.id}>
-                    {option.label}
-                  </option>
-                ))}
-              </NativeSelect>
-            </label>
-            <div className="unidades-vista" role="group" aria-label="Vista">
-              <button
-                type="button"
-                aria-pressed={vista === 'tabla'}
-                aria-label="Vista tabla"
-                className={vista === 'tabla' ? 'active' : ''}
-                onClick={() => setVista('tabla')}
-              >
-                <LayoutList className="size-4" />
-              </button>
-              <button
-                type="button"
-                aria-pressed={vista === 'tarjetas'}
-                aria-label="Vista tarjetas"
-                className={vista === 'tarjetas' ? 'active' : ''}
-                onClick={() => setVista('tarjetas')}
-              >
-                <LayoutGrid className="size-4" />
-              </button>
-            </div>
-          </div>
-        </div>
-      ) : null}
 
       {isAdmin && tipoSeleccionado ? (
         <div className="unidades-tipo-bar">
@@ -417,7 +371,7 @@ export function UnidadesCatalogo({
 
       {tipos.length > 0 ? (
         <>
-          {vista === 'tarjetas' ? (
+          {isMobile ? (
             slice.length === 0 ? (
               <div className="empty-state">
                 <h2>
@@ -456,6 +410,7 @@ export function UnidadesCatalogo({
                         icono={unidad.tipo.icono}
                       />
                       <div>
+                        <div className="unidades-placas">{unidad.placas}</div>
                         <div className="unidades-interno">
                           {unidad.numeroInterno}
                         </div>
@@ -476,7 +431,6 @@ export function UnidadesCatalogo({
                         {unidad.tipo.nombre}
                       </Badge>
                       <EstadoUnidadMark unidad={unidad} />
-                      <span className="unidades-placas">{unidad.placas}</span>
                     </div>
                     <CeldaAtencion unidad={unidad} avisos={avisos} />
                   </article>

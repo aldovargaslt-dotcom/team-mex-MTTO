@@ -6,13 +6,16 @@ Estado: **Slice 1 LOCKED** (visual only). Spec de ingeniería: [docs/design/](..
 
 ## Slice 1 MUST (Unidades + Stock desktop)
 
+Mode B Despacho (this slice): placas-first dense list chrome. Tipo chips from catálogo (live: STOCK | RUTAS | CAMIONES 3 Y MEDIA). Mode A Taller (Visitas/WO) later — do not restyle.
+
 ### List chrome
 
 - Toolbar: title + count (`N unidades` / stock count) + ONE orange CTA
 - Full-row open → ficha/record
 - Hover row quiet `#F8FAFC` + pointer
 - Trailing › or ⋯ overflow for secondary row actions
-- Filter chips segmented (Stock: Todos|Bajo|Agotado); active = underline/quiet fill, NOT solid orange
+- Filter chips segmented (Stock: Todos|Bajo|Agotado; Unidades tipos: catálogo, live STOCK|RUTAS|CAMIONES 3 Y MEDIA); active = underline/quiet fill, NOT solid orange
+- Unidades: placas first (P0), interno/modelo secondary; default sort placas
 
 ### Affordances
 
