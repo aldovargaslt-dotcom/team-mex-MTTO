@@ -63,7 +63,7 @@ export default function FamiliasPage() {
       <PageHeader
         title="Categorías"
         actions={
-          <Button type="submit" form="nueva-categoria" disabled={!nombre.trim()}>
+          <Button type="submit" form="nueva-categoria">
             Agregar categoría
           </Button>
         }

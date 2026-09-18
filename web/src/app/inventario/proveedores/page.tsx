@@ -67,7 +67,7 @@ export default function ProveedoresPage() {
       <PageHeader
         title="Proveedores"
         actions={
-          <Button type="submit" form="nuevo-proveedor" disabled={!nombre.trim()}>
+          <Button type="submit" form="nuevo-proveedor">
             Agregar proveedor
           </Button>
         }
