@@ -1050,6 +1050,13 @@
     background: white;
   }
 
+  .doc-section .signature-img {
+    width: auto;
+    max-width: 100%;
+    max-height: 120px;
+    object-fit: contain;
+  }
+
   .photo-item {
     display: grid;
     gap: 6px;

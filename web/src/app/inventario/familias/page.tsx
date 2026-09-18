@@ -60,8 +60,15 @@ export default function FamiliasPage() {
 
   return (
     <>
-      <PageHeader title="Categorías" />
-      <form className="card form-grid" onSubmit={crear}>
+      <PageHeader
+        title="Categorías"
+        actions={
+          <Button type="submit" form="nueva-categoria" disabled={!nombre.trim()}>
+            Agregar categoría
+          </Button>
+        }
+      />
+      <form id="nueva-categoria" className="mb-3 max-w-sm" onSubmit={crear}>
         <Field label="Nombre" htmlFor="famNombre">
           <Input
             id="famNombre"
@@ -71,9 +78,6 @@ export default function FamiliasPage() {
             placeholder="Filtros"
           />
         </Field>
-        <div className="form-actions">
-          <Button type="submit">Agregar categoría</Button>
-        </div>
       </form>
       <FormAlert>{error}</FormAlert>
       {familias.length > 0 || !error ? (

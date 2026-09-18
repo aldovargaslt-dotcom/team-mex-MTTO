@@ -64,8 +64,15 @@ export default function ProveedoresPage() {
 
   return (
     <>
-      <PageHeader title="Proveedores" />
-      <form className="card form-grid" onSubmit={crear}>
+      <PageHeader
+        title="Proveedores"
+        actions={
+          <Button type="submit" form="nuevo-proveedor" disabled={!nombre.trim()}>
+            Agregar proveedor
+          </Button>
+        }
+      />
+      <form id="nuevo-proveedor" className="mb-3 max-w-sm" onSubmit={crear}>
         <Field label="Nombre" htmlFor="provNombre">
           <Input
             id="provNombre"
@@ -75,9 +82,6 @@ export default function ProveedoresPage() {
             placeholder="Refacciones del Norte"
           />
         </Field>
-        <div className="form-actions">
-          <Button type="submit">Agregar proveedor</Button>
-        </div>
       </form>
       <FormAlert>{error}</FormAlert>
       {proveedores.length > 0 || !error ? (

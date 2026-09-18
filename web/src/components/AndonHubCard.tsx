@@ -74,7 +74,7 @@ export function AndonHubCard({
   const explicacion = aviso ? explicacionAlertaAndon(aviso) : null;
 
   return (
-    <section className="card panel mb-3">
+    <section className={vencido ? 'card panel row-warn mb-3' : 'card panel mb-3'}>
       <h2>{vencido ? (explicacion?.titulo ?? 'Mantenimiento atrasado') : 'Próximo mantenimiento'}</h2>
       {aviso === undefined ? (
         <p className="muted">Cargando…</p>
@@ -112,7 +112,7 @@ export function AndonHubCard({
                   disabled={busy}
                   onClick={() => void enterado()}
                 >
-                  {busy ? 'Marcando…' : 'Marcar como enterado'}
+                  {busy ? 'Marcando…' : 'Enterado'}
                 </Button>
               ) : null}
             </div>

@@ -368,6 +368,16 @@ function HubContent() {
                             Continuar
                           </Link>
                         </Button>
+                        {index === 0 ? (
+                          <Button
+                            type="button"
+                            variant="outline"
+                            disabled={!hub.puedeCrearVisita || creating}
+                            onClick={() => void nuevaVisita()}
+                          >
+                            {creating ? 'Creando…' : 'Nueva visita'}
+                          </Button>
+                        ) : null}
                         <Button
                           type="button"
                           variant="destructive"
@@ -381,16 +391,17 @@ function HubContent() {
                   ))}
                 </ul>
               )}
-              <div className="hub-actions">
-                <Button
-                  type="button"
-                  variant={hub.borradores.length > 0 ? 'outline' : 'default'}
-                  disabled={!hub.puedeCrearVisita || creating}
-                  onClick={() => void nuevaVisita()}
-                >
-                  {creating ? 'Creando…' : 'Nueva visita'}
-                </Button>
-              </div>
+              {hub.borradores.length === 0 ? (
+                <div className="hub-actions">
+                  <Button
+                    type="button"
+                    disabled={!hub.puedeCrearVisita || creating}
+                    onClick={() => void nuevaVisita()}
+                  >
+                    {creating ? 'Creando…' : 'Nueva visita'}
+                  </Button>
+                </div>
+              ) : null}
             </>
           ) : (
             <p className="muted">
