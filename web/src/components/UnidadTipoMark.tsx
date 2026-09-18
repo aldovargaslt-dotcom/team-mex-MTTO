@@ -16,21 +16,21 @@ export function UnidadTipoMark({
 }: {
   nombre: string;
   icono?: string | null;
-  size?: 'sm' | 'md';
+  size?: 'sm' | 'md' | 'lg';
 }) {
   const Icon = ICONS[glyphTipo(nombre, icono)];
+  const iconClass =
+    size === 'sm' ? 'size-3.5' : size === 'lg' ? 'size-8' : 'size-5';
   return (
     <span
       className={cn(
         'unidades-thumb',
         size === 'sm' && 'unidades-thumb--sm',
+        size === 'lg' && 'unidades-thumb--lg',
       )}
       aria-hidden
     >
-      <Icon
-        className={size === 'sm' ? 'size-3.5' : 'size-5'}
-        strokeWidth={1.75}
-      />
+      <Icon className={iconClass} strokeWidth={1.75} />
     </span>
   );
 }

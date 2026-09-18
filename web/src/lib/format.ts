@@ -8,6 +8,10 @@ export function resumenAvisoMantenimiento(km: number, dias: number) {
   return `Avisa a los ${km.toLocaleString('es-MX')} km o a los ${dias} días`;
 }
 
+export function etiquetaIntervaloMantenimiento(km: number, dias: number) {
+  return `${km.toLocaleString('es-MX')} km o ${dias} días`;
+}
+
 export type ExplicacionAlertaAndon = {
   titulo: string;
   vencido: string | null;

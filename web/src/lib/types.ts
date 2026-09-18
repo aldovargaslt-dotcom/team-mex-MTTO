@@ -49,6 +49,7 @@ export type Unidad = {
   tipo: TipoVehiculo;
   marcaModelo: string | null;
   anio: number | null;
+  updatedAt?: string;
 };
 
 export type VisitaResumen = {
