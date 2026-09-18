@@ -56,16 +56,23 @@ const DIM_LABEL: Record<string, string> = {
   inspections: 'Inspecciones',
 };
 
+function hasAlertaActiva(health: UnidadHealth) {
+  return (
+    Boolean(health.derivedAlert) ||
+    health.drivers.some((d) => d.type === 'ANDON_OPEN')
+  );
+}
+
 export function UnitHealth({
   health,
   variant = 'standard',
   onOpen,
 }: {
   health: UnidadHealth | null;
-  variant?: 'compact' | 'standard' | 'detailed' | 'embedded';
+  variant?: 'compact' | 'standard' | 'detailed' | 'embedded' | 'header';
   onOpen?: () => void;
 }) {
-  const showKicker = variant === 'standard';
+  const showKicker = variant === 'standard' || variant === 'header';
 
   if (!health) {
     return <p className="muted">Cargando salud…</p>;
@@ -81,7 +88,7 @@ export function UnitHealth({
           <span className="health-label">{health.label}</span>
           <span className="health-note">
             {health.message ??
-              'No hay información suficiente para calcular la salud.'}
+              'Faltan datos para calcular la salud.'}
           </span>
         </span>
       </>
@@ -92,7 +99,11 @@ export function UnitHealth({
     return (
       <button
         type="button"
-        className={cn('health-display', variant === 'embedded' && 'embedded')}
+        className={cn(
+          'health-display',
+          variant === 'embedded' && 'embedded',
+          variant === 'header' && 'header',
+        )}
         onClick={onOpen}
       >
         {body}
@@ -102,6 +113,7 @@ export function UnitHealth({
 
   const semantic = getHealthSemantic(health.status as HealthStatus);
   const style = { '--health-fg': semantic.fg } as CSSProperties;
+  const alertaActiva = hasAlertaActiva(health);
 
   if (variant === 'compact') {
     return (
@@ -117,12 +129,21 @@ export function UnitHealth({
     );
   }
 
-  const ring = (
-    <Ring
-      pct={health.score}
-      fg={semantic.fg}
-      size={variant === 'detailed' ? 48 : 56}
-    />
+  const ringSize =
+    variant === 'detailed' ? 48 : variant === 'header' ? 80 : 56;
+
+  const ring = <Ring pct={health.score} fg={semantic.fg} size={ringSize} />;
+
+  const scoreInsideRing =
+    variant === 'header' || variant === 'detailed' || variant === 'standard';
+
+  const ringBlock = scoreInsideRing ? (
+    <span className="health-ring-wrap">
+      {ring}
+      <span className="health-score">{health.score}%</span>
+    </span>
+  ) : (
+    ring
   );
 
   const headline = (
@@ -130,14 +151,16 @@ export function UnitHealth({
       {showKicker ? (
         <span className="health-kicker">Salud de la unidad</span>
       ) : null}
-      <span className="health-score">{health.score}%</span>
+      {scoreInsideRing ? null : (
+        <span className="health-score">{health.score}%</span>
+      )}
       <span className="health-label">{health.label}</span>
       {variant === 'standard' ? (
         <span className="health-note health-note-help">
           <CircleHelp className="size-3.5" aria-hidden />
           Por qué
         </span>
-      ) : health.derivedAlert ? (
+      ) : alertaActiva && variant !== 'header' ? (
         <span className="health-note">Alerta activa</span>
       ) : null}
     </span>
@@ -148,7 +171,7 @@ export function UnitHealth({
     return (
       <div className="flex flex-col gap-3" style={style}>
         <div className="flex items-center gap-3">
-          {ring}
+          {ringBlock}
           {headline}
         </div>
         <ul className="flex flex-col gap-2">
@@ -162,9 +185,9 @@ export function UnitHealth({
               </span>
               <span className="tabular-nums text-right">
                 {dim.availability === 'APPLICABLE' && dim.score != null
-                  ? `${Math.round(dim.score)}/100 × ${dim.weight}%`
+                  ? `${Math.round(dim.score)} / 100`
                   : dim.availability === 'NOT_APPLICABLE'
-                    ? `No aplica × ${dim.weight}%`
+                    ? 'No aplica'
                     : 'Sin datos'}
               </span>
             </li>
@@ -193,13 +216,15 @@ export function UnitHealth({
       type="button"
       className={cn(
         'health-display',
-        variant === 'embedded' ? 'embedded' : 'standard',
+        variant === 'embedded' && 'embedded',
+        variant === 'header' && 'header',
+        variant === 'standard' && 'standard',
       )}
       style={style}
       onClick={onOpen}
       aria-label={`Salud de la unidad: ${health.score}% ${health.label}`}
     >
-      {ring}
+      {ringBlock}
       {headline}
     </button>
   );
