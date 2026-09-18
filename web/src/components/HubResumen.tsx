@@ -3,7 +3,6 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import { AndonHubCard } from '@/components/AndonHubCard';
-import { StatusBadge } from '@/components/StatusBadge';
 import { Note } from '@/components/ui/field';
 import {
   etiquetaEstadoVisita,
@@ -98,9 +97,9 @@ export function HubResumen({
         <div className="hub-facts">
           <div>
             <p className="hub-facts__kicker">Estado</p>
-            <div className="hub-facts__value">
-              <StatusBadge estado={ficha.estado} />
-            </div>
+            <p className="hub-facts__value">
+              {ficha.estado === 'ACTIVA' ? 'Activa' : 'Inactiva'}
+            </p>
             {ficha.motivoInactivacion === 'ENVIO_ESPECIAL' ? (
               <p className="hub-facts__meta">Envío especial</p>
             ) : null}
@@ -129,12 +128,6 @@ export function HubResumen({
             <dd>{ficha.anio ?? 'Sin año registrado'}</dd>
             <dt>Tipo</dt>
             <dd>{ficha.tipoNombre}</dd>
-            {ficha.vin ? (
-              <>
-                <dt>VIN</dt>
-                <dd className="mono">{ficha.vin}</dd>
-              </>
-            ) : null}
           </dl>
         </section>
         <section className="card panel">

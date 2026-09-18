@@ -160,7 +160,7 @@ export function UnitHealth({
           <CircleHelp className="size-3.5" aria-hidden />
           Por qué
         </span>
-      ) : alertaActiva ? (
+      ) : alertaActiva && variant !== 'header' ? (
         <span className="health-note">Alerta activa</span>
       ) : null}
     </span>

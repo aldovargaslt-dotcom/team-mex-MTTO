@@ -690,6 +690,11 @@
     font-size: 14px;
     font-weight: 600;
     margin: 0 0 4px;
+    color: var(--navy);
+  }
+
+  .hub-ops-card.is-overdue .hub-ops-title {
+    color: var(--danger);
   }
 
   .hub-ops-status {
@@ -1991,6 +1996,10 @@
     .hub-resumen-lower,
     .hub-facts {
       grid-template-columns: 1fr;
+    }
+
+    .hub-ops-count {
+      display: none;
     }
 
     .list-head {

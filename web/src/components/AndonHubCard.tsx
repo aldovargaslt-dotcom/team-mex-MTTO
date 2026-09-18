@@ -170,7 +170,7 @@ export function AndonHubCard({
         </dl>
       </section>
 
-      <section className={cn('card panel hub-ops-card', vencido && 'is-overdue')}>
+      <section className="card panel hub-ops-card">
         <div className="hub-ops-card__head">
           <h2>Últimas alertas</h2>
           {aviso ? (
@@ -210,9 +210,6 @@ export function AndonHubCard({
                 </p>
               ))}
             </div>
-            {explicacion?.vencido ? (
-              <p className="hub-ops-status mt-1.5">{explicacion.vencido}</p>
-            ) : null}
             {aviso.estado === 'ABIERTO' && !isAdmin ? (
               <div className="hub-actions">
                 <Button

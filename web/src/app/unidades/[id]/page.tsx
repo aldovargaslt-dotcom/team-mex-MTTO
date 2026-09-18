@@ -307,6 +307,12 @@ function HubContent() {
           {vista === 'mantenimiento' ? (
             <section className="card panel">
               <h2>Mantenimiento</h2>
+              {health?.drivers.some((d) => d.type === 'MAINTENANCE_OVERDUE') ? (
+                <p className="hub-ops-status text-destructive">
+                  {health.drivers.find((d) => d.type === 'MAINTENANCE_OVERDUE')
+                    ?.message}
+                </p>
+              ) : null}
               {!isAdmin ? (
                 <>
                   <h3 className="subhead">Visitas abiertas</h3>
@@ -388,14 +394,10 @@ function HubContent() {
       <Sheet open={healthOpen} onOpenChange={setHealthOpen}>
         <SheetContent side="right">
           <SheetHeader>
-            <SheetTitle>
-              {health?.available && health.score != null
-                ? `Salud de la unidad — ${health.score}%`
-                : 'Salud de la unidad'}
-            </SheetTitle>
+            <SheetTitle>Salud de la unidad</SheetTitle>
             <SheetDescription>
               {health?.available
-                ? `${health.score}% — ${health.label}`
+                ? health.label
                 : 'Cómo se calcula este indicador.'}
             </SheetDescription>
           </SheetHeader>
