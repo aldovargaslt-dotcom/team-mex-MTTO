@@ -18,6 +18,7 @@ Briefs: [anti-generic](docs/design-system/ui-polish-anti-generic-v0.md), [44px](
 - Wizard: stepper `Paso N de 7` (Datos → Trabajos → Obs → Fotos → Piezas → Firmas → Confirmar). No tabs de desktop. Sticky Continuar visible, sin recorte.
 - **Rechazar** shots con chrome de DevTools o device-toolbar (marco de dispositivo, `100%`, barra de inspect).
 - Un CTA primario **naranja** por vista. En Piezas: **Continuar** disabled → enabled alrededor de stock insuficiente / compra externa (`DESDE_STOCK` qty > stock vs `COMPRA_EXTERNA`).
+- El PNG debe reconocerse como el patrón/hermano de la spec (`PageHeader`, un panel de excepción, `ListFilter` si el listado filtra por estado). Dos cards del mismo atraso o `.btn` junto a `Button` → recapturar.
 - Cazar regresiones del **shell/nav** compartido (topbar, campanita, menú móvil `<768`).
 - Si el corte añade **sheet / select / menú**: ábrelo; no debe recortarse (`overflow` del padre). Si añade control: hover/focus/disabled visibles (Continuar disabled→enabled en Piezas si aplica).
 - Corte **visual only**: no tocar `api/src`.

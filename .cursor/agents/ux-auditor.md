@@ -14,29 +14,40 @@ Flujo y formato de salida: [docs/design/VISUAL_QA.md](docs/design/VISUAL_QA.md).
 ## Fuentes (abrir, no resumir de memoria)
 
 - [docs/design/VISUAL_QA.md](docs/design/VISUAL_QA.md) — orden de impacto, fail inmediato, 3–5 hallazgos
-- [docs/design/VISUAL_HIERARCHY.md](docs/design/VISUAL_HIERARCHY.md) — P0–P3, presupuesto
+- [docs/design/PAGE_PATTERNS.md](docs/design/PAGE_PATTERNS.md) — el primer paint debe clonar el patrón/hermano de la spec
+- [docs/design/VISUAL_HIERARCHY.md](docs/design/VISUAL_HIERARCHY.md)
 - [docs/design/UI_ANTI_PATTERNS.md](docs/design/UI_ANTI_PATTERNS.md)
-- [docs/design/DESIGN_SYSTEM.md](docs/design/DESIGN_SYSTEM.md) — primitivas (no inventar tokens)
-- [docs/design/OPERATE_CRAFT.md](docs/design/OPERATE_CRAFT.md) — estados de control, overlays, motion; no skills de landing
-- [docs/design-system/ui-polish-anti-generic-v0.md](docs/design-system/ui-polish-anti-generic-v0.md)
-- [docs/design-system/ui-touch-targets-mobile-v0.md](docs/design-system/ui-touch-targets-mobile-v0.md)
-- [docs/design-system/ui-semantic-button-pastels-v0.md](docs/design-system/ui-semantic-button-pastels-v0.md)
-- [docs/design-system/ui-nav-filter-action-inicio-v0.md](docs/design-system/ui-nav-filter-action-inicio-v0.md)
-- [docs/design-system/ux-operacional-cortes-v0.md](docs/design-system/ux-operacional-cortes-v0.md) — Must/Don’t del corte A–E si aplica
-- Flota: [docs/specs/fleet-tablero-viaje-v0.md](docs/specs/fleet-tablero-viaje-v0.md) si el diff toca `/flota`
+- [docs/design/DESIGN_SYSTEM.md](docs/design/DESIGN_SYSTEM.md)
+- [docs/design/OPERATE_CRAFT.md](docs/design/OPERATE_CRAFT.md)
+- [docs/design-system/ui-unify-chrome-v0.md](docs/design-system/ui-unify-chrome-v0.md) si el corte es chrome/hub
+- Briefs anti-generic, 44px, pasteles, nav, UX operacional A–E si aplica
+- Flota: [docs/specs/fleet-tablero-viaje-v0.md](docs/specs/fleet-tablero-viaje-v0.md) si toca `/flota`
 - [docs/adr/003-shadcn-tailwind.md](docs/adr/003-shadcn-tailwind.md)
 - Skill [proof-ui](../skills/proof-ui/SKILL.md)
 
-## Barra
+## Fail inmediato (no negociar)
 
-1. PNG del PR vs estados Must / spec UX. Falta un estado nombrado → no OK.
-2. `proof-ui`: role picker; click-through; español; “Tomar o subir”; `d1440` (y `m390` si WO); **sin** DevTools; un CTA naranja; Continuar disabled→enabled en Piezas si aplica; shell/nav.
-3. ¿Se responden objeto / excepción / acción en 5 s? P3 ¿compite con P0? ¿Cards de más?
-4. Operate craft: menú/sheet recortado; motion de marketing; control nuevo sin disabled/focus. Skills de landing en el diff → no OK.
-5. Visual only que tocó `api/src` → fail de alcance (`sd-scope`).
+Cualquiera → **no OK**, sin wall of nits:
+
+1. El PNG no se reconoce como el patrón/hermano de la spec (dos paneles de la misma excepción, Card+select donde el patrón pide `ListFilter`, visita cerrada = stack de Cards, `.btn` nuevo junto a `Button`).
+2. No se responde “qué es” + “qué está mal o qué sigue” en 5 s.
+3. Más de un fill naranja sólido, o naranja en filtro.
+4. Shot con DevTools / device-toolbar, o sin role picker cuando el rol importa.
+5. Copy en inglés de chrome o jerga SQL.
+6. Visual only con diff en `api/src`.
+7. Hits &lt;44px en WO `<768`.
+8. Inicio/Flota con KPIs o gráficas.
+9. Diff que instala ui-ux-pro-max / Impeccable / Taste Skill, o menú recortado.
+
+## Barra (resto)
+
+- PNG vs estados Must / spec UX. Falta un estado nombrado → no OK.
+- `proof-ui`: click-through; español; “Tomar o subir”; `d1440` (y `m390` si WO); un CTA naranja; Continuar disabled→enabled en Piezas si aplica; shell/nav.
+- P3 ¿compite con P0? ¿Cards de más?
+- Operate craft: control nuevo sin disabled/focus.
 
 ## Salida
 
-Veredicto OK / no OK. **3–5 hallazgos** de mayor impacto (no un wall of nits), con brief/doc citado y paths de shots. Sin rediseñar. Sin editar código en este pase.
+Veredicto OK / no OK. **3–5 hallazgos** de mayor impacto, con brief/doc citado y paths de shots. Sin rediseñar. Sin editar código en este pase.
 
 Tras OK de hallazgos, el implementer (`ui-implementer`) aplica y recaptura.

@@ -54,8 +54,8 @@ Los briefs viejos sin sufijo de viewport siguen válidos; los nuevos lo llevan.
 | `/` | — | Role picker | Una vez por PR que toque shell/home |
 | `/inicio` | Supervisor, Admin | Cola | Con excepciones y vacío si el corte las toca |
 | `/unidades` | ambos | Listado agrupado | Buscar + grupos |
-| `/unidades/:id` | ambos | Hub | U-101; Andon + Nueva visita (un naranja) |
-| `/unidades/:id/visitas/:id` | Supervisor | WO | m390 pasos + sticky; desktop stepper |
+| `/unidades/:id` | ambos | Hub | U-101; un panel Andon; un naranja; tabs intactos |
+| `/unidades/:id/visitas/:id` | Supervisor | WO / documento | m390 wizard; cerrado = un Card `.doc-section` d1440 |
 | `/andon` | ambos | Listado + chips | Pendientes / empty |
 | `/inventario` | ambos | Listado + subnav | Fila → ficha sheet |
 | `/inventario/stock` | ambos | Listado | `?alerta=BAJO`; CTA entrada |
@@ -65,7 +65,7 @@ Los briefs viejos sin sufijo de viewport siguen válidos; los nuevos lo llevan.
 | `/flota` | Logística, Admin | Tablero | Chips viaje; Atención ámbar |
 | `/flota/unidades/:id` | Logística, Admin | Ficha viaje | Form salida/entrada |
 | `/flota/sitios` | Logística, Admin | Listado | |
-| `/choferes` | Admin | Listado | |
+| `/choferes` | Admin | Listado | `ListFilter` Activos / Todos |
 
 Semilla: U-101, `PAST-FR-01` Bajo. Ver README.
 

@@ -17,20 +17,20 @@ No copies ADRs ni briefs aquí. Ábrelos.
 ```text
 Spec funcional (ADR / corte / Must del PR)
         ↓
-Spec UX   UX_SPEC_TEMPLATE.md
+Spec UX   UX_SPEC_TEMPLATE.md  (+ patrón y hermano a clonar)
         ↓
-Implementación   skill ui-implementer
+Primer pase   ui-implementer: 8 puntos antes de JSX
         ↓
-Screenshot       skill proof-ui
+Screenshot    skill proof-ui
         ↓
-Visual QA        subagente ux-auditor (otro pase; no el que implementó)
+Visual QA     ux-auditor (otro pase; fail inmediato si no clona el patrón)
         ↓
-Correcciones     ui-implementer
+Correcciones  ui-implementer
         ↓
-Aceptación       Hold SD / visual OK en el PR
+Aceptación    Hold SD / visual OK en el PR
 ```
 
-Copy menor o un string: spec UX completa no es obligatoria. Sí lo es un corte que cambia layout, jerarquía, acciones o estados.
+Copy menor o un string: spec UX completa no es obligatoria. Sí lo es un corte que cambia layout, jerarquía, acciones o estados. Si el primer paint no se parece al hermano, se rehace **antes** de QA.
 
 ## Documentos
 

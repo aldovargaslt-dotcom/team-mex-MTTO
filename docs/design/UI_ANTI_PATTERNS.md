@@ -64,7 +64,7 @@ Norma de producto ya aceptada: [ui-polish-anti-generic-v0](../design-system/ui-p
 ## Layout
 
 - Kanban / cards por unidad en Flota.
-- Tabs Resumen / Mantenimiento / Andon / Historial en el hub.
+- Quinto tab o tab Andon en el hub. `HubFichaNav` (Resumen / Técnica / Mantenimiento / Historial) ya está shipped; no ampliar.
 - Sidebar de settings genérico.
 - Max-width 1280+ “app shell SaaS” (el producto es 1040).
 - Dark mode.
@@ -77,6 +77,7 @@ Norma de producto ya aceptada: [ui-polish-anti-generic-v0](../design-system/ui-p
 ## Proceso
 
 - Implementar layout sin spec UX cuando cambia jerarquía o acciones.
+- Primer paint que no clona el patrón/hermano (dos excepciones, Card+filtro, `.btn` nuevo).
 - Aprobar el propio UI (el mismo pase no es Visual QA).
 - Screenshot de URL profunda sin pasar por el role picker si el corte depende del rol.
 - Shot con DevTools / device-toolbar visibles.

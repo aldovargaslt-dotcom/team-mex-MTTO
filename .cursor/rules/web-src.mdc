@@ -8,8 +8,9 @@ alwaysApply: false
 
 Leer, no recopiar: [docs/design/README.md](docs/design/README.md), [operate craft](docs/design/OPERATE_CRAFT.md), [ADR-003](docs/adr/003-shadcn-tailwind.md), [anti-generic](docs/design-system/ui-polish-anti-generic-v0.md), [touch 44px](docs/design-system/ui-touch-targets-mobile-v0.md), [pasteles](docs/design-system/ui-semantic-button-pastels-v0.md), [nav vs filtro vs Inicio](docs/design-system/ui-nav-filter-action-inicio-v0.md), [UX operacional](docs/design-system/ux-operacional-cortes-v0.md).
 
-- Layout o jerarquía nueva: spec UX ([plantilla](docs/design/UX_SPEC_TEMPLATE.md)) **antes** de pintar. Skill `ui-implementer`. No auto-aprobar: `ux-auditor` en otro pase.
-- Un CTA primario naranja `#EA7515` por vista; secundario `secondary` / `outline`; ghost solo en shell navy.
+- Layout o jerarquía nueva: spec UX ([plantilla](docs/design/UX_SPEC_TEMPLATE.md)) **antes** de pintar, con patrón + hermano a clonar. Skill `ui-implementer` (8 puntos de primer pase). No auto-aprobar: `ux-auditor` en otro pase.
+- Un CTA primario naranja `#EA7515` por vista; secundario `secondary` / `outline`; ghost solo en shell navy. Una excepción: no dos cards con el mismo hecho.
+- `PageHeader` + `Button` + `ListFilter`. No `.btn` / `.page-head` nuevos. Visita cerrada = `.doc-section`, no un Card por H2.
 - Mobile `<768`: hits ≥44px (wizard WO). Densidad anti-generic en desktop. Cards con justificación de sección.
 - Screenshots: skill `proof-ui` + [SCREENSHOT_WORKFLOW.md](docs/design/SCREENSHOT_WORKFLOW.md) (`d1440`; `m390` si WO). No Playwright en este overlay.
 - Visual only: no tocar `api/src`. North star: Supervisor field-service; Admin listado/ficha denso; Logística = tablero Flota.

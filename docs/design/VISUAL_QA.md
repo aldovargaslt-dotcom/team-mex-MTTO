@@ -8,7 +8,7 @@ Quién: subagente `ux-auditor`. No el mismo razonamiento que implementó. Tras 3
 
 ## Entrada
 
-- Spec UX (plantilla o Must del corte).
+- Spec UX (plantilla o Must del corte) **y** el hermano a clonar (patrón + ruta).
 - Briefs: anti-generic, pasteles, nav, 44px, UX operacional o tablero Flota — **abrir**, no recitar de memoria.
 - [DESIGN_SYSTEM.md](DESIGN_SYSTEM.md), [UI_ANTI_PATTERNS.md](UI_ANTI_PATTERNS.md), [VISUAL_HIERARCHY.md](VISUAL_HIERARCHY.md), [OPERATE_CRAFT.md](OPERATE_CRAFT.md).
 - Screenshots click-through ([SCREENSHOT_WORKFLOW.md](SCREENSHOT_WORKFLOW.md)): rol desde `/`, sin chrome DevTools.
@@ -40,6 +40,7 @@ Preferir **quitar** (card, badge, icono, botón) antes que añadir peso visual.
 
 Fail inmediato:
 
+- Primer paint no se reconoce como el patrón/hermano de la spec UX ([PAGE_PATTERNS.md](PAGE_PATTERNS.md)): dos paneles de la misma excepción, Card+select donde el patrón pide `ListFilter`, visita cerrada = stack de Cards, `.btn` nuevo junto a `Button`.
 - No se responde “qué es” + “qué está mal o qué sigue” en 5 s.
 - Más de un fill naranja sólido, o naranja en filtro.
 - Screenshot con DevTools / device-toolbar, o sin role picker cuando el rol importa.

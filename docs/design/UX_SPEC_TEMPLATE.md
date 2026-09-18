@@ -47,6 +47,10 @@ Qué se calla (no se pinta). Ver [VISUAL_HIERARCHY.md](VISUAL_HIERARCHY.md).
 
 Cuál de [PAGE_PATTERNS.md](PAGE_PATTERNS.md). Si es nuevo: por qué no sirve 3 o 5.
 
+## Clone
+
+Pantalla hermana ya buena (ruta + patrón). El primer paint debe reconocerse como esa receta. Sin hermano nombrado, el default es (3) o (5).
+
 ## States
 
 - loading:

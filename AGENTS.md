@@ -12,7 +12,7 @@
 | Andon | ADR-004, [ADR-005](docs/adr/005-andon-no-stock-alerts.md), [ops checklist](architecture/andon-whatsapp-ops-checklist-v0.md) |
 | Inventario | ADR-002, [ADR-007](docs/adr/007-inventario-stock-bajo.md), ADR-004 (I/S) |
 | Notifications / campanita | [ADR-006](docs/adr/006-notifications-schema.md), ADR-004 (N) |
-| UI (`web/src`) | [ADR-003](docs/adr/003-shadcn-tailwind.md) + briefs [docs/design-system/](docs/design-system/) + sistema [docs/design/README.md](docs/design/README.md) ([operate craft](docs/design/OPERATE_CRAFT.md): no skills de landing) |
+| UI (`web/src`) | [ADR-003](docs/adr/003-shadcn-tailwind.md) + briefs [docs/design-system/](docs/design-system/) ([unify chrome](docs/design-system/ui-unify-chrome-v0.md)) + sistema [docs/design/README.md](docs/design/README.md) ([operate craft](docs/design/OPERATE_CRAFT.md): no skills de landing) |
 | UX operacional (copy, existencias, filtros, hub piezas) | [ux-operacional-cortes-v0](docs/design-system/ux-operacional-cortes-v0.md) — recorte SPEC-UX-001; **no toca Flota**. Flota: [tablero viaje](docs/specs/fleet-tablero-viaje-v0.md) |
 | Consulta / conducta (cadencia, ranking, consumo, Andon reincidencia, patio) | [ux-consulta-conducta-cortes-v0](docs/design-system/ux-consulta-conducta-cortes-v0.md) — **no** fusionar con A–E ni con el tablero viaje |
 | Salud de unidad | [ADR-010](docs/adr/010-salud-unidad.md), [spec](docs/specs/unit-health-v0.md), ADR-004 (H1–H15). No escribir `andon.*`. Dual-stack notify intacto. |
