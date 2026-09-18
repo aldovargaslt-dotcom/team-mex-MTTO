@@ -2203,12 +2203,12 @@
     align-items: center;
     justify-content: center;
     gap: 6px;
-    min-height: var(--tap-mobile);
+    min-height: 36px;
     padding: 0 12px;
-    border: 1px solid var(--border);
+    border: 1px solid var(--btn-quiet-border);
     border-radius: 6px;
-    background: var(--card);
-    color: var(--navy);
+    background: var(--btn-quiet);
+    color: var(--btn-quiet-fg);
     font-size: 13px;
     font-weight: 500;
     cursor: pointer;
@@ -2220,7 +2220,7 @@
   }
 
   .unidades-admin-menu summary:hover {
-    background: var(--muted-bg);
+    background: var(--btn-quiet-hover);
   }
 
   .unidades-admin-menu summary:focus-visible {
