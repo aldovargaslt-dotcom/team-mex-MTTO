@@ -9,7 +9,9 @@ import { StatusBadge } from '@/components/StatusBadge';
 import { AndonHubCard } from '@/components/AndonHubCard';
 import { HubFichaNav, parseHubVista } from '@/components/HubFichaNav';
 import { UnitHealth } from '@/components/UnitHealth';
+import { Button } from '@/components/ui/button';
 import { DataTable } from '@/components/ui/data-table';
+import { FormAlert, Note, PageHeader } from '@/components/ui/field';
 import {
   Sheet,
   SheetContent,
@@ -54,7 +56,6 @@ function HubContent() {
   const [hub, setHub] = useState<UnidadHub | null>(null);
   const [health, setHealth] = useState<UnidadHealth | null>(null);
   const [healthOpen, setHealthOpen] = useState(false);
-  const [alertaEnCard, setAlertaEnCard] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [notFound, setNotFound] = useState(false);
   const [creating, setCreating] = useState(false);
@@ -141,9 +142,9 @@ function HubContent() {
     return (
         <div className="empty-state">
           <h2>No se encontró la unidad.</h2>
-          <Link className="btn btn-outline" href="/unidades">
-            Volver al listado
-          </Link>
+          <Button asChild variant="outline">
+            <Link href="/unidades">Volver al listado</Link>
+          </Button>
         </div>
     );
   }
@@ -172,60 +173,57 @@ function HubContent() {
     health?.drivers.find(
       (d) => d.type === 'MAINTENANCE_DUE' || d.type === 'MAINTENANCE_OVERDUE',
     )?.message ?? null;
+  const lede = [
+    ficha.marcaModelo || null,
+    ficha.anio != null ? String(ficha.anio) : null,
+    ficha.tipoNombre,
+  ]
+    .filter(Boolean)
+    .join(' · ');
+  const notas = hub.mensajes.filter(
+    (mensaje) =>
+      mensaje !== 'Puede registrar una nueva visita de mantenimiento.',
+  );
 
   return (
     <>
-      <div className="page-head">
-        <div>
-          <h1>
+      <PageHeader
+        title={
+          <span className="inline-flex items-center gap-2">
             {ficha.numeroInterno} <StatusBadge estado={ficha.estado} />
-          </h1>
-          <p className="lede">
-            {ficha.marcaModelo
-              ? `${ficha.marcaModelo}${ficha.anio ? ` · ${ficha.anio}` : ''}`
-              : ficha.tipoNombre}
-          </p>
-          {ficha.marcaModelo ? (
-            <p className="muted" style={{ marginTop: 2 }}>
-              {ficha.tipoNombre}
-            </p>
-          ) : ficha.anio ? (
-            <p className="muted" style={{ marginTop: 2 }}>
-              {ficha.anio}
-            </p>
-          ) : null}
-        </div>
-        <div className="hub-head-aside">
-          {health ? (
-            <UnitHealth
-              health={health}
-              variant="standard"
-              onOpen={() => setHealthOpen(true)}
-            />
-          ) : null}
-          <Link className="btn btn-secondary" href="/unidades">
-            Volver
-          </Link>
-        </div>
-      </div>
+          </span>
+        }
+        lede={lede}
+        actions={
+          <div className="hub-head-aside">
+            {health ? (
+              <UnitHealth
+                health={health}
+                variant="standard"
+                onOpen={() => setHealthOpen(true)}
+              />
+            ) : null}
+            <Button asChild variant="secondary">
+              <Link href="/unidades">Volver</Link>
+            </Button>
+          </div>
+        }
+      />
 
       <HubFichaNav unidadId={ficha.id} vista={vista} />
 
-      {error ? <p className="alert" style={{ marginBottom: 12 }}>{error}</p> : null}
+      {error ? <FormAlert>{error}</FormAlert> : null}
 
       {vista === 'resumen' ? (
         <>
           <AndonHubCard
             unidadId={ficha.id}
-            onAvisoChange={(aviso) => setAlertaEnCard(aviso != null)}
             puedeCrearVisita={hub.puedeCrearVisita}
             onNuevaVisita={() => void nuevaVisita()}
             creating={creating}
-            ultimoServicioAt={ultimoServicioAt}
-            ultimoServicioKm={ficha.ultimoKm}
             maintenanceHint={maintenanceHint}
           />
-          <section className="card panel" style={{ marginBottom: 12 }}>
+          <section className="card panel mb-3">
             <h2>Estado y operación</h2>
             <dl className="dl">
               <dt>Placas</dt>
@@ -281,38 +279,13 @@ function HubContent() {
                     </div>
                   </Link>
                 </li>
-              ) : hub.historialCerrado[0] ? (
-                <li>
-                  <Link href={`/unidades/${ficha.id}/visitas/${hub.historialCerrado[0].id}`}>
-                    <strong>Última visita</strong>
-                    <div className="muted">
-                      {etiquetaEstadoVisita(hub.historialCerrado[0].estado)}
-                      {' · '}
-                      {formatFechaCorta(hub.historialCerrado[0].cerradoAt)}
-                    </div>
-                  </Link>
-                </li>
               ) : null}
-              {alertaEnCard ? (
-                <li>
-                  <strong>Última alerta</strong>
-                  <div className="muted">Mantenimiento atrasado</div>
-                </li>
-              ) : (
-                <li>
-                  <strong>Última alerta</strong>
-                  <div className="muted">Sin alerta de mantenimiento vencido</div>
-                </li>
-              )}
             </ul>
           </section>
-          {hub.mensajes.map((mensaje) => (
-            <p
-              key={mensaje}
-              className={warn ? 'note note-warn' : 'note'}
-            >
+          {notas.map((mensaje) => (
+            <Note key={mensaje} variant={warn ? 'warn' : 'default'}>
               {mensaje}
-            </p>
+            </Note>
           ))}
         </>
       ) : null}
@@ -355,12 +328,9 @@ function HubContent() {
           </dl>
           {isAdmin ? (
             <div className="hub-actions">
-              <Link
-                className="btn btn-secondary"
-                href={`/unidades/${ficha.id}/editar`}
-              >
-                Editar unidad
-              </Link>
+              <Button asChild variant="secondary">
+                <Link href={`/unidades/${ficha.id}/editar`}>Editar unidad</Link>
+              </Button>
             </div>
           ) : null}
         </section>
@@ -387,55 +357,61 @@ function HubContent() {
                           {formatFecha(visita.updatedAt)}
                         </div>
                       </div>
-                      <div className="hub-actions" style={{ marginTop: 0 }}>
-                        <Link
-                          className={
-                            index === 0 ? 'btn btn-primary' : 'btn btn-outline'
-                          }
-                          href={`/unidades/${ficha.id}/visitas/${visita.id}`}
+                      <div className="hub-actions mt-0">
+                        <Button
+                          asChild
+                          variant={index === 0 ? 'default' : 'outline'}
                         >
-                          Continuar
-                        </Link>
-                        <button
+                          <Link
+                            href={`/unidades/${ficha.id}/visitas/${visita.id}`}
+                          >
+                            Continuar
+                          </Link>
+                        </Button>
+                        {index === 0 ? (
+                          <Button
+                            type="button"
+                            variant="outline"
+                            disabled={!hub.puedeCrearVisita || creating}
+                            onClick={() => void nuevaVisita()}
+                          >
+                            {creating ? 'Creando…' : 'Nueva visita'}
+                          </Button>
+                        ) : null}
+                        <Button
                           type="button"
-                          className="btn btn-danger"
+                          variant="destructive"
                           disabled={busyId === visita.id}
                           onClick={() => void eliminar(visita.id)}
                         >
                           Eliminar
-                        </button>
+                        </Button>
                       </div>
                     </li>
                   ))}
                 </ul>
               )}
-              <div className="hub-actions">
-                <button
-                  type="button"
-                  className={
-                    hub.borradores.length > 0
-                      ? 'btn btn-outline'
-                      : 'btn btn-primary'
-                  }
-                  disabled={!hub.puedeCrearVisita || creating}
-                  onClick={() => void nuevaVisita()}
-                >
-                  {creating ? 'Creando…' : 'Nueva visita'}
-                </button>
-              </div>
+              {hub.borradores.length === 0 ? (
+                <div className="hub-actions">
+                  <Button
+                    type="button"
+                    disabled={!hub.puedeCrearVisita || creating}
+                    onClick={() => void nuevaVisita()}
+                  >
+                    {creating ? 'Creando…' : 'Nueva visita'}
+                  </Button>
+                </div>
+              ) : null}
             </>
           ) : (
             <p className="muted">
               El historial de servicios está en Historial.
             </p>
           )}
-          {hub.mensajes.map((mensaje) => (
-            <p
-              key={mensaje}
-              className={warn ? 'note note-warn' : 'note'}
-            >
+          {notas.map((mensaje) => (
+            <Note key={mensaje} variant={warn ? 'warn' : 'default'}>
               {mensaje}
-            </p>
+            </Note>
           ))}
         </section>
       ) : null}

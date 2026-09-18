@@ -7,7 +7,7 @@ description: Prove Team Mex UI cortes with click-through screenshots (no Playwri
 
 Heurísticas recuperadas de agentes internos de verificación. **No** es un framework de tests. Web no tiene Jest/Playwright; la prueba es el flujo clickeado + `docs/screenshots/`. Viewports y catálogo: [SCREENSHOT_WORKFLOW.md](docs/design/SCREENSHOT_WORKFLOW.md).
 
-Briefs: [anti-generic](docs/design-system/ui-polish-anti-generic-v0.md), [44px](docs/design-system/ui-touch-targets-mobile-v0.md), [pasteles](docs/design-system/ui-semantic-button-pastels-v0.md), [nav vs filtro vs Inicio](docs/design-system/ui-nav-filter-action-inicio-v0.md), [UX operacional](docs/design-system/ux-operacional-cortes-v0.md), [ADR-003](docs/adr/003-shadcn-tailwind.md). Sistema: [docs/design/README.md](docs/design/README.md).
+Briefs: [anti-generic](docs/design-system/ui-polish-anti-generic-v0.md), [44px](docs/design-system/ui-touch-targets-mobile-v0.md), [pasteles](docs/design-system/ui-semantic-button-pastels-v0.md), [nav vs filtro vs Inicio](docs/design-system/ui-nav-filter-action-inicio-v0.md), [UX operacional](docs/design-system/ux-operacional-cortes-v0.md), [ADR-003](docs/adr/003-shadcn-tailwind.md). Sistema: [docs/design/README.md](docs/design/README.md), [OPERATE_CRAFT.md](docs/design/OPERATE_CRAFT.md).
 
 ## Cómo entrar y qué clickear
 
@@ -18,7 +18,9 @@ Briefs: [anti-generic](docs/design-system/ui-polish-anti-generic-v0.md), [44px](
 - Wizard: stepper `Paso N de 7` (Datos → Trabajos → Obs → Fotos → Piezas → Firmas → Confirmar). No tabs de desktop. Sticky Continuar visible, sin recorte.
 - **Rechazar** shots con chrome de DevTools o device-toolbar (marco de dispositivo, `100%`, barra de inspect).
 - Un CTA primario **naranja** por vista. En Piezas: **Continuar** disabled → enabled alrededor de stock insuficiente / compra externa (`DESDE_STOCK` qty > stock vs `COMPRA_EXTERNA`).
+- El PNG debe reconocerse como el patrón/hermano de la spec (`PageHeader`, un panel de excepción, `ListFilter` si el listado filtra por estado). Dos cards del mismo atraso o `.btn` junto a `Button` → recapturar.
 - Cazar regresiones del **shell/nav** compartido (topbar, campanita, menú móvil `<768`).
+- Si el corte añade **sheet / select / menú**: ábrelo; no debe recortarse (`overflow` del padre). Si añade control: hover/focus/disabled visibles (Continuar disabled→enabled en Piezas si aplica).
 - Corte **visual only**: no tocar `api/src`.
 - Un video de walkthrough **no** es proof si es sobre todo setup o pelea con DevTools.
 

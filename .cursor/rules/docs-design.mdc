@@ -6,6 +6,6 @@ alwaysApply: false
 
 # docs/design
 
-Sistema de ingeniería (jerarquía, primitivas, spec UX, Visual QA). Briefs Must/Don’t de un corte viven en [docs/design-system/](docs/design-system/). No recopiar ADRs ni esos briefs aquí.
+Sistema de ingeniería (jerarquía, primitivas, spec UX, Visual QA, [OPERATE_CRAFT.md](docs/design/OPERATE_CRAFT.md)). Briefs Must/Don’t de un corte viven en [docs/design-system/](docs/design-system/). No recopiar ADRs ni esos briefs aquí. No instalar ui-ux-pro-max, Impeccable ni Taste Skill.
 
 No rediseñar `web/src` desde un PR que solo toca estos docs. No añadir Playwright. No crear `work-orders/`.

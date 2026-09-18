@@ -47,6 +47,10 @@ Qué se calla (no se pinta). Ver [VISUAL_HIERARCHY.md](VISUAL_HIERARCHY.md).
 
 Cuál de [PAGE_PATTERNS.md](PAGE_PATTERNS.md). Si es nuevo: por qué no sirve 3 o 5.
 
+## Clone
+
+Pantalla hermana ya buena (ruta + patrón). El primer paint debe reconocerse como esa receta. Sin hermano nombrado, el default es (3) o (5).
+
 ## States
 
 - loading:
@@ -61,6 +65,8 @@ Copy exacto. Empty explica *por qué* está vacío.
 ## Interaction notes
 
 Fila clickeable, URL de filtros, sticky CTA, dialog vs sheet, qué no se edita en la lista.
+
+Overlay: portal (no recorte). Motion: 150–250 ms, solo estado. Control nuevo: hover / `:focus-visible` / disabled. Ver [OPERATE_CRAFT.md](OPERATE_CRAFT.md).
 
 ## Mobile / responsive
 

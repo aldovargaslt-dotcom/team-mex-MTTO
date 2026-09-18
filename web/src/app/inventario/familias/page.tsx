@@ -4,7 +4,9 @@ import { FormEvent, useEffect, useState } from 'react';
 import { api, HttpError } from '@/lib/api';
 import { useRole } from '@/lib/role';
 import type { Familia } from '@/lib/types';
-import { PageHeader } from '@/components/ui/field';
+import { Button } from '@/components/ui/button';
+import { Field, FormAlert, PageHeader } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
 
 export default function FamiliasPage() {
   const { role, userId } = useRole();
@@ -58,25 +60,26 @@ export default function FamiliasPage() {
 
   return (
     <>
-      <PageHeader title="Categorías" />
-      <form className="card form-grid" onSubmit={crear}>
-        <div className="field">
-          <label htmlFor="famNombre">Nombre</label>
-          <input
+      <PageHeader
+        title="Categorías"
+        actions={
+          <Button type="submit" form="nueva-categoria">
+            Agregar categoría
+          </Button>
+        }
+      />
+      <form id="nueva-categoria" className="mb-3 max-w-sm" onSubmit={crear}>
+        <Field label="Nombre" htmlFor="famNombre">
+          <Input
             id="famNombre"
             required
             value={nombre}
             onChange={(e) => setNombre(e.target.value)}
             placeholder="Filtros"
           />
-        </div>
-        <div className="form-actions">
-          <button className="btn btn-primary" type="submit">
-            Agregar categoría
-          </button>
-        </div>
+        </Field>
       </form>
-      {error ? <p className="alert" style={{ margin: '12px 0' }}>{error}</p> : null}
+      <FormAlert>{error}</FormAlert>
       {familias.length > 0 || !error ? (
       <div className="card list" style={{ marginTop: 12 }}>
         {familias.length > 0
@@ -86,13 +89,13 @@ export default function FamiliasPage() {
                   <strong>{familia.nombre}</strong>
                   <div className="muted">{familia.activa ? 'Activa' : 'Inactiva'}</div>
                 </div>
-                <button
+                <Button
                   type="button"
-                  className="btn btn-secondary"
+                  variant="secondary"
                   onClick={() => void toggle(familia)}
                 >
                   {familia.activa ? 'Inactivar' : 'Activar'}
-                </button>
+                </Button>
               </div>
             ))
           : (
