@@ -20,7 +20,6 @@ import { Input, NativeSelect } from '@/components/ui/input';
 import {
   avisoDeUnidad,
   etiquetaSituacionAtencion,
-  kpisFlota,
   ordenarTiposChip,
   ordenarUnidades,
   situacionAtencion,
@@ -134,7 +133,6 @@ export function UnidadesCatalogo({
   const [page, setPage] = useState(1);
   const [isMobile, setIsMobile] = useState(false);
 
-  const kpis = useMemo(() => kpisFlota(flota, avisos), [flota, avisos]);
   const tipoSeleccionado = tipos.find((t) => t.id === tipoFiltro) ?? null;
   const estadoChip: EstadoChip = atencionFiltro
     ? 'ATENCION'
@@ -209,15 +207,9 @@ export function UnidadesCatalogo({
         id: 'unidad',
         header: 'Unidad',
         cell: ({ row }) => (
-          <div className="unidades-unidad">
-            <UnidadTipoMark
-              nombre={row.original.tipo.nombre}
-              icono={row.original.tipo.icono}
-            />
-            <div>
-              <div className="unidades-interno">{row.original.numeroInterno}</div>
-              <div className="unidades-modelo">{etiquetaUnidad(row.original)}</div>
-            </div>
+          <div>
+            <div className="unidades-interno">{row.original.numeroInterno}</div>
+            <div className="unidades-modelo">{etiquetaUnidad(row.original)}</div>
           </div>
         ),
       },
@@ -225,16 +217,7 @@ export function UnidadesCatalogo({
         id: 'tipo',
         header: 'Tipo',
         cell: ({ row }) => (
-          <Badge
-            variant="outline"
-            className="gap-1 font-normal normal-case tracking-normal"
-          >
-            <UnidadTipoIcon
-              nombre={row.original.tipo.nombre}
-              icono={row.original.tipo.icono}
-            />
-            {row.original.tipo.nombre}
-          </Badge>
+          <span className="unidades-tipo">{row.original.tipo.nombre}</span>
         ),
       },
       {
@@ -263,77 +246,74 @@ export function UnidadesCatalogo({
           title="Unidades"
           countLabel={`${ordenadas.length} ${ordenadas.length === 1 ? 'unidad' : 'unidades'}`}
           filters={
-            <>
-              <div className="list-chrome__search">
-                <Search
-                  className="pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground"
-                  aria-hidden
-                />
-                <Input
-                  value={q}
-                  onChange={(e) => onQ(e.target.value)}
-                  placeholder="Interno, placas, marca…"
-                  aria-label="Buscar unidad"
-                  className="pl-9"
-                />
-              </div>
+            tiposChip.length > 0 ? (
               <ListFilter
-                label="Estado"
+                label="Tipo"
                 segmented
-                value={estadoChip}
+                value={tipoChipValue}
                 options={[
-                  { id: 'TODOS', label: `Todas (${kpis.total})` },
-                  { id: 'ACTIVA', label: `Activas (${kpis.activas})` },
-                  { id: 'INACTIVA', label: `Inactivas (${kpis.inactivas})` },
-                  { id: 'ATENCION', label: `Alertas (${kpis.conAviso})` },
+                  { id: 'TODAS', label: 'Todas' },
+                  ...tiposChip.map((tipo) => ({
+                    id: tipo.id,
+                    label: tipo.nombre,
+                  })),
                 ]}
-                onChange={aplicarEstado}
+                onChange={(next) =>
+                  onTipoFiltro(next === 'TODAS' ? '' : next)
+                }
               />
-              {tiposChip.length > 0 ? (
-                <ListFilter
-                  label="Tipo"
-                  segmented
-                  value={tipoChipValue}
-                  options={[
-                    { id: 'TODAS', label: 'Todas' },
-                    ...tiposChip.map((tipo) => ({
-                      id: tipo.id,
-                      label: tipo.nombre,
-                    })),
-                  ]}
-                  onChange={(next) =>
-                    onTipoFiltro(next === 'TODAS' ? '' : next)
-                  }
-                />
-              ) : null}
-              {buscando ? (
-                <Button
-                  type="button"
-                  variant="quiet"
-                  onClick={limpiarFiltros}
-                >
-                  <RotateCcw className="size-3.5" aria-hidden />
-                  Limpiar
-                </Button>
-              ) : null}
-              <label className="unidades-sort">
-                <span>Ordenar por</span>
-                <NativeSelect
-                  value={sort}
-                  onChange={(e) => setSort(e.target.value as UnidadesSort)}
-                  aria-label="Ordenar por"
-                >
-                  {SORT_OPTIONS.map((option) => (
-                    <option key={option.id} value={option.id}>
-                      {option.label}
-                    </option>
-                  ))}
-                </NativeSelect>
-              </label>
-            </>
+            ) : null
           }
           actions={actions}
         />
+
+      <div className="unidades-toolbar">
+        <div className="list-chrome__search">
+          <Search
+            className="pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground"
+            aria-hidden
+          />
+          <Input
+            value={q}
+            onChange={(e) => onQ(e.target.value)}
+            placeholder="Interno, placas, marca…"
+            aria-label="Buscar unidad"
+            className="pl-9"
+          />
+        </div>
+        <ListFilter
+          label="Estado"
+          segmented
+          value={estadoChip}
+          options={[
+            { id: 'TODOS', label: 'Todas' },
+            { id: 'ACTIVA', label: 'Activas' },
+            { id: 'INACTIVA', label: 'Inactivas' },
+            { id: 'ATENCION', label: 'Alertas' },
+          ]}
+          onChange={aplicarEstado}
+        />
+        {buscando ? (
+          <Button type="button" variant="quiet" onClick={limpiarFiltros}>
+            <RotateCcw className="size-3.5" aria-hidden />
+            Limpiar
+          </Button>
+        ) : null}
+        <label className="unidades-sort">
+          <span>Ordenar por</span>
+          <NativeSelect
+            value={sort}
+            onChange={(e) => setSort(e.target.value as UnidadesSort)}
+            aria-label="Ordenar por"
+          >
+            {SORT_OPTIONS.map((option) => (
+              <option key={option.id} value={option.id}>
+                {option.label}
+              </option>
+            ))}
+          </NativeSelect>
+        </label>
+      </div>
       </form>
 
       {isAdmin && tipoSeleccionado ? (

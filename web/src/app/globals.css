@@ -1981,7 +1981,6 @@
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    justify-content: flex-end;
     gap: 8px 12px;
     margin: -4px 0 8px;
     min-width: 0;
@@ -1989,19 +1988,19 @@
 
   .unidades-toolbar .list-filter {
     margin: 0;
-    flex: 1;
-    min-width: 0;
-    max-width: 100%;
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    overscroll-behavior-x: contain;
-    -webkit-overflow-scrolling: touch;
   }
 
-  .unidades-page .list-chrome__filters .list-filter--segmented {
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    max-width: 100%;
+  .unidades-page .list-chrome {
+    align-items: center;
+  }
+
+  .unidades-page .list-chrome__filters {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .unidades-page .list-chrome__actions {
+    margin-left: auto;
   }
 
   .unidades-page .list-filter button {
@@ -2034,6 +2033,8 @@
     display: inline-flex;
     align-items: center;
     gap: 6px;
+    margin-left: auto;
+    white-space: nowrap;
     font-size: 12px;
     color: var(--muted-foreground);
   }
@@ -2105,6 +2106,12 @@
     font-weight: 600;
     letter-spacing: 0.04em;
     color: var(--navy);
+  }
+
+  .unidades-tipo {
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--muted-foreground);
   }
 
   .unidades-estado {
