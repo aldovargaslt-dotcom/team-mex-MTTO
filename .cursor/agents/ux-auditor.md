@@ -17,6 +17,7 @@ Flujo y formato de salida: [docs/design/VISUAL_QA.md](docs/design/VISUAL_QA.md).
 - [docs/design/VISUAL_HIERARCHY.md](docs/design/VISUAL_HIERARCHY.md) — P0–P3, presupuesto
 - [docs/design/UI_ANTI_PATTERNS.md](docs/design/UI_ANTI_PATTERNS.md)
 - [docs/design/DESIGN_SYSTEM.md](docs/design/DESIGN_SYSTEM.md) — primitivas (no inventar tokens)
+- [docs/design/OPERATE_CRAFT.md](docs/design/OPERATE_CRAFT.md) — estados de control, overlays, motion; no skills de landing
 - [docs/design-system/ui-polish-anti-generic-v0.md](docs/design-system/ui-polish-anti-generic-v0.md)
 - [docs/design-system/ui-touch-targets-mobile-v0.md](docs/design-system/ui-touch-targets-mobile-v0.md)
 - [docs/design-system/ui-semantic-button-pastels-v0.md](docs/design-system/ui-semantic-button-pastels-v0.md)
@@ -31,7 +32,8 @@ Flujo y formato de salida: [docs/design/VISUAL_QA.md](docs/design/VISUAL_QA.md).
 1. PNG del PR vs estados Must / spec UX. Falta un estado nombrado → no OK.
 2. `proof-ui`: role picker; click-through; español; “Tomar o subir”; `d1440` (y `m390` si WO); **sin** DevTools; un CTA naranja; Continuar disabled→enabled en Piezas si aplica; shell/nav.
 3. ¿Se responden objeto / excepción / acción en 5 s? P3 ¿compite con P0? ¿Cards de más?
-4. Visual only que tocó `api/src` → fail de alcance (`sd-scope`).
+4. Operate craft: menú/sheet recortado; motion de marketing; control nuevo sin disabled/focus. Skills de landing en el diff → no OK.
+5. Visual only que tocó `api/src` → fail de alcance (`sd-scope`).
 
 ## Salida
 

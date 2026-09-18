@@ -69,6 +69,8 @@ Norma de producto ya aceptada: [ui-polish-anti-generic-v0](../design-system/ui-p
 - Max-width 1280+ “app shell SaaS” (el producto es 1040).
 - Dark mode.
 - Responsive “mobile card list” en Admin desktop (salvo WO piezas).
+- Dropdown / sheet recortado por `overflow` del padre (falta portal).
+- GSAP, bounce, scroll hijack, coreografía de page-load.
 
 ---
 
@@ -79,6 +81,7 @@ Norma de producto ya aceptada: [ui-polish-anti-generic-v0](../design-system/ui-p
 - Screenshot de URL profunda sin pasar por el role picker si el corte depende del rol.
 - Shot con DevTools / device-toolbar visibles.
 - Añadir Playwright/Cypress “para visual regression” en este overlay.
+- Instalar UI UX Pro Max, Impeccable o Taste Skill como always-on ([OPERATE_CRAFT.md](OPERATE_CRAFT.md) §4).
 
 ---
 

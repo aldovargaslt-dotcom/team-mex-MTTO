@@ -10,7 +10,7 @@ Quién: subagente `ux-auditor`. No el mismo razonamiento que implementó. Tras 3
 
 - Spec UX (plantilla o Must del corte).
 - Briefs: anti-generic, pasteles, nav, 44px, UX operacional o tablero Flota — **abrir**, no recitar de memoria.
-- [DESIGN_SYSTEM.md](DESIGN_SYSTEM.md), [UI_ANTI_PATTERNS.md](UI_ANTI_PATTERNS.md), [VISUAL_HIERARCHY.md](VISUAL_HIERARCHY.md).
+- [DESIGN_SYSTEM.md](DESIGN_SYSTEM.md), [UI_ANTI_PATTERNS.md](UI_ANTI_PATTERNS.md), [VISUAL_HIERARCHY.md](VISUAL_HIERARCHY.md), [OPERATE_CRAFT.md](OPERATE_CRAFT.md).
 - Screenshots click-through ([SCREENSHOT_WORKFLOW.md](SCREENSHOT_WORKFLOW.md)): rol desde `/`, sin chrome DevTools.
 - Diff `web/src` (¿visual only tocó `api/src`? → fallar alcance, pasar a `sd-scope`).
 
@@ -27,9 +27,10 @@ Sin PNG del flujo: **no OK**. Una captura estática de ruta profunda no basta.
 5. **Semántica de color** — naranja decorativo; filtros pintados; semáforo en filas sanas.
 6. **Alineación / grid** — acciones que bailan, thead vs celdas, sheet vs página.
 7. **Consistencia** — un listado con chips y el gemelo con card+select; `.btn` nuevo vs `Button`.
-8. **Estados** — empty mudo, loading ausente, error genérico, warning que parece banner de marketing.
+8. **Estados** — empty mudo, loading ausente, error genérico, warning que parece banner de marketing; control nuevo sin disabled/focus.
 9. **Tipografía** — H1 &gt;22px, todo bold, mezcla de escalas.
-10. **Decoración** — iconos de más, pills, sombras, radio 16.
+10. **Decoración** — iconos de más, pills, sombras, radio 16, GSAP / bounce.
+11. **Overlays** — menú o sheet recortado (`overflow` del padre).
 
 Preferir **quitar** (card, badge, icono, botón) antes que añadir peso visual.
 
@@ -46,6 +47,7 @@ Fail inmediato:
 - Cortes visual only con diff en `api/src`.
 - Hits &lt;44px en WO `<768` (brief 44px).
 - Inicio/Flota con KPIs o gráficas.
+- Diff que instala ui-ux-pro-max / Impeccable / Taste Skill, o menú recortado en el shot.
 
 El resto: hallazgos priorizados, no un wall of nits.
 
