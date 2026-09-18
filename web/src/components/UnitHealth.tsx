@@ -130,16 +130,30 @@ export function UnitHealth({
   }
 
   const ringSize =
-    variant === 'detailed' ? 48 : variant === 'header' ? 72 : 56;
+    variant === 'detailed' ? 48 : variant === 'header' ? 80 : 56;
 
   const ring = <Ring pct={health.score} fg={semantic.fg} size={ringSize} />;
+
+  const scoreInsideRing =
+    variant === 'header' || variant === 'detailed' || variant === 'standard';
+
+  const ringBlock = scoreInsideRing ? (
+    <span className="health-ring-wrap">
+      {ring}
+      <span className="health-score">{health.score}%</span>
+    </span>
+  ) : (
+    ring
+  );
 
   const headline = (
     <span className="health-copy">
       {showKicker ? (
         <span className="health-kicker">Salud de la unidad</span>
       ) : null}
-      <span className="health-score">{health.score}%</span>
+      {scoreInsideRing ? null : (
+        <span className="health-score">{health.score}%</span>
+      )}
       <span className="health-label">{health.label}</span>
       {variant === 'standard' ? (
         <span className="health-note health-note-help">
@@ -157,7 +171,7 @@ export function UnitHealth({
     return (
       <div className="flex flex-col gap-3" style={style}>
         <div className="flex items-center gap-3">
-          {ring}
+          {ringBlock}
           {headline}
         </div>
         <ul className="flex flex-col gap-2">
@@ -210,7 +224,7 @@ export function UnitHealth({
       onClick={onOpen}
       aria-label={`Salud de la unidad: ${health.score}% ${health.label}`}
     >
-      {ring}
+      {ringBlock}
       {headline}
     </button>
   );

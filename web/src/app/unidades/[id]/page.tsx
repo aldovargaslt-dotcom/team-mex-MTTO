@@ -349,16 +349,6 @@ function HubContent() {
                       ))}
                     </ul>
                   )}
-                  <div className="hub-actions">
-                    <button
-                      type="button"
-                      className="btn btn-outline"
-                      disabled={!hub.puedeCrearVisita || creating}
-                      onClick={() => void nuevaVisita()}
-                    >
-                      {creating ? 'Creando…' : 'Registrar mantenimiento'}
-                    </button>
-                  </div>
                 </>
               ) : (
                 <p className="muted">

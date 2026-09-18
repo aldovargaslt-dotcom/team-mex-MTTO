@@ -16,6 +16,8 @@ import type { AvisoAndon, UnidadHealth, UnidadHub } from '@/lib/types';
 
 const MENSAJE_PUEDE_REGISTRAR =
   'Puede registrar una nueva visita de mantenimiento.';
+const MENSAJE_ADMIN_SIN_VISITA =
+  'El administrador directivo no puede crear visitas de mantenimiento.';
 
 type ActivityItem = {
   key: string;
@@ -72,11 +74,11 @@ export function HubResumen({
   const [aviso, setAviso] = useState<AvisoAndon | null>(null);
   const ficha = hub.fichaCorta;
   const ultimoServicioAt = hub.historialCerrado[0]?.cerradoAt ?? null;
-  const mensajes = hub.mensajes.filter((m) => m !== MENSAJE_PUEDE_REGISTRAR);
+  const mensajes = hub.mensajes.filter(
+    (m) => m !== MENSAJE_PUEDE_REGISTRAR && m !== MENSAJE_ADMIN_SIN_VISITA,
+  );
   const warn = mensajes.some(
-    (m) =>
-      (/inactiva|administrador|choferes/i.test(m) && !hub.puedeCrearVisita) ||
-      /choferes/i.test(m),
+    (m) => /inactiva/i.test(m) || /choferes/i.test(m),
   );
   const recent = activityItems(hub, aviso);
 
