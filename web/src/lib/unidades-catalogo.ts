@@ -21,7 +21,7 @@ export const ICONOS_TIPO: {
   { id: 'bus', label: 'Pasajeros' },
 ];
 
-export const UNIDADES_PAGE_SIZE = 5;
+export const UNIDADES_PAGE_SIZE = 20;
 
 /** Live Despacho order when those tipos exist; other names follow. */
 const TIPO_CHIP_ORDER = ['STOCK', 'RUTAS', 'CAMIONES 3 Y MEDIA'];
