@@ -31,7 +31,7 @@ import { cn } from '@/lib/utils';
 import type { AvisoAndon, TipoVehiculo, Unidad } from '@/lib/types';
 
 function etiquetaUnidad(unidad: Unidad) {
-  if (!unidad.marcaModelo) return '—';
+  if (!unidad.marcaModelo) return '';
   return unidad.anio
     ? `${unidad.marcaModelo} · ${unidad.anio}`
     : unidad.marcaModelo;
@@ -206,12 +206,17 @@ export function UnidadesCatalogo({
       {
         id: 'unidad',
         header: 'Unidad',
-        cell: ({ row }) => (
-          <div>
-            <div className="unidades-interno">{row.original.numeroInterno}</div>
-            <div className="unidades-modelo">{etiquetaUnidad(row.original)}</div>
-          </div>
-        ),
+        cell: ({ row }) => {
+          const modelo = etiquetaUnidad(row.original);
+          return (
+            <div>
+              <div className="unidades-interno">{row.original.numeroInterno}</div>
+              {modelo ? (
+                <div className="unidades-modelo">{modelo}</div>
+              ) : null}
+            </div>
+          );
+        },
       },
       {
         id: 'tipo',
@@ -394,9 +399,11 @@ export function UnidadesCatalogo({
                         <div className="unidades-interno">
                           {unidad.numeroInterno}
                         </div>
-                        <div className="unidades-modelo">
-                          {etiquetaUnidad(unidad)}
-                        </div>
+                        {etiquetaUnidad(unidad) ? (
+                          <div className="unidades-modelo">
+                            {etiquetaUnidad(unidad)}
+                          </div>
+                        ) : null}
                       </div>
                     </div>
                     <div className="flex flex-wrap items-center gap-2">
