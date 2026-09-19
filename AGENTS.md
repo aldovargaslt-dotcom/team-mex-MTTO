@@ -12,7 +12,7 @@
 | Andon | ADR-004, [ADR-005](docs/adr/005-andon-no-stock-alerts.md), [ops checklist](architecture/andon-whatsapp-ops-checklist-v0.md) |
 | Inventario | ADR-002, [ADR-007](docs/adr/007-inventario-stock-bajo.md), ADR-004 (I/S) |
 | Notifications / campanita | [ADR-006](docs/adr/006-notifications-schema.md), ADR-004 (N) |
-| UI (`web/src`) | [ADR-003](docs/adr/003-shadcn-tailwind.md) + briefs [docs/design-system/](docs/design-system/) + sistema [docs/design/README.md](docs/design/README.md) |
+| UI (`web/src`) | [ADR-003](docs/adr/003-shadcn-tailwind.md) + briefs [docs/design-system/](docs/design-system/) + sistema [docs/design/README.md](docs/design/README.md) ([operate craft](docs/design/OPERATE_CRAFT.md): no skills de landing) |
 | UX operacional (copy, existencias, filtros, hub piezas) | [ux-operacional-cortes-v0](docs/design-system/ux-operacional-cortes-v0.md) — recorte SPEC-UX-001; **no toca Flota**. Flota: [tablero viaje](docs/specs/fleet-tablero-viaje-v0.md) |
 | Consulta / conducta (cadencia, ranking, consumo, Andon reincidencia, patio) | [ux-consulta-conducta-cortes-v0](docs/design-system/ux-consulta-conducta-cortes-v0.md) — **no** fusionar con A–E ni con el tablero viaje |
 | Salud de unidad | [ADR-010](docs/adr/010-salud-unidad.md), [spec](docs/specs/unit-health-v0.md), ADR-004 (H1–H15). No escribir `andon.*`. Dual-stack notify intacto. |
@@ -28,6 +28,10 @@ Hay **dos** fábricas. Documentar ambas; el default sigue `ANDON_NOTIFY_PROVIDER
 2. `api/src/andon/notify/` — Evolution HTTP sí cableado (`createAndonNotify`). El runtime usa `notify.providers.ts` → esa fábrica.
 
 El [checklist de ops](architecture/andon-whatsapp-ops-checklist-v0.md) todavía dice que Evolution no está implementado. Lab only / riesgo ToS; ver [docs/andon-evolution-notify.md](docs/andon-evolution-notify.md). **No** fusionar ni “arreglar” en un corte de infra o visual.
+
+## Skills de UI de terceros (no instalar)
+
+No `uipro init`, no `npx impeccable install`, no Taste Skill. El DS ya está en ADR-003 + `docs/design/` + `docs/design-system/`. Recorte Operate y por qué esos repos no aplican: [OPERATE_CRAFT.md](docs/design/OPERATE_CRAFT.md) §4. Referencias de pantallas: Mobbin (field service / listados densos), no galerías de landing.
 
 ## WO UI ≠ brief de ingeniería
 

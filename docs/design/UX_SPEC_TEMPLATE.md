@@ -62,6 +62,8 @@ Copy exacto. Empty explica *por qué* está vacío.
 
 Fila clickeable, URL de filtros, sticky CTA, dialog vs sheet, qué no se edita en la lista.
 
+Overlay: portal (no recorte). Motion: 150–250 ms, solo estado. Control nuevo: hover / `:focus-visible` / disabled. Ver [OPERATE_CRAFT.md](OPERATE_CRAFT.md).
+
 ## Mobile / responsive
 
 - Desktop 1440:  

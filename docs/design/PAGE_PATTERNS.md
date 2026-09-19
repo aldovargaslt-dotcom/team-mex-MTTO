@@ -95,7 +95,7 @@ Corta: **Dialog** (tipo, chofer, alertas, sitio, nueva refacción).
 
 Larga: página + `UnidadForm` en `Card` de una vez (no un campo = una card). Footer: primary Guardar + secondary Cancelar.
 
-Sheets: ficha refacción, movimiento inventario — no dialog centrado.
+Sheets: ficha refacción, movimiento inventario — no dialog centrado. Overlay por portal ([OPERATE_CRAFT.md](OPERATE_CRAFT.md)).
 
 ---
 
