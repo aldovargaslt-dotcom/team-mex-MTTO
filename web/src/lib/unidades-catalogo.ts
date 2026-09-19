@@ -1,4 +1,4 @@
-import type { AvisoAndon, IconoTipoVehiculo, TipoVehiculo, Unidad } from './types';
+import type { AvisoAndon, IconoTipoVehiculo, Unidad } from './types';
 
 export type SituacionAtencion =
   | 'requiere_inspeccion'
@@ -21,32 +21,7 @@ export const ICONOS_TIPO: {
   { id: 'bus', label: 'Pasajeros' },
 ];
 
-export const UNIDADES_PAGE_SIZE = 20;
-
-/** Live Despacho order when those tipos exist; other names follow. */
-const TIPO_CHIP_ORDER = ['STOCK', 'RUTAS', 'CAMIONES 3 Y MEDIA'];
-
-function claveTipoChip(nombre: string) {
-  return nombre
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/\s+/g, ' ')
-    .trim()
-    .toUpperCase();
-}
-
-export function ordenarTiposChip(tipos: TipoVehiculo[]): TipoVehiculo[] {
-  return [...tipos].sort((a, b) => {
-    const ia = TIPO_CHIP_ORDER.indexOf(claveTipoChip(a.nombre));
-    const ib = TIPO_CHIP_ORDER.indexOf(claveTipoChip(b.nombre));
-    if (ia === -1 && ib === -1) {
-      return a.nombre.localeCompare(b.nombre, 'es');
-    }
-    if (ia === -1) return 1;
-    if (ib === -1) return -1;
-    return ia - ib;
-  });
-}
+export const UNIDADES_PAGE_SIZE = 5;
 
 export function isTipoGlyph(value: string | null | undefined): value is TipoGlyph {
   return ICONOS_TIPO.some((item) => item.id === value);
