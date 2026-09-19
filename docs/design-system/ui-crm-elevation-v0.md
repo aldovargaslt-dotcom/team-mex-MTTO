@@ -40,9 +40,9 @@ Mode B Despacho en Flota. Slice 2 mobile card-row. Hub header polish.
 
 ## Proof
 
-Post-revert Supervisor:
+Post-revert Supervisor (VM viewport 1280×800; `d1440` not available in this agent):
 
-- `docs/screenshots/mtto_revert_unidades_list_desktop_d1440.png`
-- `docs/screenshots/mtto_revert_stock_list_desktop_d1440.png`
+- `docs/screenshots/mtto_revert_unidades_list_desktop_d1280.png`
+- `docs/screenshots/mtto_revert_stock_list_desktop_d1280.png`
 
 Hold SD / visual OK. No merge.
