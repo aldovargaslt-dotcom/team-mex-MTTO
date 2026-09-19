@@ -233,12 +233,29 @@ describe('Logística asignación chofer↔unidad (e2e L1–L4)', () => {
       .send({ unidadId: u1.id, choferId: created.body.id })
       .expect(204);
 
+    const kernelBefore = await request(server)
+      .get(`/unidades/${u1.id}`)
+      .set(LOGISTICA)
+      .expect(200);
+    expect(kernelBefore.body.choferId).toBe(created.body.id);
+
     const blocked = await request(server)
       .patch(`/choferes/${created.body.id}`)
       .set(ADMIN)
       .send({ estado: 'INACTIVO' })
       .expect(400);
     expect(blocked.body.message).toBe(MSG_INACTIVAR_ASIGNADO);
+
+    const kernelAfter = await request(server)
+      .get(`/unidades/${u1.id}`)
+      .set(LOGISTICA)
+      .expect(200);
+    expect(kernelAfter.body.choferId).toBe(created.body.id);
+    const stillActivo = await request(server)
+      .get(`/choferes/${created.body.id}`)
+      .set(ADMIN)
+      .expect(200);
+    expect(stillActivo.body.estado).toBe('ACTIVO');
 
     await request(server)
       .delete(`/logistica/asignaciones/${u1.id}`)

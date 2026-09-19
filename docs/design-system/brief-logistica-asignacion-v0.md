@@ -16,7 +16,7 @@ Audiencia: `LOGISTICA` (+ espejo `ADMIN_DIRECTIVO`). Supervisor fuera.
 - Fila: nombre · badge ops · placas/unidad si asignado
 - Soft-block: no pasar a INACTIVO un chofer asignado
 - Cambiar rol quiet + `focus-visible`
-- Color lock: 1 naranja; secundarios outline; pasteles **solo** en badges de estado
+- Color lock: 1 naranja; secundarios outline; En ruta = sky/navy quiet (`info`), no `#EA7515`; Disponible muted
 
 ## Reglas
 

@@ -37,7 +37,7 @@ export function ChoferEstadoBadge({ estado }: { estado: EstadoChofer }) {
 export function ChoferOpsBadge({ ops }: { ops: OpsChofer }) {
   return (
     <Badge
-      variant={ops === 'EN_RUTA' ? 'warning' : 'muted'}
+      variant={ops === 'EN_RUTA' ? 'info' : 'muted'}
       className="normal-case tracking-normal"
     >
       {etiquetaOpsChofer(ops)}

@@ -51,7 +51,7 @@ Qué se calla: tipos STOCK|RUTAS, tip banner, alta chofer, bitácora SALIDA/ENTR
 - empty búsqueda: `Nadie coincide con la búsqueda.`
 - error: `FormAlert` con el mensaje de la API.
 - normal: tabla densa, hover `#F8FAFC`, › al final.
-- warning: badge En ruta (ámbar de estado, no CTA).
+- warning: n/a en fila sana. Badge En ruta = `info` sky/navy quiet (`#E8F1FF` / `#2F5BB8`), no `#EA7515`. Disponible = `muted`.
 
 ## Interaction notes
 

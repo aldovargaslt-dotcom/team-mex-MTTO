@@ -98,7 +98,7 @@ TDD en `api/src/logistica/logistica-rules.spec.ts` (dominio puro; sin Postgres) 
 
 - **L1** — 1:0..1: un chofer no se asigna a dos unidades; una unidad no toma segundo chofer sin `unassign`.
 - **L2** — solo chofer `ACTIVO` es asignable; `INACTIVO` no aparece en `GET /logistica/choferes`.
-- **L3** — soft-block: `PATCH` a `INACTIVO` falla si el chofer tiene `unidad.choferId`.
+- **L3** — soft-block: `PATCH` a `INACTIVO` falla si alguna `unidad.choferId` apunta al chofer; el chofer sigue `ACTIVO` y el kernel no se borra.
 - **L4** — escritura síncrona a Kernel `unidades.chofer_id`; cero filas nuevas en `outbox_events`.
 
 ## Outbound ops

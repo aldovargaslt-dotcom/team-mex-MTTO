@@ -77,8 +77,11 @@ describe('Logística asignación (ADR-004 L1–L4)', () => {
     expect(filtrarFilas(rows, undefined, 'EN_RUTA')[0].ops).toBe('EN_RUTA');
   });
 
-  it('L3 soft-block: no INACTIVO si está asignado', () => {
-    expect(errorInactivarSiAsignado(U1)).toBe(MSG_INACTIVAR_ASIGNADO);
+  it('L3 soft-block: no INACTIVO si unidad.choferId apunta al chofer', () => {
+    const unidadChoferId: string | null = C1;
+    expect(errorInactivarSiAsignado(unidadChoferId ? U1 : null)).toBe(
+      MSG_INACTIVAR_ASIGNADO,
+    );
     expect(errorInactivarSiAsignado(null)).toBeNull();
   });
 
