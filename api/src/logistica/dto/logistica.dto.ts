@@ -1,5 +1,15 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsEnum, IsOptional, IsUUID } from 'class-validator';
+import { Type } from 'class-transformer';
+import {
+  IsArray,
+  IsEnum,
+  IsInt,
+  IsOptional,
+  IsUUID,
+  Min,
+  ValidateIf,
+  ValidateNested,
+} from 'class-validator';
 import { OptionalTrimmed } from '../../common/trim';
 import { ChipLogistica, ChipLogisticaUnidad } from '../logistica-types';
 
@@ -37,4 +47,61 @@ export class CreateAsignacionDto {
   @ApiProperty({ format: 'uuid' })
   @IsUUID(undefined, { message: 'Indique un chofer válido.' })
   choferId: string;
+}
+
+export class RegistrarSalidaDto {
+  @ApiProperty({ enum: ['LOCAL', 'FORANEO'] })
+  @IsEnum(['LOCAL', 'FORANEO'] as const, {
+    message: 'Indique si la salida es local o foránea.',
+  })
+  ambito: 'LOCAL' | 'FORANEO';
+
+  @ApiPropertyOptional()
+  @OptionalTrimmed()
+  destino?: string;
+
+  @ApiPropertyOptional({ format: 'uuid' })
+  @IsOptional()
+  @IsUUID(undefined, { message: 'Indique un chofer válido.' })
+  choferId?: string;
+}
+
+export class UmbralUnidadDto {
+  @ApiProperty({ format: 'uuid' })
+  @IsUUID(undefined, { message: 'Indique una unidad válida.' })
+  unidadId: string;
+
+  @ApiPropertyOptional({
+    description: 'Horas de override. Null borra el override.',
+    nullable: true,
+  })
+  @IsOptional()
+  @ValidateIf((_, value) => value != null)
+  @Type(() => Number)
+  @IsInt()
+  @Min(1, { message: 'El umbral de la unidad debe ser al menos 1 hora.' })
+  horas: number | null;
+}
+
+export class PatchAlertasSinRegresoDto {
+  @ApiPropertyOptional({ description: 'Default horas LOCAL (8).' })
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(1, { message: 'El umbral local debe ser al menos 1 hora.' })
+  localH?: number;
+
+  @ApiPropertyOptional({ description: 'Default horas FORANEO (24).' })
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(1, { message: 'El umbral foráneo debe ser al menos 1 hora.' })
+  foraneoH?: number;
+
+  @ApiPropertyOptional({ type: [UmbralUnidadDto] })
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => UmbralUnidadDto)
+  umbrales?: UmbralUnidadDto[];
 }

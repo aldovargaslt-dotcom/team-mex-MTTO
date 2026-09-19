@@ -2,8 +2,9 @@
 
 import { FormEvent, Suspense, useEffect, useMemo, useState } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import Link from 'next/link';
 import { ColumnDef } from '@tanstack/react-table';
-import { ChevronRight, Search, Truck } from 'lucide-react';
+import { ChevronRight, Clock, Search, Settings2, Truck } from 'lucide-react';
 import {
   AmbitoBadge,
   UnidadOpsBadge,
@@ -26,6 +27,7 @@ import { etiquetaAlertaRegreso } from '@/lib/format';
 import { useRole } from '@/lib/role';
 import { cn } from '@/lib/utils';
 import type {
+  AmbitoUnidad,
   ChipLogisticaUnidad,
   LogisticaUnidadRow,
   LogisticaUnidadesResponse,
@@ -36,10 +38,27 @@ function parseChip(raw: string | null): ChipLogisticaUnidad {
   return 'TODAS';
 }
 
-function emptyCopy(chip: ChipLogisticaUnidad, q: string) {
+function parseAmbito(raw: string | null): AmbitoUnidad | null {
+  if (raw === 'LOCAL' || raw === 'FORANEO') return raw;
+  return null;
+}
+
+function parseAlerta(raw: string | null): 'SIN_REGRESO' | null {
+  return raw === 'SIN_REGRESO' ? 'SIN_REGRESO' : null;
+}
+
+function emptyCopy(
+  chip: ChipLogisticaUnidad,
+  q: string,
+  ambito: AmbitoUnidad | null,
+  alerta: 'SIN_REGRESO' | null,
+) {
   if (q.trim()) return 'Nadie coincide con la búsqueda.';
+  if (alerta === 'SIN_REGRESO') return 'Nadie sin regreso.';
   if (chip === 'EN_RUTA') return 'Nadie en ruta. El regreso se registra aquí.';
   if (chip === 'DISPONIBLE') return 'Nadie disponible.';
+  if (ambito === 'LOCAL') return 'Nadie en esta ubicación.';
+  if (ambito === 'FORANEO') return 'Nadie en esta ubicación.';
   return 'No hay unidades.';
 }
 
@@ -57,6 +76,8 @@ function FlotaVisual() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const chip = parseChip(searchParams.get('chip'));
+  const ambito = parseAmbito(searchParams.get('ambito'));
+  const alerta = parseAlerta(searchParams.get('alerta'));
   const qParam = searchParams.get('q') ?? '';
   const [q, setQ] = useState(qParam);
   const [data, setData] = useState<LogisticaUnidadesResponse | null>(null);
@@ -88,24 +109,42 @@ function FlotaVisual() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [role]);
 
-  function setParams(next: { chip?: ChipLogisticaUnidad; q?: string }) {
+  function setParams(next: {
+    chip?: ChipLogisticaUnidad;
+    q?: string;
+    ambito?: AmbitoUnidad | null;
+    alerta?: 'SIN_REGRESO' | null;
+  }) {
     const params = new URLSearchParams(searchParams.toString());
     const nextChip = next.chip ?? chip;
     const nextQ = next.q ?? qParam;
+    const nextAmbito = next.ambito === undefined ? ambito : next.ambito;
+    const nextAlerta = next.alerta === undefined ? alerta : next.alerta;
     if (nextChip === 'TODAS') params.delete('chip');
     else params.set('chip', nextChip);
     if (!nextQ.trim()) params.delete('q');
     else params.set('q', nextQ.trim());
+    if (!nextAmbito) params.delete('ambito');
+    else params.set('ambito', nextAmbito);
+    if (!nextAlerta) params.delete('alerta');
+    else params.set('alerta', nextAlerta);
     const qs = params.toString();
     router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
   }
 
-  const kpis = data?.kpis ?? { enRuta: 0, disponibles: 0, total: 0 };
+  const kpis = data?.kpis ?? {
+    enRuta: 0,
+    disponibles: 0,
+    total: 0,
+    sinRegreso: 0,
+  };
   const allItems = useMemo(() => data?.items ?? [], [data]);
   const items = useMemo(() => {
     const needle = qParam.trim().toLowerCase();
     return allItems.filter((row) => {
       if (chip !== 'TODAS' && row.opsEstado !== chip) return false;
+      if (ambito && row.ambito !== ambito) return false;
+      if (alerta && row.alerta !== alerta) return false;
       if (
         needle &&
         !row.placas.toLowerCase().includes(needle) &&
@@ -115,7 +154,8 @@ function FlotaVisual() {
       }
       return true;
     });
-  }, [allItems, chip, qParam]);
+  }, [allItems, chip, qParam, ambito, alerta]);
+  const todosActivo = chip === 'TODAS' && alerta == null;
   const enRuta = allItems.filter((row) => row.opsEstado === 'EN_RUTA');
   const sheetRow = sheet && sheet !== 'cta' ? sheet : enRuta[0] ?? null;
 
@@ -246,6 +286,12 @@ function FlotaVisual() {
             >
               Registrar regreso
             </Button>
+            <Button type="button" variant="quiet" asChild>
+              <Link href="/flota/alertas">
+                <Settings2 className="size-4" aria-hidden />
+                Config alertas
+              </Link>
+            </Button>
           </div>
         </div>
       </div>
@@ -253,9 +299,9 @@ function FlotaVisual() {
       <div className="unidades-kpis unidades-kpis--ops" aria-label="Resumen de flota">
         <button
           type="button"
-          className={cn('unidades-kpi', chip === 'EN_RUTA' && 'is-active')}
-          aria-pressed={chip === 'EN_RUTA'}
-          onClick={() => setParams({ chip: 'EN_RUTA' })}
+          className={cn('unidades-kpi', chip === 'EN_RUTA' && !alerta && 'is-active')}
+          aria-pressed={chip === 'EN_RUTA' && !alerta}
+          onClick={() => setParams({ chip: 'EN_RUTA', alerta: null })}
         >
           <span className="unidades-kpi__icon unidades-kpi__icon--total">
             <Truck className="size-5" aria-hidden />
@@ -267,9 +313,12 @@ function FlotaVisual() {
         </button>
         <button
           type="button"
-          className={cn('unidades-kpi', chip === 'DISPONIBLE' && 'is-active')}
-          aria-pressed={chip === 'DISPONIBLE'}
-          onClick={() => setParams({ chip: 'DISPONIBLE' })}
+          className={cn(
+            'unidades-kpi',
+            chip === 'DISPONIBLE' && !alerta && 'is-active',
+          )}
+          aria-pressed={chip === 'DISPONIBLE' && !alerta}
+          onClick={() => setParams({ chip: 'DISPONIBLE', alerta: null })}
         >
           <span className="unidades-kpi__icon unidades-kpi__icon--ok">
             <Truck className="size-5" aria-hidden />
@@ -281,9 +330,9 @@ function FlotaVisual() {
         </button>
         <button
           type="button"
-          className={cn('unidades-kpi', chip === 'TODAS' && 'is-active')}
-          aria-pressed={chip === 'TODAS'}
-          onClick={() => setParams({ chip: 'TODAS' })}
+          className={cn('unidades-kpi', todosActivo && 'is-active')}
+          aria-pressed={todosActivo}
+          onClick={() => setParams({ chip: 'TODAS', alerta: null })}
         >
           <span className="unidades-kpi__icon unidades-kpi__icon--off">
             <Truck className="size-5" aria-hidden />
@@ -291,6 +340,22 @@ function FlotaVisual() {
           <span className="unidades-kpi__copy">
             <span className="unidades-kpi__label">Total</span>
             <span className="unidades-kpi__value">{kpis.total}</span>
+          </span>
+        </button>
+        <button
+          type="button"
+          className={cn('unidades-kpi', alerta === 'SIN_REGRESO' && 'is-active')}
+          aria-pressed={alerta === 'SIN_REGRESO'}
+          onClick={() =>
+            setParams({ chip: 'TODAS', alerta: 'SIN_REGRESO' })
+          }
+        >
+          <span className="unidades-kpi__icon unidades-kpi__icon--warn">
+            <Clock className="size-5" aria-hidden />
+          </span>
+          <span className="unidades-kpi__copy">
+            <span className="unidades-kpi__label">Sin regreso</span>
+            <span className="unidades-kpi__value">{kpis.sinRegreso}</span>
           </span>
         </button>
       </div>
@@ -315,6 +380,28 @@ function FlotaVisual() {
             className="pl-9"
           />
         </div>
+        <div className="list-filter" role="group" aria-label="Ubicación">
+          <button
+            type="button"
+            aria-pressed={ambito === 'LOCAL'}
+            className={ambito === 'LOCAL' ? 'active' : ''}
+            onClick={() =>
+              setParams({ ambito: ambito === 'LOCAL' ? null : 'LOCAL' })
+            }
+          >
+            Local
+          </button>
+          <button
+            type="button"
+            aria-pressed={ambito === 'FORANEO'}
+            className={ambito === 'FORANEO' ? 'active' : ''}
+            onClick={() =>
+              setParams({ ambito: ambito === 'FORANEO' ? null : 'FORANEO' })
+            }
+          >
+            Foráneo
+          </button>
+        </div>
       </form>
 
       <FormAlert>{error && !sheet ? error : null}</FormAlert>
@@ -322,7 +409,7 @@ function FlotaVisual() {
       <DataTable
         columns={columns}
         data={items}
-        empty={emptyCopy(chip, qParam)}
+        empty={emptyCopy(chip, qParam, ambito, alerta)}
         onRowClick={abrirFila}
       />
 

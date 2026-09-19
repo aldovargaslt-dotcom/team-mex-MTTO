@@ -106,8 +106,18 @@ TDD en `api/src/logistica/logistica-rules.spec.ts` (dominio puro; sin Postgres) 
 TDD en `api/src/logistica/logistica-ops-rules.spec.ts` + e2e. [ADR-011](011-logistica-flota-ops-estado.md).
 
 - **L5** — `GET /logistica/unidades` lista Kernel `ambito` / `destino` / `opsEstado` (no tipos STOCK\|RUTAS como ubicación).
-- **L6** — `POST /logistica/regresos/:unidadId` pasa `EN_RUTA` → `DISPONIBLE` (estado real).
-- **L7** — regreso de `DISPONIBLE` falla; alerta de lista si `EN_RUTA` (sin regreso).
+- **L6** — `POST /logistica/regresos/:unidadId` pasa `EN_RUTA` → `DISPONIBLE` (estado real) y limpia `salida_at`.
+- **L7** — regreso de `DISPONIBLE` falla; `POST /logistica/salidas/:unidadId` pone `EN_RUTA` + `salida_at`.
+
+## Logística Flota sin regreso (L8–L12)
+
+TDD umbral + emit/clear. [ADR-012](012-flota-sin-regreso-alertas.md) / [architecture ADR-010](../../architecture/ADR-010-flota-sin-regreso-alertas-v0.md).
+
+- **L8** — `resolveUmbralHoras`: override `umbral_unidad` gana; si no, FORANEO 24h / LOCAL 8h (o defaults de `regla_flota_sin_regreso`).
+- **L9** — alerta de lista `SIN_REGRESO` solo si `EN_RUTA` + `salida_at` + elapsed ≥ umbral (EN_RUTA reciente no alerta).
+- **L10** — emit `FLOTA_SIN_REGRESO` con `dedupe_key=FLOTA:sin-regreso:{unidadId}`; el mismo dedupe no duplica activo.
+- **L11** — regreso o under-threshold expira el mismo dedupe (patrón StockBajo). No escribe `andon.*`.
+- **L12** — `GET`/`PATCH /logistica/alertas/sin-regreso`: LOGISTICA ok; Supervisor 403. Schema `alertas`, no silo Logística.
 
 ## Outbound ops
 

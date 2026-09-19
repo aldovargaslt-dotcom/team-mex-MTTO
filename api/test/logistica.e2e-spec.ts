@@ -285,11 +285,12 @@ describe('Logística asignación chofer↔unidad (e2e L1–L4)', () => {
         destino: string | null;
         alerta: string | null;
       }[];
-      kpis: { enRuta: number; disponibles: number; total: number };
+      kpis: { enRuta: number; disponibles: number; total: number; sinRegreso: number };
     };
     expect(body.kpis.total).toBe(body.items.length);
     expect(body.kpis.enRuta + body.kpis.disponibles).toBe(body.kpis.total);
     expect(body.kpis.enRuta).toBeGreaterThanOrEqual(1);
+    expect(body.kpis.sinRegreso).toBeGreaterThanOrEqual(2);
     const foraneo = body.items.find((r) => r.placas === '63AL5K');
     expect(foraneo).toMatchObject({
       numeroInterno: 'RAM FORANEO',
@@ -297,6 +298,18 @@ describe('Logística asignación chofer↔unidad (e2e L1–L4)', () => {
       opsEstado: 'EN_RUTA',
       destino: 'Cliente FEMSA',
       alerta: 'SIN_REGRESO',
+    });
+    const foton = body.items.find((r) => r.placas === 'VU2625C');
+    expect(foton).toMatchObject({
+      ambito: 'LOCAL',
+      opsEstado: 'EN_RUTA',
+      alerta: 'SIN_REGRESO',
+    });
+    const ducato = body.items.find((r) => r.placas === 'VU2627C');
+    expect(ducato).toMatchObject({
+      ambito: 'FORANEO',
+      opsEstado: 'EN_RUTA',
+      alerta: null,
     });
     expect(body.items.every((r) => r.ambito === 'FORANEO' || r.ambito === 'LOCAL')).toBe(
       true,
@@ -347,5 +360,172 @@ describe('Logística asignación chofer↔unidad (e2e L1–L4)', () => {
       .set(LOGISTICA)
       .expect(400);
     expect(again.body.message).toMatch(/no está en ruta/i);
+  });
+
+  it('L7 registrar salida pone EN_RUTA + salida_at; reciente no alerta', async () => {
+    const list = await request(server)
+      .get('/logistica/unidades')
+      .query({ q: 'VU2632C' })
+      .set(LOGISTICA)
+      .expect(200);
+    const nissan = (
+      list.body.items as {
+        unidadId: string;
+        placas: string;
+        opsEstado: string;
+        alerta: string | null;
+        salidaAt: string | null;
+      }[]
+    ).find((r) => r.placas === 'VU2632C');
+    expect(nissan?.opsEstado).toBe('DISPONIBLE');
+
+    await request(server)
+      .post(`/logistica/salidas/${nissan!.unidadId}`)
+      .set(LOGISTICA)
+      .send({ ambito: 'LOCAL', destino: 'CEDIS prueba' })
+      .expect(204);
+
+    const after = await request(server)
+      .get('/logistica/unidades')
+      .query({ q: 'VU2632C' })
+      .set(LOGISTICA)
+      .expect(200);
+    const updated = (
+      after.body.items as {
+        opsEstado: string;
+        ambito: string;
+        destino: string | null;
+        alerta: string | null;
+        salidaAt: string | null;
+      }[]
+    ).find((r) => r.placas === 'VU2632C');
+    expect(updated).toMatchObject({
+      opsEstado: 'EN_RUTA',
+      ambito: 'LOCAL',
+      destino: 'CEDIS prueba',
+      alerta: null,
+    });
+    expect(updated?.salidaAt).toBeTruthy();
+  });
+
+  it('L8/L12 config alertas LOGISTICA; Supervisor 403; override gana', async () => {
+    await request(server)
+      .get('/logistica/alertas/sin-regreso')
+      .set(SUPERVISOR)
+      .expect(403);
+
+    const cfg = await request(server)
+      .get('/logistica/alertas/sin-regreso')
+      .set(LOGISTICA)
+      .expect(200);
+    expect(cfg.body).toMatchObject({ localH: 8, foraneoH: 24 });
+
+    const list = await request(server)
+      .get('/logistica/unidades')
+      .query({ q: 'VU2626C' })
+      .set(LOGISTICA)
+      .expect(200);
+    const ducatoRutas = (
+      list.body.items as { unidadId: string; placas: string }[]
+    ).find((r) => r.placas === 'VU2626C');
+    expect(ducatoRutas).toBeTruthy();
+
+    await request(server)
+      .patch('/logistica/alertas/sin-regreso')
+      .set(LOGISTICA)
+      .send({
+        localH: 8,
+        foraneoH: 24,
+        umbrales: [{ unidadId: ducatoRutas!.unidadId, horas: 1 }],
+      })
+      .expect(200);
+
+    await request(server)
+      .post(`/logistica/salidas/${ducatoRutas!.unidadId}`)
+      .set(LOGISTICA)
+      .send({ ambito: 'LOCAL', destino: 'Override 1h' })
+      .expect(204);
+
+    const ds = app.get(DataSource);
+    await ds.query(
+      `UPDATE unidades SET salida_at = NOW() - INTERVAL '2 hours' WHERE id = $1`,
+      [ducatoRutas!.unidadId],
+    );
+
+    const after = await request(server)
+      .get('/logistica/unidades')
+      .query({ q: 'VU2626C' })
+      .set(LOGISTICA)
+      .expect(200);
+    const row = (
+      after.body.items as { placas: string; alerta: string | null }[]
+    ).find((r) => r.placas === 'VU2626C');
+    expect(row?.alerta).toBe('SIN_REGRESO');
+  });
+
+  it('L10/L11 emit FLOTA_SIN_REGRESO a campanita; regreso lo limpia', async () => {
+    const list = await request(server)
+      .get('/logistica/unidades')
+      .set(LOGISTICA)
+      .expect(200);
+    const foton = (
+      list.body.items as {
+        unidadId: string;
+        placas: string;
+        alerta: string | null;
+      }[]
+    ).find((r) => r.placas === 'VU2625C');
+    expect(foton?.alerta).toBe('SIN_REGRESO');
+
+    const inbox = await request(server)
+      .get('/notifications')
+      .query({ filter: 'all' })
+      .set(LOGISTICA)
+      .expect(200);
+    const item = (
+      inbox.body as {
+        sourceModule: string;
+        sourceEvent: string;
+        dedupeKey: string;
+        title: string;
+        deeplinkPath: string;
+        expiresAt: string | null;
+      }[]
+    ).find((row) => row.sourceEvent === 'FLOTA_SIN_REGRESO');
+    expect(item).toBeTruthy();
+    expect(item!.sourceModule).toBe('LOGISTICA');
+    expect(item!.dedupeKey).toBe(`FLOTA:sin-regreso:${foton!.unidadId}`);
+    expect(item!.title).toMatch(/Sin regreso/i);
+    expect(item!.deeplinkPath).toBe('/flota?alerta=SIN_REGRESO');
+    expect(item!.expiresAt).toBeNull();
+
+    const andonRows = await app.get(DataSource).query(
+      `SELECT count(*)::int AS n FROM andon.avisos WHERE unidad_id = $1`,
+      [foton!.unidadId],
+    );
+    const beforeAndon = andonRows[0].n as number;
+
+    await request(server)
+      .post(`/logistica/regresos/${foton!.unidadId}`)
+      .set(LOGISTICA)
+      .expect(204);
+
+    const afterInbox = await request(server)
+      .get('/notifications')
+      .query({ filter: 'all' })
+      .set(LOGISTICA)
+      .expect(200);
+    const gone = (
+      afterInbox.body as { sourceEvent: string; dedupeKey: string }[]
+    ).find(
+      (row) => row.dedupeKey === `FLOTA:sin-regreso:${foton!.unidadId}`,
+    );
+    expect(gone).toBeUndefined();
+
+    const andonAfter = await app.get(DataSource).query(
+      `SELECT count(*)::int AS n FROM andon.avisos WHERE unidad_id = $1`,
+      [foton!.unidadId],
+    );
+    expect(andonAfter[0].n).toBe(beforeAndon);
   });
 });

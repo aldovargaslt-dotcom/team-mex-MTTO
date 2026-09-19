@@ -116,6 +116,7 @@ export class UnidadesService {
       ambito: AmbitoUnidad.LOCAL,
       destino: null,
       opsEstado: OpsEstadoUnidad.DISPONIBLE,
+      salidaAt: null,
       marcaModelo: dto.marcaModelo?.trim() || null,
       anio: dto.anio ?? null,
     });

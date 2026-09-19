@@ -18,6 +18,8 @@ Columnas Kernel (dueño: `UnidadesService` / módulo delgado `logistica` para mu
 
 `opsEstado` **no** se deriva de `flota` SALIDA/ENTRADA en este corte. Patio bitácora (ADR-008) sigue aparte.
 
+`salida_at` (timestamptz) se añade en [ADR-010](ADR-010-flota-sin-regreso-alertas-v0.md); este ADR no se reescribe.
+
 Asignación chofer↔unidad (`unidad.choferId`, `UnidadChoferAssignmentPort`) queda **PARKED**: API puede existir; no es el desk de este PR; no hay nav a `/logistica`.
 
 ## HTTP (mínimo)
@@ -27,7 +29,7 @@ Asignación chofer↔unidad (`unidad.choferId`, `UnidadChoferAssignmentPort`) qu
 - `GET /logistica/unidades?q&chip=` — lista unidades (placas-first). `chip=EN_RUTA|DISPONIBLE|TODAS`. `q` = placas o número interno. KPI En ruta / Disponibles / Total.
 - `POST /logistica/regresos/:unidadId` — `opsEstado` `EN_RUTA` → `DISPONIBLE` (204). Falla si no está en ruta.
 
-Alerta de lista: `opsEstado === EN_RUTA` → sin regreso reportado (badge ámbar/sky, **no** `#EA7515`).
+Alerta de lista v0 inicial: `opsEstado === EN_RUTA`. Umbral vs `salida_at` (badge **Sin regreso**): [ADR-010](ADR-010-flota-sin-regreso-alertas-v0.md).
 
 ## Consecuencias
 

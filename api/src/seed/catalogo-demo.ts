@@ -29,6 +29,8 @@ export type UnidadDemoSeed = {
   ambito?: 'FORANEO' | 'LOCAL';
   opsEstado?: 'EN_RUTA' | 'DISPONIBLE';
   destino?: string | null;
+  /** Hours before now for Kernel salida_at when EN_RUTA (ADR-010 demo). */
+  salidaAtHoursAgo?: number;
 };
 
 export const UNIDADES_DEMO: readonly UnidadDemoSeed[] = [
@@ -40,6 +42,7 @@ export const UNIDADES_DEMO: readonly UnidadDemoSeed[] = [
     ambito: 'LOCAL',
     opsEstado: 'EN_RUTA',
     destino: 'CEDIS local',
+    salidaAtHoursAgo: 9,
   },
   {
     nombre: 'NISSAN REDILAS',
@@ -91,6 +94,7 @@ export const UNIDADES_DEMO: readonly UnidadDemoSeed[] = [
     ambito: 'FORANEO',
     opsEstado: 'EN_RUTA',
     destino: 'Taller externo',
+    salidaAtHoursAgo: 2,
   },
   {
     nombre: 'RAM CODISA',
@@ -106,6 +110,7 @@ export const UNIDADES_DEMO: readonly UnidadDemoSeed[] = [
     ambito: 'FORANEO',
     opsEstado: 'EN_RUTA',
     destino: 'Cliente FEMSA',
+    salidaAtHoursAgo: 25,
   },
   {
     nombre: 'FORD 2017',

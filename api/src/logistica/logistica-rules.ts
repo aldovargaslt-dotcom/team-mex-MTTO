@@ -1,5 +1,7 @@
+import { alertaSinRegreso as alertaPorUmbral } from '../alertas/umbral-rules';
 import { EstadoChofer } from '../choferes/estado-chofer.enum';
 import {
+  AmbitoFlota,
   ChipLogistica,
   ChipLogisticaUnidad,
   LogisticaChoferRow,
@@ -17,6 +19,8 @@ export const MSG_INACTIVAR_ASIGNADO =
   'No se puede pasar a INACTIVO: el chofer tiene una unidad asignada. Quite la asignación en Logística primero.';
 export const MSG_REGRESO_NO_EN_RUTA =
   'La unidad no está en ruta. No hay regreso que registrar.';
+export const MSG_SALIDA_SIN_AMBITO =
+  'Indique si la salida es local o foránea.';
 
 export function opsDeAsignacion(
   unidadId?: string | null,
@@ -104,10 +108,22 @@ export function kpisActivos(rows: LogisticaChoferRow[]) {
   };
 }
 
-export function alertaSinRegreso(
-  opsEstado: 'EN_RUTA' | 'DISPONIBLE',
-): 'SIN_REGRESO' | null {
-  return opsEstado === 'EN_RUTA' ? 'SIN_REGRESO' : null;
+export function alertaSinRegreso(input: {
+  opsEstado: 'EN_RUTA' | 'DISPONIBLE';
+  salidaAt: Date | string | null | undefined;
+  now: Date;
+  thresholdHoras: number;
+}): 'SIN_REGRESO' | null {
+  const salidaAt =
+    typeof input.salidaAt === 'string'
+      ? new Date(input.salidaAt)
+      : input.salidaAt;
+  return alertaPorUmbral({
+    opsEstado: input.opsEstado,
+    salidaAt,
+    now: input.now,
+    thresholdHoras: input.thresholdHoras,
+  });
 }
 
 export function errorRegreso(
@@ -117,15 +133,26 @@ export function errorRegreso(
   return null;
 }
 
+export function errorSalida(ambito?: AmbitoFlota | null): string | null {
+  if (ambito !== 'LOCAL' && ambito !== 'FORANEO') {
+    return MSG_SALIDA_SIN_AMBITO;
+  }
+  return null;
+}
+
 export function filtrarUnidadesOps(
   rows: LogisticaUnidadRow[],
   q?: string,
   chip?: ChipLogisticaUnidad,
+  ambito?: AmbitoFlota,
+  alerta?: 'SIN_REGRESO',
 ): LogisticaUnidadRow[] {
   const needle = q?.trim().toLowerCase() ?? '';
   const filtro = chip && chip !== 'TODAS' ? chip : undefined;
   return rows.filter((row) => {
     if (filtro && row.opsEstado !== filtro) return false;
+    if (ambito && row.ambito !== ambito) return false;
+    if (alerta && row.alerta !== alerta) return false;
     if (!needle) return true;
     return (
       row.placas.toLowerCase().includes(needle) ||
@@ -140,5 +167,6 @@ export function kpisUnidadesOps(rows: LogisticaUnidadRow[]) {
     enRuta,
     disponibles: rows.length - enRuta,
     total: rows.length,
+    sinRegreso: rows.filter((r) => r.alerta === 'SIN_REGRESO').length,
   };
 }

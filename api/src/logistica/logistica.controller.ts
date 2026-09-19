@@ -6,6 +6,7 @@ import {
   HttpCode,
   Param,
   ParseUUIDPipe,
+  Patch,
   Post,
   Query,
 } from '@nestjs/common';
@@ -16,6 +17,8 @@ import {
   CreateAsignacionDto,
   FiltrarLogisticaChoferesDto,
   FiltrarLogisticaUnidadesDto,
+  PatchAlertasSinRegresoDto,
+  RegistrarSalidaDto,
 } from './dto/logistica.dto';
 import { LogisticaService } from './logistica.service';
 
@@ -43,9 +46,37 @@ export class LogisticaController {
     return this.service.listUnidades(filtros.q, filtros.chip);
   }
 
+  @Get('alertas/sin-regreso')
+  @ApiOperation({
+    summary: 'Config familia sin regreso (LOCAL 8h / FORANEO 24h).',
+  })
+  getAlertasSinRegreso() {
+    return this.service.getAlertasSinRegreso();
+  }
+
+  @Patch('alertas/sin-regreso')
+  @ApiOperation({ summary: 'Actualizar umbrales default y override por unidad.' })
+  patchAlertasSinRegreso(@Body() dto: PatchAlertasSinRegresoDto) {
+    return this.service.patchAlertasSinRegreso(dto);
+  }
+
+  @Post('salidas/:unidadId')
+  @HttpCode(204)
+  @ApiOperation({
+    summary: 'Registrar salida: EN_RUTA + salida_at=now (ADR-010).',
+  })
+  registrarSalida(
+    @Param('unidadId', ParseUUIDPipe) unidadId: string,
+    @Body() dto: RegistrarSalidaDto,
+  ) {
+    return this.service.registrarSalida(unidadId, dto);
+  }
+
   @Post('regresos/:unidadId')
   @HttpCode(204)
-  @ApiOperation({ summary: 'Registrar regreso: opsEstado EN_RUTA → DISPONIBLE' })
+  @ApiOperation({
+    summary: 'Registrar regreso: DISPONIBLE y limpia salida_at.',
+  })
   registrarRegreso(
     @Param('unidadId', ParseUUIDPipe) unidadId: string,
   ) {

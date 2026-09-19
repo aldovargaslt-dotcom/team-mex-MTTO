@@ -39,7 +39,7 @@ function toDto(row: Awaited<ReturnType<NotificationsService['list']>>[number]) {
 
 @ApiTags('notifications')
 @Controller('notifications')
-@Roles(Rol.SUPERVISOR, Rol.ADMIN_DIRECTIVO)
+@Roles(Rol.SUPERVISOR, Rol.ADMIN_DIRECTIVO, Rol.LOGISTICA)
 export class NotificationsController {
   constructor(private readonly service: NotificationsService) {}
 

@@ -67,6 +67,10 @@ export class Unidad {
   })
   opsEstado: OpsEstadoUnidad;
 
+  /** Clock start for Flota sin-regreso (ADR-010). Set on salida, cleared on regreso. */
+  @Column({ name: 'salida_at', type: 'timestamptz', nullable: true })
+  salidaAt: Date | null;
+
   @Column({ name: 'marca_modelo', type: 'varchar', nullable: true })
   marcaModelo: string | null;
 

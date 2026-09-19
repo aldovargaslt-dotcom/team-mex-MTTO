@@ -19,6 +19,10 @@ export function healthBelowDedupeKey(unidadId: string) {
   return `SALUD:HealthBelow:${unidadId}`;
 }
 
+export function flotaSinRegresoDedupeKey(unidadId: string) {
+  return `FLOTA:sin-regreso:${unidadId}`;
+}
+
 export function stockBajoDedupeKey(itemId: string) {
   return `INV:stock-bajo:${itemId}`;
 }
@@ -30,6 +34,9 @@ export function isExpired(item: InboxItem, now: Date) {
 export function deeplinkPath(
   item: Pick<InboxItem, 'subjectType' | 'subjectRef' | 'sourceModule'>,
 ) {
+  if (item.sourceModule === SourceModule.LOGISTICA) {
+    return '/flota?alerta=SIN_REGRESO';
+  }
   if (item.subjectType === SubjectType.UNIDAD && item.subjectRef) {
     return `/unidades/${item.subjectRef}`;
   }
@@ -120,6 +127,40 @@ export function healthBelowCommand(input: HealthBelowInput): IngestCommand {
       : `${numero} tiene una salud de ${input.score}%. El límite configurado es ${input.threshold}%.`,
     dedupeKey: healthBelowDedupeKey(input.unidadId),
     createdAt: new Date(input.openedAt),
+  };
+}
+
+export type FlotaSinRegresoInput = {
+  eventId: string;
+  unidadId: string;
+  ambito: 'LOCAL' | 'FORANEO';
+  salidaAt: string;
+  thresholdHoras: number;
+  elapsedHoras: number;
+  occurredAt: string;
+  numeroInterno?: string | null;
+  placas?: string | null;
+};
+
+export function flotaSinRegresoCommand(
+  input: FlotaSinRegresoInput,
+): IngestCommand {
+  const who =
+    input.numeroInterno?.trim() || input.placas?.trim() || 'Unidad';
+  const horas = Math.max(1, Math.round(input.elapsedHoras));
+  const umbral = input.thresholdHoras;
+  const ambito = input.ambito === 'FORANEO' ? 'foránea' : 'local';
+  return {
+    sourceModule: SourceModule.LOGISTICA,
+    sourceEvent: SourceEvent.FLOTA_SIN_REGRESO,
+    sourceRef: input.eventId,
+    subjectType: SubjectType.UNIDAD,
+    subjectRef: input.unidadId,
+    severity: Severity.WARNING,
+    title: `Sin regreso — ${who}`,
+    body: `${who} lleva ${horas} h en ruta (${ambito}; umbral ${umbral} h). Registrar el regreso en Flota.`,
+    dedupeKey: flotaSinRegresoDedupeKey(input.unidadId),
+    createdAt: new Date(input.occurredAt),
   };
 }
 

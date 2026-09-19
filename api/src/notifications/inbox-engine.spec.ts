@@ -15,6 +15,8 @@ import { InboxEngine } from './inbox-engine';
 import {
   avisoAbiertoCommand,
   avisoAbiertoDedupeKey,
+  flotaSinRegresoCommand,
+  flotaSinRegresoDedupeKey,
   stockBajoCommand,
   stockBajoDedupeKey,
 } from './inbox-rules';
@@ -238,6 +240,62 @@ describe('Notifications inbox (ADR-004 N1–N4 / ADR-006)', () => {
       );
       expect(expired?.expiresAt).toBeTruthy();
       expect(await engine.list(USER, 'all')).toEqual([]);
+    });
+  });
+
+  describe('L10/L11 FLOTA_SIN_REGRESO emit + clear (ADR-010)', () => {
+    const abierto = {
+      eventId: 'evt-flota-1',
+      unidadId: UNIDAD,
+      ambito: 'LOCAL' as const,
+      salidaAt: '2026-09-19T03:00:00.000Z',
+      thresholdHoras: 8,
+      elapsedHoras: 9,
+      occurredAt: '2026-09-19T12:00:00.000Z',
+      numeroInterno: 'FOTON',
+      placas: 'VU2625C',
+    };
+
+    it('emite LOGISTICA/FLOTA_SIN_REGRESO con dedupe FLOTA:sin-regreso:{unidadId}', async () => {
+      const { engine, store } = inboxHarness();
+      const cmd = flotaSinRegresoCommand(abierto);
+      expect(cmd.sourceModule).toBe(SourceModule.LOGISTICA);
+      expect(cmd.sourceEvent).toBe(SourceEvent.FLOTA_SIN_REGRESO);
+      expect(cmd.subjectType).toBe(SubjectType.UNIDAD);
+      expect(cmd.subjectRef).toBe(UNIDAD);
+      expect(cmd.severity).toBe(Severity.WARNING);
+      expect(cmd.dedupeKey).toBe(flotaSinRegresoDedupeKey(UNIDAD));
+      expect(cmd.dedupeKey).toBe(`FLOTA:sin-regreso:${UNIDAD}`);
+      expect(cmd.title).toBe('Sin regreso — FOTON');
+
+      const first = await engine.ingest(cmd);
+      const second = await engine.ingest({
+        ...cmd,
+        sourceRef: 'evt-flota-2',
+      });
+      expect(second.id).toBe(first.id);
+      expect(store.items.size).toBe(1);
+
+      const [row] = await engine.list(USER, 'unread');
+      expect(row.deeplinkPath).toBe('/flota?alerta=SIN_REGRESO');
+    });
+
+    it('regreso / under-threshold expira el mismo dedupe; no toca andon', async () => {
+      const { engine } = inboxHarness();
+      await engine.ingest(flotaSinRegresoCommand(abierto));
+      expect(await engine.badge(USER)).toBe(1);
+      const expired = await engine.expireDedupe(
+        flotaSinRegresoDedupeKey(UNIDAD),
+      );
+      expect(expired?.expiresAt).toBeTruthy();
+      expect(await engine.list(USER, 'all')).toEqual([]);
+
+      const avisoEntity = readFileSync(
+        join(__dirname, '../andon/entities/aviso.entity.ts'),
+        'utf8',
+      );
+      expect(avisoEntity).not.toMatch(/salida_at/i);
+      expect(avisoEntity).not.toMatch(/FLOTA_SIN_REGRESO/);
     });
   });
 });

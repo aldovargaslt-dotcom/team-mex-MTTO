@@ -79,12 +79,24 @@ export type LogisticaUnidadRow = {
   opsEstado: OpsEstadoUnidad;
   ambito: AmbitoUnidad;
   destino: string | null;
+  salidaAt?: string | null;
   alerta: 'SIN_REGRESO' | null;
 };
 
 export type LogisticaUnidadesResponse = {
   items: LogisticaUnidadRow[];
-  kpis: { enRuta: number; disponibles: number; total: number };
+  kpis: {
+    enRuta: number;
+    disponibles: number;
+    total: number;
+    sinRegreso: number;
+  };
+};
+
+export type AlertasSinRegresoConfig = {
+  localH: number;
+  foraneoH: number;
+  umbrales: { unidadId: string; horas: number }[];
 };
 
 export type VisitaResumen = {
@@ -285,7 +297,7 @@ export type InboxItem = {
   deeplinkPath: string;
 };
 
-export type SourceModule = 'ANDON' | 'INVENTARIO' | 'SALUD';
+export type SourceModule = 'ANDON' | 'INVENTARIO' | 'SALUD' | 'LOGISTICA';
 
 export type SubjectType = 'UNIDAD' | 'ITEM' | 'NONE';
 

@@ -18,6 +18,7 @@ El archivo 004 se llama `ADR-004-…` (histórico). No renombrar en un overlay d
 | 009 | [009-icono-tipo-vehiculo.md](009-icono-tipo-vehiculo.md) | `tipos_vehiculo.icono` (glifo del catálogo) |
 | 010 | [010-salud-unidad.md](010-salud-unidad.md) | Schema `salud`, Health Score, alerta derivada |
 | 011 | [011-logistica-flota-ops-estado.md](011-logistica-flota-ops-estado.md) | Kernel `ambito` / `destino` / `opsEstado`; registrar regreso. Canónico Aldo: [architecture/ADR-009](../../architecture/ADR-009-logistica-flota-ops-estado-v0.md) |
+| 012 | [012-flota-sin-regreso-alertas.md](012-flota-sin-regreso-alertas.md) | `salida_at`, schema `alertas`, emit `FLOTA_SIN_REGRESO`. Canónico Aldo: [architecture/ADR-010](../../architecture/ADR-010-flota-sin-regreso-alertas-v0.md). No sustituye [010-salud](010-salud-unidad.md). |
 
 Mapa de bounded contexts → directorios: [context-map.md](context-map.md). Briefs visuales de corte: [docs/design-system/](../design-system/). Sistema de ingeniería UI (spec UX, Visual QA): [docs/design/](../design/).
 

@@ -17,6 +17,7 @@ import { OutboxModule } from './kernel/outbox/outbox.module';
 import { SeedModule } from './seed/seed.module';
 import { UnidadesModule } from './unidades/unidades.module';
 import { VisitasModule } from './visitas/visitas.module';
+import { AlertasModule } from './alertas/alertas.module';
 import { SaludModule } from './salud/salud.module';
 
 @Module({
@@ -33,6 +34,7 @@ import { SaludModule } from './salud/salud.module';
     UnidadesModule,
     ChoferesModule,
     FlotaModule,
+    AlertasModule,
     LogisticaModule,
     InventarioModule,
     NotificationsModule,

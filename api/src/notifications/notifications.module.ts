@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AndonInboxAdapter } from './andon-inbox.adapter';
+import { FlotaInboxAdapter } from './flota-inbox.adapter';
 import { InventarioInboxAdapter } from './inventario-inbox.adapter';
 import { SaludInboxAdapter } from './salud-inbox.adapter';
 import { InboxItemEntity } from './entities/inbox-item.entity';
@@ -20,6 +21,7 @@ export const NOTIFICATIONS_ENTITIES = [InboxItemEntity, InboxReadEntity];
     AndonInboxAdapter,
     InventarioInboxAdapter,
     SaludInboxAdapter,
+    FlotaInboxAdapter,
   ],
   exports: [
     TypeOrmModule,
@@ -27,6 +29,7 @@ export const NOTIFICATIONS_ENTITIES = [InboxItemEntity, InboxReadEntity];
     AndonInboxAdapter,
     InventarioInboxAdapter,
     SaludInboxAdapter,
+    FlotaInboxAdapter,
   ],
 })
 export class NotificationsModule {}

@@ -132,6 +132,7 @@ export class SeedService implements OnModuleInit {
           ? OpsEstadoUnidad.EN_RUTA
           : OpsEstadoUnidad.DISPONIBLE;
       exists.destino = item.destino?.trim() || null;
+      exists.salidaAt = this.salidaAtFromSeed(item);
       return this.unidades.save(exists);
     }
     return this.unidades.save(
@@ -147,8 +148,16 @@ export class SeedService implements OnModuleInit {
             ? OpsEstadoUnidad.EN_RUTA
             : OpsEstadoUnidad.DISPONIBLE,
         destino: item.destino?.trim() || null,
+        salidaAt: this.salidaAtFromSeed(item),
       }),
     );
+  }
+
+  private salidaAtFromSeed(item: UnidadDemoSeed): Date | null {
+    if (item.opsEstado !== 'EN_RUTA' || item.salidaAtHoursAgo == null) {
+      return null;
+    }
+    return new Date(Date.now() - item.salidaAtHoursAgo * 3_600_000);
   }
 
   /**
