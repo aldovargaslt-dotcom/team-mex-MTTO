@@ -3,7 +3,7 @@
 import { FormEvent, Suspense, useEffect, useMemo, useState } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { ColumnDef } from '@tanstack/react-table';
-import { Search, TriangleAlert, Truck } from 'lucide-react';
+import { Search, Truck } from 'lucide-react';
 import {
   AmbitoBadge,
   UnidadOpsBadge,
@@ -196,11 +196,7 @@ function FlotaVisual() {
           const copy = etiquetaAlertaRegreso(row.original.alerta);
           if (!copy) return <span className="muted">—</span>;
           return (
-            <Badge
-              variant="warning"
-              className="normal-case tracking-normal gap-1"
-            >
-              <TriangleAlert className="size-3.5" aria-hidden />
+            <Badge variant="warning" className="normal-case tracking-normal">
               {copy}
             </Badge>
           );
@@ -337,7 +333,7 @@ function FlotaVisual() {
             title.focus();
           }}
         >
-          <form className="flex flex-col" onSubmit={onSheetSubmit}>
+          <form className="flex h-full min-h-0 flex-col" onSubmit={onSheetSubmit}>
             <SheetHeader>
               <SheetTitle tabIndex={-1}>Registrar regreso</SheetTitle>
               <SheetDescription>
@@ -358,7 +354,7 @@ function FlotaVisual() {
               )}
               <FormAlert>{sheet ? error : null}</FormAlert>
             </div>
-            <SheetFooter className="mt-3">
+            <SheetFooter>
               <Button
                 type="button"
                 variant="secondary"
