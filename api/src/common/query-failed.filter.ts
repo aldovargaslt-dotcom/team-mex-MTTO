@@ -30,6 +30,8 @@ export class QueryFailedFilter implements ExceptionFilter {
         message = 'Ya existe una unidad con ese VIN.';
       } else if (constraint.includes('sku')) {
         message = 'Ya existe un ítem con ese SKU.';
+      } else if (constraint.includes('chofer_id')) {
+        message = 'El chofer ya está asignado a una unidad.';
       } else if (constraint.includes('chofer')) {
         message = 'Ya existe un chofer con ese nombre.';
       } else if (constraint.includes('familia')) {

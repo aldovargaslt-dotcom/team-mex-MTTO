@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { HeartPulse, Package, Wrench } from 'lucide-react';
+import { HeartPulse, Package, Truck, Wrench } from 'lucide-react';
 import { RoleGate } from '@/components/RoleGate';
 import { ListFilter } from '@/components/ListFilter';
 import { Button } from '@/components/ui/button';
@@ -21,7 +21,7 @@ const FILTROS: { id: 'unread' | 'all'; label: string }[] = [
 
 export default function NotificacionesPage() {
   return (
-    <RoleGate allow={['SUPERVISOR', 'ADMIN_DIRECTIVO']}>
+    <RoleGate allow={['SUPERVISOR', 'ADMIN_DIRECTIVO', 'LOGISTICA']}>
       <InboxContent />
     </RoleGate>
   );
@@ -106,7 +106,7 @@ function InboxContent() {
     <>
       <PageHeader
         title="Notificaciones"
-        lede="Alertas de mantenimiento, inventario y salud de unidad. Tocar una fila la marca leída y abre el destino."
+        lede="Alertas de mantenimiento, inventario, salud de unidad y flota sin regreso. Tocar una fila la marca leída y abre el destino."
         actions={
           unreadCount > 0 ? (
             <Button
@@ -145,6 +145,8 @@ function InboxContent() {
                     <Package className="size-4" />
                   ) : item.sourceModule === 'SALUD' ? (
                     <HeartPulse className="size-4" />
+                  ) : item.sourceModule === 'LOGISTICA' ? (
+                    <Truck className="size-4" />
                   ) : (
                     <Wrench className="size-4" />
                   )}

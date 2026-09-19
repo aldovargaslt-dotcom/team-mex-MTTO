@@ -76,7 +76,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           <div className="shell-header__actions">
             {showChrome ? (
               <>
-                {!isLogistica ? <Campanita /> : null}
+                <Campanita />
                 <span className="shell-header__role hidden md:inline">
                   {etiquetaRol(role!)}
                 </span>

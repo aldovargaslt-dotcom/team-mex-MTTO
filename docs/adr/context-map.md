@@ -9,9 +9,11 @@
 | Inventario | `inventario` | `api/src/inventario` | `web/src/app/inventario` |
 | Andon | `andon` | `api/src/andon` | `web/src/app/andon` |
 | Notifications | `notifications` | `api/src/notifications` | `web/src/app/notificaciones`, `Campanita` |
-| Flota | `flota` | `api/src/flota` | `web/src/app/flota` |
+| Flota | `flota` | `api/src/flota` | `web/src/app/flota` (visual ops: ADR-011) |
+| Logística (ops + asignación parked) | `public` (`unidades.ops_estado`, `ambito`, `destino`, `salida_at`, `chofer_id`) | `api/src/logistica` | `/flota` (nav Logística→Flota). `/logistica` redirige. Config alertas sin regreso. |
+| Alertas (config compartida) | `alertas` | `api/src/alertas` (store); API HTTP bajo `/logistica/alertas` | `/flota/alertas` (familia sin regreso). No silo Logística. No Andon. |
 | Salud | `salud` | `api/src/salud` | hub `web/src/app/unidades/[id]`, config en Unidades (Admin) |
 
-Seams (puertos): `NotifyPort`, `StockAlertPort`, `AvisoInboxPort`, `AndonAbiertoPort` (Flota lee aviso Andon abierto; sin UI Andon), `HealthAlertPort` (Salud → inbox; sin WhatsApp). IDs opacos; sin FKs/JOINs cruzadas (ADR-002).
+Seams (puertos): `NotifyPort`, `StockAlertPort`, `AvisoInboxPort`, `AndonAbiertoPort` (Flota lee aviso Andon abierto; sin UI Andon), `HealthAlertPort` (Salud → inbox; sin WhatsApp), `FlotaSinRegresoPort` (Logística → inbox `FLOTA_SIN_REGRESO`; sin `andon.*`), `UnidadChoferAssignmentPort` (Logística escribe Kernel `unidad.choferId`; sin schema propio). IDs opacos; sin FKs/JOINs cruzadas (ADR-002).
 
 Notify dual-stack (no unificar): `andon-notifier.factory.ts` vs `andon/notify/` — [AGENTS.md](../../AGENTS.md).

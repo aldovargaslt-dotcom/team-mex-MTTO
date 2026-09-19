@@ -162,7 +162,7 @@ No hay choferes placeholder. INACTIVO los oculta del select de visita; el histor
 | FORD 2017 | VU2624C | CAMIONES 3 Y MEDIA | RUBEN |
 | CHATO NUEVO | WR2023C | CAMIONES 3 Y MEDIA | — |
 
-`FOTON` lleva la visita cerrada demo (100 km, ~120 d) para Andon ABIERTO. El chofer usual (si hay) se proyecta en `flota.unidad_operativa.chofer_ultimo_id` (ADR-008: no hay `choferId` en `public.unidades`); no inventa SALIDA/ENTRADA.
+`FOTON` lleva la visita cerrada demo (100 km, ~120 d) para Andon ABIERTO. El chofer usual (si hay) se proyecta en `flota.unidad_operativa.chofer_ultimo_id` (bitácora de patio). La asignación de despacho v0 (`unidades.chofer_id`) está **parked**. Ops visual: Kernel `ambito` / `destino` / `ops_estado` (ADR-011).
 
 Si la DB ya tenía la semilla placeholder (`U-101` / Juan Pérez / Camión), `npm run seed` la retira por placas/nombre. No borra unidades reales ajenas a esas claves.
 
@@ -189,9 +189,12 @@ Autenticación stub: encabezado `X-Role`. Falta el encabezado → 401.
 | `GET /andon/avisos`, `GET /andon/umbrales` | sí | sí | 403 |
 | `POST /andon/avisos/:id/enterado` | sí | 403 | 403 |
 | `PATCH /andon/umbrales/:tipoVehiculoId` | 403 | sí | 403 |
-| `GET /notifications`, `GET /notifications/badge` | sí | sí (mismo inbox) | 403 |
-| `POST /notifications/:id/read`, `POST /notifications/read-all` | sí | sí | 403 |
+| `GET /notifications`, `GET /notifications/badge` | sí | sí (mismo inbox) | sí (`FLOTA_SIN_REGRESO`) |
+| `POST /notifications/:id/read`, `POST /notifications/read-all` | sí | sí | sí |
 | `/flota/*` (tablero, sitios, movimientos, envío especial) | 403 | sí | sí |
+| `GET /logistica/unidades` (`?q` `?chip=EN_RUTA\|DISPONIBLE\|TODAS`) | 403 | sí | sí |
+| `POST /logistica/regresos/:unidadId` | 403 | sí | sí |
+| `GET /logistica/choferes`, assign (parked) | 403 | sí | sí |
 
 Hub: `fichaCorta` + `borradores[]` (vacío para admin) + `historialCerrado[]` + `puedeCrearVisita` + `mensajes[]`. `puedeCrearVisita` es **true solo si el rol es SUPERVISOR y la unidad está ACTIVA**.
 
@@ -203,7 +206,7 @@ Documentación: [http://localhost:3001/docs](http://localhost:3001/docs).
 
 ## UI
 
-Rol stub → Unidades / Andon / Inventario / **Flota**. Campanita en el shell (badge de no leídas) abre `/notificaciones` (no logística). Admin: en Unidades, familias (tipos + reglas t_km/t_días) junto a la flota de mantenimiento; choferes; inventario; historial de visitas en solo lectura (sin Nueva visita); bitácora de patio en Flota. Logística: solo Flota (tablero, sitios, salidas/entradas con dos firmas, envío especial). Supervisor: inventario, Andon (Enterado) y visitas (Datos → Trabajos → Obs → Fotos → **Piezas** → Firmas → Confirmar). El select de chofer en visita solo lista ACTIVO. Hub: si la unidad está inactiva por envío especial, el mensaje lo dice.
+Rol stub → Unidades / Andon / Inventario / **Flota**. Campanita en el shell (badge de no leídas) abre `/notificaciones` (no logística). Admin: en Unidades, familias (tipos + reglas t_km/t_días) junto a la flota de mantenimiento; choferes; inventario; historial de visitas en solo lectura (sin Nueva visita); bitácora de patio en Flota. Logística: Flota visual ops (`/flota`: En ruta, Ubicación Foráneo|Local, destino, Registrar regreso). Asignación chofer↔unidad **parked** (HTTP `/logistica/asignaciones` existe; no hay desk ni nav). Supervisor: inventario, Andon (Enterado) y visitas (Datos → Trabajos → Obs → Fotos → **Piezas** → Firmas → Confirmar). El select de chofer en visita solo lista ACTIVO. Hub: si la unidad está inactiva por envío especial, el mensaje lo dice.
 
 Inventario: Ítems (búsqueda + Nuevo ítem; ficha con **Mínimo**), Familias, Proveedores, Stock (columna Min editable, badges OK/Bajo/Agotado, filtro Todos | Bajo | Agotado), Movimientos, Pendientes.
 

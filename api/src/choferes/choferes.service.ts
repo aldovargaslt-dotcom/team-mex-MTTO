@@ -6,6 +6,8 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { requireTrimmed } from '../common/require-trimmed';
+import { errorInactivarSiAsignado } from '../logistica/logistica-rules';
+import { Unidad } from '../unidades/unidad.entity';
 import { Chofer } from './chofer.entity';
 import { CreateChoferDto } from './dto/create-chofer.dto';
 import { UpdateChoferDto } from './dto/update-chofer.dto';
@@ -19,6 +21,8 @@ export class ChoferesService {
   constructor(
     @InjectRepository(Chofer)
     private readonly repo: Repository<Chofer>,
+    @InjectRepository(Unidad)
+    private readonly unidades: Repository<Unidad>,
   ) {}
 
   findAll(estado?: EstadoChofer) {
@@ -66,6 +70,15 @@ export class ChoferesService {
       );
     }
     if (dto.estado !== undefined) {
+      if (dto.estado === EstadoChofer.INACTIVO) {
+        const assigned = await this.unidades.findOne({
+          where: { choferId: id },
+        });
+        const bloqueo = errorInactivarSiAsignado(assigned?.id ?? null);
+        if (bloqueo) {
+          throw new BadRequestException(bloqueo);
+        }
+      }
       chofer.estado = dto.estado;
     }
     return this.repo.save(chofer);

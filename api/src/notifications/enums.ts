@@ -4,6 +4,7 @@ export enum SourceModule {
   ANDON = 'ANDON',
   INVENTARIO = 'INVENTARIO',
   SALUD = 'SALUD',
+  LOGISTICA = 'LOGISTICA',
 }
 
 export enum SourceEvent {
@@ -14,6 +15,7 @@ export enum SourceEvent {
   PENDIENTE_COMPROBANTE = 'PendienteComprobante',
   HEALTH_BELOW_THRESHOLD = 'HealthBelowThreshold',
   HEALTH_RECOVERED = 'HealthRecovered',
+  FLOTA_SIN_REGRESO = 'FLOTA_SIN_REGRESO',
 }
 
 export enum SubjectType {

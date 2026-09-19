@@ -145,7 +145,7 @@ Disabled: gris `#D8D8DE` (ya en CVA). No bajar opacidad hasta volver ilegible.
 | warning | `warning` | BAJO, Borrador, ABIERTO, Registrar entrada (Flota) |
 | critical | `danger` | AGOTADO |
 | neutral | `muted` | Inactiva, Resuelto, “—” |
-| informational | `navy` o `secondary` | Raro; no competir con warning |
+| informational | `info` / `navy` o `secondary` | En ruta (Logística; sky quiet, no `#EA7515`) |
 
 No usar `Badge variant="default"` (fill naranja) como estado. El naranja no es un status.
 

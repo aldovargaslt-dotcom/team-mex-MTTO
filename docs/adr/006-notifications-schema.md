@@ -47,7 +47,13 @@ Supervisor y Admin: mismo inbox v0.
 - **Inventario `StockBajo`**: Inventario emite envelope ADR-007 vía `StockAlertPort`; el adapter llama `ingestStockBajo`. `source_module=INVENTARIO`, `subject_type=ITEM`, `subject_ref=itemId`, `dedupe_key=INV:stock-bajo:{itemId}`. `WARNING` si `qty > 0`, `CRITICAL` si `qty = 0`. Deeplink `/inventario/stock`.
 - **Inventario `StockReabastecido`**: no crea fila; `clear(itemId)` expira el matching `dedupe_key` cuando `qty > min_qty` (o se quita el umbral).
 
+## Extensiones
+
+- [ADR-010 architecture](../../architecture/ADR-010-flota-sin-regreso-alertas-v0.md) / [ADR-012](012-flota-sin-regreso-alertas.md): `source_module=LOGISTICA`, `source_event=FLOTA_SIN_REGRESO`, `subject_type=UNIDAD`, `dedupe_key=FLOTA:sin-regreso:{unidadId}`, deeplink `/flota`. Logística y Admin leen el mismo inbox. No reescribe las filas Andon/Inventario de este ADR.
+- Salud (`source_module=SALUD`, `HealthBelowThreshold`) ya consume este schema; sin cambio de ownership.
+
 ## Prohibido
 
 - Filas o tablas de stock en `andon.*` (ADR-005).
 - Reemplazar `NotifyPort` (WA) por este inbox.
+- Escribir umbrales de Flota en `notifications.*` o `andon.*`.

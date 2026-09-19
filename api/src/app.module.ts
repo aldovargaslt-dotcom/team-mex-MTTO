@@ -10,12 +10,14 @@ import { ensureModuleSchemas } from './db/ensure-schemas';
 import { typeormRootOptions } from './db/postgres-options';
 import { AndonModule } from './andon/andon.module';
 import { FlotaModule } from './flota/flota.module';
+import { LogisticaModule } from './logistica/logistica.module';
 import { InventarioModule } from './inventario/inventario.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { OutboxModule } from './kernel/outbox/outbox.module';
 import { SeedModule } from './seed/seed.module';
 import { UnidadesModule } from './unidades/unidades.module';
 import { VisitasModule } from './visitas/visitas.module';
+import { AlertasModule } from './alertas/alertas.module';
 import { SaludModule } from './salud/salud.module';
 
 @Module({
@@ -32,6 +34,8 @@ import { SaludModule } from './salud/salud.module';
     UnidadesModule,
     ChoferesModule,
     FlotaModule,
+    AlertasModule,
+    LogisticaModule,
     InventarioModule,
     NotificationsModule,
     AndonModule,

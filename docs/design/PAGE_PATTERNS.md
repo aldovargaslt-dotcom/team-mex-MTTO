@@ -28,7 +28,7 @@ No gráficas, no KPIs, no feed, no campanita duplicada.
 
 ## 3. Listado denso + filtro
 
-**Rutas:** Andon, Existencias, Refacciones, Movimientos, Por recibir, Flota, Choferes, Sitios, Notificaciones.
+**Rutas:** Andon, Existencias, Refacciones, Movimientos, Por recibir, Flota (ops visual), Choferes, Sitios, Notificaciones.
 
 ```
 PageHeader (H1 + lede + acciones)
@@ -37,6 +37,8 @@ FormAlert
 DataTable | inbox-list
 empty-state | “Cargando …”
 ```
+
+Unidades / Existencias (post-#65 revert): KPI strip + `unidades-toolbar` / tabla, no Mode B `ListChrome`. Flota visual Logística: same pre-#62 KPI strip (`unidades-kpis--ops`) + tabla; no assign desk.
 
 - Un naranja en header si hay alta/entrada; Flota Sitios / Configurar alertas = secondary.
 - Fila clickeable → ficha o hub. Evitar “Detalle”.

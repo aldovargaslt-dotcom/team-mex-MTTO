@@ -13,6 +13,7 @@ export async function ensureModuleSchemas(config: ConfigService) {
     await ds.query('CREATE SCHEMA IF NOT EXISTS notifications');
     await ds.query('CREATE SCHEMA IF NOT EXISTS flota');
     await ds.query('CREATE SCHEMA IF NOT EXISTS salud');
+    await ds.query('CREATE SCHEMA IF NOT EXISTS alertas');
   } finally {
     await ds.destroy();
   }

@@ -12,6 +12,8 @@ import {
 import { EstadoUnidad } from '../common/estado-unidad.enum';
 import { MotivoInactivacion } from '../common/motivo-inactivacion.enum';
 import { TipoVehiculo } from './tipo-vehiculo.entity';
+import { AmbitoUnidad } from './ambito-unidad.enum';
+import { OpsEstadoUnidad } from './ops-estado-unidad.enum';
 
 @Entity('unidades')
 export class Unidad {
@@ -41,6 +43,33 @@ export class Unidad {
     nullable: true,
   })
   motivoInactivacion: MotivoInactivacion | null;
+
+  /** Standing assignment (ADR-008 logistica). Opaque chofer id; unique if set. Parked UI. */
+  @Column({ name: 'chofer_id', type: 'uuid', nullable: true, unique: true })
+  choferId: string | null;
+
+  /** Logística Flota visual (ADR-011). Foráneo | Local — not tipo STOCK|RUTAS. */
+  @Column({
+    type: 'varchar',
+    length: 16,
+    default: AmbitoUnidad.LOCAL,
+  })
+  ambito: AmbitoUnidad;
+
+  @Column({ type: 'varchar', length: 160, nullable: true })
+  destino: string | null;
+
+  @Column({
+    name: 'ops_estado',
+    type: 'varchar',
+    length: 16,
+    default: OpsEstadoUnidad.DISPONIBLE,
+  })
+  opsEstado: OpsEstadoUnidad;
+
+  /** Clock start for Flota sin-regreso (ADR-010). Set on salida, cleared on regreso. */
+  @Column({ name: 'salida_at', type: 'timestamptz', nullable: true })
+  salidaAt: Date | null;
 
   @Column({ name: 'marca_modelo', type: 'varchar', nullable: true })
   marcaModelo: string | null;

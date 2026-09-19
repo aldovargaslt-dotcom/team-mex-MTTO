@@ -62,7 +62,7 @@ Los briefs viejos sin sufijo de viewport siguen válidos; los nuevos lo llevan.
 | `/inventario/movimientos` | ambos | Listado | Filtros en URL |
 | `/inventario/pendientes` | ambos | Listado | Por recibir |
 | `/notificaciones` | ambos | Inbox | Unread + quiet action |
-| `/flota` | Logística, Admin | Tablero | Chips viaje; Atención ámbar |
+| `/flota` | Logística, Admin | Lista ops | KPI En ruta; Ubicación Foráneo\|Local; alerta Sin regreso Local; d1440. **Sin** Ciclos/Sitios (Logística). |
 | `/flota/unidades/:id` | Logística, Admin | Ficha viaje | Form salida/entrada |
 | `/flota/sitios` | Logística, Admin | Listado | |
 | `/choferes` | Admin | Listado | |

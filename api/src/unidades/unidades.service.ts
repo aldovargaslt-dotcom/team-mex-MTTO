@@ -17,6 +17,8 @@ import { FiltrarUnidadesDto } from './dto/filtrar-unidades.dto';
 import { UpdateUnidadDto } from './dto/update-unidad.dto';
 import { UnidadHubDto } from './dto/unidad-hub.dto';
 import { Unidad } from './unidad.entity';
+import { AmbitoUnidad } from './ambito-unidad.enum';
+import { OpsEstadoUnidad } from './ops-estado-unidad.enum';
 
 const UUID_RE =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -110,6 +112,11 @@ export class UnidadesService {
       tipo,
       estado: dto.estado,
       motivoInactivacion: null,
+      choferId: null,
+      ambito: AmbitoUnidad.LOCAL,
+      destino: null,
+      opsEstado: OpsEstadoUnidad.DISPONIBLE,
+      salidaAt: null,
       marcaModelo: dto.marcaModelo?.trim() || null,
       anio: dto.anio ?? null,
     });

@@ -92,6 +92,33 @@ TDD en `api/src/salud/*.spec.ts` (dominio puro e in-memory fakes; sin Postgres).
 - **H14** — PUT config: Admin ok; Supervisor y `LOGISTICA` 403.
 - **H15** — dominio Salud no escribe `andon.*`; cero filas de health en schema Andon.
 
+## Logística asignación (L1–L4)
+
+TDD en `api/src/logistica/logistica-rules.spec.ts` (dominio puro; sin Postgres) + e2e de HTTP. ADR-008 (puerto `UnidadChoferAssignmentPort`).
+
+- **L1** — 1:0..1: un chofer no se asigna a dos unidades; una unidad no toma segundo chofer sin `unassign`.
+- **L2** — solo chofer `ACTIVO` es asignable; `INACTIVO` no aparece en `GET /logistica/choferes`.
+- **L3** — soft-block: `PATCH` a `INACTIVO` falla si alguna `unidad.choferId` apunta al chofer; el chofer sigue `ACTIVO` y el kernel no se borra.
+- **L4** — escritura síncrona a Kernel `unidades.chofer_id`; cero filas nuevas en `outbox_events`.
+
+## Logística Flota ops (L5–L7)
+
+TDD en `api/src/logistica/logistica-ops-rules.spec.ts` + e2e. [ADR-011](011-logistica-flota-ops-estado.md).
+
+- **L5** — `GET /logistica/unidades` lista Kernel `ambito` / `destino` / `opsEstado` (no tipos STOCK\|RUTAS como ubicación).
+- **L6** — `POST /logistica/regresos/:unidadId` pasa `EN_RUTA` → `DISPONIBLE` (estado real) y limpia `salida_at`.
+- **L7** — regreso de `DISPONIBLE` falla; `POST /logistica/salidas/:unidadId` pone `EN_RUTA` + `salida_at`.
+
+## Logística Flota sin regreso (L8–L12)
+
+TDD umbral + emit/clear. [ADR-012](012-flota-sin-regreso-alertas.md) / [architecture ADR-010](../../architecture/ADR-010-flota-sin-regreso-alertas-v0.md).
+
+- **L8** — `resolveUmbralHoras`: override `umbral_unidad` gana; si no, FORANEO 24h / LOCAL 8h (o defaults de `regla_flota_sin_regreso`).
+- **L9** — alerta de lista `SIN_REGRESO` solo si `EN_RUTA` + `salida_at` + elapsed ≥ umbral (EN_RUTA reciente no alerta).
+- **L10** — emit `FLOTA_SIN_REGRESO` con `dedupe_key=FLOTA:sin-regreso:{unidadId}`; el mismo dedupe no duplica activo.
+- **L11** — regreso o under-threshold expira el mismo dedupe (patrón StockBajo). No escribe `andon.*`.
+- **L12** — `GET`/`PATCH /logistica/alertas/sin-regreso`: LOGISTICA ok; Supervisor 403. Schema `alertas`, no silo Logística.
+
 ## Outbound ops
 
 Puerto `NotifyPort`. `ANDON_NOTIFY_PROVIDER=evolution|noop` (**default noop**). Contrato lab: `POST /message/sendText/{instance}` con `number=ANDON_WA_GROUP_JID` (`@g.us`). Cableado HTTP: **otro agente**. Throwaway Baileys — **riesgo ToS, no prod**. Meta/Twilio no en este PR. Enterado in-app. Checklist: [andon-whatsapp-ops-checklist-v0](../../architecture/andon-whatsapp-ops-checklist-v0.md).

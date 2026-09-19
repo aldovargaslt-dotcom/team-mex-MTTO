@@ -47,6 +47,7 @@ for db in team_mex_mtto team_mex_mtto_test; do
     -c "CREATE SCHEMA IF NOT EXISTS notifications AUTHORIZATION team_mex;" \
     -c "CREATE SCHEMA IF NOT EXISTS flota AUTHORIZATION team_mex;" \
     -c "CREATE SCHEMA IF NOT EXISTS salud AUTHORIZATION team_mex;" \
+    -c "CREATE SCHEMA IF NOT EXISTS alertas AUTHORIZATION team_mex;" \
     -c "GRANT ALL ON SCHEMA public TO team_mex;"
 done
 

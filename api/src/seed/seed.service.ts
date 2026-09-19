@@ -10,6 +10,8 @@ import { UnidadOperativaEntity } from '../flota/entities/unidad-operativa.entity
 import { InventarioService } from '../inventario/inventario.service';
 import { TipoVehiculo } from '../unidades/tipo-vehiculo.entity';
 import { Unidad } from '../unidades/unidad.entity';
+import { AmbitoUnidad } from '../unidades/ambito-unidad.enum';
+import { OpsEstadoUnidad } from '../unidades/ops-estado-unidad.enum';
 import {
   CategoriaTrabajo,
   EstadoVisita,
@@ -124,6 +126,13 @@ export class SeedService implements OnModuleInit {
       exists.tipo = tipo;
       exists.estado = EstadoUnidad.ACTIVA;
       exists.motivoInactivacion = null;
+      exists.ambito = item.ambito === 'FORANEO' ? AmbitoUnidad.FORANEO : AmbitoUnidad.LOCAL;
+      exists.opsEstado =
+        item.opsEstado === 'EN_RUTA'
+          ? OpsEstadoUnidad.EN_RUTA
+          : OpsEstadoUnidad.DISPONIBLE;
+      exists.destino = item.destino?.trim() || null;
+      exists.salidaAt = this.salidaAtFromSeed(item);
       return this.unidades.save(exists);
     }
     return this.unidades.save(
@@ -133,13 +142,28 @@ export class SeedService implements OnModuleInit {
         vin: null,
         tipo,
         estado: EstadoUnidad.ACTIVA,
+        ambito: item.ambito === 'FORANEO' ? AmbitoUnidad.FORANEO : AmbitoUnidad.LOCAL,
+        opsEstado:
+          item.opsEstado === 'EN_RUTA'
+            ? OpsEstadoUnidad.EN_RUTA
+            : OpsEstadoUnidad.DISPONIBLE,
+        destino: item.destino?.trim() || null,
+        salidaAt: this.salidaAtFromSeed(item),
       }),
     );
   }
 
+  private salidaAtFromSeed(item: UnidadDemoSeed): Date | null {
+    if (item.opsEstado !== 'EN_RUTA' || item.salidaAtHoursAgo == null) {
+      return null;
+    }
+    return new Date(Date.now() - item.salidaAtHoursAgo * 3_600_000);
+  }
+
   /**
-   * Usual driver lives in flota.unidad_operativa (ADR-008), not public.unidades.
-   * Does not invent SALIDA/ENTRADA. Skips if the unit already has patio history.
+   * Usual driver lives in flota.unidad_operativa (patio), not as SALIDA/ENTRADA.
+   * Standing despacho assignment is Kernel unidades.chofer_id (logistica); seed
+   * leaves it null so the UI starts DISPONIBLE.
    */
   private async upsertChoferUsual(
     unidad: Unidad,

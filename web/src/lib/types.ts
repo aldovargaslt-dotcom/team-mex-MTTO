@@ -46,10 +46,57 @@ export type Unidad = {
   vin: string | null;
   estado: EstadoUnidad;
   motivoInactivacion?: MotivoInactivacion | null;
+  choferId?: string | null;
   tipo: TipoVehiculo;
   marcaModelo: string | null;
   anio: number | null;
   updatedAt?: string;
+};
+
+export type OpsChofer = 'DISPONIBLE' | 'EN_RUTA';
+
+export type ChipLogistica = 'DISPONIBLE' | 'EN_RUTA' | 'TODOS';
+
+export type LogisticaChoferRow = {
+  choferId: string;
+  nombre: string;
+  ops: OpsChofer;
+  unidadId?: string;
+  placas?: string;
+};
+
+export type OpsEstadoUnidad = 'EN_RUTA' | 'DISPONIBLE';
+
+export type AmbitoUnidad = 'FORANEO' | 'LOCAL';
+
+export type ChipLogisticaUnidad = 'EN_RUTA' | 'DISPONIBLE' | 'TODAS';
+
+export type LogisticaUnidadRow = {
+  unidadId: string;
+  placas: string;
+  numeroInterno: string;
+  choferNombre: string | null;
+  opsEstado: OpsEstadoUnidad;
+  ambito: AmbitoUnidad;
+  destino: string | null;
+  salidaAt?: string | null;
+  alerta: 'SIN_REGRESO' | null;
+};
+
+export type LogisticaUnidadesResponse = {
+  items: LogisticaUnidadRow[];
+  kpis: {
+    enRuta: number;
+    disponibles: number;
+    total: number;
+    sinRegreso: number;
+  };
+};
+
+export type AlertasSinRegresoConfig = {
+  localH: number;
+  foraneoH: number;
+  umbrales: { unidadId: string; horas: number }[];
 };
 
 export type VisitaResumen = {
@@ -250,7 +297,7 @@ export type InboxItem = {
   deeplinkPath: string;
 };
 
-export type SourceModule = 'ANDON' | 'INVENTARIO' | 'SALUD';
+export type SourceModule = 'ANDON' | 'INVENTARIO' | 'SALUD' | 'LOGISTICA';
 
 export type SubjectType = 'UNIDAD' | 'ITEM' | 'NONE';
 

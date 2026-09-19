@@ -26,6 +26,11 @@ export type UnidadDemoSeed = {
   placas: string;
   tipoNombre: string;
   choferNombre: (typeof CHOFERES_DEMO)[number] | null;
+  ambito?: 'FORANEO' | 'LOCAL';
+  opsEstado?: 'EN_RUTA' | 'DISPONIBLE';
+  destino?: string | null;
+  /** Hours before now for Kernel salida_at when EN_RUTA (ADR-010 demo). */
+  salidaAtHoursAgo?: number;
 };
 
 export const UNIDADES_DEMO: readonly UnidadDemoSeed[] = [
@@ -34,6 +39,10 @@ export const UNIDADES_DEMO: readonly UnidadDemoSeed[] = [
     placas: 'VU2625C',
     tipoNombre: TIPO_STOCK,
     choferNombre: null,
+    ambito: 'LOCAL',
+    opsEstado: 'EN_RUTA',
+    destino: 'CEDIS local',
+    salidaAtHoursAgo: 9,
   },
   {
     nombre: 'NISSAN REDILAS',
@@ -82,6 +91,10 @@ export const UNIDADES_DEMO: readonly UnidadDemoSeed[] = [
     placas: 'VU2627C',
     tipoNombre: TIPO_RUTAS,
     choferNombre: 'BRYAN',
+    ambito: 'FORANEO',
+    opsEstado: 'EN_RUTA',
+    destino: 'Taller externo',
+    salidaAtHoursAgo: 2,
   },
   {
     nombre: 'RAM CODISA',
@@ -94,6 +107,10 @@ export const UNIDADES_DEMO: readonly UnidadDemoSeed[] = [
     placas: '63AL5K',
     tipoNombre: TIPO_CAMIONES_3_Y_MEDIA,
     choferNombre: null,
+    ambito: 'FORANEO',
+    opsEstado: 'EN_RUTA',
+    destino: 'Cliente FEMSA',
+    salidaAtHoursAgo: 25,
   },
   {
     nombre: 'FORD 2017',
