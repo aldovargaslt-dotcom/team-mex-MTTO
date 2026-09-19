@@ -1,6 +1,6 @@
 # Brief — Logística chofer↔unidad asignación v0
 
-Estado: **Accepted**.
+Estado: **Parked** (Aldo lock). Desk de asignación no es el producto v0. Ver [brief-logistica-flota-visual-v0](brief-logistica-flota-visual-v0.md).
 
 Seam: [ADR-008](../adr/008-flota-schema.md) — módulo Nest delgado `logistica`. Estado = Kernel `unidad.choferId`. No schema de mantenimiento. No duplicar maestros Chofer/Unidad. TDD: [ADR-004](../adr/ADR-004-tdd-test-bar-andon-v0.md) L1–L4. UX: [logistica-asignacion-ux-v0](logistica-asignacion-ux-v0.md).
 

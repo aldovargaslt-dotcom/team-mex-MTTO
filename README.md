@@ -162,7 +162,7 @@ No hay choferes placeholder. INACTIVO los oculta del select de visita; el histor
 | FORD 2017 | VU2624C | CAMIONES 3 Y MEDIA | RUBEN |
 | CHATO NUEVO | WR2023C | CAMIONES 3 Y MEDIA | — |
 
-`FOTON` lleva la visita cerrada demo (100 km, ~120 d) para Andon ABIERTO. El chofer usual (si hay) se proyecta en `flota.unidad_operativa.chofer_ultimo_id` (bitácora de patio). La asignación de despacho v0 vive en Kernel `unidades.chofer_id` (módulo `logistica`, ADR-008); la semilla no la escribe y no inventa SALIDA/ENTRADA.
+`FOTON` lleva la visita cerrada demo (100 km, ~120 d) para Andon ABIERTO. El chofer usual (si hay) se proyecta en `flota.unidad_operativa.chofer_ultimo_id` (bitácora de patio). La asignación de despacho v0 (`unidades.chofer_id`) está **parked**. Ops visual: Kernel `ambito` / `destino` / `ops_estado` (ADR-011).
 
 Si la DB ya tenía la semilla placeholder (`U-101` / Juan Pérez / Camión), `npm run seed` la retira por placas/nombre. No borra unidades reales ajenas a esas claves.
 
@@ -192,8 +192,9 @@ Autenticación stub: encabezado `X-Role`. Falta el encabezado → 401.
 | `GET /notifications`, `GET /notifications/badge` | sí | sí (mismo inbox) | 403 |
 | `POST /notifications/:id/read`, `POST /notifications/read-all` | sí | sí | 403 |
 | `/flota/*` (tablero, sitios, movimientos, envío especial) | 403 | sí | sí |
-| `GET /logistica/choferes` (`?q` `?chip=DISPONIBLE\|EN_RUTA\|TODOS`) | 403 | sí | sí |
-| `POST /logistica/asignaciones`, `DELETE /logistica/asignaciones/:unidadId` | 403 | sí | sí |
+| `GET /logistica/unidades` (`?q` `?chip=EN_RUTA\|DISPONIBLE\|TODAS`) | 403 | sí | sí |
+| `POST /logistica/regresos/:unidadId` | 403 | sí | sí |
+| `GET /logistica/choferes`, assign (parked) | 403 | sí | sí |
 
 Hub: `fichaCorta` + `borradores[]` (vacío para admin) + `historialCerrado[]` + `puedeCrearVisita` + `mensajes[]`. `puedeCrearVisita` es **true solo si el rol es SUPERVISOR y la unidad está ACTIVA**.
 

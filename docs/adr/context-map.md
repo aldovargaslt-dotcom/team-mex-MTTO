@@ -9,8 +9,8 @@
 | Inventario | `inventario` | `api/src/inventario` | `web/src/app/inventario` |
 | Andon | `andon` | `api/src/andon` | `web/src/app/andon` |
 | Notifications | `notifications` | `api/src/notifications` | `web/src/app/notificaciones`, `Campanita` |
-| Flota | `flota` | `api/src/flota` | `web/src/app/flota` |
-| Logística (asignación) | `public` (`unidades.chofer_id`) | `api/src/logistica` | `web/src/app/logistica` |
+| Flota | `flota` | `api/src/flota` | `web/src/app/flota` (visual ops: ADR-011) |
+| Logística (ops + asignación parked) | `public` (`unidades.ops_estado`, `ambito`, `destino`, `chofer_id`) | `api/src/logistica` | `/flota` (nav Logística→Flota). `/logistica` redirige. |
 | Salud | `salud` | `api/src/salud` | hub `web/src/app/unidades/[id]`, config en Unidades (Admin) |
 
 Seams (puertos): `NotifyPort`, `StockAlertPort`, `AvisoInboxPort`, `AndonAbiertoPort` (Flota lee aviso Andon abierto; sin UI Andon), `HealthAlertPort` (Salud → inbox; sin WhatsApp), `UnidadChoferAssignmentPort` (Logística escribe Kernel `unidad.choferId`; sin schema propio). IDs opacos; sin FKs/JOINs cruzadas (ADR-002).

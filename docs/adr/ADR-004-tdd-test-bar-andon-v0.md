@@ -101,6 +101,14 @@ TDD en `api/src/logistica/logistica-rules.spec.ts` (dominio puro; sin Postgres) 
 - **L3** — soft-block: `PATCH` a `INACTIVO` falla si alguna `unidad.choferId` apunta al chofer; el chofer sigue `ACTIVO` y el kernel no se borra.
 - **L4** — escritura síncrona a Kernel `unidades.chofer_id`; cero filas nuevas en `outbox_events`.
 
+## Logística Flota ops (L5–L7)
+
+TDD en `api/src/logistica/logistica-ops-rules.spec.ts` + e2e. [ADR-011](011-logistica-flota-ops-estado.md).
+
+- **L5** — `GET /logistica/unidades` lista Kernel `ambito` / `destino` / `opsEstado` (no tipos STOCK\|RUTAS como ubicación).
+- **L6** — `POST /logistica/regresos/:unidadId` pasa `EN_RUTA` → `DISPONIBLE` (estado real).
+- **L7** — regreso de `DISPONIBLE` falla; alerta de lista si `EN_RUTA` (sin regreso).
+
 ## Outbound ops
 
 Puerto `NotifyPort`. `ANDON_NOTIFY_PROVIDER=evolution|noop` (**default noop**). Contrato lab: `POST /message/sendText/{instance}` con `number=ANDON_WA_GROUP_JID` (`@g.us`). Cableado HTTP: **otro agente**. Throwaway Baileys — **riesgo ToS, no prod**. Meta/Twilio no en este PR. Enterado in-app. Checklist: [andon-whatsapp-ops-checklist-v0](../../architecture/andon-whatsapp-ops-checklist-v0.md).

@@ -62,10 +62,9 @@ Los briefs viejos sin sufijo de viewport siguen válidos; los nuevos lo llevan.
 | `/inventario/movimientos` | ambos | Listado | Filtros en URL |
 | `/inventario/pendientes` | ambos | Listado | Por recibir |
 | `/notificaciones` | ambos | Inbox | Unread + quiet action |
-| `/flota` | Logística, Admin | Tablero | Chips viaje; Atención ámbar |
+| `/flota` | Logística, Admin | Lista ops | KPI En ruta; Ubicación Foráneo\|Local; d1440 |
 | `/flota/unidades/:id` | Logística, Admin | Ficha viaje | Form salida/entrada |
 | `/flota/sitios` | Logística, Admin | Listado | |
-| `/logistica` | Logística, Admin | Listado asignación | Mode B `ListChrome` chips Disponibles/En ruta; sheet; d1440 |
 | `/choferes` | Admin | Listado | |
 
 Semilla: U-101, `PAST-FR-01` Bajo. Ver README.

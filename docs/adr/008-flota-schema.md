@@ -60,4 +60,6 @@ HTTP (`LOGISTICA` | `ADMIN_DIRECTIVO`; Supervisor 403):
 
 Soft-block: no pasar un chofer a `INACTIVO` mientras esté asignado (PATCH `/choferes/:id`).
 
+**Parked (Aldo lock Flota visual):** el desk de asignación (`/logistica`, chips Disponibles|En ruta sobre choferes) no es el producto de v0 visual. El puerto HTTP de asignación puede quedar en el módulo; la nav Logística apunta a `/flota`. Ops de viaje: [ADR-009 / ADR-011](011-logistica-flota-ops-estado.md).
+
 Fuera: geo/rutas, multi-asignación, nav Supervisor, alta de chofer aquí.

@@ -28,7 +28,7 @@ No gráficas, no KPIs, no feed, no campanita duplicada.
 
 ## 3. Listado denso + filtro
 
-**Rutas:** Andon, Existencias, Refacciones, Movimientos, Por recibir, Flota, Logística (asignación), Choferes, Sitios, Notificaciones.
+**Rutas:** Andon, Existencias, Refacciones, Movimientos, Por recibir, Flota (ops visual), Choferes, Sitios, Notificaciones.
 
 ```
 PageHeader (H1 + lede + acciones)
@@ -38,7 +38,7 @@ DataTable | inbox-list
 empty-state | “Cargando …”
 ```
 
-Mode B Despacho (Unidades, Existencias, Logística asignación): `ListChrome` (H1 + count + `ListFilter` segmented en `filters` + un CTA) en lugar de `PageHeader`. Búsqueda en fila aparte. Chip activo = quiet fill + navy underline, no naranja.
+Mode B Despacho (Unidades, Existencias): `ListChrome` (H1 + count + `ListFilter` segmented en `filters` + un CTA). Flota visual Logística: KPI strip pre-#62 (`unidades-kpis`) + tabla; no assign desk.
 
 - Un naranja en header si hay alta/entrada; Flota Sitios / Configurar alertas = secondary.
 - Fila clickeable → ficha o hub. Evitar “Detalle”.

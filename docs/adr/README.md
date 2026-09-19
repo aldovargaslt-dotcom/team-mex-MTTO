@@ -14,9 +14,10 @@ El archivo 004 se llama `ADR-004-…` (histórico). No renombrar en un overlay d
 | 005 | [005-andon-no-stock-alerts.md](005-andon-no-stock-alerts.md) | Andon ≠ alertas de stock |
 | 006 | [006-notifications-schema.md](006-notifications-schema.md) | Schema `notifications` (inbox) |
 | 007 | [007-inventario-stock-bajo.md](007-inventario-stock-bajo.md) | `min_qty` / `StockBajo` |
-| 008 | [008-flota-schema.md](008-flota-schema.md) | Schema `flota`, rol `LOGISTICA`, envío especial, puerto asignación chofer↔unidad |
+| 008 | [008-flota-schema.md](008-flota-schema.md) | Schema `flota`, rol `LOGISTICA`, envío especial, puerto asignación chofer↔unidad (parked UI) |
 | 009 | [009-icono-tipo-vehiculo.md](009-icono-tipo-vehiculo.md) | `tipos_vehiculo.icono` (glifo del catálogo) |
 | 010 | [010-salud-unidad.md](010-salud-unidad.md) | Schema `salud`, Health Score, alerta derivada |
+| 011 | [011-logistica-flota-ops-estado.md](011-logistica-flota-ops-estado.md) | Kernel `ambito` / `destino` / `opsEstado`; registrar regreso. Canónico Aldo: [architecture/ADR-009](../../architecture/ADR-009-logistica-flota-ops-estado-v0.md) |
 
 Mapa de bounded contexts → directorios: [context-map.md](context-map.md). Briefs visuales de corte: [docs/design-system/](../design-system/). Sistema de ingeniería UI (spec UX, Visual QA): [docs/design/](../design/).
 
