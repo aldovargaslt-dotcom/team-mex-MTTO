@@ -58,7 +58,11 @@ describe('Flota v0 (e2e)', () => {
       .expect(403);
     expect(inv.body.message).toMatch(/Logística/i);
     await request(server).get('/andon/avisos').set(LOGISTICA).expect(403);
-    await request(server).get('/notifications/badge').set(LOGISTICA).expect(403);
+    const badge = await request(server)
+      .get('/notifications/badge')
+      .set(LOGISTICA)
+      .expect(200);
+    expect(badge.body).toEqual(expect.objectContaining({ unread: expect.any(Number) }));
     await request(server).post('/unidades').set(LOGISTICA).send({}).expect(403);
     await request(server).post('/choferes').set(LOGISTICA).send({}).expect(403);
     const u101 = await unidad(UNIDAD_ANDON_DEMO);

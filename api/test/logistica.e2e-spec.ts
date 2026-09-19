@@ -392,6 +392,7 @@ describe('Logística asignación chofer↔unidad (e2e L1–L4)', () => {
       .expect(200);
     const updated = (
       after.body.items as {
+        placas: string;
         opsEstado: string;
         ambito: string;
         destino: string | null;
@@ -486,12 +487,13 @@ describe('Logística asignación chofer↔unidad (e2e L1–L4)', () => {
       inbox.body as {
         sourceModule: string;
         sourceEvent: string;
+        subjectRef: string | null;
         dedupeKey: string;
         title: string;
         deeplinkPath: string;
         expiresAt: string | null;
       }[]
-    ).find((row) => row.sourceEvent === 'FLOTA_SIN_REGRESO');
+    ).find((row) => row.dedupeKey === `FLOTA:sin-regreso:${foton!.unidadId}`);
     expect(item).toBeTruthy();
     expect(item!.sourceModule).toBe('LOGISTICA');
     expect(item!.dedupeKey).toBe(`FLOTA:sin-regreso:${foton!.unidadId}`);

@@ -189,8 +189,8 @@ Autenticación stub: encabezado `X-Role`. Falta el encabezado → 401.
 | `GET /andon/avisos`, `GET /andon/umbrales` | sí | sí | 403 |
 | `POST /andon/avisos/:id/enterado` | sí | 403 | 403 |
 | `PATCH /andon/umbrales/:tipoVehiculoId` | 403 | sí | 403 |
-| `GET /notifications`, `GET /notifications/badge` | sí | sí (mismo inbox) | 403 |
-| `POST /notifications/:id/read`, `POST /notifications/read-all` | sí | sí | 403 |
+| `GET /notifications`, `GET /notifications/badge` | sí | sí (mismo inbox) | sí (`FLOTA_SIN_REGRESO`) |
+| `POST /notifications/:id/read`, `POST /notifications/read-all` | sí | sí | sí |
 | `/flota/*` (tablero, sitios, movimientos, envío especial) | 403 | sí | sí |
 | `GET /logistica/unidades` (`?q` `?chip=EN_RUTA\|DISPONIBLE\|TODAS`) | 403 | sí | sí |
 | `POST /logistica/regresos/:unidadId` | 403 | sí | sí |

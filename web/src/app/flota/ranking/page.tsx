@@ -51,7 +51,6 @@ import {
 } from '@/lib/ranking-patio';
 import { useRole } from '@/lib/role';
 import type { FlotaUnidadDetalle, TableroFlotaRow } from '@/lib/types';
-import { LogisticaTableroOnly } from '@/components/LogisticaTableroOnly';
 
 export default function FlotaCiclosPage() {
   return (
