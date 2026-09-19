@@ -5,12 +5,24 @@ import { ChoferesService } from '../choferes/choferes.service';
 import { EstadoChofer } from '../choferes/estado-chofer.enum';
 import { Unidad } from '../unidades/unidad.entity';
 import { UnidadesService } from '../unidades/unidades.service';
-import { errorAssign, filaChofer, filtrarFilas, kpisActivos } from './logistica-rules';
+import {
+  alertaSinRegreso,
+  errorAssign,
+  errorRegreso,
+  filaChofer,
+  filtrarFilas,
+  filtrarUnidadesOps,
+  kpisActivos,
+  kpisUnidadesOps,
+} from './logistica-rules';
 import {
   ChipLogistica,
+  ChipLogisticaUnidad,
   LogisticaChoferRow,
+  LogisticaUnidadRow,
   UnidadChoferAssignmentPort,
 } from './logistica-types';
+import { OpsEstadoUnidad } from '../unidades/ops-estado-unidad.enum';
 
 @Injectable()
 export class LogisticaService implements UnidadChoferAssignmentPort {
@@ -43,6 +55,51 @@ export class LogisticaService implements UnidadChoferAssignmentPort {
       items: filtrarFilas(rows, q, chip),
       kpis: kpisActivos(rows),
     };
+  }
+
+  async listUnidades(q?: string, chip?: ChipLogisticaUnidad) {
+    const unidades = await this.unidadRepo.find({
+      relations: { tipo: true },
+      order: { placas: 'ASC' },
+    });
+    const choferIds = [
+      ...new Set(
+        unidades.map((u) => u.choferId).filter((id): id is string => Boolean(id)),
+      ),
+    ];
+    const choferes = await Promise.all(
+      choferIds.map((id) => this.choferes.findOne(id).catch(() => null)),
+    );
+    const nombreById = new Map<string, string>();
+    for (const chofer of choferes) {
+      if (chofer) nombreById.set(chofer.id, chofer.nombre);
+    }
+    const rows: LogisticaUnidadRow[] = unidades.map((unidad) => ({
+      unidadId: unidad.id,
+      placas: unidad.placas,
+      numeroInterno: unidad.numeroInterno,
+      choferNombre: unidad.choferId
+        ? (nombreById.get(unidad.choferId) ?? null)
+        : null,
+      opsEstado: unidad.opsEstado,
+      ambito: unidad.ambito,
+      destino: unidad.destino,
+      alerta: alertaSinRegreso(unidad.opsEstado),
+    }));
+    return {
+      items: filtrarUnidadesOps(rows, q, chip),
+      kpis: kpisUnidadesOps(rows),
+    };
+  }
+
+  async registrarRegreso(unidadId: string): Promise<void> {
+    const unidad = await this.unidades.findOne(unidadId);
+    const error = errorRegreso(unidad.opsEstado);
+    if (error) {
+      throw new BadRequestException(error);
+    }
+    unidad.opsEstado = OpsEstadoUnidad.DISPONIBLE;
+    await this.unidadRepo.save(unidad);
   }
 
   async assign(unidadId: string, choferId: string): Promise<void> {

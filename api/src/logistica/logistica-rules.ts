@@ -1,7 +1,9 @@
 import { EstadoChofer } from '../choferes/estado-chofer.enum';
 import {
   ChipLogistica,
+  ChipLogisticaUnidad,
   LogisticaChoferRow,
+  LogisticaUnidadRow,
   OpsChofer,
 } from './logistica-types';
 
@@ -13,6 +15,8 @@ export const MSG_CHOFER_OCUPADO =
   'El chofer ya está asignado a otra unidad.';
 export const MSG_INACTIVAR_ASIGNADO =
   'No se puede pasar a INACTIVO: el chofer tiene una unidad asignada. Quite la asignación en Logística primero.';
+export const MSG_REGRESO_NO_EN_RUTA =
+  'La unidad no está en ruta. No hay regreso que registrar.';
 
 export function opsDeAsignacion(
   unidadId?: string | null,
@@ -93,6 +97,45 @@ export function filtrarFilas(
 
 export function kpisActivos(rows: LogisticaChoferRow[]) {
   const enRuta = rows.filter((r) => r.ops === 'EN_RUTA').length;
+  return {
+    enRuta,
+    disponibles: rows.length - enRuta,
+    total: rows.length,
+  };
+}
+
+export function alertaSinRegreso(
+  opsEstado: 'EN_RUTA' | 'DISPONIBLE',
+): 'SIN_REGRESO' | null {
+  return opsEstado === 'EN_RUTA' ? 'SIN_REGRESO' : null;
+}
+
+export function errorRegreso(
+  opsEstado: 'EN_RUTA' | 'DISPONIBLE' | null,
+): string | null {
+  if (opsEstado !== 'EN_RUTA') return MSG_REGRESO_NO_EN_RUTA;
+  return null;
+}
+
+export function filtrarUnidadesOps(
+  rows: LogisticaUnidadRow[],
+  q?: string,
+  chip?: ChipLogisticaUnidad,
+): LogisticaUnidadRow[] {
+  const needle = q?.trim().toLowerCase() ?? '';
+  const filtro = chip && chip !== 'TODAS' ? chip : undefined;
+  return rows.filter((row) => {
+    if (filtro && row.opsEstado !== filtro) return false;
+    if (!needle) return true;
+    return (
+      row.placas.toLowerCase().includes(needle) ||
+      row.numeroInterno.toLowerCase().includes(needle)
+    );
+  });
+}
+
+export function kpisUnidadesOps(rows: LogisticaUnidadRow[]) {
+  const enRuta = rows.filter((r) => r.opsEstado === 'EN_RUTA').length;
   return {
     enRuta,
     disponibles: rows.length - enRuta,

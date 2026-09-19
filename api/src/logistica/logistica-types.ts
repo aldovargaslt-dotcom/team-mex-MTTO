@@ -18,3 +18,16 @@ export interface UnidadChoferAssignmentPort {
 export const UNIDAD_CHOFER_ASSIGNMENT_PORT = Symbol(
   'UnidadChoferAssignmentPort',
 );
+
+export type ChipLogisticaUnidad = 'EN_RUTA' | 'DISPONIBLE' | 'TODAS';
+
+export type LogisticaUnidadRow = {
+  unidadId: string;
+  placas: string;
+  numeroInterno: string;
+  choferNombre: string | null;
+  opsEstado: 'EN_RUTA' | 'DISPONIBLE';
+  ambito: 'FORANEO' | 'LOCAL';
+  destino: string | null;
+  alerta: 'SIN_REGRESO' | null;
+};

@@ -15,6 +15,7 @@ import { Rol } from '../auth/roles.enum';
 import {
   CreateAsignacionDto,
   FiltrarLogisticaChoferesDto,
+  FiltrarLogisticaUnidadesDto,
 } from './dto/logistica.dto';
 import { LogisticaService } from './logistica.service';
 
@@ -31,6 +32,24 @@ export class LogisticaController {
   })
   list(@Query() filtros: FiltrarLogisticaChoferesDto) {
     return this.service.listChoferes(filtros.q, filtros.chip);
+  }
+
+  @Get('unidades')
+  @ApiOperation({
+    summary:
+      'Unidades con ops EN_RUTA|DISPONIBLE, ambito FORANEO|LOCAL y destino. Query q (placas/nombre) y chip.',
+  })
+  listUnidades(@Query() filtros: FiltrarLogisticaUnidadesDto) {
+    return this.service.listUnidades(filtros.q, filtros.chip);
+  }
+
+  @Post('regresos/:unidadId')
+  @HttpCode(204)
+  @ApiOperation({ summary: 'Registrar regreso: opsEstado EN_RUTA → DISPONIBLE' })
+  registrarRegreso(
+    @Param('unidadId', ParseUUIDPipe) unidadId: string,
+  ) {
+    return this.service.registrarRegreso(unidadId);
   }
 
   @Post('asignaciones')

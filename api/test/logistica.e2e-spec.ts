@@ -93,11 +93,14 @@ describe('Logística asignación chofer↔unidad (e2e L1–L4)', () => {
   it('LOGISTICA y Admin entran; Supervisor 403', async () => {
     await request(server).get('/logistica/choferes').set(LOGISTICA).expect(200);
     await request(server).get('/logistica/choferes').set(ADMIN).expect(200);
+    await request(server).get('/logistica/unidades').set(LOGISTICA).expect(200);
+    await request(server).get('/logistica/unidades').set(ADMIN).expect(200);
     const denied = await request(server)
       .get('/logistica/choferes')
       .set(SUPERVISOR)
       .expect(403);
     expect(denied.body.message).toMatch(/supervisor/i);
+    await request(server).get('/logistica/unidades').set(SUPERVISOR).expect(403);
   });
 
   it('L2 lista solo ACTIVO; INACTIVO no aparece; kpis ACTIVO', async () => {
@@ -266,5 +269,83 @@ describe('Logística asignación chofer↔unidad (e2e L1–L4)', () => {
       .set(ADMIN)
       .send({ estado: 'INACTIVO' })
       .expect(200);
+  });
+
+  it('L5 lista unidades con ambito FORANEO|LOCAL y KPI En ruta', async () => {
+    const res = await request(server)
+      .get('/logistica/unidades')
+      .set(LOGISTICA)
+      .expect(200);
+    const body = res.body as {
+      items: {
+        placas: string;
+        numeroInterno: string;
+        ambito: string;
+        opsEstado: string;
+        destino: string | null;
+        alerta: string | null;
+      }[];
+      kpis: { enRuta: number; disponibles: number; total: number };
+    };
+    expect(body.kpis.total).toBe(body.items.length);
+    expect(body.kpis.enRuta + body.kpis.disponibles).toBe(body.kpis.total);
+    expect(body.kpis.enRuta).toBeGreaterThanOrEqual(1);
+    const foraneo = body.items.find((r) => r.placas === '63AL5K');
+    expect(foraneo).toMatchObject({
+      numeroInterno: 'RAM FORANEO',
+      ambito: 'FORANEO',
+      opsEstado: 'EN_RUTA',
+      destino: 'Cliente FEMSA',
+      alerta: 'SIN_REGRESO',
+    });
+    expect(body.items.every((r) => r.ambito === 'FORANEO' || r.ambito === 'LOCAL')).toBe(
+      true,
+    );
+  });
+
+  it('L6/L7 registrar regreso EN_RUTA → DISPONIBLE; DISPONIBLE falla', async () => {
+    const list = await request(server)
+      .get('/logistica/unidades')
+      .query({ q: '63AL5K' })
+      .set(LOGISTICA)
+      .expect(200);
+    const ram = (
+      list.body.items as {
+        unidadId: string;
+        placas: string;
+        opsEstado: string;
+        alerta: string | null;
+      }[]
+    ).find((r) => r.placas === '63AL5K');
+    expect(ram).toMatchObject({
+      opsEstado: 'EN_RUTA',
+      alerta: 'SIN_REGRESO',
+    });
+
+    await request(server)
+      .post(`/logistica/regresos/${ram!.unidadId}`)
+      .set(LOGISTICA)
+      .expect(204);
+
+    const after = await request(server)
+      .get('/logistica/unidades')
+      .query({ q: '63AL5K' })
+      .set(LOGISTICA)
+      .expect(200);
+    const updated = (
+      after.body.items as {
+        placas: string;
+        opsEstado: string;
+        alerta: string | null;
+      }[]
+    ).find((r) => r.placas === '63AL5K');
+    expect(updated?.opsEstado).toBe('DISPONIBLE');
+    expect(updated?.alerta).toBeNull();
+
+    const again = await request(server)
+      .post(`/logistica/regresos/${ram!.unidadId}`)
+      .set(LOGISTICA)
+      .expect(400);
+    expect(again.body.message).toMatch(/no está en ruta/i);
   });
 });
