@@ -1,6 +1,41 @@
 # AGENTS
 
-Índice para agentes. **No** copia ADRs ni briefs: ábrelos antes de tocar código.
+Índice **de este repositorio**. La metodología global (SDD, DDD, TDD, ADR, ICM, Engineering Work Orders, verificación) no se copia aquí.
+
+**Producto:** Team Mex MTTO — visitas de mantenimiento, inventario (piezas), Andon, campanita, bitácora de patio, ops Logística, salud de unidad.
+
+Antes de cargar árbol: [ICM.md](ICM.md) (**minimum sufficient authoritative context**, no “load the repo”). Vocabulario: [context/GLOSSARY.md](context/GLOSSARY.md).
+
+## Fuentes de verdad
+
+| Tema | Dónde |
+|------|--------|
+| Producto (qué / quién / alcance / no-goals) | [context/PRODUCT.md](context/PRODUCT.md) — run/deploy/seed: [README.md](README.md) |
+| Arquitectura as-is | [context/ARCHITECTURE.md](context/ARCHITECTURE.md) |
+| ADRs (único SoT de decisiones) | [docs/adr/](docs/adr/) — índice [docs/adr/README.md](docs/adr/README.md) |
+| Mapa técnico de módulos | [docs/adr/context-map.md](docs/adr/context-map.md) |
+| Áreas de dominio (provisionales) | [domain/README.md](domain/README.md) |
+| Specs funcionales | [docs/specs/](docs/specs/) |
+| UI / spec UX / Visual QA | [docs/design/](docs/design/) + briefs [docs/design-system/](docs/design-system/) |
+| Engineering Work Orders | [docs/engineering-work-orders/](docs/engineering-work-orders/) (`EWO-xxx`) |
+| Evidencia de cierre | [docs/evidence/](docs/evidence/) · UI PNG: [docs/screenshots/](docs/screenshots/) |
+| Enrutado de contexto | [ICM.md](ICM.md) |
+
+No hay `docs/decisions/` ni carpeta `work-orders/`.
+
+## WO vs Engineering Work Order
+
+- **WO** = wizard de visita (Supervisor), orden de trabajo de mantenimiento. No redefinir.
+- **Engineering Work Order** = artefacto de ejecución no trivial. ID `EWO-001`, `EWO-002`, …. Ruta `docs/engineering-work-orders/`. **No** usar el acrónimo WO.
+- Cortes / briefs (issue + [PR template](.github/pull_request_template.md) + `docs/design-system/`) son **históricos**. No migrarlos a EWO salvo pedido explícito.
+
+Implementación no trivial: EWO **aprobado**. No ampliar alcance del EWO en silencio. Spec UX si cambia layout/jerarquía/acciones ([plantilla](docs/design/UX_SPEC_TEMPLATE.md)).
+
+## ICM y escalación
+
+1. Leer [ICM.md](ICM.md) y cargar solo el contexto de la etapa + el área afectada.
+2. No decidir en silencio producto, dominio (incluido “esto ya es un Bounded Context”), ni arquitectura.
+3. Escalar si hay conflicto SPEC/ADR, fuera de v0, ownership, o pedido de unificar notify.
 
 ## Antes de cambiar X, lee Y
 
@@ -20,8 +55,6 @@
 | Salud de unidad | [ADR-010](docs/adr/010-salud-unidad.md), [spec](docs/specs/unit-health-v0.md), ADR-004 (H1–H15). No escribir `andon.*`. Dual-stack notify intacto. |
 | Notify / WhatsApp | Dual-stack abajo. Default **noop**. No “arreglar”. |
 
-Mapa de directorios: [docs/adr/context-map.md](docs/adr/context-map.md). Índice ADR: [docs/adr/README.md](docs/adr/README.md).
-
 ## Dual-stack Andon notify (conflicto conocido; no unificar)
 
 Hay **dos** fábricas. Documentar ambas; el default sigue `ANDON_NOTIFY_PROVIDER=noop`.
@@ -31,13 +64,9 @@ Hay **dos** fábricas. Documentar ambas; el default sigue `ANDON_NOTIFY_PROVIDER
 
 El [checklist de ops](architecture/andon-whatsapp-ops-checklist-v0.md) todavía dice que Evolution no está implementado. Lab only / riesgo ToS; ver [docs/andon-evolution-notify.md](docs/andon-evolution-notify.md). **No** fusionar ni “arreglar” en un corte de infra o visual.
 
-## WO UI ≠ brief de ingeniería
-
-“WO” en este repo es el **wizard de visita** (Supervisor). El artefacto de ingeniería es el **brief** / **corte** del PR ([`.github/pull_request_template.md`](.github/pull_request_template.md)) y, si cambia layout o jerarquía, la spec UX ([plantilla](docs/design/UX_SPEC_TEMPLATE.md)). No hay carpeta `work-orders/`.
-
 ## Fuera de v0
 
-README: multi-almacén, lotes, costeo, OC formal, kardex pesado, ítem↔placa, reserva de stock en borrador. Flota: sin GPS/rutas. No ampliar ownership de Inventario ni Andon sin ADR.
+README / [PRODUCT.md](context/PRODUCT.md): multi-almacén, lotes, costeo, OC formal, kardex pesado, ítem↔placa, reserva de stock en borrador. Flota: sin GPS/rutas. No ampliar ownership de Inventario ni Andon sin ADR.
 
 ## Verificación
 

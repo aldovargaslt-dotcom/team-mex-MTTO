@@ -1,6 +1,8 @@
 # ADRs
 
-Fuente de arquitectura de Team Mex. Estado: **aceptado (v0)** salvo que un ADR posterior lo sustituya.
+Fuente de arquitectura de Team Mex (**único SoT de decisiones**; no hay `docs/decisions/`). Estado: **aceptado (v0)** salvo que un ADR posterior lo sustituya.
+
+Baseline as-is para agentes: [context/ARCHITECTURE.md](../../context/ARCHITECTURE.md). Enrutado: [ICM.md](../../ICM.md). Plantilla para un ADR **nuevo**: [ADR-TEMPLATE.md](ADR-TEMPLATE.md).
 
 El archivo 004 se llama `ADR-004-…` (histórico). No renombrar en un overlay de proceso.
 

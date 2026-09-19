@@ -11,3 +11,4 @@ Los ADRs en `docs/adr/` están **aceptados**. Índice y cuándo escribir uno: [R
 - No reescribir el cuerpo de un ADR aceptado para encajar código nuevo. Nuevo archivo o el viejo pasa a *superseded* con enlace.
 - El nombre `ADR-004-tdd-test-bar-andon-v0.md` es histórico; no renombrar por cosmética.
 - Copy visual y CI no van aquí (`docs/design-system/` o el PR). Sistema de ingeniería UI: `docs/design/`.
+- ADR nuevo: [ADR-TEMPLATE.md](docs/adr/ADR-TEMPLATE.md) en este directorio. No crear `docs/decisions/`.

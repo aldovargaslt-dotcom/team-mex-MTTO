@@ -8,4 +8,4 @@ alwaysApply: false
 
 Sistema de ingeniería (jerarquía, primitivas, spec UX, Visual QA). Briefs Must/Don’t de un corte viven en [docs/design-system/](docs/design-system/). No recopiar ADRs ni esos briefs aquí.
 
-No rediseñar `web/src` desde un PR que solo toca estos docs. No añadir Playwright. No crear `work-orders/`.
+No rediseñar `web/src` desde un PR que solo toca estos docs. No añadir Playwright. No crear `work-orders/`. Engineering Work Orders: `docs/engineering-work-orders/` (`EWO-xxx`); WO sigue siendo el wizard de visita.

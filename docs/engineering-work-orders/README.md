@@ -1,0 +1,18 @@
+# Engineering Work Orders
+
+Execution artifacts for **non-trivial** implementation in this repository.
+
+| | Product **WO** | **Engineering Work Order** |
+|---|----------------|----------------------------|
+| Means | Supervisor visit wizard (Orden de Trabajo) | Approved engineering execution brief |
+| ID | not used | `EWO-001`, `EWO-002`, … |
+| Path | `web/src/app/unidades/.../visitas` (UI) | this folder |
+| Acronym | **WO** only | **Never abbreviated WO** |
+
+Template: [EWO-TEMPLATE.md](EWO-TEMPLATE.md).
+
+Do **not** create `work-orders/` or `docs/work-orders/` (legacy rule: that name collides with the wizard).
+
+Historical **cortes / briefs** (GitHub issue template, PR template, `docs/design-system/*`) stay where they are. Do not migrate them here unless a human explicitly asks.
+
+Do not add speculative EWOs. An EWO is created when there is approved work to execute.
