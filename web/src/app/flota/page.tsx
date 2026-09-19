@@ -3,7 +3,7 @@
 import { FormEvent, Suspense, useEffect, useMemo, useState } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { ColumnDef } from '@tanstack/react-table';
-import { Search, Truck } from 'lucide-react';
+import { ChevronRight, Search, Truck } from 'lucide-react';
 import {
   AmbitoBadge,
   UnidadOpsBadge,
@@ -217,6 +217,17 @@ function FlotaVisual() {
             <span className="muted">—</span>
           ),
       },
+      {
+        id: 'abrir',
+        header: () => <span className="sr-only">Abrir</span>,
+        cell: () => (
+          <ChevronRight
+            className="size-4 text-muted-foreground"
+            strokeWidth={1.75}
+            aria-hidden
+          />
+        ),
+      },
     ],
     [],
   );
@@ -313,7 +324,6 @@ function FlotaVisual() {
         data={items}
         empty={emptyCopy(chip, qParam)}
         onRowClick={abrirFila}
-        rowAffordance
       />
 
       <Sheet
