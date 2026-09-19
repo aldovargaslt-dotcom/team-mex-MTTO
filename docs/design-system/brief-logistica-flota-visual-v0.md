@@ -17,6 +17,7 @@ Audiencia: `LOGISTICA` (+ espejo `ADMIN_DIRECTIVO`). Home Logística = `/flota`.
 - Alerta cuando `opsEstado=EN_RUTA` (sin regreso): badge ámbar/sky, **no** `#EA7515`
 - Choferes catálogo sigue Admin; assign-chofer parked
 - Sin Ver ficha navy; no tocar Mantenimiento `/unidades`
+- **Tablero only** — Ciclos / Sitios fuera del producto Logística Flota v0
 
 ## API (real, no mock)
 
@@ -24,4 +25,4 @@ Audiencia: `LOGISTICA` (+ espejo `ADMIN_DIRECTIVO`). Home Logística = `/flota`.
 
 ## Fuera
 
-GPS · assign desk · mutar `flota.*` en regreso · dual-stack notify · chips de tipo como ubicación
+GPS · assign desk · Ciclos/Sitios · mutar `flota.*` en regreso · dual-stack notify · chips de tipo como ubicación

@@ -37,4 +37,4 @@ Alerta de lista: `opsEstado === EN_RUTA` → sin regreso reportado (badge ámbar
 
 ## Fuera
 
-GPS/rutas, assign-chofer desk, Ver ficha navy, chips STOCK|RUTAS como ubicación, geo.
+GPS/rutas, assign-chofer desk, Ciclos/Sitios en el desk visual, Ver ficha navy, chips STOCK|RUTAS como ubicación, geo.

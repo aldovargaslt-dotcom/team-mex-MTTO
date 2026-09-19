@@ -33,9 +33,9 @@ Ver qué unidades están en ruta y registrar el regreso (Kernel `opsEstado`).
 P0: H1 Flota + CTA Registrar regreso + KPI En ruta.  
 P1: fila (placas) + alerta sin regreso.  
 P2: chofer, ubicación, destino, búsqueda.  
-P3: subnav Ciclos/Sitios.
+P3: ninguna (sin subnav Ciclos/Sitios).
 
-Qué se calla: STOCK|RUTAS como ubicación, Ver ficha navy, assign chofer, GPS.
+Qué se calla: STOCK|RUTAS como ubicación, Ver ficha navy, assign chofer, GPS, Ciclos, Sitios.
 
 ## Pattern
 
@@ -66,10 +66,11 @@ Qué se calla: STOCK|RUTAS como ubicación, Ver ficha navy, assign chofer, GPS.
 
 ## Fuera / Don’t
 
-Assign desk, geo, segundo naranja, badge En ruta `#EA7515`, tocar `web/src` Mantenimiento catálogo, unificar notify.
+Assign desk, geo, Ciclos/Sitios, segundo naranja, badge En ruta `#EA7515`, tocar `web/src` Mantenimiento catálogo, unificar notify.
 
 ## Proof
 
 - `docs/screenshots/logistica_flota_visual_en_ruta_d1440.png`
 - `docs/screenshots/logistica_flota_visual_sheet_d1440.png`
 - `docs/screenshots/logistica_flota_visual_despues_d1440.png`
+- `docs/screenshots/logistica_flota_visual_local_sin_regreso_d1440.png`

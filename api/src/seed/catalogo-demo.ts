@@ -37,6 +37,9 @@ export const UNIDADES_DEMO: readonly UnidadDemoSeed[] = [
     placas: 'VU2625C',
     tipoNombre: TIPO_STOCK,
     choferNombre: null,
+    ambito: 'LOCAL',
+    opsEstado: 'EN_RUTA',
+    destino: 'CEDIS local',
   },
   {
     nombre: 'NISSAN REDILAS',

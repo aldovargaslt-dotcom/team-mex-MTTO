@@ -3,6 +3,7 @@
 import { FormEvent, useEffect, useMemo, useState } from 'react';
 import { ColumnDef } from '@tanstack/react-table';
 import { RoleGate } from '@/components/RoleGate';
+import { LogisticaTableroOnly } from '@/components/LogisticaTableroOnly';
 import { Button } from '@/components/ui/button';
 import { DataTable } from '@/components/ui/data-table';
 import {
@@ -21,9 +22,11 @@ import type { EstadoSitio, SitioFlota } from '@/lib/types';
 
 export default function SitiosPage() {
   return (
-    <RoleGate allow={['LOGISTICA', 'ADMIN_DIRECTIVO']}>
-      <SitiosAdmin />
-    </RoleGate>
+    <LogisticaTableroOnly>
+      <RoleGate allow={['ADMIN_DIRECTIVO']}>
+        <SitiosAdmin />
+      </RoleGate>
+    </LogisticaTableroOnly>
   );
 }
 

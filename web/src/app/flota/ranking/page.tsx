@@ -12,6 +12,7 @@ import {
 import { ColumnDef } from '@tanstack/react-table';
 import { FilterFacet } from '@/components/FilterFacet';
 import { ListFilter } from '@/components/ListFilter';
+import { LogisticaTableroOnly } from '@/components/LogisticaTableroOnly';
 import { UmbralAid } from '@/components/UmbralAid';
 import { DataTable } from '@/components/ui/data-table';
 import { Field, FormAlert, PageHeader } from '@/components/ui/field';
@@ -50,12 +51,15 @@ import {
 } from '@/lib/ranking-patio';
 import { useRole } from '@/lib/role';
 import type { FlotaUnidadDetalle, TableroFlotaRow } from '@/lib/types';
+import { LogisticaTableroOnly } from '@/components/LogisticaTableroOnly';
 
 export default function FlotaCiclosPage() {
   return (
-    <Suspense fallback={<p className="muted">Cargando ciclos…</p>}>
-      <CiclosPatio />
-    </Suspense>
+    <LogisticaTableroOnly>
+      <Suspense fallback={<p className="muted">Cargando ciclos…</p>}>
+        <CiclosPatio />
+      </Suspense>
+    </LogisticaTableroOnly>
   );
 }
 
