@@ -142,6 +142,14 @@ export function etiquetaOpsChofer(ops: string) {
   return ops === 'EN_RUTA' ? 'En ruta' : 'Disponible';
 }
 
+export function etiquetaAmbitoUnidad(ambito: string) {
+  return ambito === 'FORANEO' ? 'Foráneo' : 'Local';
+}
+
+export function etiquetaAlertaRegreso(alerta: string | null) {
+  return alerta === 'SIN_REGRESO' ? 'Sin regreso' : null;
+}
+
 export function etiquetaOrigenPieza(origen: string) {
   return origen === 'COMPRA_EXTERNA' ? 'Compra externa' : 'Desde stock';
 }

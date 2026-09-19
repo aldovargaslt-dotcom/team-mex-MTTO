@@ -2258,9 +2258,17 @@
     margin-bottom: 12px;
   }
 
+  .unidades-kpis--ops {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
   @media (min-width: 900px) {
     .unidades-kpis {
       grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .unidades-kpis--ops {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
     }
   }
 

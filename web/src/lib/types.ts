@@ -65,8 +65,25 @@ export type LogisticaChoferRow = {
   placas?: string;
 };
 
-export type LogisticaChoferesResponse = {
-  items: LogisticaChoferRow[];
+export type OpsEstadoUnidad = 'EN_RUTA' | 'DISPONIBLE';
+
+export type AmbitoUnidad = 'FORANEO' | 'LOCAL';
+
+export type ChipLogisticaUnidad = 'EN_RUTA' | 'DISPONIBLE' | 'TODAS';
+
+export type LogisticaUnidadRow = {
+  unidadId: string;
+  placas: string;
+  numeroInterno: string;
+  choferNombre: string | null;
+  opsEstado: OpsEstadoUnidad;
+  ambito: AmbitoUnidad;
+  destino: string | null;
+  alerta: 'SIN_REGRESO' | null;
+};
+
+export type LogisticaUnidadesResponse = {
+  items: LogisticaUnidadRow[];
   kpis: { enRuta: number; disponibles: number; total: number };
 };
 
