@@ -1,6 +1,5 @@
 'use client';
 
-import Link from 'next/link';
 import { FormEvent, Suspense, useEffect, useMemo, useState } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { ColumnDef } from '@tanstack/react-table';
@@ -24,7 +23,7 @@ import { RefaccionFicha } from '@/components/RefaccionFicha';
 import { StockAlertaBadge } from '@/components/StatusBadge';
 import { Button } from '@/components/ui/button';
 import { DataTable } from '@/components/ui/data-table';
-import { Field, FormAlert, ListChrome } from '@/components/ui/field';
+import { Field, FormAlert, PageHeader } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import {
   Dialog,
@@ -46,27 +45,30 @@ function parseAlerta(raw: string | null): 'TODOS' | AlertaStock {
   return 'TODOS';
 }
 
-function emptyExistencias(
-  filtro: 'TODOS' | AlertaStock,
-  opts?: { cta?: boolean },
-) {
+function emptyExistencias(filtro: 'TODOS' | AlertaStock) {
   if (filtro === 'BAJO') {
-    return 'Nada en Bajo — cantidad ≤ mínimo y aún hay piezas.';
-  }
-  if (filtro === 'AGOTADO') {
-    return 'Nada en Agotado — cantidad 0 con mínimo configurado.';
-  }
-  if (opts?.cta) {
     return (
-      <span className="inline-flex flex-wrap items-center gap-2">
-        Aún no hay existencias.
-        <Link href="/inventario" className="btn btn-quiet btn-compact">
-          Ver refacciones
-        </Link>
-      </span>
+      <>
+        <span className="block font-medium text-navy">Nada en Bajo.</span>
+        <span>
+          El badge Bajo aparece cuando la cantidad es igual o menor al mínimo y
+          aún hay piezas.
+        </span>
+      </>
     );
   }
-  return 'Aún no hay existencias. Cargue refacciones y registre una entrada.';
+  if (filtro === 'AGOTADO') {
+    return (
+      <>
+        <span className="block font-medium text-navy">Nada en Agotado.</span>
+        <span>
+          El badge Agotado aparece cuando la cantidad es 0 y hay un mínimo
+          configurado.
+        </span>
+      </>
+    );
+  }
+  return 'Aún no hay existencias.';
 }
 
 export default function StockPage() {
@@ -229,32 +231,14 @@ function StockContent() {
   );
 
   return (
-    <>
-      <ListChrome
+    <div className="existencias-page">
+      <PageHeader
         title="Existencias"
-        countLabel={`${filtered.length} ${filtered.length === 1 ? 'existencia' : 'existencias'}`}
-        filters={
-          <ListFilter
-            label="Filtro de existencias"
-            segmented
-            value={filtro}
-            options={FILTROS}
-            onChange={(next) => {
-              const params = new URLSearchParams(searchParams.toString());
-              if (next === 'TODOS') params.delete('alerta');
-              else params.set('alerta', next);
-              const qs = params.toString();
-              router.replace(qs ? `${pathname}?${qs}` : pathname, {
-                scroll: false,
-              });
-            }}
-          />
-        }
         actions={
           <>
             <Button
               type="button"
-              variant="quiet"
+              variant="secondary"
               onClick={() => {
                 setMode(null);
                 setItemId('');
@@ -275,14 +259,25 @@ function StockContent() {
           </>
         }
       />
+      <ListFilter
+        label="Filtro de existencias"
+        value={filtro}
+        options={FILTROS}
+        onChange={(next) => {
+          const params = new URLSearchParams(searchParams.toString());
+          if (next === 'TODOS') params.delete('alerta');
+          else params.set('alerta', next);
+          const qs = params.toString();
+          router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
+        }}
+      />
       <FormAlert>{error}</FormAlert>
       {rows.length > 0 || !error ? (
         <DataTable
           columns={columns}
           data={filtered}
-          empty={emptyExistencias(filtro, { cta: rows.length === 0 })}
+          empty={emptyExistencias(filtro)}
           onRowClick={(row) => void abrirFicha(row)}
-          rowAffordance
         />
       ) : null}
 
@@ -415,6 +410,6 @@ function StockContent() {
           </form>
         </DialogContent>
       </Dialog>
-    </>
+    </div>
   );
 }

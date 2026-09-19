@@ -13,22 +13,16 @@ export function ListFilter<T extends string>({
   options,
   onChange,
   className,
-  segmented = false,
 }: {
   label: string;
   value: T;
   options: readonly Option<T>[];
   onChange: (id: T) => void;
   className?: string;
-  segmented?: boolean;
 }) {
   return (
     <div
-      className={cn(
-        'list-filter',
-        segmented && 'list-filter--segmented',
-        className,
-      )}
+      className={cn('list-filter', className)}
       role="group"
       aria-label={label}
     >

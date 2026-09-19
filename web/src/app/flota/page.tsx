@@ -291,7 +291,7 @@ function FlotaVisual() {
           setParams({ q });
         }}
       >
-        <div className="list-chrome__search">
+        <div className="unidades-search">
           <Search
             className="pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground"
             aria-hidden

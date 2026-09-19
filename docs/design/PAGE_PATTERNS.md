@@ -38,7 +38,7 @@ DataTable | inbox-list
 empty-state | “Cargando …”
 ```
 
-Mode B Despacho (Unidades, Existencias): `ListChrome` (H1 + count + `ListFilter` segmented en `filters` + un CTA). Flota visual Logística: KPI strip pre-#62 (`unidades-kpis`) + tabla; no assign desk.
+Unidades / Existencias (post-#65 revert): KPI strip + `unidades-toolbar` / tabla, no Mode B `ListChrome`. Flota visual Logística: same pre-#62 KPI strip (`unidades-kpis--ops`) + tabla; no assign desk.
 
 - Un naranja en header si hay alta/entrada; Flota Sitios / Configurar alertas = secondary.
 - Fila clickeable → ficha o hub. Evitar “Detalle”.

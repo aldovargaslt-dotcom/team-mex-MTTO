@@ -1,51 +1,48 @@
 # UI — CRM elevation v0
 
-Estado: **Slice 1 LOCKED** (visual only). Spec de ingeniería: [docs/design/](../design/).
+Estado: **Mantenimiento Supervisor REVERTIDO** (visual only). Spec de ingeniería: [docs/design/](../design/).
 
-**Color lock:** orange `#EA7515` = ONE primary CTA per view; gray/outline = secondary; green/amber/red = badges ONLY. Soft Entrada optional `#FFF7ED`/`#FDBA74`/`#C2410C`. Danger soft rose for Inactivar. OUT: blue underlined link-as-row-action; icon-only without label on mobile.
+Slice 1 (#62) put Mode B Despacho list chrome on Mantenimiento Unidades + Existencias. Aldo quiere de nuevo el listado Supervisor **KPI + lista** (pre-#62). El catálogo demo no se toca: tipos `STOCK | RUTAS | CAMIONES 3 Y MEDIA`, 13 unidades, 7 choferes.
 
-## Slice 1 MUST (Unidades + Stock desktop)
+**Color lock:** orange `#EA7515` = ONE primary CTA per view; gray/outline = secondary; green/amber/red = badges ONLY. Soft Entrada optional `#FFF7ED`/`#FDBA74`/`#C2410C`. Danger soft rose for Inactivar.
 
-Mode B Despacho (this slice): placas-first dense list chrome. Tipo chips from catálogo (live: STOCK | RUTAS | CAMIONES 3 Y MEDIA). Mode A Taller (Visitas/WO) later — do not restyle.
+## Mantenimiento Supervisor (este corte)
 
-### List chrome
+Restore pre-#62 chrome on `/unidades` and `/inventario/stock` only.
 
-- Toolbar: title + count (`N unidades` / stock count) + ONE orange CTA
-- Full-row open → ficha/record
-- Hover row quiet `#F8FAFC` + pointer
-- Trailing › or ⋯ overflow for secondary row actions
-- Filter chips segmented (Stock: Todos|Bajo|Agotado; Unidades tipos: catálogo, live STOCK|RUTAS|CAMIONES 3 Y MEDIA); active = underline/quiet fill, NOT solid orange
-- Unidades: placas first (P0), interno/modelo secondary; default sort placas
+### Unidades
 
-### Affordances
+- Hero + lede + aside “Flota de mantenimiento”
+- KPI cards: Total / Activas / Inactivas / Alertas (filtran la lista)
+- Búsqueda + Estado + Limpiar / Buscar
+- Tipo chips disconnected con conteo; activo = fill navy (no segmented, no underline)
+- Tabla: Unidad (interno P0) · Tipo · Placas · Estado · Alerta · Ver ficha
+- Default sort interno; page size 5 + pager
+- Consejo de búsqueda
 
-- Primary orange `#EA7515` one per view
-- Secondary outline or quiet fill `#EEF2F6` + border; ≥36 desktop
-- Soft Entrada optional; danger soft rose Inactivar
-- OUT: blue underline links as actions
+### Existencias
 
-### Shell
-
-- Cambiar rol + sub-nav quiet/ghost (not CTA)
-- `focus-visible` rings on nav, chips, buttons, rows
+- `PageHeader` + Configurar alertas (secondary) + Registrar entrada (naranja)
+- Chips Todos|Bajo|Agotado disconnected; activo = muted fill, sin subrayado
+- Fila abre ficha; sin chevron Mode B
 
 ### Don’t
 
-- Mobile card-row (Slice 2)
-- Hub header polish
-- Visitas / WO / taller Mode A restyle
-- BrandPlate / logo / `api/src`
+- Quitar seed / catálogo / tipos (`api/src`)
+- Restyle Visitas / WO / taller
+- Logística Flota / tablero viaje / assign desk (otro PR)
+- ADR-009 `icono` de tipo
+- BrandPlate / logo
+
+## Fuera
+
+Mode B Despacho en Flota. Slice 2 mobile card-row. Hub header polish.
 
 ## Proof
 
-Before:
+Post-revert Supervisor (VM viewport 1280×800; `d1440` not available in this agent):
 
-- `docs/screenshots/crm_elev_unidades_list_desktop_before_d1440.png`
-- `docs/screenshots/crm_elev_stock_list_desktop_before_d1440.png`
-
-After:
-
-- `docs/screenshots/crm_elev_unidades_list_desktop_d1440.png`
-- `docs/screenshots/crm_elev_stock_list_desktop_d1440.png`
+- `docs/screenshots/mtto_revert_unidades_list_desktop_d1280.png`
+- `docs/screenshots/mtto_revert_stock_list_desktop_d1280.png`
 
 Hold SD / visual OK. No merge.
