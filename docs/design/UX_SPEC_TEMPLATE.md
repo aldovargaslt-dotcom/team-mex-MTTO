@@ -4,7 +4,7 @@ Complementa el spec funcional (ADR, corte en `docs/design-system/`, Must del PR)
 
 Obligatoria si el cambio altera layout, jerarquía, acciones o estados. Opcional si es copy puntual o un string.
 
-Copiar a `docs/design-system/` junto al corte **o** al cuerpo del PR (sección Must) si el corte es chico. No crear `work-orders/`.
+Copiar a `docs/design-system/` junto al corte **o** al cuerpo del PR (sección Must) si el corte es chico. No crear `work-orders/`. Engineering Work Orders: `docs/engineering-work-orders/` (`EWO-xxx`); no usar WO para eso.
 
 ---
 

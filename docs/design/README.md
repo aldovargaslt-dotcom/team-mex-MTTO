@@ -60,4 +60,4 @@ Un mismo razonamiento no implementa y aprueba.
 - No sustituye ADR-003 ni los Must/Don’t de un corte.
 - No introduce otro framework de UI.
 - No pide rediseñar pantallas existentes en el mismo PR que las toca por lógica.
-- “WO” = wizard de visita. El artefacto de ingeniería es el brief / spec UX / PR, no una carpeta `work-orders/`.
+- “WO” = wizard de visita. El artefacto de ingeniería **histórico** es el brief / spec UX / PR, no una carpeta `work-orders/`. Ejecución no trivial nueva: **Engineering Work Order** `EWO-xxx` en [`docs/engineering-work-orders/`](../engineering-work-orders/) (nunca acrónimo WO).
