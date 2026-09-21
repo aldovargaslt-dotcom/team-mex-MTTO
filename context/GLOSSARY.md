@@ -45,7 +45,10 @@ Terms found in code, UI, database, tests, or documentation. **Do not invent busi
 | `salida_at` | Timestamp for sin-regreso evaluation | Logística / Kernel | ADR-012 |
 | Registrar regreso | `EN_RUTA` → `DISPONIBLE` | Logística | `POST /logistica/regresos/:unidadId` |
 | Asignación chofer↔unidad | Kernel `unidades.chofer_id` via port | Logística | **Parked** UI; HTTP may exist |
-| Alertas (schema) | Shared config for sin-regreso thresholds | Alertas | Not Andon; HTTP under `/logistica/alertas`; UI `/flota/alertas` |
+| Alertas (schema) | Shared config for sin-regreso thresholds | Alertas | Not Andon; HTTP under `/logistica/alertas`; UI absorbed by Configuración → Alertas |
+| Alertas (producto) | Config UI + inbox/campanita label | Shared | Internal names Andon / `notifications` / schema `alertas` stay in code |
+| Alert Catalog | Shared type registry (family, `active`, threshold mode) | Shared | Overlay schema `alert_catalog`. Not a confirmed BC. ADR-013 |
+| Configuración → Alertas | Role-filtered catalog of alert **types** | Shared / UI | `/configuracion/alertas`. Absorbs `/flota/alertas` |
 | Sin regreso / `FLOTA_SIN_REGRESO` | Overdue return while `ops_estado=EN_RUTA` | Alertas → Notifications | `dedupe_key=FLOTA:sin-regreso:{unidadId}` |
 | Salud / Health Score | Calculated unit health (not editable) | Salud | Schema `salud`. Not `ACTIVA`/`INACTIVA`, not ops_estado |
 | `HEALTH_BELOW_THRESHOLD` | Derived inbox alert from Salud | Salud → Notifications | Does not appear on Andon board; no WhatsApp |

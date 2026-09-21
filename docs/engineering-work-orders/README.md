@@ -16,3 +16,9 @@ Do **not** create `work-orders/` or `docs/work-orders/` (legacy rule: that name 
 Historical **cortes / briefs** (GitHub issue template, PR template, `docs/design-system/*`) stay where they are. Do not migrate them here unless a human explicitly asks.
 
 Do not add speculative EWOs. An EWO is created when there is approved work to execute.
+
+| ID | Title | Status |
+|----|-------|--------|
+| [EWO-001](EWO-001.md) | Alert Catalog registry + API façade + role swimlane | Ready |
+| [EWO-002](EWO-002.md) | Configuración → Alertas UI + absorb `/flota/alertas` | Ready |
+| [EWO-003](EWO-003.md) | Threshold editors + active-gate on emit | Ready |

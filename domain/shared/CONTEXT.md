@@ -8,6 +8,7 @@
 - Roles: `SUPERVISOR`, `ADMIN_DIRECTIVO`, `LOGISTICA`.
 - Envelope `VisitaCerrada` (shape owned by Mantenimiento/Kernel outbox; consumed by Inventario, Andon, Salud).
 - Ports as the only legal cross-area write/read seam (ADR-002).
+- **Alert Catalog** (provisional shared capability, not a confirmed BC): type metadata + permission façade. [ADR-013](../../docs/adr/013-alert-catalog-ownership.md). Threshold values stay in owning modules.
 
 ## Shared invariants (evidence)
 

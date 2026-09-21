@@ -21,6 +21,7 @@ The living technical map remains [docs/adr/context-map.md](../docs/adr/context-m
 | Flota | [flota/](flota/CONTEXT.md) | `flota` | **Provisional** (ADR-008 names it a BC; still validate on real change) |
 | Logística | [logistica/](logistica/CONTEXT.md) | No own schema; writes kernel columns | **Provisional** — may be an application service on Kernel, not a BC |
 | Alertas | [alertas/](alertas/CONTEXT.md) | `alertas` | **Provisional** — shared config, not a silo |
+| Alert Catalog (provisional shared capability) | [shared/](shared/CONTEXT.md) | `alert_catalog.tipo` overlay + HTTP façade | **Not a confirmed BC** (ADR-013) |
 | Salud | [salud/](salud/CONTEXT.md) | `salud` | **Provisional** (ADR-010 names it a BC) |
 
 ## Not domain folders
