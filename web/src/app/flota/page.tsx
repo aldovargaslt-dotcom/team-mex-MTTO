@@ -287,7 +287,7 @@ function FlotaVisual() {
               Registrar regreso
             </Button>
             <Button type="button" variant="quiet" asChild>
-              <Link href="/flota/alertas">
+              <Link href="/configuracion/alertas?code=FLOTA_SIN_REGRESO">
                 <Settings2 className="size-4" aria-hidden />
                 Config alertas
               </Link>

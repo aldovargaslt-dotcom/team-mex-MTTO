@@ -34,6 +34,11 @@ const NAV_ITEMS: {
     roles: ['SUPERVISOR', 'ADMIN_DIRECTIVO'],
   },
   { href: '/choferes', label: 'Choferes', roles: ['ADMIN_DIRECTIVO'] },
+  {
+    href: '/configuracion/alertas',
+    label: 'Configuración',
+    roles: ['SUPERVISOR', 'ADMIN_DIRECTIVO', 'LOGISTICA'],
+  },
 ];
 
 export function AppShell({ children }: { children: ReactNode }) {

@@ -51,7 +51,7 @@ function InboxContent() {
       setError(
         err instanceof HttpError
           ? err.message
-          : 'No se pudieron cargar las notificaciones.',
+          : 'No se pudieron cargar las alertas.',
       );
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -105,8 +105,8 @@ function InboxContent() {
   return (
     <>
       <PageHeader
-        title="Notificaciones"
-        lede="Alertas de mantenimiento, inventario, salud de unidad y flota sin regreso. Tocar una fila la marca leída y abre el destino."
+        title="Alertas"
+        lede="Avisos de mantenimiento, inventario, salud de unidad y flota sin regreso. Tocar una fila la marca leída y abre el destino."
         actions={
           unreadCount > 0 ? (
             <Button
@@ -121,16 +121,16 @@ function InboxContent() {
         }
       />
       <ListFilter
-        label="Filtro de notificaciones"
+        label="Filtro de alertas"
         value={filtro}
         options={FILTROS}
         onChange={setFiltro}
       />
       <FormAlert>{error}</FormAlert>
       {items == null ? (
-        <p className="muted">Cargando notificaciones…</p>
+        <p className="muted">Cargando alertas…</p>
       ) : items.length === 0 ? (
-        <p className="muted">Sin notificaciones.</p>
+        <p className="muted">Sin alertas.</p>
       ) : (
         <ul className="inbox-list">
           {items.map((item) => (
