@@ -175,12 +175,13 @@ export class SaludEngine {
 
     let derived = active;
     if (decision === 'CREATE' && computation.score != null) {
+      const score = computation.score;
       const alert: HealthAlert = {
         id: this.id(),
         unidadId,
         type: HealthAlertType.HEALTH_BELOW_THRESHOLD,
         estado: EstadoHealthAlert.ABIERTO,
-        scoreAtOpen: computation.score,
+        scoreAtOpen: score,
         thresholdAtOpen: config.alertThreshold,
         openedAt: this.nowIso(),
         resolvedAt: null,
@@ -196,7 +197,7 @@ export class SaludEngine {
             this.deps.inbox!.onOpened({
               alert,
               unidad,
-              score: computation.score,
+              score,
               threshold: config.alertThreshold,
               numeroInterno: unidad?.numeroInterno ?? 'Unidad',
               drivers: computation.drivers,
