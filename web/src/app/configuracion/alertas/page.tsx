@@ -124,14 +124,20 @@ function CatalogContent() {
         accessorKey: 'active',
         header: 'Estado',
         cell: ({ row }) =>
-          row.original.active ? (
-            <Badge variant="success">Activa</Badge>
+          isAdmin ? (
+            row.original.active ? (
+              <Badge variant="success">Activa</Badge>
+            ) : (
+              <Badge variant="muted">Inactiva</Badge>
+            )
           ) : (
-            <Badge variant="muted">Inactiva</Badge>
+            <span className="text-[12px] text-muted-foreground">
+              {row.original.active ? 'Activa' : 'Inactiva'}
+            </span>
           ),
       },
     ],
-    [],
+    [isAdmin],
   );
 
   function openType(row: AlertType) {
@@ -226,6 +232,7 @@ function CreateAlertDialog({
   const [family, setFamily] = useState<AlertFamily>('MTTO');
   const [owningModule, setOwningModule] = useState<AlertOwningModule>('OTRO');
   const [thresholdMode, setThresholdMode] = useState<ThresholdMode>('MODULE');
+  const [active, setActive] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
 
@@ -244,12 +251,13 @@ function CreateAlertDialog({
           family,
           owningModule,
           thresholdMode,
-          active: true,
+          active,
         }),
       });
       onOpenChange(false);
       setCode('');
       setLabel('');
+      setActive(true);
       onCreated();
     } catch (err) {
       setError(
@@ -267,7 +275,7 @@ function CreateAlertDialog({
           <DialogHeader>
             <DialogTitle>Nueva alerta</DialogTitle>
             <DialogDescription>
-              El código no cambia después. No use el prefijo WO-.
+              El código no cambia después.
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-3 py-3">
@@ -325,9 +333,17 @@ function CreateAlertDialog({
                 <option value="CATALOG">En este catálogo</option>
               </NativeSelect>
             </Field>
+            <label className="flex items-center gap-2 text-[13px]">
+              <input
+                type="checkbox"
+                checked={active}
+                onChange={(e) => setActive(e.target.checked)}
+              />
+              Activa
+            </label>
             <FormAlert>{error}</FormAlert>
           </div>
-          <DialogFooter>
+          <DialogFooter className="sm:justify-between">
             <Button
               type="button"
               variant="secondary"
