@@ -2,7 +2,11 @@
 
 ## Status
 
-**Proposed**
+**Approved** — 2026-09-21
+
+Approved with open-question defaults accepted:
+1. Inventario `min_qty` remains editable on Inventario screens **and** via catalog entry (`MODULE` dual editor).
+2. ADR-013 (catalog persistence / ownership) only if spike shows more than a UI façade; otherwise façade is enough for first EWOs.
 
 Does not replace ADRs. UI hierarchy detail: companion UX spec under `docs/design/` when layout is cut. Implementation requires an approved ADR if a new catalog schema / ownership boundary is introduced (see Related ADRs).
 
@@ -110,6 +114,8 @@ Evaluating “should we alert?” stays in Andon / Inventario / Salud / Flota-Al
 
 `MODULE`: catalog stores metadata only; edit UI calls owning module.  
 `CATALOG`: catalog UX is SoT for those scalar thresholds; module reads via port/API owned by Flota/Alertas.
+
+**Inventario dual editor (Approved default):** `min_qty` may be edited on Inventario screens **and** via the catalog entry for `STOCK_BAJO`. Catalog is not the sole editor for `MODULE` Inventario thresholds.
 
 Additional types require `ADMIN_DIRECTIVO` create + this table extended in a SPEC revision or ADR.
 
@@ -257,11 +263,11 @@ Unchanged (`ABIERTO` / `ENTERADO` / `RESUELTO`).
 
 ## Dependencies
 
-- ADR for catalog persistence / ownership **if** new tables or ownership shift beyond façade (gate before EWO).
+- ADR for catalog persistence / ownership **if** new tables or ownership shift beyond façade (gate before EWO that needs persistence)—spike decides; not a blocker to Approve this SPEC.
 - UX spec (`docs/design/`) for Configuración → Alertas layout when UI cut starts.
 - Existing ADR-005, 006, 007, 010, 012 behavior remaining authoritative for emitters.
-- Glossary update on Approve: product term Alertas vs internal Andon/notifications.
-- Optional ICM / `domain/shared` card pointer update after Approve.
+- Glossary update: product term Alertas vs internal Andon/notifications.
+- Optional ICM / `domain/shared` card pointer update.
 
 ## Related ADRs
 
@@ -272,13 +278,11 @@ Unchanged (`ABIERTO` / `ENTERADO` / `RESUELTO`).
 - `docs/adr/012-flota-sin-regreso-alertas.md`
 - `docs/adr/002-schema-per-module.md`
 - `docs/adr/003-shadcn-tailwind.md`
-- **TBD** — ADR-013 (proposed name) Alert Catalog shared metadata / ownership — required before execution if not pure UI façade
+- **TBD** — ADR-013 (proposed name) Alert Catalog shared metadata / ownership — only if spike shows more than UI façade
 
 ## Open Questions
 
-None material for **Proposed** direction. Before **Approved**:
+**None.** Closed on Approve (2026-09-21):
 
-1. Confirm whether Inventario `min_qty` editing remains on Inventario screens in addition to catalog entry (AC edge case)—default in this SPEC: **yes, both**; catalog is not the only editor for `MODULE` Inventario thresholds.
-2. Confirm ADR-013 necessity after technical spike (façade vs new schema).
-
-These two must be closed or explicitly accepted as specified defaults before Status → Approved.
+1. Inventario `min_qty` dual editor: **yes** — Inventario screens and catalog entry.
+2. ADR-013: **deferred to spike** — required only if not pure UI façade.
