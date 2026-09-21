@@ -4,7 +4,12 @@ import {
   Injectable,
   NotFoundException,
   OnModuleInit,
+  Optional,
 } from '@nestjs/common';
+import {
+  ALERT_TYPE_ACTIVE_PORT,
+  AlertTypeActivePort,
+} from '../alert-catalog/ports';
 import { EntityManager } from 'typeorm';
 import { CurrentUser } from '../auth/current-user';
 import {
@@ -40,6 +45,9 @@ export class AndonService implements OnModuleInit, AndonAbiertoPort {
     @Inject(AVISO_INBOX_PORT) private readonly inbox: AvisoInboxPort,
     private readonly outbox: OutboxService,
     private readonly tipos: TiposVehiculoService,
+    @Optional()
+    @Inject(ALERT_TYPE_ACTIVE_PORT)
+    private readonly alertTypes?: AlertTypeActivePort,
   ) {
     // Constructor: listo antes de Seed.onModuleInit (cierre de visita semilla).
     this.outbox.register(VISITA_CERRADA, async (payload, manager) => {
@@ -60,6 +68,7 @@ export class AndonService implements OnModuleInit, AndonAbiertoPort {
       catalog: this.catalog,
       whatsapp: this.notifier,
       inbox: this.inbox,
+      alertTypes: this.alertTypes,
     });
   }
 

@@ -57,8 +57,10 @@ export class AndonController {
   }
 
   @Patch('umbrales/:tipoVehiculoId')
-  @Roles(Rol.ADMIN_DIRECTIVO)
-  @ApiOperation({ summary: 'Actualizar t_km / t_dias (admin)' })
+  @Roles(Rol.ADMIN_DIRECTIVO, Rol.SUPERVISOR)
+  @ApiOperation({
+    summary: 'Actualizar t_km / t_dias (admin o supervisor vía catálogo)',
+  })
   updateUmbral(
     @Param('tipoVehiculoId', ParseUUIDPipe) tipoVehiculoId: string,
     @Body() dto: UpdateUmbralDto,

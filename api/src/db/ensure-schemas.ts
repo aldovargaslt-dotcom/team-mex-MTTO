@@ -14,6 +14,7 @@ export async function ensureModuleSchemas(config: ConfigService) {
     await ds.query('CREATE SCHEMA IF NOT EXISTS flota');
     await ds.query('CREATE SCHEMA IF NOT EXISTS salud');
     await ds.query('CREATE SCHEMA IF NOT EXISTS alertas');
+    await ds.query('CREATE SCHEMA IF NOT EXISTS alert_catalog');
   } finally {
     await ds.destroy();
   }

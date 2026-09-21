@@ -163,6 +163,26 @@ describe('stock umbral (S1–S4)', () => {
       expect(reabastecido).toEqual([cleared]);
     });
 
+    it('K5: tipo inactivo no llama onStockBajo', async () => {
+      const { port, bajo } = fakePort();
+      const emitted = await publicarAlertaStock(
+        port,
+        {
+          eventId: 'evt-gate',
+          occurredAt: '2026-09-11T16:00:00.000Z',
+          itemId: 'item-1',
+          sku: 'UMB-01',
+          prevQty: 8,
+          nextQty: 5,
+          prevMin: 5,
+          nextMin: 5,
+        },
+        { isActive: async () => false },
+      );
+      expect(emitted?.eventType).toBe(STOCK_BAJO);
+      expect(bajo).toEqual([]);
+    });
+
     it('sin cruce o sin port no emite', async () => {
       const { port, bajo, reabastecido } = fakePort();
       expect(
