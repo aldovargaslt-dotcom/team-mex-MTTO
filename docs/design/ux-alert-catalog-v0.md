@@ -36,9 +36,9 @@ Admin: **Nueva alerta** (`Button` `default`). Supervisor / Logística: **las fil
 P0: H1 **Alertas** (navy 20/600) + tabla de tipos visibles para el rol.  
 P1: fila (nombre de producto) → diálogo de edición. Admin: **Nueva alerta**.  
 P2: área (Mantenimiento | Flota) y dueño, muted 12px.  
-P3: código estable (`MTTO_VENCIDO`, …) muted 12px `font-mono` **solo Admin** (y en el diálogo). **Inactiva** muted solo Admin cuando aplica.
+P3: código estable solo en diálogo Admin (muted 12px `font-mono`). **Inactiva** muted solo Admin cuando aplica.
 
-Qué se calla: columna “dónde se edita” / “En el módulo” / “En este catálogo”; badge verde **Activa** en cada fila; códigos en el scan path de Supervisor/Logística; `notifications`, `min_qty`, `t_km`, `t_días`, umbral, “regla”, dual-stack, WhatsApp, JSON de envelope.
+Qué se calla: columna “dónde se edita” / “En el módulo” / “En este catálogo”; badge verde **Activa** en cada fila; códigos en el listado (cualquier rol); `notifications`, `min_qty`, `t_km`, `t_días`, umbral, “regla”, dual-stack, WhatsApp, JSON de envelope.
 
 ## Pattern
 

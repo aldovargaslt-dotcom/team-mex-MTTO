@@ -98,14 +98,7 @@ function CatalogContent() {
         accessorKey: 'label',
         header: 'Alerta',
         cell: ({ row }) => (
-          <span className="block">
-            <span className="font-medium text-navy">{row.original.label}</span>
-            {isAdmin ? (
-              <span className="mt-0.5 block font-mono text-[12px] font-normal text-muted-foreground">
-                {row.original.code}
-              </span>
-            ) : null}
-          </span>
+          <span className="font-medium text-navy">{row.original.label}</span>
         ),
       },
       {
