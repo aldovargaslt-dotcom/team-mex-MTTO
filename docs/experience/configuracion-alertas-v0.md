@@ -1,10 +1,10 @@
 # Experience Context — Configuración → Alertas (v0)
 
 **Status:** Accepted (2026-09-22)  
-**Hierarchy redesign v0.1:** PROPOSAL (Option B — 2026-09-22) — awaiting SD Accepted before UI EWO  
+**Hierarchy redesign v0.1:** Accepted (Option B — 2026-09-22) — authorizes UI EWO-005  
 **Screen:** `/configuracion/alertas`  
-**Related:** SPEC `docs/specs/alert-catalog-v0.md` (Approved) · ADR-013 · EWO-004 · UX `docs/design/ux-alert-catalog-v0.md`  
-**Rule:** No Experience Context → no final UI. Base context Accepted; hierarchy redesign below is not yet Approved for implementation.
+**Related:** SPEC `docs/specs/alert-catalog-v0.md` (Approved) · ADR-013 · EWO-004 (merged) · EWO-005 · UX `docs/design/ux-alert-catalog-v0.md`  
+**Rule:** No Experience Context → no final UI.
 
 IA locked for current work: **hub remains Configuración → Alertas** (not Unidades/Stock-only). Brief `ui-alertas-copy-botones-v0` secondary CTAs elsewhere remain allowed dual entry; they do not replace this hub in this Accepted context.
 
@@ -38,9 +38,9 @@ experience:
 | 3 | Secondary users | `SUPERVISOR` — MTTO family thresholds only; `LOGISTICA` — Flota family thresholds only | SPEC swimlane |
 | 4 | Primary job on screen | See which alert **types** I can configure, then open the right type to set when the system should avisarme | SPEC goals, UX purpose |
 | 5 | Decisions | Which type to open? Are thresholds still right? (Admin) Should this type be active? Should a new type exist? | Derived |
-| 6 | Actions | Scan list → open type → edit thresholds → save; Admin: Nueva alerta / Desactivar | SPEC + EWO-004 |
-| 7 | Info for decisions | Product name of type; **Cuándo avisa** summary on the list; family/área; active vs inactive (Admin); full threshold values in dialog | Hierarchy below (v0.1) |
-| 8 | Secondary info | Owning module label; stable code; “edited in module vs catalog” mechanics | P2/P3 — Dueño out of list in v0.1 |
+| 6 | Actions | Scan list → open type → edit thresholds → save; Admin: Nueva alerta / Desactivar | SPEC + EWO-004/005 |
+| 7 | Info for decisions | Product name of type; **Cuándo avisa** summary on the list; family/área; active vs inactive (Admin); full threshold values in dialog | Hierarchy v0.1 Accepted |
+| 8 | Secondary info | Owning module label; stable code; “edited in module vs catalog” mechanics | P3 — Dueño out of list |
 | 9 | Operational context | Desk/admin configuration after seed; not live yard monitoring. Campanita delivery is a different surface (`/notificaciones`) | PRODUCT / GLOSSARY |
 | 10 | Mistake impact | Too-low thresholds → alert noise; too-high / inactive → missed avisos; wrong family visibility → confusion. Need clear cancel, non-destructive defaults, Admin-only deactivate | UNKNOWN: exact recovery SOP / who gets paged |
 | 11 | Frequency | Occasional (setup, policy change), not every shift start | UNKNOWN: real field cadence |
@@ -132,42 +132,17 @@ task:
 
 ---
 
-## Information hierarchy
-
-### Base (Accepted 2026-09-22)
+## Information hierarchy (v0.1 Accepted — Option B)
 
 ```yaml
 information_priority:
   P0:
-    - alert_type_product_name
-    - role_visible_type_list
-    - threshold_values_in_editor
-  P1:
-    - family_mantenimiento_vs_flota
-    - inactive_state_for_admin
-    - primary_cta_nueva_alerta
-  P2:
-    - owning_module_label
-    - lede_explaining_campanita_link
-  P3:
-    - stable_code
-    - schema_or_edit_locus_mechanics
-    - notify_provider_dual_stack
-```
-
-### Hierarchy redesign v0.1 — PROPOSAL (Option B)
-
-Goal: list reads as *configuring when each type alerts*, not as a metadata directory.
-
-```yaml
-information_priority_v0_1:
-  P0:
     - alert_type_product_name          # navy, primary row weight
     - role_visible_type_list           # swimlane; grouped by Área when >1 área
   P1:
-    - when_it_alerts_summary           # NEW on list — taller Spanish, e.g. "5 000 km o 90 días"
+    - when_it_alerts_summary           # on list — taller Spanish from live thresholds
     - primary_cta_nueva_alerta         # Admin list only
-    - threshold_values_in_editor       # full detail still in dialog
+    - threshold_values_in_editor       # full detail in dialog
     - inactive_state_for_admin         # muted Inactiva only when inactive
   P2:
     - area_group_heading               # Mantenimiento | Flota (section H2)
@@ -179,16 +154,16 @@ information_priority_v0_1:
     - notify_provider_dual_stack
 ```
 
-List columns (v0.1): **Alerta** | **Cuándo avisa** | row affordance (`›`).  
+List columns: **Alerta** | **Cuándo avisa** | row affordance (`›`).  
 **Área** is the **group heading**, not a redundant per-row column when grouped.  
 **Dueño** removed from list.
 
-Grouping (Option B):
+Grouping:
 
-- Admin (both families visible): sections `Mantenimiento` then `Flota` (PAGE_PATTERNS listado agrupado over dense list).
+- Admin (both families visible): sections `Mantenimiento` then `Flota`.
 - Supervisor / Logística (single family): one section or no visible group chrome if only one group — avoid empty theater.
 
-Anti-dump rule unchanged: codes, “dónde se edita”, green Activa-on-every-row stay P3/noise.
+Anti-dump rule: codes, “dónde se edita”, green Activa-on-every-row stay P3/noise.
 
 ---
 
@@ -250,7 +225,7 @@ ux_constraints:
 | Top-nav **Alerta** vs page **Alertas** | Different surfaces; identity must be clear in chrome/lede |
 | Pattern 3 flat table vs Option B grouping | Grouping allowed as listado agrupado over pattern 3 — not a new page pattern, not SaaS settings sidebar |
 
-### Explicit rejects (v0.1)
+### Explicit rejects
 
 - Card grid per alert type
 - SaaS settings sidebar
@@ -260,11 +235,7 @@ ux_constraints:
 
 ---
 
-## Anti-pattern checklist
-
-**EWO-004 / PR #68 (merged):** PASS against base Accepted context.
-
-**Hierarchy redesign v0.1 (pre-EWO):** check before merge of polish PR
+## Anti-pattern checklist (EWO-005)
 
 - [ ] Groups by Área when Admin sees both families
 - [ ] P0 product name; P1 Cuándo avisa summary on list
@@ -287,7 +258,7 @@ ux_constraints:
 3. Operational SOP when Admin deactivates `STOCK_BAJO` but `min_qty` remains on ítems.
 4. Whether Configuración will gain sibling pages (only Alertas location cue needed now).
 5. Field confirmation that “Alertas” inbox label vs Andon board “Alerta” is clear to operators.
-6. Exact Spanish summary strings per type (derive from live threshold payloads in EWO; do not invent numbers in docs).
+6. Exact Spanish summary strings per type (derive from live threshold payloads in EWO-005; do not invent numbers in docs).
 
 ---
 
@@ -295,4 +266,4 @@ ux_constraints:
 
 **Base Experience Context:** Accepted by SD 2026-09-22 (EWO-004 / PR #68 PASS → merged).
 
-**Hierarchy redesign v0.1 (Option B):** PROPOSAL — requires explicit SD **Accepted** before Screen Spec lock / UI EWO dispatch.
+**Hierarchy redesign v0.1 (Option B):** Accepted by SD 2026-09-22 → EWO-005 authorized.
