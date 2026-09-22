@@ -23,3 +23,4 @@ Do not add speculative EWOs. An EWO is created when there is approved work to ex
 | [EWO-002](EWO-002.md) | Configuración → Alertas UI + absorb `/flota/alertas` | Ready |
 | [EWO-003](EWO-003.md) | Threshold editors + active-gate on emit | Ready |
 | [EWO-004](EWO-004.md) | Alert Catalog UI polish (design-system gate) | Ready |
+| [EWO-005](EWO-005.md) | Configuración → Alertas hierarchy redesign (Option B) | Ready |

@@ -17,6 +17,10 @@ import {
 import { Field, FormAlert, PageHeader } from '@/components/ui/field';
 import { Input, NativeSelect } from '@/components/ui/input';
 import { api, HttpError } from '@/lib/api';
+import {
+  RESUMEN_SIN_AJUSTE,
+  resumenCuandoAvisaCatalogo,
+} from '@/lib/alert-catalog-resumen';
 import { etiquetaMinimo, resumenAvisoMantenimiento } from '@/lib/format';
 import { useRole } from '@/lib/role';
 import type {
@@ -27,6 +31,8 @@ import type {
   Role,
   ThresholdMode,
 } from '@/lib/types';
+
+const FAMILY_ORDER: AlertFamily[] = ['MTTO', 'FLOTA'];
 
 function etiquetaFamilia(family: AlertFamily) {
   return family === 'FLOTA' ? 'Flota' : 'Mantenimiento';
@@ -42,12 +48,43 @@ function etiquetaModulo(mod: AlertOwningModule) {
 
 function ledeParaRol(role: Role | null) {
   if (role === 'LOGISTICA') {
-    return 'Tipos que configuras aquí. Lo que llega a la campanita: unidad sin regreso.';
+    return 'Ajusta cuándo avisa cada tipo. Lo que llega a la campanita: unidad sin regreso. Toca una fila para editar.';
   }
   if (role === 'SUPERVISOR') {
-    return 'Tipos que configuras aquí. Lo que llega a la campanita: mantenimiento, existencias y salud.';
+    return 'Ajusta cuándo avisa cada tipo. Lo que llega a la campanita: mantenimiento, existencias y salud. Toca una fila para editar.';
   }
-  return 'Tipos que configuras aquí. Lo que llega a la campanita. Alta y baja solo en esta lista.';
+  return 'Ajusta cuándo avisa cada tipo. Lo que llega a la campanita. Alta y baja solo en esta lista. Toca una fila para editar.';
+}
+
+function groupsForList(rows: AlertType[]) {
+  return FAMILY_ORDER.filter((family) =>
+    rows.some((row) => row.family === family),
+  ).map((family) => ({
+    family,
+    heading: etiquetaFamilia(family),
+    rows: rows.filter((row) => row.family === family),
+  }));
+}
+
+async function cargarResumenes(
+  types: AlertType[],
+  role: Role,
+  userId?: string,
+): Promise<Record<string, string>> {
+  const entries = await Promise.all(
+    types.map(async (row) => {
+      try {
+        const payload = await api<CatalogUmbrales>(
+          `/configuracion/alertas/${row.code}/umbrales`,
+          { role, userId },
+        );
+        return [row.code, resumenCuandoAvisaCatalogo(row.code, payload)] as const;
+      } catch {
+        return [row.code, RESUMEN_SIN_AJUSTE] as const;
+      }
+    }),
+  );
+  return Object.fromEntries(entries);
 }
 
 export default function ConfiguracionAlertasPage() {
@@ -60,6 +97,7 @@ function CatalogContent() {
   const { role, userId, isAdmin } = useRole();
   const wantedCode = searchParams.get('code');
   const [rows, setRows] = useState<AlertType[] | null>(null);
+  const [resumenes, setResumenes] = useState<Record<string, string>>({});
   const [error, setError] = useState<string | null>(null);
   const [createOpen, setCreateOpen] = useState(false);
   const [selected, setSelected] = useState<AlertType | null>(null);
@@ -69,7 +107,9 @@ function CatalogContent() {
       role: role!,
       userId,
     });
+    const nextResumenes = await cargarResumenes(data, role!, userId);
     setRows(data);
+    setResumenes(nextResumenes);
     return data;
   }
 
@@ -92,46 +132,62 @@ function CatalogContent() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [role, userId, wantedCode]);
 
-  const columns = useMemo<ColumnDef<AlertType, unknown>[]>(() => {
-    const cols: ColumnDef<AlertType, unknown>[] = [
+  const columns = useMemo<ColumnDef<AlertType, unknown>[]>(
+    () => [
       {
         accessorKey: 'label',
         header: 'Alerta',
         cell: ({ row }) => (
-          <span className="font-medium text-navy">{row.original.label}</span>
+          <div className="flex min-w-0 flex-wrap items-center gap-2">
+            <span className="font-medium text-navy">{row.original.label}</span>
+            {isAdmin && !row.original.active ? (
+              <Badge variant="muted">Inactiva</Badge>
+            ) : null}
+          </div>
         ),
       },
       {
-        accessorKey: 'family',
-        header: 'Área',
-        cell: ({ row }) => (
-          <span className="text-[12px] text-muted-foreground">
-            {etiquetaFamilia(row.original.family)}
-          </span>
-        ),
+        id: 'cuandoAvisa',
+        header: 'Cuándo avisa',
+        cell: ({ row }) => {
+          const resumen =
+            resumenes[row.original.code] ?? RESUMEN_SIN_AJUSTE;
+          const muted = resumen === RESUMEN_SIN_AJUSTE;
+          return (
+            <span
+              className={
+                muted
+                  ? 'text-[13px] text-muted-foreground'
+                  : 'text-[13px] text-foreground'
+              }
+            >
+              {resumen}
+            </span>
+          );
+        },
       },
       {
-        accessorKey: 'owningModule',
-        header: 'Dueño',
-        cell: ({ row }) => (
-          <span className="text-[12px] text-muted-foreground">
-            {etiquetaModulo(row.original.owningModule)}
+        id: 'open',
+        header: () => (
+          <span className="block text-right" aria-hidden>
+            ›
+          </span>
+        ),
+        cell: () => (
+          <span
+            className="block text-right text-[15px] leading-none text-muted-foreground"
+            aria-hidden
+          >
+            ›
           </span>
         ),
       },
-    ];
-    if (isAdmin && (rows ?? []).some((row) => !row.active)) {
-      cols.push({
-        accessorKey: 'active',
-        header: 'Estado',
-        cell: ({ row }) =>
-          row.original.active ? null : (
-            <Badge variant="muted">Inactiva</Badge>
-          ),
-      });
-    }
-    return cols;
-  }, [isAdmin, rows]);
+    ],
+    [isAdmin, resumenes],
+  );
+
+  const groups = useMemo(() => groupsForList(rows ?? []), [rows]);
+  const showGroupHeadings = groups.length > 1;
 
   function openType(row: AlertType) {
     setSelected(row);
@@ -170,12 +226,23 @@ function CatalogContent() {
           </p>
         </div>
       ) : (
-        <DataTable
-          columns={columns}
-          data={rows}
-          onRowClick={openType}
-          empty="No hay alertas para este rol."
-        />
+        <div className="grid gap-3">
+          {groups.map((group) => (
+            <section key={group.family} className="grid gap-2">
+              {showGroupHeadings ? (
+                <h2 className="text-[13px] font-semibold text-navy">
+                  {group.heading}
+                </h2>
+              ) : null}
+              <DataTable
+                columns={columns}
+                data={group.rows}
+                onRowClick={openType}
+                empty="No hay alertas para este rol."
+              />
+            </section>
+          ))}
+        </div>
       )}
       {isAdmin ? (
         <CreateAlertDialog
@@ -193,7 +260,9 @@ function CatalogContent() {
           userId={userId}
           isAdmin={isAdmin}
           onClose={closeType}
-          onChanged={() => void cargar()}
+          onChanged={async () => {
+            await cargar();
+          }}
         />
       ) : null}
     </div>
@@ -360,7 +429,7 @@ function TypeEditorDialog({
   userId?: string;
   isAdmin: boolean;
   onClose: () => void;
-  onChanged: () => void;
+  onChanged: () => void | Promise<void>;
 }) {
   const [payload, setPayload] = useState<CatalogUmbrales | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -467,8 +536,8 @@ function TypeEditorDialog({
         method: 'PATCH',
         body: JSON.stringify(body),
       });
+      await onChanged();
       setSaved(true);
-      onChanged();
     } catch (err) {
       setError(
         err instanceof HttpError
@@ -490,7 +559,7 @@ function TypeEditorDialog({
         method: 'PATCH',
         body: JSON.stringify({ active }),
       });
-      onChanged();
+      await onChanged();
       onClose();
     } catch (err) {
       setError(
