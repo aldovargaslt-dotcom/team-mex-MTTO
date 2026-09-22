@@ -3,7 +3,6 @@
 import { FormEvent, useEffect, useMemo, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ColumnDef } from '@tanstack/react-table';
-import { RoleGate } from '@/components/RoleGate';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { DataTable } from '@/components/ui/data-table';
@@ -41,16 +40,18 @@ function etiquetaModulo(mod: AlertOwningModule) {
   return 'Mantenimiento';
 }
 
-function etiquetaModo(mode: ThresholdMode) {
-  return mode === 'CATALOG' ? 'En este catálogo' : 'En el módulo';
+function ledeParaRol(role: Role | null) {
+  if (role === 'LOGISTICA') {
+    return 'Tipos que configuras aquí. Lo que llega a la campanita: unidad sin regreso.';
+  }
+  if (role === 'SUPERVISOR') {
+    return 'Tipos que configuras aquí. Lo que llega a la campanita: mantenimiento, existencias y salud.';
+  }
+  return 'Tipos que configuras aquí. Lo que llega a la campanita. Alta y baja solo en esta lista.';
 }
 
 export default function ConfiguracionAlertasPage() {
-  return (
-    <RoleGate allow={['SUPERVISOR', 'ADMIN_DIRECTIVO', 'LOGISTICA']}>
-      <CatalogContent />
-    </RoleGate>
-  );
+  return <CatalogContent />;
 }
 
 function CatalogContent() {
@@ -91,54 +92,46 @@ function CatalogContent() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [role, userId, wantedCode]);
 
-  const columns = useMemo<ColumnDef<AlertType, unknown>[]>(
-    () => [
+  const columns = useMemo<ColumnDef<AlertType, unknown>[]>(() => {
+    const cols: ColumnDef<AlertType, unknown>[] = [
       {
         accessorKey: 'label',
         header: 'Alerta',
         cell: ({ row }) => (
-          <span>
-            <span className="font-medium">{row.original.label}</span>
-            <span className="mt-0.5 block font-mono text-[12px] text-muted-foreground">
-              {row.original.code}
-            </span>
-          </span>
+          <span className="font-medium text-navy">{row.original.label}</span>
         ),
       },
       {
         accessorKey: 'family',
-        header: 'Familia',
-        cell: ({ row }) => etiquetaFamilia(row.original.family),
+        header: 'Área',
+        cell: ({ row }) => (
+          <span className="text-[12px] text-muted-foreground">
+            {etiquetaFamilia(row.original.family)}
+          </span>
+        ),
       },
       {
         accessorKey: 'owningModule',
         header: 'Dueño',
-        cell: ({ row }) => etiquetaModulo(row.original.owningModule),
+        cell: ({ row }) => (
+          <span className="text-[12px] text-muted-foreground">
+            {etiquetaModulo(row.original.owningModule)}
+          </span>
+        ),
       },
-      {
-        accessorKey: 'thresholdMode',
-        header: 'Dónde se edita',
-        cell: ({ row }) => etiquetaModo(row.original.thresholdMode),
-      },
-      {
+    ];
+    if (isAdmin && (rows ?? []).some((row) => !row.active)) {
+      cols.push({
         accessorKey: 'active',
         header: 'Estado',
         cell: ({ row }) =>
-          isAdmin ? (
-            row.original.active ? (
-              <Badge variant="success">Activa</Badge>
-            ) : (
-              <Badge variant="muted">Inactiva</Badge>
-            )
-          ) : (
-            <span className="text-[12px] text-muted-foreground">
-              {row.original.active ? 'Activa' : 'Inactiva'}
-            </span>
+          row.original.active ? null : (
+            <Badge variant="muted">Inactiva</Badge>
           ),
-      },
-    ],
-    [isAdmin],
-  );
+      });
+    }
+    return cols;
+  }, [isAdmin, rows]);
 
   function openType(row: AlertType) {
     setSelected(row);
@@ -152,18 +145,11 @@ function CatalogContent() {
     router.replace('/configuracion/alertas');
   }
 
-  const lede =
-    role === 'LOGISTICA'
-      ? 'Avisos de flota: cuánto tiempo puede ir una unidad sin regreso.'
-      : role === 'SUPERVISOR'
-        ? 'Avisos de mantenimiento, existencias y salud. Lo que llega a la campanita.'
-        : 'Tipos de aviso de mantenimiento y flota. Alta y baja solo aquí.';
-
   return (
     <div className="unidades-page">
       <PageHeader
         title="Alertas"
-        lede={lede}
+        lede={ledeParaRol(role)}
         actions={
           isAdmin ? (
             <Button type="button" onClick={() => setCreateOpen(true)}>
@@ -275,7 +261,7 @@ function CreateAlertDialog({
           <DialogHeader>
             <DialogTitle>Nueva alerta</DialogTitle>
             <DialogDescription>
-              El código no cambia después.
+              Nombre que ve el taller. El código queda fijo.
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-3 py-3">
@@ -296,7 +282,7 @@ function CreateAlertDialog({
                 required
               />
             </Field>
-            <Field label="Familia" htmlFor="alerta-familia">
+            <Field label="Área" htmlFor="alerta-familia">
               <NativeSelect
                 id="alerta-familia"
                 value={family}
@@ -306,7 +292,7 @@ function CreateAlertDialog({
                 <option value="FLOTA">Flota</option>
               </NativeSelect>
             </Field>
-            <Field label="Módulo dueño" htmlFor="alerta-modulo">
+            <Field label="Dueño" htmlFor="alerta-modulo">
               <NativeSelect
                 id="alerta-modulo"
                 value={owningModule}
@@ -321,7 +307,7 @@ function CreateAlertDialog({
                 <option value="OTRO">Otro</option>
               </NativeSelect>
             </Field>
-            <Field label="Dónde se edita" htmlFor="alerta-modo">
+            <Field label="Se ajusta en" htmlFor="alerta-modo">
               <NativeSelect
                 id="alerta-modo"
                 value={thresholdMode}
@@ -329,8 +315,8 @@ function CreateAlertDialog({
                   setThresholdMode(e.target.value as ThresholdMode)
                 }
               >
-                <option value="MODULE">En el módulo</option>
-                <option value="CATALOG">En este catálogo</option>
+                <option value="MODULE">Unidades o existencias</option>
+                <option value="CATALOG">Esta lista</option>
               </NativeSelect>
             </Field>
             <label className="flex items-center gap-2 text-[13px]">
@@ -351,8 +337,8 @@ function CreateAlertDialog({
             >
               Cancelar
             </Button>
-            <Button type="submit" disabled={saving}>
-              {saving ? 'Guardando…' : 'Crear'}
+            <Button type="submit" variant="outline" disabled={saving}>
+              {saving ? 'Guardando…' : 'Guardar'}
             </Button>
           </DialogFooter>
         </form>
@@ -531,13 +517,17 @@ function TypeEditorDialog({
           <DialogHeader>
             <DialogTitle>{type.label}</DialogTitle>
             <DialogDescription>
-              {etiquetaFamilia(type.family)} · {etiquetaModulo(type.owningModule)}{' '}
-              · {etiquetaModo(type.thresholdMode)}
+              {etiquetaFamilia(type.family)} · {etiquetaModulo(type.owningModule)}
+              {isAdmin ? (
+                <span className="mt-0.5 block font-mono text-[12px] font-normal">
+                  {type.code}
+                </span>
+              ) : null}
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-3 py-3">
             {loading ? (
-              <p className="muted">Cargando configuración…</p>
+              <p className="muted">Cargando…</p>
             ) : (
               <>
                 {type.code === 'MTTO_VENCIDO' && payload?.umbrales ? (
@@ -599,13 +589,13 @@ function TypeEditorDialog({
                 {type.code === 'STOCK_BAJO' && payload?.items ? (
                   <div className="grid gap-2">
                     <p className="text-[13px] text-muted-foreground">
-                      Avisar cuando queden. Vacío = no avisar. También se edita en
+                      Avisar si quedan. Vacío = no avisar. También se edita en
                       Existencias.
                     </p>
                     {payload.items.map((row) => (
                       <Field
                         key={row.itemId}
-                        label={`${row.sku} · ${etiquetaMinimo(row.minQty)}`}
+                        label={`${row.nombre} · ${etiquetaMinimo(row.minQty)}`}
                         htmlFor={`min-${row.itemId}`}
                       >
                         <Input
@@ -663,11 +653,11 @@ function TypeEditorDialog({
                   <>
                     <Field
                       label="Local (horas)"
-                      htmlFor="umbral-local"
+                      htmlFor="horas-local"
                       help="Sale de CEDIS / patio. Reloj desde registrar salida."
                     >
                       <Input
-                        id="umbral-local"
+                        id="horas-local"
                         type="number"
                         min={1}
                         value={localH}
@@ -677,11 +667,11 @@ function TypeEditorDialog({
                     </Field>
                     <Field
                       label="Foránea (horas)"
-                      htmlFor="umbral-foraneo"
+                      htmlFor="horas-foraneo"
                       help="Viaje fuera. Reloj desde registrar salida."
                     >
                       <Input
-                        id="umbral-foraneo"
+                        id="horas-foraneo"
                         type="number"
                         min={1}
                         value={foraneoH}
@@ -723,7 +713,11 @@ function TypeEditorDialog({
                 Cancelar
               </Button>
               {canEditValues ? (
-                <Button type="submit" variant="outline" disabled={saving || loading}>
+                <Button
+                  type="submit"
+                  variant={isAdmin ? 'outline' : 'default'}
+                  disabled={saving || loading}
+                >
                   {saving ? 'Guardando…' : 'Guardar'}
                 </Button>
               ) : null}

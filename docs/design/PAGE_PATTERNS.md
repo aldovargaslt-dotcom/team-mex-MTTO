@@ -28,7 +28,7 @@ No gráficas, no KPIs, no feed, no campanita duplicada.
 
 ## 3. Listado denso + filtro
 
-**Rutas:** Andon, Existencias, Refacciones, Movimientos, Por recibir, Flota (ops visual), Choferes, Sitios, Notificaciones.
+**Rutas:** Andon, Existencias, Refacciones, Movimientos, Por recibir, Flota (ops visual), Choferes, Sitios, Notificaciones, Configuración → Alertas.
 
 ```
 PageHeader (H1 + lede + acciones)
@@ -40,8 +40,9 @@ empty-state | “Cargando …”
 
 Unidades / Existencias (post-#65 revert): KPI strip + `unidades-toolbar` / tabla, no Mode B `ListChrome`. Flota visual Logística: same pre-#62 KPI strip (`unidades-kpis--ops`) + tabla; no assign desk.
 
-- Un naranja en header si hay alta/entrada; Flota Sitios / Configurar alertas = secondary.
+- Un naranja en header si hay alta/entrada; Flota Sitios / Configurar alertas = secondary. Configuración → Alertas: Admin **Nueva alerta** (`default`); Supervisor/Logística cero naranja (la fila abre el diálogo).
 - Fila clickeable → ficha o hub. Evitar “Detalle”.
+- Configuración v0: `.subnav` con **Configuración** muted + **Alertas** activo (ubicación). Mismo chrome que Inventario/Flota — **no** sidebar de settings (anti-patrón). No es un patrón de página extra.
 - Filtros enumerados = `ListFilter` (chips). Búsqueda de texto = `Input` en el header o una fila, **sin** card de un solo campo (Choferes es deuda).
 - URL comparte filtros cuando el corte lo pide (`?alerta=`, `?filtro=`, movimientos).
 
