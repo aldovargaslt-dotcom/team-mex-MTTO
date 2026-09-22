@@ -1,5 +1,16 @@
 import { randomUUID } from 'crypto';
-import { BadRequestException, Inject, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  Optional,
+} from '@nestjs/common';
+import {
+  ALERT_TYPE_ACTIVE_PORT,
+  AlertTypeActivePort,
+  emitIfActive,
+} from '../alert-catalog/ports';
+import { SEED_ALERT_CODES } from '../alert-catalog/alert-catalog.types';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { AlertasService } from '../alertas/alertas.service';
@@ -42,6 +53,9 @@ export class LogisticaService implements UnidadChoferAssignmentPort {
     private readonly unidadRepo: Repository<Unidad>,
     @Inject(FLOTA_SIN_REGRESO_PORT)
     private readonly flotaAlert: FlotaSinRegresoPort,
+    @Optional()
+    @Inject(ALERT_TYPE_ACTIVE_PORT)
+    private readonly alertTypes?: AlertTypeActivePort,
   ) {}
 
   async listChoferes(q?: string, chip?: ChipLogistica) {
@@ -232,18 +246,23 @@ export class LogisticaService implements UnidadChoferAssignmentPort {
     thresholdHoras: number,
   ): Promise<void> {
     if (row.alerta === 'SIN_REGRESO' && unidad.salidaAt) {
-      await this.flotaAlert.onAbierto({
-        eventId: randomUUID(),
-        eventType: 'FLOTA_SIN_REGRESO',
-        unidadId: unidad.id,
-        ambito: unidad.ambito,
-        salidaAt: unidad.salidaAt.toISOString(),
-        thresholdHoras,
-        elapsedHoras: elapsedHoras(unidad.salidaAt, now),
-        occurredAt: now.toISOString(),
-        numeroInterno: unidad.numeroInterno,
-        placas: unidad.placas,
-      });
+      await emitIfActive(
+        this.alertTypes,
+        SEED_ALERT_CODES.FLOTA_SIN_REGRESO,
+        () =>
+          this.flotaAlert.onAbierto({
+            eventId: randomUUID(),
+            eventType: 'FLOTA_SIN_REGRESO',
+            unidadId: unidad.id,
+            ambito: unidad.ambito,
+            salidaAt: unidad.salidaAt!.toISOString(),
+            thresholdHoras,
+            elapsedHoras: elapsedHoras(unidad.salidaAt!, now),
+            occurredAt: now.toISOString(),
+            numeroInterno: unidad.numeroInterno,
+            placas: unidad.placas,
+          }),
+      );
       return;
     }
     await this.flotaAlert.onCerrado(unidad.id);

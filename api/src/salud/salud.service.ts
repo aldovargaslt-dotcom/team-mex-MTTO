@@ -3,7 +3,12 @@ import {
   Inject,
   Injectable,
   OnModuleInit,
+  Optional,
 } from '@nestjs/common';
+import {
+  ALERT_TYPE_ACTIVE_PORT,
+  AlertTypeActivePort,
+} from '../alert-catalog/ports';
 import { CurrentUser } from '../auth/current-user';
 import { VISITA_CERRADA, VisitaCerradaPayload } from '../kernel/events/visita-cerrada';
 import { OutboxService } from '../kernel/outbox/outbox.service';
@@ -34,6 +39,9 @@ export class SaludService implements OnModuleInit {
     private readonly inbox: HealthAlertPort,
     private readonly unidades: UnidadesService,
     private readonly outbox: OutboxService,
+    @Optional()
+    @Inject(ALERT_TYPE_ACTIVE_PORT)
+    private readonly alertTypes?: AlertTypeActivePort,
   ) {
     this.outbox.register(VISITA_CERRADA, async (payload) => {
       await this.engine().handleVisitaCerrada(
@@ -53,6 +61,7 @@ export class SaludService implements OnModuleInit {
       andon: this.andon,
       odometer: this.odometer,
       inbox: this.inbox,
+      alertTypes: this.alertTypes,
     });
   }
 

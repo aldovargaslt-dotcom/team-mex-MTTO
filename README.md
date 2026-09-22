@@ -82,7 +82,7 @@ Si el log de Railway dice `Railpack could not determine how to build` y lista `a
    `PORT` lo pone Railway. No copie `DB_HOST` local.
 5. **Settings → Networking → Generate Domain.** Pruebe `https://<api>.up.railway.app/health` → `{"status":"ok",...}`.
 
-El boot crea schemas `inventario` / `andon` / `notifications` / `flota` / `salud`, sincroniza tablas y siembra el catálogo demo (STOCK / RUTAS / CAMIONES 3 Y MEDIA) + stock bajo.
+El boot crea schemas `inventario` / `andon` / `notifications` / `flota` / `salud` / `alertas` / `alert_catalog`, sincroniza tablas y siembra el catálogo demo (STOCK / RUTAS / CAMIONES 3 Y MEDIA) + stock bajo.
 
 ### 2. Railway — UI (probar sin SSO de Vercel)
 

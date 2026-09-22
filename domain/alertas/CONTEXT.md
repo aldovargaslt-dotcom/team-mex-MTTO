@@ -17,7 +17,7 @@ Umbral horas, override por `unidadId` opaco, `FLOTA_SIN_REGRESO`.
 
 ## UI
 
-`/flota/alertas`. HTTP under `/logistica/alertas`.
+HTTP under `/logistica/alertas`. Product UI: **Configuración → Alertas** (`FLOTA_SIN_REGRESO`). `/flota/alertas` redirects. Catalog overlay is `alert_catalog` (ADR-013), not this schema.
 
 ## Do not
 

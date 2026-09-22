@@ -368,7 +368,7 @@ function AndonContent() {
         actions={
           isAdmin ? (
             <Button asChild variant="secondary">
-              <Link href="/unidades">Configurar alertas</Link>
+              <Link href="/configuracion/alertas?code=MTTO_VENCIDO">Configurar alertas</Link>
             </Button>
           ) : null
         }

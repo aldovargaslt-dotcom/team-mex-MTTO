@@ -43,9 +43,7 @@ export function Campanita() {
   }, [cargar]);
 
   const label =
-    unread > 0
-      ? `Notificaciones, ${unread} sin leer`
-      : 'Notificaciones';
+    unread > 0 ? `Alertas, ${unread} sin leer` : 'Alertas';
 
   return (
     <Link

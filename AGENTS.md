@@ -53,6 +53,7 @@ Implementación no trivial: EWO **aprobado**. No ampliar alcance del EWO en sile
 | UX operacional (copy, existencias, filtros, hub piezas) | [ux-operacional-cortes-v0](docs/design-system/ux-operacional-cortes-v0.md) — recorte SPEC-UX-001; **no toca Flota**. Flota: [tablero viaje](docs/specs/fleet-tablero-viaje-v0.md) |
 | Consulta / conducta (cadencia, ranking, consumo, Andon reincidencia, patio) | [ux-consulta-conducta-cortes-v0](docs/design-system/ux-consulta-conducta-cortes-v0.md) — **no** fusionar con A–E ni con el tablero viaje |
 | Salud de unidad | [ADR-010](docs/adr/010-salud-unidad.md), [spec](docs/specs/unit-health-v0.md), ADR-004 (H1–H15). No escribir `andon.*`. Dual-stack notify intacto. |
+| Catálogo Alertas | [SPEC](docs/specs/alert-catalog-v0.md), [ADR-013](docs/adr/013-alert-catalog-ownership.md), [UX](docs/design/ux-alert-catalog-v0.md), ADR-004 K. No mergear schemas. Dual-stack notify intacto. |
 | Notify / WhatsApp | Dual-stack abajo. Default **noop**. No “arreglar”. |
 
 ## Dual-stack Andon notify (conflicto conocido; no unificar)

@@ -18,6 +18,7 @@ import { SeedModule } from './seed/seed.module';
 import { UnidadesModule } from './unidades/unidades.module';
 import { VisitasModule } from './visitas/visitas.module';
 import { AlertasModule } from './alertas/alertas.module';
+import { AlertCatalogModule } from './alert-catalog/alert-catalog.module';
 import { SaludModule } from './salud/salud.module';
 
 @Module({
@@ -35,6 +36,7 @@ import { SaludModule } from './salud/salud.module';
     ChoferesModule,
     FlotaModule,
     AlertasModule,
+    AlertCatalogModule,
     LogisticaModule,
     InventarioModule,
     NotificationsModule,

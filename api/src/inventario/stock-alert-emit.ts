@@ -1,3 +1,8 @@
+import { SEED_ALERT_CODES } from '../alert-catalog/alert-catalog.types';
+import {
+  AlertTypeActivePort,
+  emitIfActive,
+} from '../alert-catalog/ports';
 import { StockAlertPort } from './ports';
 import {
   STOCK_BAJO,
@@ -18,6 +23,7 @@ export async function publicarAlertaStock(
     prevMin: number | null | undefined;
     nextMin: number | null;
   },
+  alertTypes?: AlertTypeActivePort | null,
 ): Promise<StockAlertEvent | null> {
   const eventType = eventoCruceUmbral({
     prevQty: input.prevQty,
@@ -38,7 +44,9 @@ export async function publicarAlertaStock(
     occurredAt: input.occurredAt,
   });
   if (eventType === STOCK_BAJO) {
-    await port.onStockBajo(event);
+    await emitIfActive(alertTypes, SEED_ALERT_CODES.STOCK_BAJO, () =>
+      port.onStockBajo(event),
+    );
   } else {
     await port.onStockReabastecido(event);
   }

@@ -6,6 +6,11 @@ import {
 } from './enums';
 import { evaluateHealthAlertRule } from './health-alert-rules';
 import { computeUnitHealth } from './health-score';
+import { SEED_ALERT_CODES } from '../alert-catalog/alert-catalog.types';
+import {
+  AlertTypeActivePort,
+  emitIfActive,
+} from '../alert-catalog/ports';
 import {
   AndonHealthInputPort,
   HealthAlertPort,
@@ -34,6 +39,7 @@ export type SaludEngineDeps = {
   andon: AndonHealthInputPort;
   odometer: OdometerPort;
   inbox?: HealthAlertPort;
+  alertTypes?: AlertTypeActivePort | null;
   now?: () => Date;
   newId?: () => string;
 };
@@ -169,12 +175,13 @@ export class SaludEngine {
 
     let derived = active;
     if (decision === 'CREATE' && computation.score != null) {
+      const score = computation.score;
       const alert: HealthAlert = {
         id: this.id(),
         unidadId,
         type: HealthAlertType.HEALTH_BELOW_THRESHOLD,
         estado: EstadoHealthAlert.ABIERTO,
-        scoreAtOpen: computation.score,
+        scoreAtOpen: score,
         thresholdAtOpen: config.alertThreshold,
         openedAt: this.nowIso(),
         resolvedAt: null,
@@ -182,15 +189,22 @@ export class SaludEngine {
       };
       await this.deps.store.insertAlert(alert);
       derived = alert;
-      await this.deps.inbox?.onOpened({
-        alert,
-        unidad,
-        score: computation.score,
-        threshold: config.alertThreshold,
-        numeroInterno: unidad?.numeroInterno ?? 'Unidad',
-        drivers: computation.drivers,
-        severity: config.alertSeverity,
-      });
+      if (this.deps.inbox) {
+        await emitIfActive(
+          this.deps.alertTypes,
+          SEED_ALERT_CODES.SALUD_UMBRAL,
+          () =>
+            this.deps.inbox!.onOpened({
+              alert,
+              unidad,
+              score,
+              threshold: config.alertThreshold,
+              numeroInterno: unidad?.numeroInterno ?? 'Unidad',
+              drivers: computation.drivers,
+              severity: config.alertSeverity,
+            }),
+        );
+      }
     } else if (decision === 'RESOLVE' && active && computation.score != null) {
       const resolved: HealthAlert = {
         ...active,

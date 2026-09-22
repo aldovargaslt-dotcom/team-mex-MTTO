@@ -137,22 +137,6 @@ function UnidadesList() {
     setDialogOpen(true);
   }
 
-  function abrirAlertas() {
-    setAlertDraft(
-      Object.fromEntries(
-        tipos.map((tipo) => [
-          tipo.id,
-          {
-            tKm: String(umbrales[tipo.id]?.tKm ?? DEFAULT_T_KM),
-            tDias: String(umbrales[tipo.id]?.tDias ?? DEFAULT_T_DIAS),
-          },
-        ]),
-      ),
-    );
-    setError(null);
-    setAlertasOpen(true);
-  }
-
   async function guardarFamilia(event: FormEvent) {
     event.preventDefault();
     setError(null);
@@ -273,7 +257,9 @@ function UnidadesList() {
       <>
         <UnidadesAdminMenu
           onNuevoTipo={abrirAltaFamilia}
-          onAlertas={abrirAlertas}
+          onAlertas={() =>
+            router.push('/configuracion/alertas?code=MTTO_VENCIDO')
+          }
           onSalud={() => setSaludOpen(true)}
         />
         <Button asChild>

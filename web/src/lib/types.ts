@@ -297,6 +297,41 @@ export type InboxItem = {
   deeplinkPath: string;
 };
 
+export type AlertFamily = 'MTTO' | 'FLOTA';
+
+export type AlertOwningModule =
+  | 'ANDON'
+  | 'INVENTARIO'
+  | 'SALUD'
+  | 'ALERTAS'
+  | 'OTRO';
+
+export type ThresholdMode = 'MODULE' | 'CATALOG';
+
+export type AlertType = {
+  code: string;
+  label: string;
+  family: AlertFamily;
+  owningModule: AlertOwningModule;
+  thresholdMode: ThresholdMode;
+  active: boolean;
+  seeded: boolean;
+};
+
+export type CatalogUmbrales = {
+  code: string;
+  mode: ThresholdMode;
+  umbrales?: UmbralAndon[];
+  items?: StockRow[];
+  sinRegreso?: AlertasSinRegresoConfig;
+  salud?: {
+    alertEnabled: boolean;
+    alertThreshold: number;
+    recoveryThreshold: number;
+    alertSeverity: Severity;
+  } | null;
+};
+
 export type SourceModule = 'ANDON' | 'INVENTARIO' | 'SALUD' | 'LOGISTICA';
 
 export type SubjectType = 'UNIDAD' | 'ITEM' | 'NONE';

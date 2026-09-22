@@ -9,6 +9,13 @@ import {
   EstadoAviso,
   WhatsAppKind,
 } from './enums';
+import {
+  SEED_ALERT_CODES,
+} from '../alert-catalog/alert-catalog.types';
+import {
+  AlertTypeActivePort,
+  emitIfActive,
+} from '../alert-catalog/ports';
 import { AndonStore, AvisoInboxPort, UnidadCatalog, WhatsAppPort } from './ports';
 
 export class AndonForbiddenError extends Error {
@@ -30,6 +37,7 @@ export type AndonEngineDeps = {
   catalog: UnidadCatalog;
   whatsapp: WhatsAppPort;
   inbox?: AvisoInboxPort;
+  alertTypes?: AlertTypeActivePort | null;
   now?: () => Date;
   newId?: () => string;
   visitaWriter?: VisitaWriter;
@@ -100,7 +108,13 @@ export class AndonEngine {
       unidadId: aviso.unidadId,
       kind: WhatsAppKind.AVISO,
     });
-    await this.deps.inbox?.onAbierto(aviso, unidad);
+    if (this.deps.inbox) {
+      await emitIfActive(
+        this.deps.alertTypes,
+        SEED_ALERT_CODES.MTTO_VENCIDO,
+        () => this.deps.inbox!.onAbierto(aviso, unidad),
+      );
+    }
     return aviso;
   }
 

@@ -237,6 +237,12 @@ Salud
 → domain/salud + ADR-010 (docs/adr/010-salud-unidad.md) + spec unit-health-v0 + ADR-004 H
 → do not write andon.*; do not load notify factories
 
+Alert Catalog (Configuración → Alertas)
+→ SPEC alert-catalog-v0 + ADR-013 + domain/shared
+→ UX docs/design/ux-alert-catalog-v0.md
+→ do not merge andon/alertas/notifications; do not load notify factories
+→ Flota hours stay schema `alertas` via port
+
 UI web/src
 → ADR-003 + docs/design/README.md + the corte brief
 → Flota: tablero spec, not ux-operacional A–E

@@ -33,6 +33,7 @@ Do **not** use `docs/decisions/`. That path is not part of this repository’s S
 | Flota | `api/src/flota` | Yard bitácora |
 | Logística | `api/src/logistica` | Ops estado mutations; parked assignment port |
 | Alertas | `api/src/alertas` | Shared threshold store (sin regreso) |
+| Alert Catalog | `api/src/alert-catalog` | Type overlay + HTTP façade (ADR-013) |
 | Salud | `api/src/salud` | Health Score |
 | Web app | `web/src/app/*` | Role picker, unidades, visitas wizard, inventario, andon, flota, notificaciones |
 | Seed | `api/src/seed` | Idempotent demo catalog |
@@ -49,7 +50,8 @@ Do **not** use `docs/decisions/`. That path is not part of this repository’s S
 | `notifications` | Notifications |
 | `flota` | Flota |
 | `salud` | Salud |
-| `alertas` | Alertas config |
+| `alertas` | Alertas config (sin-regreso hours) |
+| `alert_catalog` | Alert type overlay (ADR-013; not inbox, not Andon) |
 
 Rules: opaque IDs; **no** FKs or JOINs across those schemas (ADR-002). TypeORM `synchronize` is used in local/CI test DBs (`DB_SYNCHRONIZE`).
 
@@ -66,6 +68,7 @@ Rules: opaque IDs; **no** FKs or JOINs across those schemas (ADR-002). TypeORM `
 - `HealthAlertPort` — Salud → inbox (`HEALTH_BELOW_THRESHOLD`); no WhatsApp.
 - `FlotaSinRegresoPort` — Logística/alertas eval → inbox `FLOTA_SIN_REGRESO`; no `andon.*`.
 - `UnidadChoferAssignmentPort` — Logística writes kernel `unidad.choferId` (parked UI).
+- `AlertTypeActivePort` — catalog `active` check before new inbox emit.
 
 Outbox: `VisitaCerrada` written in the same transaction as visit close (ADR-001).
 

@@ -40,6 +40,16 @@ const nextConfig: NextConfig = {
         destination: '/unidades',
         permanent: false,
       },
+      {
+        source: '/flota/alertas',
+        destination: '/configuracion/alertas?code=FLOTA_SIN_REGRESO',
+        permanent: false,
+      },
+      {
+        source: '/flota/alertas/',
+        destination: '/configuracion/alertas?code=FLOTA_SIN_REGRESO',
+        permanent: false,
+      },
     ];
   },
   async rewrites() {

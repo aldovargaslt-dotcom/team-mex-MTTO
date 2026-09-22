@@ -119,6 +119,17 @@ TDD umbral + emit/clear. [ADR-012](012-flota-sin-regreso-alertas.md) / [architec
 - **L11** — regreso o under-threshold expira el mismo dedupe (patrón StockBajo). No escribe `andon.*`.
 - **L12** — `GET`/`PATCH /logistica/alertas/sin-regreso`: LOGISTICA ok; Supervisor 403. Schema `alertas`, no silo Logística.
 
+## Alert Catalog (K1–K6)
+
+TDD en `api/src/alert-catalog/*.spec.ts` + e2e. SPEC [alert-catalog-v0](../specs/alert-catalog-v0.md). [ADR-013](013-alert-catalog-ownership.md).
+
+- **K1** — `GET /configuracion/alertas`: Supervisor ve solo familia MTTO; Logística solo FLOTA; Admin todos los seed (`MTTO_VENCIDO`, `STOCK_BAJO`, `SALUD_UMBRAL`, `FLOTA_SIN_REGRESO`).
+- **K2** — Supervisor `POST` tipo o `PATCH` `active` → 403. Logística igual. Sin `X-Role` → 401.
+- **K3** — Supervisor `PATCH` umbrales `FLOTA_SIN_REGRESO` vía catálogo → 403. Logística `PATCH` Andon / stock / Salud vía catálogo → 403. `GET` de otra familia o código desconocido → 404.
+- **K4** — Admin crea tipo (código único, no prefijo `WO-`) y desactiva un seed; no-admin deja de listar el desactivado; Admin lo sigue viendo `active=false`.
+- **K5** — Tipo inactivo: no hay **nuevo** ítem de inbox para ese `code` (re-check en el emit). Expire/clear sigue. Andon `NotifyPort` no se reconfigura.
+- **K6** — `FLOTA_SIN_REGRESO` CATALOG: horas persisten en schema `alertas` (no en `andon.*` ni `notifications.*`). Lectura de config fallida → fail closed (no emitir).
+
 ## Outbound ops
 
 Puerto `NotifyPort`. `ANDON_NOTIFY_PROVIDER=evolution|noop` (**default noop**). Contrato lab: `POST /message/sendText/{instance}` con `number=ANDON_WA_GROUP_JID` (`@g.us`). Cableado HTTP: **otro agente**. Throwaway Baileys — **riesgo ToS, no prod**. Meta/Twilio no en este PR. Enterado in-app. Checklist: [andon-whatsapp-ops-checklist-v0](../../architecture/andon-whatsapp-ops-checklist-v0.md).

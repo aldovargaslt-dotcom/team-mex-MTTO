@@ -53,6 +53,10 @@ import { Proveedor } from './entities/proveedor.entity';
 import { Stock } from './entities/stock.entity';
 import { EstadoPendiente, TipoMovimiento, UOM_PIEZA } from './enums';
 import { STOCK_ALERT_PORT, StockAlertPort } from './ports';
+import {
+  ALERT_TYPE_ACTIVE_PORT,
+  AlertTypeActivePort,
+} from '../alert-catalog/ports';
 import { publicarAlertaStock } from './stock-alert-emit';
 import { estadoAlertaStock } from './stock-alerta-rules';
 import { mensajeStockInsuficiente, stockTrasMovimiento } from './stock-rules';
@@ -89,6 +93,9 @@ export class InventarioService implements OnModuleInit {
     @Optional()
     @Inject(STOCK_ALERT_PORT)
     private readonly stockAlerts?: StockAlertPort,
+    @Optional()
+    @Inject(ALERT_TYPE_ACTIVE_PORT)
+    private readonly alertTypes?: AlertTypeActivePort,
   ) {}
 
   onModuleInit() {
@@ -642,16 +649,20 @@ export class InventarioService implements OnModuleInit {
   }
 
   private async emitCruceUmbral(crossing: StockCrossing) {
-    await publicarAlertaStock(this.stockAlerts, {
-      eventId: randomUUID(),
-      occurredAt: new Date(),
-      itemId: crossing.item.id,
-      sku: crossing.item.sku,
-      prevQty: crossing.prevQty,
-      nextQty: crossing.nextQty,
-      prevMin: crossing.prevMin,
-      nextMin: crossing.nextMin,
-    });
+    await publicarAlertaStock(
+      this.stockAlerts,
+      {
+        eventId: randomUUID(),
+        occurredAt: new Date(),
+        itemId: crossing.item.id,
+        sku: crossing.item.sku,
+        prevQty: crossing.prevQty,
+        nextQty: crossing.nextQty,
+        prevMin: crossing.prevMin,
+        nextMin: crossing.nextMin,
+      },
+      this.alertTypes,
+    );
   }
 
   private async replaceCompatibilidad(

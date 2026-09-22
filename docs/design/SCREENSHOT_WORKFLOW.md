@@ -61,7 +61,9 @@ Los briefs viejos sin sufijo de viewport siguen válidos; los nuevos lo llevan.
 | `/inventario/stock` | ambos | Listado | `?alerta=BAJO`; CTA entrada |
 | `/inventario/movimientos` | ambos | Listado | Filtros en URL |
 | `/inventario/pendientes` | ambos | Listado | Por recibir |
-| `/notificaciones` | ambos | Inbox | Unread + quiet action |
+| `/notificaciones` | los tres | Inbox | H1 Alertas; unread + quiet action |
+| `/configuracion/alertas` | los tres | Listado + dialog | Catálogo de tipos; `?code=`; d1440 |
+| `/flota/alertas` | — | redirect | → `/configuracion/alertas?code=FLOTA_SIN_REGRESO` |
 | `/flota` | Logística, Admin | Lista ops | KPI En ruta; Ubicación Foráneo\|Local; alerta Sin regreso Local; d1440. **Sin** Ciclos/Sitios (Logística). |
 | `/flota/unidades/:id` | Logística, Admin | Ficha viaje | Form salida/entrada |
 | `/flota/sitios` | Logística, Admin | Listado | |
