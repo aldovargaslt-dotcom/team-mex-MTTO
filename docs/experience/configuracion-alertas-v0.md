@@ -1,9 +1,10 @@
 # Experience Context — Configuración → Alertas (v0)
 
 **Status:** Accepted (2026-09-22)  
+**Hierarchy redesign v0.1:** PROPOSAL (Option B — 2026-09-22) — awaiting SD Accepted before UI EWO  
 **Screen:** `/configuracion/alertas`  
 **Related:** SPEC `docs/specs/alert-catalog-v0.md` (Approved) · ADR-013 · EWO-004 · UX `docs/design/ux-alert-catalog-v0.md`  
-**Rule:** No Experience Context → no final UI. This artifact gates UI polish PR #68.
+**Rule:** No Experience Context → no final UI. Base context Accepted; hierarchy redesign below is not yet Approved for implementation.
 
 IA locked for current work: **hub remains Configuración → Alertas** (not Unidades/Stock-only). Brief `ui-alertas-copy-botones-v0` secondary CTAs elsewhere remain allowed dual entry; they do not replace this hub in this Accepted context.
 
@@ -38,8 +39,8 @@ experience:
 | 4 | Primary job on screen | See which alert **types** I can configure, then open the right type to set when the system should avisarme | SPEC goals, UX purpose |
 | 5 | Decisions | Which type to open? Are thresholds still right? (Admin) Should this type be active? Should a new type exist? | Derived |
 | 6 | Actions | Scan list → open type → edit thresholds → save; Admin: Nueva alerta / Desactivar | SPEC + EWO-004 |
-| 7 | Info for decisions | Product name of type; family (Mantenimiento/Flota); active vs inactive (Admin); current threshold values in dialog | Hierarchy below |
-| 8 | Secondary info | Owning module label; stable code; “edited in module vs catalog” mechanics | P2/P3 — audit said over-exposed |
+| 7 | Info for decisions | Product name of type; **Cuándo avisa** summary on the list; family/área; active vs inactive (Admin); full threshold values in dialog | Hierarchy below (v0.1) |
+| 8 | Secondary info | Owning module label; stable code; “edited in module vs catalog” mechanics | P2/P3 — Dueño out of list in v0.1 |
 | 9 | Operational context | Desk/admin configuration after seed; not live yard monitoring. Campanita delivery is a different surface (`/notificaciones`) | PRODUCT / GLOSSARY |
 | 10 | Mistake impact | Too-low thresholds → alert noise; too-high / inactive → missed avisos; wrong family visibility → confusion. Need clear cancel, non-destructive defaults, Admin-only deactivate | UNKNOWN: exact recovery SOP / who gets paged |
 | 11 | Frequency | Occasional (setup, policy change), not every shift start | UNKNOWN: real field cadence |
@@ -133,37 +134,72 @@ task:
 
 ## Information hierarchy
 
+### Base (Accepted 2026-09-22)
+
 ```yaml
 information_priority:
   P0:
-    - alert_type_product_name          # e.g. Mantenimiento vencido
-    - role_visible_type_list           # swimlane result
-    - threshold_values_in_editor       # when dialog open
+    - alert_type_product_name
+    - role_visible_type_list
+    - threshold_values_in_editor
   P1:
-    - family_mantenimiento_vs_flota    # if shown, muted
-    - inactive_state_for_admin         # only when inactive
-    - primary_cta_nueva_alerta         # Admin list only
+    - family_mantenimiento_vs_flota
+    - inactive_state_for_admin
+    - primary_cta_nueva_alerta
   P2:
-    - owning_module_label              # optional muted
+    - owning_module_label
     - lede_explaining_campanita_link
   P3:
-    - stable_code                      # MTTO_VENCIDO — mono muted / Admin dialog only
-    - schema_or_edit_locus_mechanics   # MUST NOT be a list column
+    - stable_code
+    - schema_or_edit_locus_mechanics
     - notify_provider_dual_stack
 ```
 
-Anti-dump rule: codes, “dónde se edita”, and green Activa-on-every-row are P3/noise — EWO-004 polish targets.
+### Hierarchy redesign v0.1 — PROPOSAL (Option B)
+
+Goal: list reads as *configuring when each type alerts*, not as a metadata directory.
+
+```yaml
+information_priority_v0_1:
+  P0:
+    - alert_type_product_name          # navy, primary row weight
+    - role_visible_type_list           # swimlane; grouped by Área when >1 área
+  P1:
+    - when_it_alerts_summary           # NEW on list — taller Spanish, e.g. "5 000 km o 90 días"
+    - primary_cta_nueva_alerta         # Admin list only
+    - threshold_values_in_editor       # full detail still in dialog
+    - inactive_state_for_admin         # muted Inactiva only when inactive
+  P2:
+    - area_group_heading               # Mantenimiento | Flota (section H2)
+    - lede_task_oriented               # "Ajusta cuándo avisa… Toca una fila…"
+  P3:
+    - owning_module_label              # OUT of list columns; Admin dialog only if needed
+    - stable_code                      # Admin dialog only
+    - schema_or_edit_locus_mechanics
+    - notify_provider_dual_stack
+```
+
+List columns (v0.1): **Alerta** | **Cuándo avisa** | row affordance (`›`).  
+**Área** is the **group heading**, not a redundant per-row column when grouped.  
+**Dueño** removed from list.
+
+Grouping (Option B):
+
+- Admin (both families visible): sections `Mantenimiento` then `Flota` (PAGE_PATTERNS listado agrupado over dense list).
+- Supervisor / Logística (single family): one section or no visible group chrome if only one group — avoid empty theater.
+
+Anti-dump rule unchanged: codes, “dónde se edita”, green Activa-on-every-row stay P3/noise.
 
 ---
 
 ## Decision model (this screen)
 
 ```text
-1. understand_current_state  → see my types
-2. identify_exception        → (Admin) inactive; (any) wrong thresholds — weak on list
+1. understand_current_state  → see my types (grouped by Área if Admin)
+2. identify_exception        → scan Cuándo avisa summaries; (Admin) inactive
 3. inspect_context           → open type dialog
 4. execute_action            → save thresholds / create / deactivate
-5. confirm_result            → dialog close + list refresh
+5. confirm_result            → dialog close + list refresh (summary updates)
 ```
 
 Not a live exception queue (that is Inicio / Andon / inbox).
@@ -195,37 +231,52 @@ actions:
 ux_constraints:
   density: high
   primary_action_count: 1  # Admin list; 0 on Supervisor/Logística lists
-  critical_information_above_fold: true  # type names
-  progressive_disclosure: true  # thresholds in dialog; codes demoted
+  critical_information_above_fold: true  # type names + when-it-alerts
+  progressive_disclosure: true  # full thresholds in dialog; codes demoted
   minimize_navigation: true  # hub under Configuración; redirect /flota/alertas
   preserve_context: true
   menu_identity: Configuración → Alertas vs top-nav Alerta (Andon board)
   copy: taller_spanish_no_umbral_t_km_min_qty_regla
-  pattern: PAGE_PATTERNS_3_list + 7_dialog
+  pattern: PAGE_PATTERNS_3_list + grouped_sections_when_multi_area + 7_dialog
   design_system: Team_Mex_tokens_only
+  list_affordance: row_click + chevron_or_lede_hint  # no Lucide-per-row icons
 ```
 
 ### Rule conflicts (explicit)
 
-| Conflict | Resolution for this proposal |
-|----------|------------------------------|
+| Conflict | Resolution |
+|----------|------------|
 | Brief `ui-alertas-copy-botones-v0` prefers Configurar alertas on Unidades/Stock | Hub Configuración kept (SPEC). Dual entry OK; full brief-first rewrite **out of scope** until new decision |
 | Top-nav **Alerta** vs page **Alertas** | Different surfaces; identity must be clear in chrome/lede |
+| Pattern 3 flat table vs Option B grouping | Grouping allowed as listado agrupado over pattern 3 — not a new page pattern, not SaaS settings sidebar |
+
+### Explicit rejects (v0.1)
+
+- Card grid per alert type
+- SaaS settings sidebar
+- KPI / monitoring dashboard chrome
+- Lucide (or other) icon per row
+- Relocating hub to Unidades/Stock-only
 
 ---
 
-## Anti-pattern checklist (pre-merge #68)
+## Anti-pattern checklist
 
-- [x] No architecture column in list
-- [x] No code primacy in list scan
-- [x] No Activa green flood
-- [x] One orange Admin / zero on other roles’ lists
-- [x] No settings-sidebar SaaS chrome (subnav/breadcrumb OK)
-- [x] No Lucide-per-row
-- [x] Dialog button grammar matches design system
-- [x] Supports **configuring** task, not fake monitoring dashboard
+**EWO-004 / PR #68 (merged):** PASS against base Accepted context.
 
-*(Checked against EWO-004 / PR #68 implementation 2026-09-22 — PASS)*
+**Hierarchy redesign v0.1 (pre-EWO):** check before merge of polish PR
+
+- [ ] Groups by Área when Admin sees both families
+- [ ] P0 product name; P1 Cuándo avisa summary on list
+- [ ] No Dueño column on list
+- [ ] No architecture / “dónde se edita” column
+- [ ] No code primacy in list scan
+- [ ] No Activa green flood
+- [ ] One orange Admin / zero on other roles’ lists
+- [ ] No settings-sidebar SaaS chrome
+- [ ] No Lucide-per-row
+- [ ] Dialog button grammar matches design system
+- [ ] Supports **configuring** task, not fake monitoring dashboard
 
 ---
 
@@ -236,10 +287,12 @@ ux_constraints:
 3. Operational SOP when Admin deactivates `STOCK_BAJO` but `min_qty` remains on ítems.
 4. Whether Configuración will gain sibling pages (only Alertas location cue needed now).
 5. Field confirmation that “Alertas” inbox label vs Andon board “Alerta” is clear to operators.
+6. Exact Spanish summary strings per type (derive from live threshold payloads in EWO; do not invent numbers in docs).
 
 ---
 
-## Acceptance of this Experience Context
+## Acceptance
 
-**Accepted** by SD 2026-09-22.  
-UX re-check of EWO-004 / PR #68 against this context: **PASS** → merge authorized.
+**Base Experience Context:** Accepted by SD 2026-09-22 (EWO-004 / PR #68 PASS → merged).
+
+**Hierarchy redesign v0.1 (Option B):** PROPOSAL — requires explicit SD **Accepted** before Screen Spec lock / UI EWO dispatch.
