@@ -14,11 +14,11 @@ Ver los **tipos de alerta** que este rol puede configurar, y entrar a editar cu�
 
 ## Questions the screen must answer
 
-1. ¿Qué estoy viendo? — Catálogo de **Alertas** (tipos), no el tablero Andon ni la campanita.
-2. ¿Hay algo mal? — Tipo inactivo (solo Admin); error de carga.
+1. ¿Qué estoy viendo? — Catálogo de **Alertas** (tipos) bajo **Configuración**, no el tablero Andon (**Alerta** en nav) ni la campanita.
+2. ¿Hay algo mal? — Tipo inactivo (solo Admin, muted **Inactiva**); error de carga. No pintar verde **Activa** en cada fila.
 3. ¿Debo actuar? — Admin: **Nueva alerta**. El resto: la fila abre el editor.
-4. ¿Cuál es el estado ahora? — Activa / Inactiva; familia Mantenimiento o Flota.
-5. ¿Qué apoyo hay? — Lede: quién ve qué; hint de que el aviso llega a la campanita.
+4. ¿Cuál es el estado ahora? — Nombre de producto; área Mantenimiento o Flota (P2 muted).
+5. ¿Qué apoyo hay? — Subnav Configuración → Alertas; lede: tipos que configuras aquí / lo que llega a la campanita.
 
 ## Primary action
 
@@ -27,24 +27,24 @@ Admin: **Nueva alerta** (`Button` `default`). Supervisor / Logística: **las fil
 ## Secondary actions
 
 - **Desactivar** / **Reactivar** (solo Admin): `dangerSoft` / `outline` en el diálogo del tipo, nunca el CTA de la vista.
-- **Guardar** en el panel de umbrales: `outline` (tertiary) si ya hay un naranja de alta; si no hay alta en la vista, **Guardar** puede ser el único `default`.
+- **Guardar** en el diálogo del tipo: `outline` (tertiary) si ya hay un naranja de alta; si no hay alta en la vista, **Guardar** puede ser el único `default`.
 - **Cancelar**: `secondary`.
 - Sin “Detalle”. Sin “Configurar alertas” naranja.
 
 ## Information hierarchy
 
-P0: H1 **Alertas** + tabla de tipos visibles para el rol.  
-P1: fila (nombre de producto + estado) → diálogo/sheet de edición.  
-P2: familia (Mantenimiento | Flota), módulo dueño, si avisa desde el módulo o desde este catálogo.  
-P3: código estable (`MTTO_VENCIDO`, …) en 12px muted / `.mono` — no UUID, no nombre de schema.
+P0: H1 **Alertas** (navy 20/600) + tabla de tipos visibles para el rol.  
+P1: fila (nombre de producto) → diálogo de edición. Admin: **Nueva alerta**.  
+P2: área (Mantenimiento | Flota) y dueño, muted 12px.  
+P3: código estable (`MTTO_VENCIDO`, …) muted 12px `font-mono` **solo Admin** (y en el diálogo). **Inactiva** muted solo Admin cuando aplica.
 
-Qué se calla: `notifications`, `min_qty`, `t_km`, dual-stack, WhatsApp, JSON de envelope.
+Qué se calla: columna “dónde se edita” / “En el módulo” / “En este catálogo”; badge verde **Activa** en cada fila; códigos en el scan path de Supervisor/Logística; `notifications`, `min_qty`, `t_km`, `t_días`, umbral, “regla”, dual-stack, WhatsApp, JSON de envelope.
 
 ## Pattern
 
-[PAGE_PATTERNS.md](PAGE_PATTERNS.md) **3** (listado denso) + **7** (diálogo corto para alta y para umbrales).
+[PAGE_PATTERNS.md](PAGE_PATTERNS.md) **3** (listado denso) + **7** (diálogo corto para alta y para avisos). Ubicación: chrome `.subnav` ya existente (como Inventario/Flota) con **Configuración** muted + **Alertas** activo. No es un quinto patrón. No es sidebar de settings SaaS.
 
-No patrón 1 (home). No sidebar de settings genérico. No dashboard de KPIs. v0: una sola página bajo Configuración; el ítem de nav **Configuración** entra directo aquí.
+No patrón 1 (home). No dashboard de KPIs. v0: una sola página bajo Configuración; el ítem de nav **Configuración** entra directo aquí. Top-nav **Alerta** sigue siendo el tablero Andon.
 
 ## States
 
@@ -52,14 +52,14 @@ No patrón 1 (home). No sidebar de settings genérico. No dashboard de KPIs. v0:
 - empty (filtros de rol, catálogo semilla siempre tiene filas): no aplica en seed v0. Si Admin desactivó todo lo visible para un no-admin: **No hay alertas para este rol.** / *Las alertas de otras áreas las ve administración. Las inactivas no se listan aquí.*
 - error: `FormAlert` con el mensaje de API.
 - normal: `DataTable` (card de sección).
-- warning: tipo inactivo — badge `muted` **Inactiva** (solo Admin).
+- warning: tipo inactivo — badge `muted` **Inactiva** (solo Admin). Sin badge cuando está activa.
 - critical: no rediseñar la página; errores de validación en el diálogo.
 
-Copy de alta (Admin): título **Nueva alerta**. Campos: Código, Nombre, Familia (Mantenimiento / Flota), Módulo dueño, Dónde se edita (En el módulo / En este catálogo), Activa (default sí).
+Copy de alta (Admin): título **Nueva alerta**. Campos: Código, Nombre, Área (Mantenimiento / Flota), Dueño, Se ajusta en (Unidades o existencias / Esta lista), Activa (default sí). Footer: **Cancelar** `secondary` + **Guardar** `outline` (Nueva alerta ya es el naranja de la vista).
 
 ## Interaction notes
 
-- Fila clickeable abre diálogo del tipo (umbral +, si Admin, desactivar).
+- Fila clickeable abre diálogo del tipo (cuándo avisa; si Admin, desactivar).
 - URL: `/configuracion/alertas`. `?code=FLOTA_SIN_REGRESO` abre el diálogo de ese tipo (redirect desde `/flota/alertas`).
 - Lista no se edita inline.
 - No-admin no ve controles de alta ni desactivar.
