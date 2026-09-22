@@ -2,7 +2,7 @@
 
 Companion to [SPEC-ALERT-CATALOG-v0](../specs/alert-catalog-v0.md) and [ADR-013](../adr/013-alert-catalog-ownership.md). Experience: [configuracion-alertas-v0](../experience/configuracion-alertas-v0.md). Tokens: [DESIGN_SYSTEM.md](DESIGN_SYSTEM.md). Must/Don’t of taller copy: [ui-alertas-copy-botones-v0](../design-system/ui-alertas-copy-botones-v0.md).
 
-**Hierarchy redesign v0.1:** PROPOSAL (Option B — 2026-09-22) — awaiting SD Accepted with Experience Context before UI EWO.
+**Hierarchy redesign v0.1:** Accepted (Option B — 2026-09-22) — authorizes EWO-005.
 
 ---
 
@@ -33,7 +33,7 @@ Admin: **Nueva alerta** (`Button` `default`). Supervisor / Logística: **las fil
 - **Cancelar**: `secondary`.
 - Sin “Detalle”. Sin “Configurar alertas” naranja.
 
-## Information hierarchy (v0.1 PROPOSAL)
+## Information hierarchy (v0.1 Accepted)
 
 P0: H1 **Alertas** (navy 20/600) + nombre de producto en cada fila.  
 P1: columna **Cuándo avisa** (resumen en español de taller, derivado de umbrales vivos) + Admin **Nueva alerta**.  
@@ -119,7 +119,7 @@ Lede sugerido (tarea, no catálogo técnico):
 - Nav Andon sigue **Alerta** (tablero de avisos). No renombrar el wizard WO.
 - No inventar números de umbral en docs; leerlos del API en implementación.
 
-## Proof (post-EWO)
+## Proof (EWO-005)
 
 PNG en `docs/screenshots/alert-catalog/` (`d1440`; `m390` si se toca shell/dialog Supervisor):
 
