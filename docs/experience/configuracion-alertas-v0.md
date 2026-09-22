@@ -1,11 +1,11 @@
 # Experience Context — Configuración → Alertas (v0)
 
-**Status:** PROPOSAL (gate for PR #68 / EWO-004 merge)  
+**Status:** Accepted (2026-09-22)  
 **Screen:** `/configuracion/alertas`  
 **Related:** SPEC `docs/specs/alert-catalog-v0.md` (Approved) · ADR-013 · EWO-004 · UX `docs/design/ux-alert-catalog-v0.md`  
-**Rule:** No Experience Context → no final UI. This artifact must be accepted before merging UI polish PR #68.
+**Rule:** No Experience Context → no final UI. This artifact gates UI polish PR #68.
 
-IA locked for current work: **hub remains Configuración → Alertas** (not Unidades/Stock-only). Brief `ui-alertas-copy-botones-v0` secondary CTAs elsewhere remain allowed dual entry; they do not replace this hub in this proposal.
+IA locked for current work: **hub remains Configuración → Alertas** (not Unidades/Stock-only). Brief `ui-alertas-copy-botones-v0` secondary CTAs elsewhere remain allowed dual entry; they do not replace this hub in this Accepted context.
 
 ---
 
@@ -216,14 +216,16 @@ ux_constraints:
 
 ## Anti-pattern checklist (pre-merge #68)
 
-- [ ] No architecture column in list
-- [ ] No code primacy in list scan
-- [ ] No Activa green flood
-- [ ] One orange Admin / zero on other roles’ lists
-- [ ] No settings-sidebar SaaS chrome (subnav/breadcrumb OK)
-- [ ] No Lucide-per-row
-- [ ] Dialog button grammar matches design system
-- [ ] Supports **configuring** task, not fake monitoring dashboard
+- [x] No architecture column in list
+- [x] No code primacy in list scan
+- [x] No Activa green flood
+- [x] One orange Admin / zero on other roles’ lists
+- [x] No settings-sidebar SaaS chrome (subnav/breadcrumb OK)
+- [x] No Lucide-per-row
+- [x] Dialog button grammar matches design system
+- [x] Supports **configuring** task, not fake monitoring dashboard
+
+*(Checked against EWO-004 / PR #68 implementation 2026-09-22 — PASS)*
 
 ---
 
@@ -239,5 +241,5 @@ ux_constraints:
 
 ## Acceptance of this Experience Context
 
-Human must mark **Accepted** before merging PR #68.  
-After acceptance: re-check EWO-004 implementation against this context (UX review §14). If polish already matches, merge; if not, revise PR then merge.
+**Accepted** by SD 2026-09-22.  
+UX re-check of EWO-004 / PR #68 against this context: **PASS** → merge authorized.
