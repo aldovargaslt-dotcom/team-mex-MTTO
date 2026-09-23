@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Propuesta · Taller · Ficha FOTON — Team Mex</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="base.css">
+</head>
+<body>
+  <div class="canvas">
+    <p class="eyebrow">Propuesta visual · no está en la app</p>
+    <div class="app">
+      <header class="shell">
+        <a class="brand" href="taller-ahora.html" aria-label="Team Mex, taller">
+          <img src="brand/logo-team-mex-shell-white.png" alt="">
+        </a>
+        <nav class="nav" aria-label="Taller">
+          <a href="taller-ahora.html">Ahora</a>
+          <a class="is-on" href="taller-unidades.html" aria-current="page">Unidades</a>
+        </nav>
+        <div class="shell-end">
+          <nav class="desk-switch" aria-label="Otros escritorios">
+            <a href="patio-tablero.html">Patio</a>
+            <a href="index.html#almacen">Almacén</a>
+          </nav>
+          <details class="catalogo">
+            <summary>Catálogo</summary>
+            <div class="catalogo-menu">
+              <a href="index.html#catalogo">Choferes</a>
+              <a href="index.html#catalogo">Tipos</a>
+              <a href="index.html#catalogo">Sitios</a>
+              <a href="index.html#catalogo">Umbrales</a>
+            </div>
+          </details>
+          <a class="bell" href="index.html#campanita" aria-label="Campanita, 2 sin leer">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 7 3 9H3c0-2 3-2 3-9"/><path d="M10 21a2 2 0 0 0 4 0"/></svg>
+            <span class="bell-count">2</span>
+          </a>
+          <span class="role">Supervisor</span>
+          <a class="ghost" href="picker.html">Cambiar rol</a>
+        </div>
+      </header>
+      <main class="main">
+        <a class="back" href="taller-unidades.html">‹ Volver a unidades</a>
+        <p class="kicker">Taller · Ficha</p>
+        <div class="head">
+          <div>
+            <h1 class="case case-id">FOTON <span class="badge badge-ok">Activa</span></h1>
+            <p class="lede">STOCK · placas <span class="mono">VU2625C</span></p>
+          </div>
+          <div class="actions">
+            <button class="btn btn-outline" type="button">Marcar como enterado</button>
+            <a class="btn btn-primary" href="taller-visita.html">Registrar mantenimiento</a>
+          </div>
+        </div>
+        <section class="band" aria-label="Qué está mal">
+          <h2 class="case">Vencido hace 30 días</h2>
+          <p>Han pasado 120 días desde el último servicio. El intervalo es 90 días, o 10,000 km.</p>
+          <p class="support">Último servicio 26 may 2026 · 100 km · Salud 39% · Crítica</p>
+        </section>
+        <nav class="subnav" aria-label="Vistas de la ficha">
+          <a class="is-on" href="taller-ficha.html" aria-current="page">Resumen</a>
+          <a href="#tecnica">Información técnica</a>
+          <a href="#actividad">Mantenimiento</a>
+          <a href="#actividad">Historial</a>
+        </nav>
+        <h2 class="h2">Estado y operación</h2>
+        <dl class="facts">
+          <div>
+            <dt>Estado</dt>
+            <dd>Activa</dd>
+          </div>
+          <div>
+            <dt>Último kilometraje</dt>
+            <dd>100 km</dd>
+          </div>
+          <div>
+            <dt>Tipo</dt>
+            <dd>STOCK</dd>
+          </div>
+        </dl>
+        <h2 class="h2" id="tecnica">Información técnica</h2>
+        <p class="muted" style="margin:0 0 16px">Sin marca, modelo ni año. VIN no registrado.</p>
+        <h2 class="h2" id="actividad">Actividad reciente</h2>
+        <ul class="activity">
+          <li>
+            <time datetime="2026-09-23">23 sep</time>
+            <span>Alerta de mantenimiento · atrasado</span>
+          </li>
+          <li>
+            <time datetime="2026-05-26">26 may</time>
+            <span>Visita · Predictivo · Cerrada · WERO</span>
+          </li>
+        </ul>
+      </main>
+    </div>
+    <aside class="nota">
+      <p class="nota-k">Nota de propuesta</p>
+      <p>Qué cambió: la banda “vencido” es el caso. Las otras vistas son subnav, no un riel llamado Acciones.</p>
+      <p>Hoy: identidad, salud 39%, riel y bloques pesan parecido. <a href="hoy/taller-ficha.png">Ver captura</a>.</p>
+      <p>Choca con: <a href="../../design-system/ficha-unidad-resumen-v0.md">ficha-unidad-resumen-v0</a> arma ese riel. Un naranja: Registrar mantenimiento.</p>
+      <p>No es spec aceptada. No cambia la app. <a href="index.html">Índice</a>.</p>
+    </aside>
+  </div>
+</body>
+</html>
