@@ -140,7 +140,7 @@ export function PiezasStep({
 
       {lineas.length > 0 ? (
         <div className="mt-4 grid gap-2">
-          <h3 className="text-sm font-semibold text-navy">En esta OT</h3>
+          <h3 className="text-sm font-semibold text-navy">En esta visita</h3>
           {lineas.map((linea) => {
             const insuficiente =
               linea.origen === 'DESDE_STOCK' && linea.qty > linea.stock;

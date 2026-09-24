@@ -18,11 +18,20 @@ import { VisitStepper } from '@/components/VisitStepper';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { Field, FormAlert, Note, PageHeader } from '@/components/ui/field';
 import { Input, NativeSelect, Textarea } from '@/components/ui/input';
 import {
   etiquetaEstadoVisita,
   etiquetaTipoVisita,
+  etiquetaUom,
   formatFecha,
   formatKm,
   resumenOrigenPiezas,
@@ -276,6 +285,7 @@ function VisitWizard({
   const [piezas, setPiezas] = useState<PiezaLinea[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
   const [ultimoKm, setUltimoKm] = useState<number | null>(null);
 
   useEffect(() => {
@@ -351,6 +361,12 @@ function VisitWizard({
   );
 
   async function persist(extra?: Record<string, unknown>) {
+    if (piezasInsuficientes(piezas).length) {
+      setError(
+        'Hay piezas que superan el stock. Use compra externa o reduzca la cantidad.',
+      );
+      return null;
+    }
     setSaving(true);
     setError(null);
     try {
@@ -412,11 +428,7 @@ function VisitWizard({
   }
 
   async function cerrar() {
-    if (
-      !window.confirm('¿Cerrar la visita? Ya no se podrá editar.')
-    ) {
-      return;
-    }
+    setConfirmOpen(false);
     const saved = await persist();
     if (!saved) return;
     setSaving(true);
@@ -462,7 +474,7 @@ function VisitWizard({
   if (!firmaChofer || !firmaJefe) faltantes.push('Firmas de chofer y jefe de mecánicos / taller');
   const bloqueoStock = piezasInsuficientes(piezas);
   if (bloqueoStock.length) {
-    faltantes.push('Piezas con stock insuficiente (compra externa o reduzca qty)');
+    faltantes.push('Piezas con stock insuficiente (compra externa o reduzca la cantidad)');
   }
 
   const choferNombre =
@@ -746,12 +758,47 @@ function VisitWizard({
           <Button
             type="button"
             disabled={saving || faltantes.length > 0}
-            onClick={() => void cerrar()}
+            onClick={() => setConfirmOpen(true)}
           >
             {saving ? 'Cerrando…' : 'Cerrar visita'}
           </Button>
         )}
       </div>
+      <Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Cerrar visita</DialogTitle>
+            <DialogDescription>
+              Ya no se podrá editar. Los avisos de mantenimiento abiertos de esta unidad pasan a resueltos.
+            </DialogDescription>
+          </DialogHeader>
+          <ul className="grid gap-1 text-sm">
+            {piezas.length === 0 ? (
+              <li>Sin piezas.</li>
+            ) : (
+              piezas.map((linea) => (
+                <li key={linea.itemId}>
+                  {linea.origen === 'DESDE_STOCK'
+                    ? `${linea.sku} · ${linea.qty} ${etiquetaUom(linea.uom)} desde stock · quedarán ${linea.stock - linea.qty}`
+                    : `${linea.sku} · ${linea.qty} ${etiquetaUom(linea.uom)} compra externa · no mueve existencias; abre por recibir`}
+                </li>
+              ))
+            )}
+          </ul>
+          <DialogFooter>
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={() => setConfirmOpen(false)}
+            >
+              Cancelar
+            </Button>
+            <Button type="button" disabled={saving} onClick={() => void cerrar()}>
+              {saving ? 'Cerrando…' : 'Cerrar visita'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
