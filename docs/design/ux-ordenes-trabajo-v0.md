@@ -27,6 +27,7 @@ Elegir una orden y leer apertura, cierre, tipo, imágenes, comentarios y el desg
 
 - **Abrir orden** (`outline`) cuando la orden está cerrada.
 - Menú de la orden seleccionada: **Agregar pieza** y **Subir foto** (solo borrador de supervisor). Un panel a la vez. La foto de la unidad no se edita aquí.
+- En la fila y en la ficha, la marca de la unidad es su foto. Sin foto, el icono del tipo (van en STOCK y RUTAS).
 - Filtros `ListFilter`: Abiertas / Cerradas (solo supervisor) y Todos / Predictivo / Correctivo.
 - Búsqueda: unidad, placas o chofer. La URL guarda `cola`, `tipo`, `q`, `orden`.
 

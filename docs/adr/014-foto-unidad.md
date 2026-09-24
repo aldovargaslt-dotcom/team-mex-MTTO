@@ -16,6 +16,7 @@ La cola de órdenes necesita la foto de la unidad, no una foto de la visita. La 
 - Solo `data:image/…`, tope de tamaño en la validación.
 - No entra en `VisitaCerrada` ni en otros envelopes.
 - La orden la lee por la unidad; no se copia a la visita.
+- Si la unidad no tiene foto, la orden muestra el glifo de su tipo (ADR-009). STOCK y RUTAS usan van; no se inventa otro icono.
 
 ## Alternatives Considered
 
