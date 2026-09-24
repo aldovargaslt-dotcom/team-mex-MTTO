@@ -5,7 +5,7 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Suspense, useEffect, useMemo, useState } from 'react';
 import { ArrowUpDown, Check, Inbox, ListFilter, Pause, Search } from 'lucide-react';
 import { OrdenCaptura } from '@/components/OrdenCaptura';
-import { UnidadTipoMark } from '@/components/UnidadTipoMark';
+import { UnidadMarca } from '@/components/UnidadTipoMark';
 import { hydratePiezasFromInventario, type PiezaLinea } from '@/components/PiezasStep';
 import { RoleGate } from '@/components/RoleGate';
 import { Button } from '@/components/ui/button';
@@ -397,16 +397,13 @@ function MarcaUnidad({
   tipoNombre: string;
   tipoIcono: string | null;
 }) {
-  if (foto) {
-    return (
-      // eslint-disable-next-line @next/next/no-img-element
-      <img className="ordenes-unidad-foto" src={foto} alt="" />
-    );
-  }
   return (
-    <span className="ordenes-unidad-marca">
-      <UnidadTipoMark nombre={tipoNombre} icono={tipoIcono} />
-    </span>
+    <UnidadMarca
+      foto={foto}
+      nombre={tipoNombre}
+      icono={tipoIcono}
+      className="ordenes-unidad-marca"
+    />
   );
 }
 

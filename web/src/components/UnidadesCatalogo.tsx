@@ -20,7 +20,7 @@ import {
   X,
 } from 'lucide-react';
 import { StatusBadge } from '@/components/StatusBadge';
-import { UnidadTipoIcon, UnidadTipoMark } from '@/components/UnidadTipoMark';
+import { UnidadMarca, UnidadTipoIcon } from '@/components/UnidadTipoMark';
 import { UnidadesTipoMenu } from '@/components/UnidadesTipoMenu';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -237,7 +237,8 @@ export function UnidadesCatalogo({
         header: 'Unidad',
         cell: ({ row }) => (
           <div className="unidades-unidad">
-            <UnidadTipoMark
+            <UnidadMarca
+              foto={row.original.fotoDataUrl}
               nombre={row.original.tipo.nombre}
               icono={row.original.tipo.icono}
             />
@@ -656,7 +657,8 @@ export function UnidadesCatalogo({
                 tabIndex={0}
               >
                 <div className="unidades-unidad">
-                  <UnidadTipoMark
+                  <UnidadMarca
+                    foto={unidad.fotoDataUrl}
                     nombre={unidad.tipo.nombre}
                     icono={unidad.tipo.icono}
                   />

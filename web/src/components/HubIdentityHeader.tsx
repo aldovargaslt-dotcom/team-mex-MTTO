@@ -4,7 +4,7 @@ import Link from 'next/link';
 import type { MouseEvent, ReactNode } from 'react';
 import { ChevronDown, ChevronLeft } from 'lucide-react';
 import { StatusBadge } from '@/components/StatusBadge';
-import { UnidadTipoMark } from '@/components/UnidadTipoMark';
+import { UnidadMarca } from '@/components/UnidadTipoMark';
 import { UnitHealth } from '@/components/UnitHealth';
 import { formatFecha } from '@/lib/format';
 import type { UnidadHealth } from '@/lib/types';
@@ -18,6 +18,7 @@ export function HubIdentityHeader({
   tipoNombre,
   tipoDescripcion,
   tipoIcono,
+  fotoDataUrl,
   placas,
   vin,
   updatedAt,
@@ -34,6 +35,7 @@ export function HubIdentityHeader({
   tipoNombre: string;
   tipoDescripcion?: string | null;
   tipoIcono?: string | null;
+  fotoDataUrl?: string | null;
   placas: string;
   vin: string | null;
   updatedAt?: string | null;
@@ -66,7 +68,12 @@ export function HubIdentityHeader({
       <div className="hub-identity__body">
         <div className="hub-identity__who">
           <div className="hub-unit-photo" aria-hidden>
-            <UnidadTipoMark nombre={tipoNombre} icono={tipoIcono} size="lg" />
+            <UnidadMarca
+              foto={fotoDataUrl}
+              nombre={tipoNombre}
+              icono={tipoIcono}
+              size="lg"
+            />
           </div>
           <div className="min-w-0">
             <h1 className="hub-identity__title">

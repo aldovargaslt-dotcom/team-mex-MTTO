@@ -35,6 +35,41 @@ export function UnidadTipoMark({
   );
 }
 
+export function UnidadMarca({
+  foto,
+  nombre,
+  icono,
+  size = 'md',
+  className,
+}: {
+  foto?: string | null;
+  nombre: string;
+  icono?: string | null;
+  size?: 'sm' | 'md' | 'lg';
+  className?: string;
+}) {
+  if (foto) {
+    return (
+      // eslint-disable-next-line @next/next/no-img-element
+      <img
+        className={cn(
+          'unidad-foto',
+          size === 'sm' && 'unidad-foto--sm',
+          size === 'lg' && 'unidad-foto--lg',
+          className,
+        )}
+        src={foto}
+        alt=""
+      />
+    );
+  }
+  return (
+    <span className={className}>
+      <UnidadTipoMark nombre={nombre} icono={icono} size={size} />
+    </span>
+  );
+}
+
 export function UnidadTipoIcon({
   nombre,
   icono,

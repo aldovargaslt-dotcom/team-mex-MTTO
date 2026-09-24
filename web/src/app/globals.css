@@ -2560,6 +2560,34 @@
     height: 64px;
   }
 
+  .unidad-foto {
+    display: block;
+    width: 48px;
+    height: 36px;
+    object-fit: cover;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: #fafafb;
+    flex-shrink: 0;
+  }
+
+  .unidad-foto--sm {
+    width: 22px;
+    height: 22px;
+    border-radius: 4px;
+  }
+
+  .unidad-foto--lg {
+    width: 88px;
+    height: 64px;
+  }
+
+  .unidad-foto--editor {
+    width: 160px;
+    height: 104px;
+    border-radius: 4px;
+  }
+
   .unidades-aviso {
     display: inline-flex;
     align-items: center;
@@ -3026,17 +3054,11 @@
   min-width: 0;
 }
 
-.ordenes-unidad-foto,
+.ordenes-unidad-marca.unidad-foto,
 .ordenes-unidad-marca .unidades-thumb {
   width: 40px;
   height: 40px;
   border-radius: 4px;
-}
-
-.ordenes-unidad-foto {
-  object-fit: cover;
-  border: 1px solid #e4e5ec;
-  background: #fafafb;
 }
 
 .ordenes-detail__identity {

@@ -237,6 +237,7 @@ function HubContent() {
         tipoNombre={ficha.tipoNombre}
         tipoDescripcion={unidad?.tipo.descripcion}
         tipoIcono={unidad?.tipo.icono}
+        fotoDataUrl={unidad?.fotoDataUrl}
         placas={ficha.placas}
         vin={ficha.vin}
         updatedAt={unidad?.updatedAt}
