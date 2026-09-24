@@ -3,13 +3,11 @@
 import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Suspense, useEffect, useMemo, useState } from 'react';
-import { Search } from 'lucide-react';
-import { ListFilter } from '@/components/ListFilter';
+import { ArrowUpDown, Check, Link2, Pause, Search } from 'lucide-react';
 import { hydratePiezasFromInventario, type PiezaLinea } from '@/components/PiezasStep';
 import { RoleGate } from '@/components/RoleGate';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { FormAlert, PageHeader } from '@/components/ui/field';
+import { FormAlert } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import {
   Table,
@@ -21,12 +19,10 @@ import {
 } from '@/components/ui/table';
 import { api, HttpError } from '@/lib/api';
 import {
-  etiquetaEstadoVisita,
   etiquetaOrigenPieza,
   etiquetaTipoVisita,
   etiquetaUom,
   formatFecha,
-  formatKm,
   formatTiempoCerrado,
 } from '@/lib/format';
 import { useRole } from '@/lib/role';
@@ -217,41 +213,16 @@ function OrdenesContent() {
         ? 'El administrador ve las visitas ya cerradas.'
         : 'Al cerrar una visita pasa a esta lista.';
 
+  const fotoSeleccion =
+    detalle && detalle.id === ordenId ? detalle.fotos[0]?.dataUrl : null;
+
   return (
     <>
-      <PageHeader
-        title="Órdenes de trabajo"
-        lede="Lo abierto y lo ya cerrado. La captura sigue en la unidad."
-        actions={
-          isAdmin ? null : (
-            <Button asChild variant={borradorSeleccionado ? 'outline' : 'default'}>
-              <Link href="/unidades">Nueva orden</Link>
-            </Button>
-          )
-        }
-      />
-      <div className="ordenes-toolbar">
-        {isAdmin ? null : (
-          <ListFilter
-            label="Cola"
-            value={cola}
-            options={COLAS}
-            onChange={(next) =>
-              setParams({ cola: next === 'abiertas' ? null : next, orden: null })
-            }
-          />
-        )}
-        <ListFilter
-          label="Tipo de mantenimiento"
-          value={tipo}
-          options={TIPOS}
-          onChange={(next) =>
-            setParams({ tipo: next === 'todos' ? null : next, orden: null })
-          }
-        />
-        <div className="unidades-search">
+      <header className="ordenes-head">
+        <h1>Órdenes de trabajo</h1>
+        <div className="ordenes-head__search">
           <Search
-            className="pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground"
+            className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground"
             aria-hidden
           />
           <Input
@@ -259,61 +230,122 @@ function OrdenesContent() {
             onChange={(event) =>
               setParams({ q: event.target.value.trim() ? event.target.value : null })
             }
-            placeholder="Unidad, placas o chofer"
+            placeholder="Buscar órdenes"
             aria-label="Buscar órdenes"
             className="pl-9"
           />
         </div>
-      </div>
+        {isAdmin ? null : (
+          <Button asChild className="ordenes-head__new">
+            <Link href="/unidades">+ Nueva orden</Link>
+          </Button>
+        )}
+      </header>
+      <label className="ordenes-filter">
+        Tipo de mantenimiento
+        <select
+          aria-label="Tipo de mantenimiento"
+          value={tipo}
+          onChange={(event) =>
+            setParams({
+              tipo: event.target.value === 'todos' ? null : event.target.value,
+              orden: null,
+            })
+          }
+        >
+          {TIPOS.map((option) => (
+            <option key={option.id} value={option.id}>
+              {option.label}
+            </option>
+          ))}
+        </select>
+      </label>
       <FormAlert>{error}</FormAlert>
       {rows == null ? (
         <p className="muted">Cargando órdenes…</p>
-      ) : filtered.length === 0 ? (
-        <div className="empty-state">
-          <h2>{emptyTitle}</h2>
-          <p className="muted">{emptyLede}</p>
-        </div>
       ) : (
         <div className="ordenes-desk">
           <div className="ordenes-list">
-            <div className="ordenes-list__scroll" role="listbox" aria-label="Órdenes">
-              {filtered.map((row) => {
-                const selected = row.id === ordenId;
-                return (
+            {isAdmin ? null : (
+              <div className="ordenes-tabs" role="tablist" aria-label="Cola">
+                {COLAS.map((option) => (
                   <button
-                    key={row.id}
+                    key={option.id}
                     type="button"
-                    role="option"
-                    aria-selected={selected}
-                    className={selected ? 'ordenes-row is-selected' : 'ordenes-row'}
-                    onClick={() => setParams({ orden: row.id })}
+                    role="tab"
+                    aria-selected={cola === option.id}
+                    className={cola === option.id ? 'is-on' : ''}
+                    onClick={() =>
+                      setParams({
+                        cola: option.id === 'abiertas' ? null : option.id,
+                        orden: null,
+                      })
+                    }
                   >
-                    <span className="ordenes-row__top">
-                      <span className="ordenes-row__title">{row.numeroInterno}</span>
-                      <Badge variant={row.estado === 'CERRADO' ? 'success' : 'warning'}>
-                        {etiquetaEstadoVisita(row.estado)}
-                      </Badge>
-                    </span>
-                    <span className="ordenes-row__sub">
-                      {row.placas}
-                      {row.choferNombre ? ` · ${row.choferNombre}` : ' · Sin chofer'}
-                    </span>
-                    <span className="ordenes-row__meta">
-                      <span className="ordenes-row__tipo">{etiquetaTipoVisita(row.tipo)}</span>
-                      <span className="ordenes-row__tipo">
-                        {row.trabajosCount === 1
-                          ? '1 trabajo'
-                          : `${row.trabajosCount} trabajos`}
-                      </span>
-                    </span>
+                    {option.id === 'abiertas' ? 'Por hacer' : 'Hechas'}
                   </button>
-                );
-              })}
-            </div>
+                ))}
+              </div>
+            )}
+            {filtered.length === 0 ? (
+              <div className="empty-state">
+                <h2>{emptyTitle}</h2>
+                <p className="muted">{emptyLede}</p>
+              </div>
+            ) : (
+              <div className="ordenes-list__scroll" role="listbox" aria-label="Órdenes">
+                {filtered.map((row) => {
+                  const selected = row.id === ordenId;
+                  const tipoClass =
+                    row.tipo === 'CORRECTIVO'
+                      ? 'is-correctivo'
+                      : row.tipo === 'PREDICTIVO'
+                        ? 'is-predictivo'
+                        : '';
+                  return (
+                    <button
+                      key={row.id}
+                      type="button"
+                      role="option"
+                      aria-selected={selected}
+                      className={selected ? 'ordenes-row is-selected' : 'ordenes-row'}
+                      onClick={() => setParams({ orden: row.id })}
+                    >
+                      <span className="ordenes-avatar">
+                        {selected && fotoSeleccion ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img src={fotoSeleccion} alt="" />
+                        ) : (
+                          row.numeroInterno.slice(0, 1)
+                        )}
+                      </span>
+                      <span className="ordenes-row__copy">
+                        <span className="ordenes-row__title">{row.numeroInterno}</span>
+                        <span className="ordenes-row__sub">
+                          Solicitada por {row.choferNombre ?? 'sin chofer'}
+                        </span>
+                        <span
+                          className={
+                            row.estado === 'CERRADO'
+                              ? 'ordenes-pill is-done'
+                              : 'ordenes-pill is-open'
+                          }
+                        >
+                          {row.estado === 'CERRADO' ? 'Hecha' : 'Abierta'}
+                        </span>
+                      </span>
+                      <span className={`ordenes-tipo ${tipoClass}`}>
+                        {etiquetaTipoVisita(row.tipo)}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
           </div>
           <div className="ordenes-detail">
             <FormAlert>{detalleError}</FormAlert>
-            {detalle && detalle.id === ordenId ? (
+            {filtered.length === 0 ? null : detalle && detalle.id === ordenId ? (
               <OrdenDetalle
                 detalle={detalle}
                 piezas={piezas}
@@ -341,31 +373,37 @@ function OrdenDetalle({
   return (
     <>
       <div className="ordenes-detail__head">
-        <div>
-          <h2 className="ordenes-detail__title">
-            {detalle.unidadNumeroInterno}
-            <Badge variant={detalle.estado === 'CERRADO' ? 'success' : 'warning'}>
-              {etiquetaEstadoVisita(detalle.estado)}
-            </Badge>
-          </h2>
-          <p className="muted mt-1">
-            {detalle.chofer?.nombre ?? 'Sin chofer'}
-            {detalle.km != null ? ` · ${formatKm(detalle.km)}` : ''}
-          </p>
-        </div>
-        {continuar ? (
-          <Button asChild>
-            <Link href={`/unidades/${detalle.unidadId}/visitas/${detalle.id}`}>
-              Continuar
-            </Link>
+        <h2 className="ordenes-detail__title">
+          <Link2 className="size-5 text-[#2563eb]" aria-hidden />
+          {detalle.unidadNumeroInterno}
+        </h2>
+        <div className="ordenes-actions">
+          <Button asChild variant="outline">
+            <a href="#orden-comentarios">Comentarios</a>
           </Button>
-        ) : (
           <Button asChild variant="outline">
             <Link href={`/unidades/${detalle.unidadId}/visitas/${detalle.id}`}>
-              Abrir orden
+              {continuar ? 'Editar' : 'Abrir'}
             </Link>
           </Button>
-        )}
+        </div>
+      </div>
+      <div className="ordenes-status" aria-label="Estado de la orden">
+        <span className={detalle.estado === 'BORRADOR' ? 'is-on' : ''}>
+          Abierta
+        </span>
+        <span className="is-off">
+          <Pause className="size-4" aria-hidden />
+          Pausada
+        </span>
+        <span className="is-off">
+          <ArrowUpDown className="size-4" aria-hidden />
+          En progreso
+        </span>
+        <span className={detalle.estado === 'CERRADO' ? 'is-on' : ''}>
+          <Check className="size-4" aria-hidden />
+          Hecha
+        </span>
       </div>
       <dl className="ordenes-facts">
         <div>
@@ -380,11 +418,14 @@ function OrdenDetalle({
           <dt>Tiempo de cerrado</dt>
           <dd>{formatTiempoCerrado(detalle.createdAt, detalle.cerradoAt)}</dd>
         </div>
-        <div>
-          <dt>Tipo de mantenimiento</dt>
-          <dd>{etiquetaTipoVisita(detalle.tipo)}</dd>
-        </div>
       </dl>
+      <section className="ordenes-section">
+        <h2>Tipo de mantenimiento</h2>
+        <p className={`ordenes-tipo ${detalle.tipo === 'CORRECTIVO' ? 'is-correctivo' : 'is-predictivo'}`}>
+          <span className="ordenes-dot" aria-hidden />
+          {etiquetaTipoVisita(detalle.tipo)}
+        </p>
+      </section>
       {detalle.trabajos.length > 0 ? (
         <section className="ordenes-section" aria-labelledby="orden-trabajos">
           <h2 id="orden-trabajos">Trabajos</h2>
@@ -419,7 +460,7 @@ function OrdenDetalle({
         )}
       </section>
       <section className="ordenes-section" aria-labelledby="orden-piezas">
-        <h2 id="orden-piezas">Piezas</h2>
+        <h2 id="orden-piezas">SKU</h2>
         {piezas.length === 0 ? (
           <p className="muted">Sin piezas en esta orden.</p>
         ) : (

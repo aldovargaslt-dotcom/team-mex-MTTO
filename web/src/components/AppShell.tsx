@@ -161,7 +161,17 @@ export function AppShell({ children }: { children: ReactNode }) {
           </SheetContent>
         </Sheet>
       ) : null}
-      <main className={isHome ? 'main main-home' : 'main'}>{children}</main>
+      <main
+        className={
+          isHome
+            ? 'main main-home'
+            : pathname?.startsWith('/ordenes')
+              ? 'main main-ordenes'
+              : 'main'
+        }
+      >
+        {children}
+      </main>
     </div>
   );
 }
