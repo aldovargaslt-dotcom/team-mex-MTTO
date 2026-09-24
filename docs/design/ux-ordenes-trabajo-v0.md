@@ -68,4 +68,4 @@ La fila selecciona; no hay botón “Detalle”. La primera fila visible queda s
 
 ## Proof
 
-`docs/screenshots/ordenes_cola_abierta_d1440.png`, `ordenes_ficha_piezas_d1440.png`, `ordenes_cola_m390.png`.
+`docs/screenshots/ordenes_cola_abierta_d1440.png`, `docs/screenshots/ordenes_cola_abierta_m390.png`.
