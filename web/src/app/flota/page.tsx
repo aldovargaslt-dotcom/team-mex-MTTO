@@ -12,8 +12,8 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { DataTable } from '@/components/ui/data-table';
-import { FormAlert } from '@/components/ui/field';
-import { Input } from '@/components/ui/input';
+import { Field, FormAlert } from '@/components/ui/field';
+import { Input, NativeSelect } from '@/components/ui/input';
 import {
   Sheet,
   SheetContent,
@@ -23,7 +23,7 @@ import {
   SheetTitle,
 } from '@/components/ui/sheet';
 import { api, HttpError } from '@/lib/api';
-import { etiquetaAlertaRegreso } from '@/lib/format';
+import { etiquetaAlertaRegreso, formatFecha, formatHace } from '@/lib/format';
 import { useRole } from '@/lib/role';
 import { cn } from '@/lib/utils';
 import type {
@@ -31,6 +31,7 @@ import type {
   ChipLogisticaUnidad,
   LogisticaUnidadRow,
   LogisticaUnidadesResponse,
+  TableroFlotaRow,
 } from '@/lib/types';
 
 function parseChip(raw: string | null): ChipLogisticaUnidad {
@@ -45,6 +46,15 @@ function parseAmbito(raw: string | null): AmbitoUnidad | null {
 
 function parseAlerta(raw: string | null): 'SIN_REGRESO' | null {
   return raw === 'SIN_REGRESO' ? 'SIN_REGRESO' : null;
+}
+
+function frasePatio(row: TableroFlotaRow | undefined, failed: boolean) {
+  if (failed) return 'Patio: no consultado.';
+  if (!row) return 'Patio: sin ficha.';
+  if (row.salidaAbiertaId) {
+    return `Patio: salida abierta · ${row.sitioNombre ?? 'sin sitio'}.`;
+  }
+  return 'Patio: sin salida abierta.';
 }
 
 function emptyCopy(
@@ -82,8 +92,11 @@ function FlotaVisual() {
   const [q, setQ] = useState(qParam);
   const [data, setData] = useState<LogisticaUnidadesResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [sheet, setSheet] = useState<LogisticaUnidadRow | 'cta' | null>(null);
+  const [sheetOpen, setSheetOpen] = useState(false);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const [patio, setPatio] = useState<Map<string, TableroFlotaRow> | null>(null);
+  const [patioError, setPatioError] = useState(false);
 
   async function cargar() {
     const list = await api<LogisticaUnidadesResponse>('/logistica/unidades', {
@@ -91,6 +104,17 @@ function FlotaVisual() {
       userId,
     });
     setData(list);
+    try {
+      const rows = await api<TableroFlotaRow[]>('/flota/tablero', {
+        role: role!,
+        userId,
+      });
+      setPatio(new Map(rows.map((row) => [row.unidadId, row])));
+      setPatioError(false);
+    } catch {
+      setPatio(null);
+      setPatioError(true);
+    }
   }
 
   useEffect(() => {
@@ -141,7 +165,7 @@ function FlotaVisual() {
   const allItems = useMemo(() => data?.items ?? [], [data]);
   const items = useMemo(() => {
     const needle = qParam.trim().toLowerCase();
-    return allItems.filter((row) => {
+    const filtered = allItems.filter((row) => {
       if (chip !== 'TODAS' && row.opsEstado !== chip) return false;
       if (ambito && row.ambito !== ambito) return false;
       if (alerta && row.alerta !== alerta) return false;
@@ -154,20 +178,30 @@ function FlotaVisual() {
       }
       return true;
     });
+    if (alerta === 'SIN_REGRESO') {
+      filtered.sort((a, b) => {
+        const aMs = a.salidaAt ? new Date(a.salidaAt).getTime() : Number.POSITIVE_INFINITY;
+        const bMs = b.salidaAt ? new Date(b.salidaAt).getTime() : Number.POSITIVE_INFINITY;
+        return aMs - bMs;
+      });
+    }
+    return filtered;
   }, [allItems, chip, qParam, ambito, alerta]);
   const todosActivo = chip === 'TODAS' && alerta == null;
-  const enRuta = allItems.filter((row) => row.opsEstado === 'EN_RUTA');
-  const sheetRow = sheet && sheet !== 'cta' ? sheet : enRuta[0] ?? null;
+  const enRuta = items.filter((row) => row.opsEstado === 'EN_RUTA');
+  const sheetRow = enRuta.find((row) => row.unidadId === selectedId) ?? null;
 
   function abrirCta() {
     setError(null);
-    setSheet(enRuta[0] ? 'cta' : null);
+    setSelectedId(null);
+    setSheetOpen(true);
   }
 
   function abrirFila(row: LogisticaUnidadRow) {
     setError(null);
     if (row.opsEstado === 'EN_RUTA') {
-      setSheet(row);
+      setSelectedId(row.unidadId);
+      setSheetOpen(true);
       return;
     }
     router.push(`/flota/unidades/${row.unidadId}`);
@@ -182,7 +216,8 @@ function FlotaVisual() {
         userId,
         method: 'POST',
       });
-      setSheet(null);
+      setSheetOpen(false);
+      setSelectedId(null);
       await cargar();
     } catch (err) {
       setError(
@@ -226,8 +261,18 @@ function FlotaVisual() {
       },
       {
         id: 'ops',
-        header: 'En ruta',
+        header: 'Viaje',
         cell: ({ row }) => <UnidadOpsBadge ops={row.original.opsEstado} />,
+      },
+      {
+        id: 'salida',
+        header: 'Desde la salida',
+        cell: ({ row }) =>
+          row.original.opsEstado === 'EN_RUTA' && row.original.salidaAt ? (
+            <span>{formatHace(row.original.salidaAt)}</span>
+          ) : (
+            <span className="muted">—</span>
+          ),
       },
       {
         id: 'alerta',
@@ -404,7 +449,7 @@ function FlotaVisual() {
         </div>
       </form>
 
-      <FormAlert>{error && !sheet ? error : null}</FormAlert>
+      <FormAlert>{error && !sheetOpen ? error : null}</FormAlert>
 
       <DataTable
         columns={columns}
@@ -414,9 +459,12 @@ function FlotaVisual() {
       />
 
       <Sheet
-        open={sheet != null && sheetRow != null}
+        open={sheetOpen}
         onOpenChange={(open) => {
-          if (!open) setSheet(null);
+          if (!open) {
+            setSheetOpen(false);
+            setSelectedId(null);
+          }
         }}
       >
         <SheetContent
@@ -434,28 +482,53 @@ function FlotaVisual() {
             <SheetHeader>
               <SheetTitle tabIndex={-1}>Registrar regreso</SheetTitle>
               <SheetDescription>
-                {sheetRow
-                  ? `${sheetRow.placas} · ${sheetRow.numeroInterno}. Pasa de en ruta a disponible.`
-                  : 'Seleccione una unidad en ruta.'}
+                Pasa el viaje de En ruta a Disponible y limpia el reloj. No registra entrada de patio.
               </SheetDescription>
             </SheetHeader>
             <div className="grid gap-3 px-4">
+              <Field label="Unidad en ruta" htmlFor="regreso-unidad">
+                <NativeSelect
+                  id="regreso-unidad"
+                  value={selectedId ?? ''}
+                  onChange={(event) => setSelectedId(event.target.value || null)}
+                  required
+                >
+                  <option value="">Seleccione la unidad</option>
+                  {enRuta.map((row) => (
+                    <option key={row.unidadId} value={row.unidadId}>
+                      {row.placas} · {row.numeroInterno}
+                    </option>
+                  ))}
+                </NativeSelect>
+              </Field>
               {sheetRow ? (
-                <p className="text-sm">
-                  <UnidadOpsBadge ops="EN_RUTA" />{' '}
-                  <AmbitoBadge ambito={sheetRow.ambito} />{' '}
-                  <span className="muted">{sheetRow.destino ?? 'sin destino'}</span>
-                </p>
+                <div className="grid gap-1 text-sm">
+                  <p>
+                    <UnidadOpsBadge ops="EN_RUTA" />{' '}
+                    <AmbitoBadge ambito={sheetRow.ambito} />{' '}
+                    <span className="muted">{sheetRow.destino ?? 'sin destino'}</span>
+                  </p>
+                  <p className="muted">
+                    Salida del viaje:{' '}
+                    {sheetRow.salidaAt
+                      ? `${formatFecha(sheetRow.salidaAt)} · ${formatHace(sheetRow.salidaAt)}`
+                      : 'sin hora'}
+                  </p>
+                  <p>{frasePatio(patio?.get(sheetRow.unidadId), patioError)}</p>
+                </div>
               ) : (
-                <p className="muted">Nadie en ruta.</p>
+                <p className="muted">Seleccione la unidad. El regreso no elige solo.</p>
               )}
-              <FormAlert>{sheet ? error : null}</FormAlert>
+              <FormAlert>{sheetOpen ? error : null}</FormAlert>
             </div>
             <SheetFooter>
               <Button
                 type="button"
                 variant="secondary"
-                onClick={() => setSheet(null)}
+                onClick={() => {
+                  setSheetOpen(false);
+                  setSelectedId(null);
+                }}
               >
                 Cancelar
               </Button>
