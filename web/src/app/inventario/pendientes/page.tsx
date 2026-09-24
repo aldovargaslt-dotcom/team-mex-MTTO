@@ -100,7 +100,7 @@ export default function PendientesPage() {
     <>
       <PageHeader
         title="Por recibir"
-        help="Compras externas aún sin entrar al almacén. No descuentan stock."
+        lede="Compras externas aún sin entrar al almacén. Cerrar el comprobante no cambia existencias."
       />
       <FormAlert>{error}</FormAlert>
       {rows.length > 0 ? (
@@ -160,7 +160,7 @@ export default function PendientesPage() {
                         disabled={busyId === row.id}
                         onClick={() => void recibir(row.id)}
                       >
-                        Marcar recibida
+                        Cerrar comprobante
                       </Button>
                     </>
                   ) : null}

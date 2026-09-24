@@ -89,7 +89,7 @@ export default function FlotaAlertasPage() {
           <Field
             label="Local (horas)"
             htmlFor="umbral-local"
-            help="Sale de CEDIS / patio. Reloj desde registrar salida."
+            help="Viaje local. El reloj corre desde que el viaje pasa a En ruta."
           >
             <Input
               id="umbral-local"
@@ -104,7 +104,7 @@ export default function FlotaAlertasPage() {
           <Field
             label="Foránea (horas)"
             htmlFor="umbral-foraneo"
-            help="Viaje fuera. Reloj desde registrar salida."
+            help="Viaje foráneo. El reloj corre desde que el viaje pasa a En ruta. No usa la salida de patio."
           >
             <Input
               id="umbral-foraneo"

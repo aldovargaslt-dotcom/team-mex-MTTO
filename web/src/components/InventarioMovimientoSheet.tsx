@@ -52,6 +52,10 @@ export function InventarioMovimientoSheet({
   const [currentId, setCurrentId] = useState(itemId);
 
   const selected = rows.find((row) => row.itemId === currentId);
+  const delta = Number(qty);
+  const projected =
+    selected && Number.isInteger(delta) ? selected.qty + delta : null;
+  const ajusteInvalido = mode === 'ajuste' && (projected == null || projected < 0);
 
   useEffect(() => {
     if (!mode) return;
@@ -62,7 +66,7 @@ export function InventarioMovimientoSheet({
 
   async function aplicar(event: FormEvent) {
     event.preventDefault();
-    if (!currentId || !mode) return;
+    if (!currentId || !mode || ajusteInvalido) return;
     try {
       if (mode === 'entrada') {
         await api('/inventario/movimientos/entrada', {
@@ -173,10 +177,18 @@ export function InventarioMovimientoSheet({
               placeholder={mode === 'ajuste' ? 'Por qué se ajusta' : 'Opcional'}
             />
           </Field>
+          {mode === 'ajuste' && selected ? (
+            <p className="text-sm">
+              {projected == null
+                ? 'Indique un entero.'
+                : `Hay ${selected.qty} ${etiquetaUom(selected.uom)} → quedarán ${projected}`}
+            </p>
+          ) : null}
           <SheetFooter className="p-0">
             <Button
               type="submit"
-              variant={mode === 'ajuste' ? 'outline' : 'default'}
+              variant="default"
+              disabled={ajusteInvalido}
             >
               {mode === 'entrada' ? 'Registrar entrada' : 'Ajustar'}
             </Button>

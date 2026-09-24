@@ -363,7 +363,7 @@ function AndonContent() {
   return (
     <>
       <PageHeader
-        title="Alerta"
+        title="Mantenimiento vencido"
         lede="Alertas de mantenimiento vencido. Enterado es in-app; solo una visita cerrada resuelve."
         actions={
           isAdmin ? (
