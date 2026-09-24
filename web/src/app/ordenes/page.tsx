@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Suspense, useEffect, useMemo, useState } from 'react';
-import { ArrowUpDown, Check, Inbox, ListFilter, Pause, Search } from 'lucide-react';
+import { ArrowUpDown, Check, ChevronLeft, Inbox, ListFilter, Pause, Search } from 'lucide-react';
 import { OrdenCaptura } from '@/components/OrdenCaptura';
 import { UnidadMarca } from '@/components/UnidadTipoMark';
 import { hydratePiezasFromInventario, type PiezaLinea } from '@/components/PiezasStep';
@@ -89,6 +89,15 @@ function OrdenesContent() {
   const [detalleError, setDetalleError] = useState<string | null>(null);
   const [piezas, setPiezas] = useState<PiezaLinea[]>([]);
   const [filtroAbierto, setFiltroAbierto] = useState(false);
+  const [mobile, setMobile] = useState(false);
+
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 767px)');
+    const apply = () => setMobile(mq.matches);
+    apply();
+    mq.addEventListener('change', apply);
+    return () => mq.removeEventListener('change', apply);
+  }, []);
 
   function setParams(patch: Record<string, string | null>) {
     const params = new URLSearchParams(searchParams.toString());
@@ -173,12 +182,18 @@ function OrdenesContent() {
       if (ordenId) setParams({ orden: null });
       return;
     }
+    if (mobile) {
+      if (ordenId && !filtered.some((row) => row.id === ordenId)) {
+        setParams({ orden: null });
+      }
+      return;
+    }
     if (!ordenId || !filtered.some((row) => row.id === ordenId)) {
       setParams({ orden: filtered[0].id });
     }
     // setParams identity changes with the URL; the guard stops the loop.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [rows, filtered, ordenId]);
+  }, [rows, filtered, ordenId, mobile]);
 
   useEffect(() => {
     if (!role || !ordenId) {
@@ -223,8 +238,21 @@ function OrdenesContent() {
         ? 'El administrador ve las visitas ya cerradas.'
         : 'Al cerrar una visita pasa a esta lista.';
 
+  const detalleAbierto = Boolean(ordenId);
+  const soloDetalle = mobile && detalleAbierto;
+
   return (
     <>
+      {soloDetalle ? (
+        <button
+          type="button"
+          className="ordenes-back"
+          onClick={() => setParams({ orden: null })}
+        >
+          <ChevronLeft className="size-5" aria-hidden />
+          Órdenes
+        </button>
+      ) : (
       <header className="ordenes-head">
         <h1>Órdenes de trabajo</h1>
         <div className="ordenes-head__search">
@@ -252,11 +280,12 @@ function OrdenesContent() {
           </Button>
         )}
       </header>
+      )}
       <FormAlert>{error}</FormAlert>
       {rows == null ? (
         <p className="muted">Cargando órdenes…</p>
       ) : (
-        <div className="ordenes-desk">
+        <div className={soloDetalle ? 'ordenes-desk is-detail' : 'ordenes-desk'}>
           <div className="ordenes-list">
             <div className="ordenes-tabs">
               {isAdmin ? null : (
