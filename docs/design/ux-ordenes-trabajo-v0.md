@@ -72,4 +72,4 @@ La fila selecciona; no hay botón “Detalle”. La primera fila visible queda s
 
 ## Proof
 
-`docs/screenshots/ordenes_captura_pieza_d1280.png`, `docs/screenshots/ordenes_captura_foto_d1280.png`, `docs/screenshots/ordenes_captura_cerrada_d1280.png`.
+`docs/screenshots/ordenes_captura_menu_d1280.png`.
