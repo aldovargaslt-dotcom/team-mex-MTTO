@@ -369,7 +369,6 @@ function OrdenesContent() {
                 detalle={detalle}
                 piezas={piezas}
                 continuar={Boolean(borradorSeleccionado)}
-                fotoUnidad={rows?.find((row) => row.id === ordenId)?.fotoDataUrl ?? null}
                 role={role!}
                 userId={userId}
                 onVisita={(next) => {
@@ -379,17 +378,6 @@ function OrdenesContent() {
                     userId,
                   }).then(setPiezas);
                 }}
-                onFotoUnidad={(foto) =>
-                  setRows((current) =>
-                    current
-                      ? current.map((row) =>
-                          row.unidadId === detalle.unidadId
-                            ? { ...row, fotoDataUrl: foto }
-                            : row,
-                        )
-                      : current,
-                  )
-                }
               />
             ) : detalleError ? null : (
               <p className="muted">Cargando la orden…</p>
@@ -405,20 +393,16 @@ function OrdenDetalle({
   detalle,
   piezas,
   continuar,
-  fotoUnidad,
   role,
   userId,
   onVisita,
-  onFotoUnidad,
 }: {
   detalle: VisitaDetalle;
   piezas: PiezaLinea[];
   continuar: boolean;
-  fotoUnidad: string | null;
   role: string;
   userId?: string;
   onVisita: (visita: VisitaDetalle) => void;
-  onFotoUnidad: (foto: string | null) => void;
 }) {
   const [capturando, setCapturando] = useState(false);
   const editarPrimario = continuar && !capturando;
@@ -452,9 +436,7 @@ function OrdenDetalle({
         userId={userId}
         editable={continuar}
         detalle={detalle}
-        fotoUnidad={fotoUnidad}
         onVisita={onVisita}
-        onFotoUnidad={onFotoUnidad}
       />
       <div className="ordenes-status" aria-label="Estado de la orden">
         <span className={detalle.estado === 'BORRADOR' ? 'is-on' : ''}>

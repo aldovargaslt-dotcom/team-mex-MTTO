@@ -1,34 +1,30 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { Camera, ImagePlus, Package } from 'lucide-react';
+import { ImagePlus, Package } from 'lucide-react';
 import { ImageDropzone } from '@/components/ImageDropzone';
 import { Button } from '@/components/ui/button';
 import { FormAlert } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { api, HttpError } from '@/lib/api';
 import { etiquetaUom } from '@/lib/format';
-import type { OrigenPieza, SkuCompatible, Unidad, VisitaDetalle } from '@/lib/types';
+import type { OrigenPieza, SkuCompatible, VisitaDetalle } from '@/lib/types';
 
-type Panel = 'unidad' | 'pieza' | 'foto';
+type Panel = 'pieza' | 'foto';
 
 export function OrdenCaptura({
   role,
   userId,
   editable,
   detalle,
-  fotoUnidad,
   onVisita,
-  onFotoUnidad,
   onCaptura,
 }: {
   role: string;
   userId?: string;
   editable: boolean;
   detalle: VisitaDetalle;
-  fotoUnidad: string | null;
   onVisita: (visita: VisitaDetalle) => void;
-  onFotoUnidad: (foto: string | null) => void;
   onCaptura?: (abierta: boolean) => void;
 }) {
   const [panel, setPanel] = useState<Panel | null>(null);
@@ -50,10 +46,6 @@ export function OrdenCaptura({
   return (
     <div className="ordenes-captura">
       <div className="ordenes-captura__menu" role="toolbar" aria-label="Captura de la orden">
-        <button type="button" aria-pressed={panel === 'unidad'} onClick={() => abrir('unidad')}>
-          <Camera aria-hidden />
-          Foto de la unidad
-        </button>
         <button
           type="button"
           disabled={!editable}
@@ -80,21 +72,6 @@ export function OrdenCaptura({
       )}
       {listo ? <p className="ordenes-captura__note">{listo}</p> : null}
       <FormAlert>{error}</FormAlert>
-      {panel === 'unidad' ? (
-        <FotoUnidadPanel
-          unidadId={detalle.unidadId}
-          foto={fotoUnidad}
-          primario={editable}
-          busy={busy}
-          opts={opts}
-          onError={setError}
-          onBusy={setBusy}
-          onSaved={(foto) => {
-            onFotoUnidad(foto);
-            setListo('Foto de la unidad guardada.');
-          }}
-        />
-      ) : null}
       {panel === 'pieza' && editable ? (
         <PiezaPanel
           detalle={detalle}
@@ -121,84 +98,6 @@ export function OrdenCaptura({
           }}
         />
       ) : null}
-    </div>
-  );
-}
-
-function FotoUnidadPanel({
-  unidadId,
-  foto,
-  primario,
-  busy,
-  opts,
-  onError,
-  onBusy,
-  onSaved,
-}: {
-  unidadId: string;
-  foto: string | null;
-  primario: boolean;
-  busy: boolean;
-  opts: { role: string; userId?: string };
-  onError: (message: string | null) => void;
-  onBusy: (value: boolean) => void;
-  onSaved: (foto: string | null) => void;
-}) {
-  const [pendiente, setPendiente] = useState<string | null>(foto);
-
-  useEffect(() => {
-    setPendiente(foto);
-  }, [foto]);
-
-  async function guardar() {
-    onBusy(true);
-    onError(null);
-    try {
-      const unidad = await api<Unidad>(`/unidades/${unidadId}/foto`, {
-        ...opts,
-        method: 'PATCH',
-        body: JSON.stringify({ fotoDataUrl: pendiente }),
-      });
-      onSaved(unidad.fotoDataUrl ?? null);
-    } catch (err) {
-      onError(err instanceof HttpError ? err.message : 'No se pudo guardar la foto de la unidad.');
-    } finally {
-      onBusy(false);
-    }
-  }
-
-  return (
-    <div className="ordenes-captura__panel">
-      <p className="ordenes-captura__label">Foto de la unidad</p>
-      {pendiente ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img className="ordenes-captura__preview" src={pendiente} alt="Foto de la unidad" />
-      ) : (
-        <p className="muted">Sin foto de la unidad.</p>
-      )}
-      <ImageDropzone
-        label="Tomar o subir"
-        hint="Esta foto queda en la unidad."
-        disabled={busy}
-        onFile={(file) => leerImagen(file, setPendiente, onError)}
-      />
-      <div className="ordenes-captura__actions">
-        <Button
-          type="button"
-          size="compact"
-          variant={primario ? 'default' : 'outline'}
-          className={primario ? 'ordenes-primary' : undefined}
-          disabled={busy}
-          onClick={() => void guardar()}
-        >
-          Guardar foto
-        </Button>
-        {pendiente ? (
-          <Button type="button" size="compact" variant="outline" disabled={busy} onClick={() => setPendiente(null)}>
-            Quitar
-          </Button>
-        ) : null}
-      </div>
     </div>
   );
 }

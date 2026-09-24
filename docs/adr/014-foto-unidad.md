@@ -11,7 +11,7 @@ La cola de órdenes necesita la foto de la unidad, no una foto de la visita. La 
 ## Decision
 
 - `unidades.foto_data_url` es opcional, una sola imagen, `text`, nullable.
-- La escribe la ficha de unidad (admin) o la orden abierta, con `PATCH /unidades/:id/foto` (supervisor y admin). El resto del catálogo sigue siendo solo admin.
+- La escribe solo la ficha de unidad (admin), con el `PATCH` del catálogo. La orden la muestra; no la edita.
 - Vacío borra la foto.
 - Solo `data:image/…`, tope de tamaño en la validación.
 - No entra en `VisitaCerrada` ni en otros envelopes.

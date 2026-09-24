@@ -3052,7 +3052,7 @@
 
 .ordenes-captura__menu {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   border: 1px solid #e4e7ee;
   border-radius: 4px;
   overflow: hidden;
@@ -3114,15 +3114,6 @@
   margin: 0 0 8px;
   font-size: 13px;
   font-weight: 600;
-}
-
-.ordenes-captura__preview {
-  width: 148px;
-  height: 96px;
-  object-fit: cover;
-  border: 1px solid #e4e5ec;
-  border-radius: 4px;
-  margin-bottom: 8px;
 }
 
 .ordenes-captura__actions {
