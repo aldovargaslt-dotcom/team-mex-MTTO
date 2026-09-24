@@ -10,6 +10,8 @@ Open, edit, and **close** a maintenance visit. Closing is the transaction that e
 
 `web/src/app/unidades/[id]/visitas` — wizard. Product term **WO** = this wizard (Orden de Trabajo). Not an Engineering Work Order.
 
+`web/src/app/ordenes` — cola de lectura (abiertas / cerradas) y ficha. No reemplaza el wizard. Sin costeo.
+
 ## Authoritative docs
 
 - [ADR-000](../../docs/adr/000-thin-kernel.md)

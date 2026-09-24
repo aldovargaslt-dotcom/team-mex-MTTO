@@ -245,6 +245,25 @@ export function formatHace(value: string | null | undefined) {
   return formatFecha(value);
 }
 
+/** Duración entre apertura y cierre. Sin cierre no hay tiempo de cerrado. */
+export function formatTiempoCerrado(
+  apertura: string | null | undefined,
+  cierre: string | null | undefined,
+) {
+  if (!cierre) return 'Sin cerrar';
+  if (!apertura) return '—';
+  const ms = new Date(cierre).getTime() - new Date(apertura).getTime();
+  if (!Number.isFinite(ms) || ms < 0) return '—';
+  const totalMin = Math.round(ms / 60000);
+  if (totalMin < 1) return 'Menos de 1 min';
+  const days = Math.floor(totalMin / (60 * 24));
+  const hours = Math.floor((totalMin % (60 * 24)) / 60);
+  const mins = totalMin % 60;
+  if (days > 0) return hours > 0 ? `${days} d ${hours} h` : `${days} d`;
+  if (hours > 0) return mins > 0 ? `${hours} h ${mins} min` : `${hours} h`;
+  return `${mins} min`;
+}
+
 export function resumenOrigenPiezas(
   piezas: { origen: string }[],
 ) {

@@ -25,3 +25,5 @@ Do not add speculative EWOs. An EWO is created when there is approved work to ex
 | [EWO-004](EWO-004.md) | Alert Catalog UI polish (design-system gate) | Ready |
 | [EWO-005](EWO-005.md) | Configuración → Alertas hierarchy redesign (Option B) | Ready |
 | [EWO-006](EWO-006.md) | Operator commits name the state they write | Verification |
+| [EWO-007](EWO-007.md) | Cola de órdenes de trabajo (lista + ficha) | Ready |
+| [EWO-006](EWO-006.md) | Operator commits name the state they write | Verification |
