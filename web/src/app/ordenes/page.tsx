@@ -24,6 +24,7 @@ import {
   etiquetaUom,
   formatFecha,
   formatTiempoCerrado,
+  numeroOrden,
 } from '@/lib/format';
 import { useRole } from '@/lib/role';
 import type { TipoVisita, Unidad, VisitaDetalle, VisitaResumen } from '@/lib/types';
@@ -35,6 +36,7 @@ type OrdenRow = VisitaResumen & {
   unidadId: string;
   numeroInterno: string;
   placas: string;
+  fotoDataUrl: string | null;
 };
 
 const COLAS: { id: Cola; label: string }[] = [
@@ -110,6 +112,7 @@ function OrdenesContent() {
                   unidadId: unidad.id,
                   numeroInterno: unidad.numeroInterno,
                   placas: unidad.placas,
+                  fotoDataUrl: unidad.fotoDataUrl ?? null,
                 })),
             ),
           ),
@@ -328,24 +331,26 @@ function OrdenesContent() {
                       type="button"
                       role="option"
                       aria-selected={selected}
-                      className={selected ? 'ordenes-row is-selected' : 'ordenes-row'}
+                      className={[
+                        'ordenes-row',
+                        row.fotoDataUrl ? 'has-foto' : '',
+                        selected ? 'is-selected' : '',
+                      ]
+                        .filter(Boolean)
+                        .join(' ')}
                       onClick={() => setParams({ orden: row.id })}
                     >
+                      {row.fotoDataUrl ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          className="ordenes-unidad-foto"
+                          src={row.fotoDataUrl}
+                          alt=""
+                        />
+                      ) : null}
                       <span className="ordenes-row__copy">
                         <span className="ordenes-row__title">{row.numeroInterno}</span>
-                        <span className="ordenes-row__sub">
-                          Solicitada por {row.choferNombre ?? 'sin chofer'}
-                          <span
-                            className={
-                              row.estado === 'CERRADO'
-                                ? 'ordenes-state is-done'
-                                : 'ordenes-state is-open'
-                            }
-                          >
-                            {' '}
-                            · {row.estado === 'CERRADO' ? 'Hecha' : 'Abierta'}
-                          </span>
-                        </span>
+                        <span className="ordenes-row__sub">{numeroOrden(row.id)}</span>
                       </span>
                       <span className={`ordenes-tipo ${tipoClass}`}>
                         {etiquetaTipoVisita(row.tipo)}
@@ -386,7 +391,10 @@ function OrdenDetalle({
   return (
     <>
       <div className="ordenes-detail__head">
-        <h2 className="ordenes-detail__title">{detalle.unidadNumeroInterno}</h2>
+        <div>
+          <h2 className="ordenes-detail__title">{detalle.unidadNumeroInterno}</h2>
+          <p className="ordenes-folio">{numeroOrden(detalle.id)}</p>
+        </div>
         <div className="ordenes-actions">
           <Button asChild variant="outline" size="compact">
             <a href="#orden-comentarios">Comentarios</a>

@@ -1,3 +1,7 @@
+export function numeroOrden(id: string) {
+  return `OT · ${id.slice(0, 8).toUpperCase()}`;
+}
+
 export function formatKm(km: number | null | undefined) {
   if (km == null) return 'Sin km';
   return `${km.toLocaleString('es-MX')} km`;

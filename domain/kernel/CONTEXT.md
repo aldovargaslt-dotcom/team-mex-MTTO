@@ -20,7 +20,7 @@ Shared identity for units, vehicle types, drivers, roles, and the integration ou
 
 ## Language (subset)
 
-Unidad, placas, número interno, TipoVehiculo, Chofer ACTIVO/INACTIVO, `motivoInactivacion` / envío especial, roles.
+Unidad, placas, número interno, TipoVehiculo, Chofer ACTIVO/INACTIVO, `motivoInactivacion` / envío especial, roles. Foto de unidad: una imagen opcional en la ficha (`foto_data_url`, ADR-014). No es foto de la visita.
 
 ## Seams
 

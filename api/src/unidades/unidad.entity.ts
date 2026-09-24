@@ -77,6 +77,10 @@ export class Unidad {
   @Column({ type: 'int', nullable: true })
   anio: number | null;
 
+  /** Una foto de la unidad (ADR-014). No es foto de la visita. */
+  @Column({ name: 'foto_data_url', type: 'text', nullable: true })
+  fotoDataUrl: string | null;
+
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 

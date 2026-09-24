@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Field, FormAlert } from '@/components/ui/field';
 import { Input, NativeSelect } from '@/components/ui/input';
+import { ImageDropzone } from '@/components/ImageDropzone';
 
 export type UnidadFormValues = {
   numeroInterno: string;
@@ -17,6 +18,7 @@ export type UnidadFormValues = {
   estado: EstadoUnidad;
   marcaModelo: string;
   anio: string;
+  fotoDataUrl: string;
 };
 
 export function UnidadForm({
@@ -45,6 +47,7 @@ export function UnidadForm({
     estado: initial?.estado ?? 'ACTIVA',
     marcaModelo: initial?.marcaModelo ?? '',
     anio: initial?.anio != null ? String(initial.anio) : '',
+    fotoDataUrl: initial?.fotoDataUrl ?? '',
   });
   const [saving, setSaving] = useState(false);
 
@@ -64,6 +67,7 @@ export function UnidadForm({
       estado: initial.estado ?? 'ACTIVA',
       marcaModelo: initial.marcaModelo ?? '',
       anio: initial.anio != null ? String(initial.anio) : '',
+      fotoDataUrl: initial.fotoDataUrl ?? '',
     });
   }, [initial, defaultTipoId]);
 
@@ -155,6 +159,36 @@ export function UnidadForm({
           onChange={(e) => set('anio', e.target.value)}
         />
       </Field>
+      <Field label="Foto de la unidad" className="sm:col-span-2">
+        {values.fotoDataUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={values.fotoDataUrl}
+            alt="Foto de la unidad"
+            className="mb-2 h-24 w-32 rounded border border-border object-cover"
+          />
+        ) : null}
+        <ImageDropzone
+          label="Tomar o subir"
+          hint="Una foto de la unidad."
+          onFile={(file) => {
+            const reader = new FileReader();
+            reader.onload = () => {
+              if (typeof reader.result === 'string') set('fotoDataUrl', reader.result);
+            };
+            reader.readAsDataURL(file);
+          }}
+        />
+        {values.fotoDataUrl ? (
+          <button
+            type="button"
+            className="mt-2 text-left text-[13px] text-muted-foreground underline-offset-2 hover:underline"
+            onClick={() => set('fotoDataUrl', '')}
+          >
+            Quitar foto
+          </button>
+        ) : null}
+      </Field>
       {error ? (
         <div className="sm:col-span-2">
           <FormAlert>{error}</FormAlert>
@@ -182,5 +216,6 @@ export function toPayload(values: UnidadFormValues) {
     estado: values.estado,
     marcaModelo: values.marcaModelo.trim() || undefined,
     anio: values.anio ? Number(values.anio) : undefined,
+    fotoDataUrl: values.fotoDataUrl.trim() || null,
   };
 }

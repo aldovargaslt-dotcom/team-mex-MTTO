@@ -47,4 +47,14 @@ export class CreateUnidadDto {
   @Min(1980)
   @Max(2100)
   anio?: number;
+
+  @ApiPropertyOptional({
+    description: 'Foto de la unidad. Vacío la quita. ADR-014.',
+  })
+  @IsOptional()
+  @OptionalTrimmed()
+  @MaxLength(1_500_000, {
+    message: 'La foto de la unidad es demasiado grande.',
+  })
+  fotoDataUrl?: string | null;
 }

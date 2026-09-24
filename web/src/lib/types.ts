@@ -51,6 +51,7 @@ export type Unidad = {
   marcaModelo: string | null;
   anio: number | null;
   updatedAt?: string;
+  fotoDataUrl?: string | null;
 };
 
 export type OpsChofer = 'DISPONIBLE' | 'EN_RUTA';

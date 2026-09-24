@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CurrentUser } from '../auth/current-user';
@@ -119,6 +119,7 @@ export class UnidadesService {
       salidaAt: null,
       marcaModelo: dto.marcaModelo?.trim() || null,
       anio: dto.anio ?? null,
+      fotoDataUrl: this.normalizeFoto(dto.fotoDataUrl),
     });
     return this.repo.save(unidad);
   }
@@ -153,7 +154,19 @@ export class UnidadesService {
     if (dto.anio !== undefined) {
       unidad.anio = dto.anio;
     }
+    if (dto.fotoDataUrl !== undefined) {
+      unidad.fotoDataUrl = this.normalizeFoto(dto.fotoDataUrl);
+    }
     return this.repo.save(unidad);
+  }
+
+  private normalizeFoto(value: string | null | undefined) {
+    if (value == null || value.trim() === '') return null;
+    const foto = value.trim();
+    if (!foto.startsWith('data:image/')) {
+      throw new BadRequestException('La foto de la unidad debe ser una imagen.');
+    }
+    return foto;
   }
 
   async marcarEnvioEspecial(id: string) {
