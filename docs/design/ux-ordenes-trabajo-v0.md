@@ -66,8 +66,10 @@ La fila selecciona; no hay botón “Detalle”. La primera fila visible queda s
 
 - No costeo (fuera de v0). No estados nuevos. No reemplazar el wizard. No unificar notify.
 - La foto de la unidad es el único write nuevo: `PATCH /unidades/:id/foto` (ADR-014). Piezas y fotos de la orden usan el `PATCH /visitas/:id` que ya existía.
-- Sin fotos redondas por fila, sin cuatro botones de estado, sin columna de costo.
+- Sin fotos redondas por fila, sin columna de costo.
+- La barra Abierta / Pausada / En progreso / Hecha es solo lectura. Pausada y En progreso no se guardan.
+- Un solo botón azul a la vez: Editar, o el guardar del panel abierto, o Nueva orden si no hay borrador.
 
 ## Proof
 
-`docs/screenshots/ordenes_cola_abierta_d1440.png`, `docs/screenshots/ordenes_cola_abierta_m390.png`.
+`docs/screenshots/ordenes_captura_unidad_d1280.png`, `docs/screenshots/ordenes_captura_pieza_d1280.png`, `docs/screenshots/ordenes_captura_foto_d1280.png`, `docs/screenshots/ordenes_captura_cerrada_d1280.png`.

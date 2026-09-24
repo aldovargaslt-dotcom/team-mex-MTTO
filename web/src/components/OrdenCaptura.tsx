@@ -20,6 +20,7 @@ export function OrdenCaptura({
   fotoUnidad,
   onVisita,
   onFotoUnidad,
+  onCaptura,
 }: {
   role: string;
   userId?: string;
@@ -28,12 +29,17 @@ export function OrdenCaptura({
   fotoUnidad: string | null;
   onVisita: (visita: VisitaDetalle) => void;
   onFotoUnidad: (foto: string | null) => void;
+  onCaptura?: (abierta: boolean) => void;
 }) {
   const [panel, setPanel] = useState<Panel | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [listo, setListo] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const opts = { role, userId };
+
+  useEffect(() => {
+    onCaptura?.(panel !== null);
+  }, [panel, onCaptura]);
 
   function abrir(next: Panel) {
     setError(null);
@@ -78,6 +84,7 @@ export function OrdenCaptura({
         <FotoUnidadPanel
           unidadId={detalle.unidadId}
           foto={fotoUnidad}
+          primario={editable}
           busy={busy}
           opts={opts}
           onError={setError}
@@ -121,6 +128,7 @@ export function OrdenCaptura({
 function FotoUnidadPanel({
   unidadId,
   foto,
+  primario,
   busy,
   opts,
   onError,
@@ -129,6 +137,7 @@ function FotoUnidadPanel({
 }: {
   unidadId: string;
   foto: string | null;
+  primario: boolean;
   busy: boolean;
   opts: { role: string; userId?: string };
   onError: (message: string | null) => void;
@@ -174,7 +183,14 @@ function FotoUnidadPanel({
         onFile={(file) => leerImagen(file, setPendiente, onError)}
       />
       <div className="ordenes-captura__actions">
-        <Button type="button" size="compact" className="ordenes-primary" disabled={busy} onClick={() => void guardar()}>
+        <Button
+          type="button"
+          size="compact"
+          variant={primario ? 'default' : 'outline'}
+          className={primario ? 'ordenes-primary' : undefined}
+          disabled={busy}
+          onClick={() => void guardar()}
+        >
           Guardar foto
         </Button>
         {pendiente ? (

@@ -420,6 +420,8 @@ function OrdenDetalle({
   onVisita: (visita: VisitaDetalle) => void;
   onFotoUnidad: (foto: string | null) => void;
 }) {
+  const [capturando, setCapturando] = useState(false);
+  const editarPrimario = continuar && !capturando;
   return (
     <>
       <div className="ordenes-detail__head">
@@ -433,9 +435,9 @@ function OrdenDetalle({
           </Button>
           <Button
             asChild
-            variant={continuar ? 'default' : 'outline'}
+            variant={editarPrimario ? 'default' : 'outline'}
             size="compact"
-            className={continuar ? 'ordenes-primary' : undefined}
+            className={editarPrimario ? 'ordenes-primary' : undefined}
           >
             <Link href={`/unidades/${detalle.unidadId}/visitas/${detalle.id}`}>
               {continuar ? 'Editar' : 'Abrir'}
@@ -445,6 +447,7 @@ function OrdenDetalle({
       </div>
       <OrdenCaptura
         key={detalle.id}
+        onCaptura={setCapturando}
         role={role}
         userId={userId}
         editable={continuar}
