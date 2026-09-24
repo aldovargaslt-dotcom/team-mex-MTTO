@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Suspense, useEffect, useMemo, useState } from 'react';
-import { ArrowUpDown, Check, Inbox, Link2, ListFilter, Pause, Search } from 'lucide-react';
+import { ArrowUpDown, Check, Inbox, ListFilter, Pause, Search } from 'lucide-react';
 import { hydratePiezasFromInventario, type PiezaLinea } from '@/components/PiezasStep';
 import { RoleGate } from '@/components/RoleGate';
 import { Button } from '@/components/ui/button';
@@ -214,9 +214,6 @@ function OrdenesContent() {
         ? 'El administrador ve las visitas ya cerradas.'
         : 'Al cerrar una visita pasa a esta lista.';
 
-  const fotoSeleccion =
-    detalle && detalle.id === ordenId ? detalle.fotos[0]?.dataUrl : null;
-
   return (
     <>
       <header className="ordenes-head">
@@ -237,7 +234,11 @@ function OrdenesContent() {
           />
         </div>
         {isAdmin ? null : (
-          <Button asChild className="ordenes-head__new">
+          <Button
+            asChild
+            variant={borradorSeleccionado ? 'outline' : 'default'}
+            className={borradorSeleccionado ? undefined : 'ordenes-primary'}
+          >
             <Link href="/unidades">+ Nueva orden</Link>
           </Button>
         )}
@@ -330,27 +331,20 @@ function OrdenesContent() {
                       className={selected ? 'ordenes-row is-selected' : 'ordenes-row'}
                       onClick={() => setParams({ orden: row.id })}
                     >
-                      <span className="ordenes-avatar">
-                        {selected && fotoSeleccion ? (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img src={fotoSeleccion} alt="" />
-                        ) : (
-                          row.numeroInterno.slice(0, 1)
-                        )}
-                      </span>
                       <span className="ordenes-row__copy">
                         <span className="ordenes-row__title">{row.numeroInterno}</span>
                         <span className="ordenes-row__sub">
                           Solicitada por {row.choferNombre ?? 'sin chofer'}
-                        </span>
-                        <span
-                          className={
-                            row.estado === 'CERRADO'
-                              ? 'ordenes-pill is-done'
-                              : 'ordenes-pill is-open'
-                          }
-                        >
-                          {row.estado === 'CERRADO' ? 'Hecha' : 'Abierta'}
+                          <span
+                            className={
+                              row.estado === 'CERRADO'
+                                ? 'ordenes-state is-done'
+                                : 'ordenes-state is-open'
+                            }
+                          >
+                            {' '}
+                            · {row.estado === 'CERRADO' ? 'Hecha' : 'Abierta'}
+                          </span>
                         </span>
                       </span>
                       <span className={`ordenes-tipo ${tipoClass}`}>
@@ -392,15 +386,17 @@ function OrdenDetalle({
   return (
     <>
       <div className="ordenes-detail__head">
-        <h2 className="ordenes-detail__title">
-          <Link2 className="size-5 text-[#2563eb]" aria-hidden />
-          {detalle.unidadNumeroInterno}
-        </h2>
+        <h2 className="ordenes-detail__title">{detalle.unidadNumeroInterno}</h2>
         <div className="ordenes-actions">
-          <Button asChild variant="outline">
+          <Button asChild variant="outline" size="compact">
             <a href="#orden-comentarios">Comentarios</a>
           </Button>
-          <Button asChild variant="outline">
+          <Button
+            asChild
+            variant={continuar ? 'default' : 'outline'}
+            size="compact"
+            className={continuar ? 'ordenes-primary' : undefined}
+          >
             <Link href={`/unidades/${detalle.unidadId}/visitas/${detalle.id}`}>
               {continuar ? 'Editar' : 'Abrir'}
             </Link>

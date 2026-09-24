@@ -2868,10 +2868,10 @@
 .ordenes-desk {
   display: grid;
   grid-template-columns: minmax(300px, 380px) minmax(0, 1fr);
-  border: 1px solid #e6e8ee;
-  border-radius: 10px;
+  border: 1px solid #e4e5ec;
+  border-radius: 4px;
   background: #fff;
-  min-height: calc(100vh - 168px);
+  min-height: calc(100vh - 148px);
   overflow: hidden;
 }
 
@@ -2890,14 +2890,14 @@
 
 .ordenes-tabs__cola button {
   flex: 1;
-  min-height: 64px;
-  padding: 16px 12px 14px;
+  min-height: 48px;
+  padding: 12px 12px 10px;
   border: 0;
-  border-bottom: 3px solid transparent;
+  border-bottom: 2px solid transparent;
   background: transparent;
-  color: #6b7288;
-  font-size: 18px;
-  font-weight: 700;
+  color: #5c6378;
+  font-size: 15px;
+  font-weight: 600;
   cursor: pointer;
 }
 
@@ -2909,8 +2909,8 @@
 .ordenes-tabs__filter {
   display: grid;
   place-items: center;
-  width: 64px;
-  min-height: 64px;
+  width: 48px;
+  min-height: 48px;
   border: 0;
   border-left: 1px solid #e6e8ee;
   background: transparent;
@@ -2977,12 +2977,12 @@
 
 .ordenes-row {
   display: grid;
-  grid-template-columns: 44px minmax(0, 1fr) auto;
-  gap: 10px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
   align-items: center;
   width: 100%;
-  min-height: 76px;
-  padding: 12px 14px;
+  min-height: 52px;
+  padding: 8px 12px;
   text-align: left;
   border: 0;
   border-bottom: 1px solid #eef0f4;
@@ -3035,25 +3035,25 @@
   white-space: nowrap;
 }
 
-.ordenes-pill {
-  display: inline-flex;
-  align-items: center;
-  width: fit-content;
-  margin-top: 4px;
-  border-radius: 999px;
-  padding: 1px 8px;
-  font-size: 11px;
+.ordenes-state.is-open {
+  color: #1f7a4d;
   font-weight: 600;
 }
 
-.ordenes-pill.is-open {
-  background: #e8f6ee;
-  color: #1f7a4d;
+.ordenes-state.is-done {
+  color: #5c6378;
+  font-weight: 600;
 }
 
-.ordenes-pill.is-done {
-  background: #ececef;
-  color: #5a5a64;
+.ordenes-primary {
+  background: #2563eb;
+  color: #fff;
+  border-color: #2563eb;
+}
+
+.ordenes-primary:hover {
+  background: #1d4ed8;
+  color: #fff;
 }
 
 .ordenes-tipo {
@@ -3097,8 +3097,8 @@
   align-items: center;
   gap: 8px;
   margin: 0;
-  font-size: 22px;
-  font-weight: 700;
+  font-size: 18px;
+  font-weight: 600;
   color: #1c1d26;
   line-height: 1.2;
 }
@@ -3115,25 +3115,32 @@
 }
 
 .ordenes-status {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 10px;
-  margin-top: 18px;
+  display: flex;
+  margin-top: 12px;
+  border: 1px solid #e4e7ee;
+  border-radius: 4px;
+  overflow: hidden;
 }
 
 .ordenes-status span {
   display: flex;
-  flex-direction: column;
+  flex: 1;
+  flex-direction: row;
   align-items: center;
   justify-content: center;
   gap: 6px;
-  min-height: 72px;
-  border: 1px solid #e4e7ee;
-  border-radius: 10px;
+  min-height: 40px;
+  border: 0;
+  border-right: 1px solid #e4e7ee;
+  border-radius: 0;
   background: #fff;
   color: #5c6378;
   font-size: 13px;
   font-weight: 600;
+}
+
+.ordenes-status span:last-child {
+  border-right: 0;
 }
 
 .ordenes-status span.is-on {
@@ -3231,9 +3238,16 @@
     max-height: none;
   }
 
-  .ordenes-facts,
+  .ordenes-facts {
+    grid-template-columns: 1fr;
+  }
+
   .ordenes-status {
-    grid-template-columns: 1fr 1fr;
+    flex-wrap: wrap;
+  }
+
+  .ordenes-status span {
+    flex: 1 1 45%;
   }
 
   .ordenes-head {
