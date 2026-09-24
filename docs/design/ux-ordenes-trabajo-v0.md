@@ -1,6 +1,6 @@
 # UX — Órdenes de trabajo (cola + ficha)
 
-Pantalla para ver órdenes abiertas o cerradas sin salir de la cola. Desde la orden abierta se sube la foto de la unidad, se agregan piezas y se adjuntan fotos. El wizard sigue siendo el cierre de la visita.
+Pantalla para ver órdenes abiertas o cerradas sin salir de la cola. Desde la orden abierta se agregan piezas y se adjuntan fotos de esa orden. La foto de la unidad se edita en la ficha de la unidad. El wizard sigue siendo el cierre de la visita.
 
 ## Screen purpose
 
@@ -13,7 +13,7 @@ Elegir una orden y leer apertura, cierre, tipo, imágenes, comentarios y el desg
 ## Questions the screen must answer
 
 1. ¿Qué estoy viendo? — La cola de órdenes de la flota, no el wizard.
-2. ¿Debo actuar? — En un borrador, el menú de captura (foto de la unidad, pieza, foto de la orden) y Editar abre el wizard. Si no hay borrador seleccionado, Nueva orden va a Unidades.
+2. ¿Debo actuar? — En un borrador, el menú de captura (pieza, foto de la orden) y Editar abre el wizard. Si no hay borrador seleccionado, Nueva orden va a Unidades.
 3. ¿Cuál es el estado ahora? — Borrador o Cerrada. Predictivo o Correctivo.
 4. ¿Qué apoyo hay? — Fechas, tiempo de cerrado, fotos, comentarios y piezas.
 
@@ -26,7 +26,8 @@ Elegir una orden y leer apertura, cierre, tipo, imágenes, comentarios y el desg
 ## Secondary actions
 
 - **Abrir orden** (`outline`) cuando la orden está cerrada.
-- Menú de la orden seleccionada: **Foto de la unidad** (siempre), **Agregar pieza** y **Subir foto** (solo borrador de supervisor). Un panel a la vez.
+- Menú de la orden seleccionada: **Agregar pieza** y **Subir foto** (solo borrador de supervisor). Un panel a la vez. La foto de la unidad no se edita aquí.
+- En la fila y en la ficha, la marca de la unidad es su foto. Sin foto, el icono del tipo (van en STOCK y RUTAS).
 - Filtros `ListFilter`: Abiertas / Cerradas (solo supervisor) y Todos / Predictivo / Correctivo.
 - Búsqueda: unidad, placas o chofer. La URL guarda `cola`, `tipo`, `q`, `orden`.
 
@@ -65,11 +66,11 @@ La fila selecciona; no hay botón “Detalle”. La primera fila visible queda s
 ## Fuera / Don’t
 
 - No costeo (fuera de v0). No estados nuevos. No reemplazar el wizard. No unificar notify.
-- La foto de la unidad es el único write nuevo: `PATCH /unidades/:id/foto` (ADR-014). Piezas y fotos de la orden usan el `PATCH /visitas/:id` que ya existía.
+- La orden no escribe `unidades.foto_data_url`. Eso queda en la ficha de unidad (ADR-014). Piezas y fotos de la orden usan el `PATCH /visitas/:id` que ya existía.
 - Sin fotos redondas por fila, sin columna de costo.
 - La barra Abierta / Pausada / En progreso / Hecha es solo lectura. Pausada y En progreso no se guardan.
 - Un solo botón azul a la vez: Editar, o el guardar del panel abierto, o Nueva orden si no hay borrador.
 
 ## Proof
 
-`docs/screenshots/ordenes_captura_unidad_d1280.png`, `docs/screenshots/ordenes_captura_pieza_d1280.png`, `docs/screenshots/ordenes_captura_foto_d1280.png`, `docs/screenshots/ordenes_captura_cerrada_d1280.png`.
+`docs/screenshots/ordenes_captura_menu_d1280.png`.

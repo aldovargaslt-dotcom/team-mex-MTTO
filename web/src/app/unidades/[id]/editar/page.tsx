@@ -66,7 +66,9 @@ function EditarUnidadForm() {
       <div className="page-head">
         <div>
           <h1>Editar {unidad?.numeroInterno ?? 'unidad'}</h1>
-          <p className="lede">Actualice los datos de catálogo de la unidad.</p>
+          <p className="lede">
+            Datos de catálogo. La foto de la unidad se sube aquí.
+          </p>
         </div>
       </div>
       {unidad ? (

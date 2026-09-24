@@ -5,6 +5,7 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Suspense, useEffect, useMemo, useState } from 'react';
 import { ArrowUpDown, Check, Inbox, ListFilter, Pause, Search } from 'lucide-react';
 import { OrdenCaptura } from '@/components/OrdenCaptura';
+import { UnidadMarca } from '@/components/UnidadTipoMark';
 import { hydratePiezasFromInventario, type PiezaLinea } from '@/components/PiezasStep';
 import { RoleGate } from '@/components/RoleGate';
 import { Button } from '@/components/ui/button';
@@ -38,6 +39,8 @@ type OrdenRow = VisitaResumen & {
   numeroInterno: string;
   placas: string;
   fotoDataUrl: string | null;
+  tipoNombre: string;
+  tipoIcono: string | null;
 };
 
 const COLAS: { id: Cola; label: string }[] = [
@@ -114,6 +117,8 @@ function OrdenesContent() {
                   numeroInterno: unidad.numeroInterno,
                   placas: unidad.placas,
                   fotoDataUrl: unidad.fotoDataUrl ?? null,
+                  tipoNombre: unidad.tipo?.nombre ?? '',
+                  tipoIcono: unidad.tipo?.icono ?? null,
                 })),
             ),
           ),
@@ -332,23 +337,16 @@ function OrdenesContent() {
                       type="button"
                       role="option"
                       aria-selected={selected}
-                      className={[
-                        'ordenes-row',
-                        row.fotoDataUrl ? 'has-foto' : '',
-                        selected ? 'is-selected' : '',
-                      ]
+                      className={['ordenes-row', selected ? 'is-selected' : '']
                         .filter(Boolean)
                         .join(' ')}
                       onClick={() => setParams({ orden: row.id })}
                     >
-                      {row.fotoDataUrl ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img
-                          className="ordenes-unidad-foto"
-                          src={row.fotoDataUrl}
-                          alt=""
-                        />
-                      ) : null}
+                      <MarcaUnidad
+                        foto={row.fotoDataUrl}
+                        tipoNombre={row.tipoNombre}
+                        tipoIcono={row.tipoIcono}
+                      />
                       <span className="ordenes-row__copy">
                         <span className="ordenes-row__title">{row.numeroInterno}</span>
                         <span className="ordenes-row__sub">{numeroOrden(row.id)}</span>
@@ -369,7 +367,7 @@ function OrdenesContent() {
                 detalle={detalle}
                 piezas={piezas}
                 continuar={Boolean(borradorSeleccionado)}
-                fotoUnidad={rows?.find((row) => row.id === ordenId)?.fotoDataUrl ?? null}
+                marca={rows?.find((row) => row.id === ordenId) ?? null}
                 role={role!}
                 userId={userId}
                 onVisita={(next) => {
@@ -379,17 +377,6 @@ function OrdenesContent() {
                     userId,
                   }).then(setPiezas);
                 }}
-                onFotoUnidad={(foto) =>
-                  setRows((current) =>
-                    current
-                      ? current.map((row) =>
-                          row.unidadId === detalle.unidadId
-                            ? { ...row, fotoDataUrl: foto }
-                            : row,
-                        )
-                      : current,
-                  )
-                }
               />
             ) : detalleError ? null : (
               <p className="muted">Cargando la orden…</p>
@@ -401,33 +388,57 @@ function OrdenesContent() {
   );
 }
 
+function MarcaUnidad({
+  foto,
+  tipoNombre,
+  tipoIcono,
+}: {
+  foto: string | null;
+  tipoNombre: string;
+  tipoIcono: string | null;
+}) {
+  return (
+    <UnidadMarca
+      foto={foto}
+      nombre={tipoNombre}
+      icono={tipoIcono}
+      className="ordenes-unidad-marca"
+    />
+  );
+}
+
 function OrdenDetalle({
   detalle,
   piezas,
   continuar,
-  fotoUnidad,
+  marca,
   role,
   userId,
   onVisita,
-  onFotoUnidad,
 }: {
   detalle: VisitaDetalle;
   piezas: PiezaLinea[];
   continuar: boolean;
-  fotoUnidad: string | null;
+  marca: OrdenRow | null;
   role: string;
   userId?: string;
   onVisita: (visita: VisitaDetalle) => void;
-  onFotoUnidad: (foto: string | null) => void;
 }) {
   const [capturando, setCapturando] = useState(false);
   const editarPrimario = continuar && !capturando;
   return (
     <>
       <div className="ordenes-detail__head">
-        <div>
-          <h2 className="ordenes-detail__title">{detalle.unidadNumeroInterno}</h2>
-          <p className="ordenes-folio">{numeroOrden(detalle.id)}</p>
+        <div className="ordenes-detail__identity">
+          <MarcaUnidad
+            foto={marca?.fotoDataUrl ?? null}
+            tipoNombre={marca?.tipoNombre ?? detalle.tipoVehiculoNombre ?? ''}
+            tipoIcono={marca?.tipoIcono ?? null}
+          />
+          <div>
+            <h2 className="ordenes-detail__title">{detalle.unidadNumeroInterno}</h2>
+            <p className="ordenes-folio">{numeroOrden(detalle.id)}</p>
+          </div>
         </div>
         <div className="ordenes-actions">
           <Button asChild variant="outline" size="compact">
@@ -452,9 +463,7 @@ function OrdenDetalle({
         userId={userId}
         editable={continuar}
         detalle={detalle}
-        fotoUnidad={fotoUnidad}
         onVisita={onVisita}
-        onFotoUnidad={onFotoUnidad}
       />
       <div className="ordenes-status" aria-label="Estado de la orden">
         <span className={detalle.estado === 'BORRADOR' ? 'is-on' : ''}>

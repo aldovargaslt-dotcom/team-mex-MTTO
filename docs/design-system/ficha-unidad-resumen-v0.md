@@ -20,7 +20,7 @@ No se inventan métricas, estados, alertas, km, operadores ni Health.
 |-------------------|-------------------------|------------|
 | Identidad (núm. interno, estado, marca/modelo/año, tipo) | `GET /unidades/:id/hub` → `fichaCorta` | Mostrar |
 | Descripción secundaria | `GET /unidades/:id` → `tipo.descripcion` | Si viene |
-| Icono / foto | No hay fotos de unidad. `tipo.icono` + `UnidadTipoMark` | Placeholder de tipo; no fotos fake |
+| Icono / foto | `fotoDataUrl` si hay; si no, `tipo.icono` | La foto se sube en Editar. Sin foto, glifo del tipo. |
 | Placas, VIN | `fichaCorta` | Mostrar. Sin copy-to-clipboard (no hay patrón) |
 | No. económico | = `numeroInterno` | No duplicar en metadatos |
 | Sucursal / ubicación | Flota `sitioNombre` (otro BC) | **Omitir** |

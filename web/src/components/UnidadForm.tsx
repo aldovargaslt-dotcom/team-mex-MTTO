@@ -9,6 +9,7 @@ import { Card } from '@/components/ui/card';
 import { Field, FormAlert } from '@/components/ui/field';
 import { Input, NativeSelect } from '@/components/ui/input';
 import { ImageDropzone } from '@/components/ImageDropzone';
+import { UnidadMarca } from '@/components/UnidadTipoMark';
 
 export type UnidadFormValues = {
   numeroInterno: string;
@@ -50,6 +51,8 @@ export function UnidadForm({
     fotoDataUrl: initial?.fotoDataUrl ?? '',
   });
   const [saving, setSaving] = useState(false);
+  const [fotoError, setFotoError] = useState<string | null>(null);
+  const tipoActual = tipos.find((tipo) => tipo.id === values.tipoId);
 
   useEffect(() => {
     void (async () => {
@@ -91,6 +94,55 @@ export function UnidadForm({
   return (
     <form className="grid gap-3 sm:grid-cols-2" onSubmit={handleSubmit}>
       <Card className="grid gap-3 p-4 sm:col-span-2 sm:grid-cols-2">
+      <Field label="Foto de la unidad" htmlFor="foto-unidad" className="sm:col-span-2">
+        <div id="foto-unidad" className="grid gap-2">
+          <UnidadMarca
+            foto={values.fotoDataUrl || null}
+            nombre={tipoActual?.nombre ?? ''}
+            icono={tipoActual?.icono}
+            size="lg"
+            className="unidad-foto--editor"
+          />
+          <p className="muted text-xs">
+            Se guarda en la unidad. Sin foto, se usa el icono del tipo.
+          </p>
+          <ImageDropzone
+            label="Tomar o subir"
+            hint="Una sola foto."
+            disabled={saving}
+            onFile={(file) => {
+              if (!file.type.startsWith('image/')) {
+                setFotoError('Elija una imagen.');
+                return;
+              }
+              const reader = new FileReader();
+              reader.onload = () => {
+                if (typeof reader.result !== 'string') return;
+                if (reader.result.length > 1_500_000) {
+                  setFotoError('La foto de la unidad es demasiado grande.');
+                  return;
+                }
+                setFotoError(null);
+                set('fotoDataUrl', reader.result);
+              };
+              reader.readAsDataURL(file);
+            }}
+          />
+          {values.fotoDataUrl ? (
+            <button
+              type="button"
+              className="text-left text-[13px] text-muted-foreground underline-offset-2 hover:underline"
+              onClick={() => {
+                setFotoError(null);
+                set('fotoDataUrl', '');
+              }}
+            >
+              Quitar foto
+            </button>
+          ) : null}
+          {fotoError ? <FormAlert>{fotoError}</FormAlert> : null}
+        </div>
+      </Field>
       <Field label="Número interno" htmlFor="numeroInterno">
         <Input
           id="numeroInterno"
@@ -158,36 +210,6 @@ export function UnidadForm({
           value={values.anio}
           onChange={(e) => set('anio', e.target.value)}
         />
-      </Field>
-      <Field label="Foto de la unidad" className="sm:col-span-2">
-        {values.fotoDataUrl ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={values.fotoDataUrl}
-            alt="Foto de la unidad"
-            className="mb-2 h-24 w-32 rounded border border-border object-cover"
-          />
-        ) : null}
-        <ImageDropzone
-          label="Tomar o subir"
-          hint="Una foto de la unidad."
-          onFile={(file) => {
-            const reader = new FileReader();
-            reader.onload = () => {
-              if (typeof reader.result === 'string') set('fotoDataUrl', reader.result);
-            };
-            reader.readAsDataURL(file);
-          }}
-        />
-        {values.fotoDataUrl ? (
-          <button
-            type="button"
-            className="mt-2 text-left text-[13px] text-muted-foreground underline-offset-2 hover:underline"
-            onClick={() => set('fotoDataUrl', '')}
-          >
-            Quitar foto
-          </button>
-        ) : null}
       </Field>
       {error ? (
         <div className="sm:col-span-2">
