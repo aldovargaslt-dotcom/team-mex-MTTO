@@ -16,6 +16,13 @@ type AttentionRow = {
   icon: 'andon' | 'stock' | 'compra';
 };
 
+type SourceState = {
+  id: string;
+  name: string;
+  status: 'ok' | 'error';
+  rows: AttentionRow[];
+};
+
 export default function InicioPage() {
   return (
     <RoleGate allow={['SUPERVISOR', 'ADMIN_DIRECTIVO']}>
@@ -27,7 +34,7 @@ export default function InicioPage() {
 function InicioContent() {
   const { role, userId } = useRole();
   const [saludo, setSaludo] = useState('Hola');
-  const [rows, setRows] = useState<AttentionRow[] | null>(null);
+  const [sources, setSources] = useState<SourceState[] | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -47,27 +54,15 @@ function InicioContent() {
       const avisos = settled[0].status === 'fulfilled' ? settled[0].value : [];
       const stock = settled[1].status === 'fulfilled' ? settled[1].value : [];
       const compras = settled[2].status === 'fulfilled' ? settled[2].value : [];
-      const failed = settled.filter((item) => item.status === 'rejected').length;
-      if (failed === settled.length) {
-        const first = settled[0];
-        setRows([]);
-        setError(
-          first.status === 'rejected' && first.reason instanceof HttpError
-            ? first.reason.message
-            : 'No se pudo cargar lo que requiere atención.',
-        );
-        return;
-      }
-      if (failed > 0) {
-        setError('Algunas excepciones no se pudieron cargar.');
-      }
       const vencidos = avisos.length;
       const bajo = stock.filter((row) => row.alerta === 'BAJO').length;
       const agotadas = stock.filter((row) => row.alerta === 'AGOTADO').length;
       const pendientes = compras.filter((row) => row.estado === 'PENDIENTE').length;
-      const next: AttentionRow[] = [];
+      const andonRows: AttentionRow[] = [];
+      const stockRows: AttentionRow[] = [];
+      const compraRows: AttentionRow[] = [];
       if (vencidos > 0) {
-        next.push({
+        andonRows.push({
           href: '/andon',
           icon: 'andon',
           label: fraseCuenta(
@@ -78,7 +73,7 @@ function InicioContent() {
         });
       }
       if (bajo > 0) {
-        next.push({
+        stockRows.push({
           href: '/inventario/stock?alerta=BAJO',
           icon: 'stock',
           label: fraseCuenta(
@@ -89,7 +84,7 @@ function InicioContent() {
         });
       }
       if (agotadas > 0) {
-        next.push({
+        stockRows.push({
           href: '/inventario/stock?alerta=AGOTADO',
           icon: 'stock',
           label: fraseCuenta(
@@ -100,13 +95,40 @@ function InicioContent() {
         });
       }
       if (pendientes > 0) {
-        next.push({
+        compraRows.push({
           href: '/inventario/pendientes',
           icon: 'compra',
           label: fraseCuenta(pendientes, 'por recibir', 'por recibir'),
         });
       }
-      setRows(next);
+      setSources([
+        {
+          id: 'andon',
+          name: 'mantenimiento vencido',
+          status: settled[0].status === 'fulfilled' ? 'ok' : 'error',
+          rows: andonRows,
+        },
+        {
+          id: 'stock',
+          name: 'existencias',
+          status: settled[1].status === 'fulfilled' ? 'ok' : 'error',
+          rows: stockRows,
+        },
+        {
+          id: 'compras',
+          name: 'por recibir',
+          status: settled[2].status === 'fulfilled' ? 'ok' : 'error',
+          rows: compraRows,
+        },
+      ]);
+      if (settled.every((item) => item.status === 'rejected')) {
+        const first = settled[0];
+        setError(
+          first.status === 'rejected' && first.reason instanceof HttpError
+            ? first.reason.message
+            : 'No se pudo cargar lo que requiere atención.',
+        );
+      }
     })();
   }, [role, userId]);
 
@@ -117,14 +139,16 @@ function InicioContent() {
         lede="Qué hay que revisar. Cada fila abre la lista."
       />
       <FormAlert>{error}</FormAlert>
-      {rows == null ? (
+      {sources == null ? (
         <p className="muted">Cargando excepciones…</p>
-      ) : rows.length === 0 && !error ? (
+      ) : sources.every((source) => source.status === 'ok' && source.rows.length === 0) ? (
         <div className="empty-state">
           <h2>Nada requiere atención</h2>
-          <p className="muted">Alertas, existencias y por recibir están al día.</p>
+          <p className="muted">
+            Mantenimiento vencido, existencias y por recibir están al día.
+          </p>
         </div>
-      ) : rows.length === 0 ? null : (
+      ) : (
         <section aria-labelledby="requiere-atencion">
           <h2
             id="requiere-atencion"
@@ -133,24 +157,38 @@ function InicioContent() {
             Requiere atención
           </h2>
           <ul className="inbox-list">
-            {rows.map((row) => (
-              <li key={row.href}>
-                <Link href={row.href} className="inbox-row unread">
-                  <span className="inbox-icon" aria-hidden>
-                    {row.icon === 'andon' ? (
-                      <Wrench className="size-4" />
-                    ) : row.icon === 'compra' ? (
-                      <ShoppingCart className="size-4" />
-                    ) : (
-                      <Package className="size-4" />
-                    )}
-                  </span>
-                  <span className="inbox-copy">
-                    <span className="inbox-title">{row.label}</span>
-                  </span>
-                </Link>
-              </li>
-            ))}
+            {sources.flatMap((source) =>
+              source.status === 'error'
+                ? [
+                    <li key={source.id}>
+                      <p className="inbox-row">
+                        <span className="inbox-copy">
+                          <span className="inbox-title">
+                            No se pudo cargar {source.name}.
+                          </span>
+                        </span>
+                      </p>
+                    </li>,
+                  ]
+                : source.rows.map((row) => (
+                    <li key={row.href}>
+                      <Link href={row.href} className="inbox-row unread">
+                        <span className="inbox-icon" aria-hidden>
+                          {row.icon === 'andon' ? (
+                            <Wrench className="size-4" />
+                          ) : row.icon === 'compra' ? (
+                            <ShoppingCart className="size-4" />
+                          ) : (
+                            <Package className="size-4" />
+                          )}
+                        </span>
+                        <span className="inbox-copy">
+                          <span className="inbox-title">{row.label}</span>
+                        </span>
+                      </Link>
+                    </li>
+                  )),
+            )}
           </ul>
         </section>
       )}
