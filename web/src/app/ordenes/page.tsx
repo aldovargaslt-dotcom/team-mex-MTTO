@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Suspense, useEffect, useMemo, useState } from 'react';
-import { ArrowUpDown, Check, Link2, Pause, Search } from 'lucide-react';
+import { ArrowUpDown, Check, Inbox, Link2, ListFilter, Pause, Search } from 'lucide-react';
 import { hydratePiezasFromInventario, type PiezaLinea } from '@/components/PiezasStep';
 import { RoleGate } from '@/components/RoleGate';
 import { Button } from '@/components/ui/button';
@@ -82,6 +82,7 @@ function OrdenesContent() {
   const [detalle, setDetalle] = useState<VisitaDetalle | null>(null);
   const [detalleError, setDetalleError] = useState<string | null>(null);
   const [piezas, setPiezas] = useState<PiezaLinea[]>([]);
+  const [filtroAbierto, setFiltroAbierto] = useState(false);
 
   function setParams(patch: Record<string, string | null>) {
     const params = new URLSearchParams(searchParams.toString());
@@ -241,52 +242,70 @@ function OrdenesContent() {
           </Button>
         )}
       </header>
-      <label className="ordenes-filter">
-        Tipo de mantenimiento
-        <select
-          aria-label="Tipo de mantenimiento"
-          value={tipo}
-          onChange={(event) =>
-            setParams({
-              tipo: event.target.value === 'todos' ? null : event.target.value,
-              orden: null,
-            })
-          }
-        >
-          {TIPOS.map((option) => (
-            <option key={option.id} value={option.id}>
-              {option.label}
-            </option>
-          ))}
-        </select>
-      </label>
       <FormAlert>{error}</FormAlert>
       {rows == null ? (
         <p className="muted">Cargando órdenes…</p>
       ) : (
         <div className="ordenes-desk">
           <div className="ordenes-list">
-            {isAdmin ? null : (
-              <div className="ordenes-tabs" role="tablist" aria-label="Cola">
-                {COLAS.map((option) => (
-                  <button
-                    key={option.id}
-                    type="button"
-                    role="tab"
-                    aria-selected={cola === option.id}
-                    className={cola === option.id ? 'is-on' : ''}
-                    onClick={() =>
-                      setParams({
-                        cola: option.id === 'abiertas' ? null : option.id,
-                        orden: null,
-                      })
-                    }
-                  >
-                    {option.id === 'abiertas' ? 'Por hacer' : 'Hechas'}
-                  </button>
-                ))}
-              </div>
-            )}
+            <div className="ordenes-tabs">
+              {isAdmin ? null : (
+                <div className="ordenes-tabs__cola" role="tablist" aria-label="Cola">
+                  {COLAS.map((option) => (
+                    <button
+                      key={option.id}
+                      type="button"
+                      role="tab"
+                      aria-selected={cola === option.id}
+                      className={cola === option.id ? 'is-on' : ''}
+                      onClick={() =>
+                        setParams({
+                          cola: option.id === 'abiertas' ? null : option.id,
+                          orden: null,
+                        })
+                      }
+                    >
+                      {option.id === 'abiertas' ? 'Por hacer' : 'Hechas'}
+                    </button>
+                  ))}
+                </div>
+              )}
+              <button
+                type="button"
+                className={
+                  filtroAbierto || tipo !== 'todos'
+                    ? 'ordenes-tabs__filter is-on'
+                    : 'ordenes-tabs__filter'
+                }
+                aria-label="Filtros"
+                aria-expanded={filtroAbierto}
+                onClick={() => setFiltroAbierto((open) => !open)}
+              >
+                <ListFilter className="size-5" aria-hidden />
+              </button>
+              {filtroAbierto ? (
+                <div className="ordenes-filter-menu" role="group" aria-label="Tipo de mantenimiento">
+                  <p>Tipo de mantenimiento</p>
+                  {TIPOS.map((option) => (
+                    <button
+                      key={option.id}
+                      type="button"
+                      aria-pressed={tipo === option.id}
+                      className={tipo === option.id ? 'is-on' : ''}
+                      onClick={() => {
+                        setParams({
+                          tipo: option.id === 'todos' ? null : option.id,
+                          orden: null,
+                        });
+                        setFiltroAbierto(false);
+                      }}
+                    >
+                      {option.label}
+                    </button>
+                  ))}
+                </div>
+              ) : null}
+            </div>
             {filtered.length === 0 ? (
               <div className="empty-state">
                 <h2>{emptyTitle}</h2>
@@ -390,6 +409,7 @@ function OrdenDetalle({
       </div>
       <div className="ordenes-status" aria-label="Estado de la orden">
         <span className={detalle.estado === 'BORRADOR' ? 'is-on' : ''}>
+          <Inbox className="size-5" aria-hidden />
           Abierta
         </span>
         <span className="is-off">
