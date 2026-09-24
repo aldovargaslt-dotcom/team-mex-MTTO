@@ -14,6 +14,7 @@ import { CurrentUserParam } from '../auth/current-user.decorator';
 import { Roles } from '../auth/roles.decorator';
 import { Rol } from '../auth/roles.enum';
 import { CreateUnidadDto } from './dto/create-unidad.dto';
+import { FotoUnidadDto } from './dto/foto-unidad.dto';
 import { FiltrarUnidadesDto } from './dto/filtrar-unidades.dto';
 import { UpdateUnidadDto } from './dto/update-unidad.dto';
 import { UnidadesService } from './unidades.service';
@@ -52,6 +53,16 @@ export class UnidadesController {
   @ApiOperation({ summary: 'Crear unidad (admin)' })
   create(@Body() dto: CreateUnidadDto) {
     return this.service.create(dto);
+  }
+
+  @Patch(':id/foto')
+  @Roles(Rol.SUPERVISOR, Rol.ADMIN_DIRECTIVO)
+  @ApiOperation({ summary: 'Foto de la unidad (supervisor o admin)' })
+  setFoto(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: FotoUnidadDto,
+  ) {
+    return this.service.setFoto(id, dto.fotoDataUrl);
   }
 
   @Patch(':id')

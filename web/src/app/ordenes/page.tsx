@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Suspense, useEffect, useMemo, useState } from 'react';
 import { ArrowUpDown, Check, Inbox, ListFilter, Pause, Search } from 'lucide-react';
+import { OrdenCaptura } from '@/components/OrdenCaptura';
 import { hydratePiezasFromInventario, type PiezaLinea } from '@/components/PiezasStep';
 import { RoleGate } from '@/components/RoleGate';
 import { Button } from '@/components/ui/button';
@@ -368,6 +369,27 @@ function OrdenesContent() {
                 detalle={detalle}
                 piezas={piezas}
                 continuar={Boolean(borradorSeleccionado)}
+                fotoUnidad={rows?.find((row) => row.id === ordenId)?.fotoDataUrl ?? null}
+                role={role!}
+                userId={userId}
+                onVisita={(next) => {
+                  setDetalle(next);
+                  void hydratePiezasFromInventario(next.piezas ?? [], {
+                    role: role!,
+                    userId,
+                  }).then(setPiezas);
+                }}
+                onFotoUnidad={(foto) =>
+                  setRows((current) =>
+                    current
+                      ? current.map((row) =>
+                          row.unidadId === detalle.unidadId
+                            ? { ...row, fotoDataUrl: foto }
+                            : row,
+                        )
+                      : current,
+                  )
+                }
               />
             ) : detalleError ? null : (
               <p className="muted">Cargando la orden…</p>
@@ -383,10 +405,20 @@ function OrdenDetalle({
   detalle,
   piezas,
   continuar,
+  fotoUnidad,
+  role,
+  userId,
+  onVisita,
+  onFotoUnidad,
 }: {
   detalle: VisitaDetalle;
   piezas: PiezaLinea[];
   continuar: boolean;
+  fotoUnidad: string | null;
+  role: string;
+  userId?: string;
+  onVisita: (visita: VisitaDetalle) => void;
+  onFotoUnidad: (foto: string | null) => void;
 }) {
   return (
     <>
@@ -411,6 +443,16 @@ function OrdenDetalle({
           </Button>
         </div>
       </div>
+      <OrdenCaptura
+        key={detalle.id}
+        role={role}
+        userId={userId}
+        editable={continuar}
+        detalle={detalle}
+        fotoUnidad={fotoUnidad}
+        onVisita={onVisita}
+        onFotoUnidad={onFotoUnidad}
+      />
       <div className="ordenes-status" aria-label="Estado de la orden">
         <span className={detalle.estado === 'BORRADOR' ? 'is-on' : ''}>
           <Inbox className="size-5" aria-hidden />

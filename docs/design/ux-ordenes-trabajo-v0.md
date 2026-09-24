@@ -1,6 +1,6 @@
 # UX — Órdenes de trabajo (cola + ficha)
 
-Pantalla de lectura para ver órdenes abiertas o cerradas sin salir de la cola. La captura sigue siendo el wizard de visita.
+Pantalla para ver órdenes abiertas o cerradas sin salir de la cola. Desde la orden abierta se sube la foto de la unidad, se agregan piezas y se adjuntan fotos. El wizard sigue siendo el cierre de la visita.
 
 ## Screen purpose
 
@@ -13,7 +13,7 @@ Elegir una orden y leer apertura, cierre, tipo, imágenes, comentarios y el desg
 ## Questions the screen must answer
 
 1. ¿Qué estoy viendo? — La cola de órdenes de la flota, no el wizard.
-2. ¿Debo actuar? — En un borrador, Continuar abre el wizard. Si no hay borrador seleccionado, Nueva orden va a Unidades.
+2. ¿Debo actuar? — En un borrador, el menú de captura (foto de la unidad, pieza, foto de la orden) y Editar abre el wizard. Si no hay borrador seleccionado, Nueva orden va a Unidades.
 3. ¿Cuál es el estado ahora? — Borrador o Cerrada. Predictivo o Correctivo.
 4. ¿Qué apoyo hay? — Fechas, tiempo de cerrado, fotos, comentarios y piezas.
 
@@ -26,6 +26,7 @@ Elegir una orden y leer apertura, cierre, tipo, imágenes, comentarios y el desg
 ## Secondary actions
 
 - **Abrir orden** (`outline`) cuando la orden está cerrada.
+- Menú de la orden seleccionada: **Foto de la unidad** (siempre), **Agregar pieza** y **Subir foto** (solo borrador de supervisor). Un panel a la vez.
 - Filtros `ListFilter`: Abiertas / Cerradas (solo supervisor) y Todos / Predictivo / Correctivo.
 - Búsqueda: unidad, placas o chofer. La URL guarda `cola`, `tipo`, `q`, `orden`.
 
@@ -63,7 +64,8 @@ La fila selecciona; no hay botón “Detalle”. La primera fila visible queda s
 
 ## Fuera / Don’t
 
-- No `api/src`. No costeo (fuera de v0). No estados nuevos. No reemplazar el wizard. No unificar notify.
+- No costeo (fuera de v0). No estados nuevos. No reemplazar el wizard. No unificar notify.
+- La foto de la unidad es el único write nuevo: `PATCH /unidades/:id/foto` (ADR-014). Piezas y fotos de la orden usan el `PATCH /visitas/:id` que ya existía.
 - Sin fotos redondas por fila, sin cuatro botones de estado, sin columna de costo.
 
 ## Proof

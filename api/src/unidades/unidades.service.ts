@@ -160,6 +160,12 @@ export class UnidadesService {
     return this.repo.save(unidad);
   }
 
+  async setFoto(id: string, fotoDataUrl: string | null | undefined) {
+    const unidad = await this.findOne(id);
+    unidad.fotoDataUrl = this.normalizeFoto(fotoDataUrl);
+    return this.repo.save(unidad);
+  }
+
   private normalizeFoto(value: string | null | undefined) {
     if (value == null || value.trim() === '') return null;
     const foto = value.trim();
