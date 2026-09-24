@@ -17,5 +17,9 @@ Visit confirm dialog was not opened: the new borrador still had faltantes, so **
 ## AC
 
 - AC-01, AC-02, AC-05: seen in the browser.
-- AC-03: persist guard is in `persist()`; not clicked through.
-- AC-04: dialog is in the confirm step; not opened because faltantes blocked the button.
+- AC-03: qty 9 on FIL-CAB-01 (stock 5) then **Guardar y salir** stayed on the visit and showed «Hay piezas que superan el stock».
+- AC-04: dialog listed «FIL-CAB-01 · 1 pza desde stock · quedarán 4» and «FIL-ACEITE-01 · 2 pza compra externa · no mueve existencias; abre por recibir». Cancelled.
+- Por recibir row showed **Cerrar comprobante**. The lede states it does not change existencias. Button not clicked.
+- Visual QA (`ux-auditor`): no OK. Fixed in the same cut: real plural «1 línea supera», label **Cantidad**, lede visible on Por recibir, **Ajustar** as the orange submit. Not changed: orange page CTA still visible under the shared `bg-black/40` overlay; the lede word STOCK is the tipo nombre, not a label.
+
+Temporary visita and pendiente used for the click-through were deleted.

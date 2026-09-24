@@ -178,7 +178,7 @@ export function PiezasStep({
                 </div>
                 <div className="flex flex-wrap items-end gap-2">
                   <label className="grid gap-1 text-xs font-medium text-muted-foreground">
-                    Qty
+                    Cantidad
                     <Input
                       className="qty-input w-[72px]"
                       type="number"
@@ -266,7 +266,7 @@ export function PiezasStep({
                   </div>
                 </div>
                 {enOt ? (
-                  <Badge variant="navy">En la OT</Badge>
+                  <Badge variant="navy">En la visita</Badge>
                 ) : (
                   <span className="text-sm font-medium text-navy">Agregar</span>
                 )}
@@ -277,8 +277,10 @@ export function PiezasStep({
       </ul>
       {alertas.length ? (
         <Note variant="warn">
-          {alertas.length} línea(s) superan el stock. Use compra externa o reduzca
-          la cantidad para continuar. No se permiten existencias negativas.
+          {alertas.length === 1
+            ? '1 línea supera el stock.'
+            : `${alertas.length} líneas superan el stock.`}{' '}
+          Use compra externa o reduzca la cantidad para continuar. No se permiten existencias negativas.
         </Note>
       ) : null}
     </Card>

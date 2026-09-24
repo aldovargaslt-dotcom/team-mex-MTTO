@@ -100,7 +100,7 @@ export default function PendientesPage() {
     <>
       <PageHeader
         title="Por recibir"
-        help="Compras externas aún sin entrar al almacén. Cerrar el comprobante no cambia existencias."
+        lede="Compras externas aún sin entrar al almacén. Cerrar el comprobante no cambia existencias."
       />
       <FormAlert>{error}</FormAlert>
       {rows.length > 0 ? (

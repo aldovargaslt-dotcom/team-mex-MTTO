@@ -21,7 +21,7 @@ Empty copy names mantenimiento vencido, existencias, and por recibir. A failed s
 
 ## Por recibir and ajuste
 
-**Cerrar comprobante** does not change existencias. Ajuste shows `Hay N → quedarán M` and does not submit a negative result.
+**Cerrar comprobante** does not change existencias. That sentence is the page lede, visible without the hint. Ajuste shows `Hay N → quedarán M`, uses the orange submit, and does not submit a negative result. Piezas uses **Cantidad** and a real plural («1 línea supera» / «N líneas superan»).
 
 ## Nav
 

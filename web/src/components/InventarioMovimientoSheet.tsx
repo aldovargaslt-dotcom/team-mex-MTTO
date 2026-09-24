@@ -187,7 +187,7 @@ export function InventarioMovimientoSheet({
           <SheetFooter className="p-0">
             <Button
               type="submit"
-              variant={mode === 'ajuste' ? 'outline' : 'default'}
+              variant="default"
               disabled={ajusteInvalido}
             >
               {mode === 'entrada' ? 'Registrar entrada' : 'Ajustar'}
