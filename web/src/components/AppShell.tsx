@@ -30,7 +30,8 @@ const NAV_ITEMS: {
     label: 'Órdenes',
     roles: ['SUPERVISOR', 'ADMIN_DIRECTIVO'],
   },
-  { href: '/flota', label: 'Flota', roles: ['LOGISTICA', 'ADMIN_DIRECTIVO'] },
+  { href: '/logistica', label: 'Inicio', roles: ['LOGISTICA'] },
+  { href: '/flota', label: 'Movimientos', roles: ['LOGISTICA', 'ADMIN_DIRECTIVO'] },
   { href: '/unidades', label: 'Unidades', roles: ['SUPERVISOR', 'ADMIN_DIRECTIVO'] },
   { href: '/andon', label: 'Mantenimiento vencido', roles: ['SUPERVISOR', 'ADMIN_DIRECTIVO'] },
   {
@@ -55,7 +56,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   const [menuOpen, setMenuOpen] = useState(false);
 
   const items = NAV_ITEMS.filter((item) => role && item.roles.includes(role));
-  const homeHref = isLogistica ? '/flota' : '/inicio';
+  const homeHref = isLogistica ? '/logistica' : '/inicio';
 
   function cambiarRol() {
     setMenuOpen(false);
