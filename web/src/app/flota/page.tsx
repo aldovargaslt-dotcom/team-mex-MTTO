@@ -88,6 +88,7 @@ function FlotaVisual() {
   const chip = parseChip(searchParams.get('chip'));
   const ambito = parseAmbito(searchParams.get('ambito'));
   const alerta = parseAlerta(searchParams.get('alerta'));
+  const requestedUnitId = searchParams.get('unidadId');
   const qParam = searchParams.get('q') ?? '';
   const [q, setQ] = useState(qParam);
   const [data, setData] = useState<LogisticaUnidadesResponse | null>(null);
@@ -188,6 +189,16 @@ function FlotaVisual() {
     return filtered;
   }, [allItems, chip, qParam, ambito, alerta]);
   const todosActivo = chip === 'TODAS' && alerta == null;
+  useEffect(() => {
+    if (!requestedUnitId || !data) return;
+    const requested = data.items.find(
+      (row) => row.unidadId === requestedUnitId && row.opsEstado === 'EN_RUTA',
+    );
+    if (requested) {
+      setSelectedId(requested.unidadId);
+      setSheetOpen(true);
+    }
+  }, [requestedUnitId, data]);
   const enRuta = items.filter((row) => row.opsEstado === 'EN_RUTA');
   const sheetRow = enRuta.find((row) => row.unidadId === selectedId) ?? null;
 
@@ -451,12 +462,21 @@ function FlotaVisual() {
 
       <FormAlert>{error && !sheetOpen ? error : null}</FormAlert>
 
-      <DataTable
-        columns={columns}
-        data={items}
-        empty={emptyCopy(chip, qParam, ambito, alerta)}
-        onRowClick={abrirFila}
-      />
+      <div className="hidden md:block">
+        <DataTable columns={columns} data={items} empty={emptyCopy(chip, qParam, ambito, alerta)} onRowClick={abrirFila} />
+      </div>
+      <div className="grid gap-3 md:hidden">
+        {items.length ? items.map((row) => (
+          <button key={row.unidadId} type="button" className="w-full rounded-lg border bg-card p-4 text-left" onClick={() => abrirFila(row)}>
+            <span className="flex items-start justify-between gap-3">
+              <span><span className="block font-semibold text-navy">{row.numeroInterno} · {row.placas}</span><span className="mt-1 block text-sm text-muted-foreground">{row.choferNombre || 'Chofer pendiente'} · {row.destino || 'Sin destino'}</span></span>
+              <UnidadOpsBadge ops={row.opsEstado} />
+            </span>
+            <span className="mt-3 flex flex-wrap items-center gap-2 text-xs text-muted-foreground"><AmbitoBadge ambito={row.ambito} />{row.salidaAt ? <span>{formatHace(row.salidaAt)}</span> : null}{row.alerta ? <Badge variant="warning" className="normal-case tracking-normal">{etiquetaAlertaRegreso(row.alerta)}</Badge> : null}</span>
+            <span className="mt-3 block text-sm font-medium text-navy">{row.opsEstado === 'EN_RUTA' ? 'Tocar para registrar regreso' : 'Ver unidad'}</span>
+          </button>
+        )) : <p className="empty-state">{emptyCopy(chip, qParam, ambito, alerta)}</p>}
+      </div>
 
       <Sheet
         open={sheetOpen}
