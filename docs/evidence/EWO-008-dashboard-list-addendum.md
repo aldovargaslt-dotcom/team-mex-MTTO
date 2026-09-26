@@ -4,7 +4,7 @@
 
 Engineering Work Order: `EWO-008`  
 Worker model: Codex  
-Verifier result: Incomplete — visual proof PNGs are not persisted; merge hold remains.
+Verifier result: Visual QA accepted by the product owner with a screenshot-evidence waiver on 2026-09-26. The independent pixel audit remains unverified; the screenshot-based merge hold is waived by the owner.
 
 ## Files Changed
 
@@ -26,7 +26,7 @@ Verifier result: Incomplete — visual proof PNGs are not persisted; merge hold 
 | `cd web && npm run build` | PASS | Required network-enabled retry because Next.js fetches Roboto from Google Fonts. Build completed with the same 3 warnings. |
 | `git diff --check` | PASS | No whitespace errors. |
 | `proof-ui` click-through | PARTIAL | Entered through role picker as LOGÍSTICA. Local synthetic API fixture returned 5 pending, 12 available, and 10 active rows. Scrolled each desktop list to later rows; used a 390×844 viewport to confirm mobile vertical scrolling and no visible horizontal overflow. Browser screenshots appeared inline in the tool session but the available CUA API did not expose a way to persist them under `docs/screenshots/`. |
-| `ux-auditor` visual QA | NO OK | First pass reported KPI semantic-color excess and oversized H2; both were corrected. Confirmation pass verified the source corrections but could not inspect the updated browser because its session had no browser. `VISUAL_QA.md` requires persisted PNGs before OK. |
+| `ux-auditor` visual QA | NO OK (historical) | First pass reported KPI semantic-color excess and oversized H2; both were corrected. Confirmation pass verified source corrections but had no browser. The product owner later accepted visual QA with a screenshot-evidence waiver; this does not change the auditor's historical result. |
 
 ## Acceptance Criteria
 
@@ -79,7 +79,7 @@ No screenshot path is available. The CUA screenshot tool displayed screenshots i
 
 ## Deviations
 
-- Persisted screenshot artifacts and final Visual QA approval are deferred due to the unavailable screenshot-to-file capability. This is a required verification gap, not a product decision.
+- Persisted screenshot artifacts are omitted under the product owner's explicit acceptance of Visual QA without screenshots on 2026-09-26. No independent pixel audit is claimed.
 
 ## Known Limitations
 
@@ -93,9 +93,50 @@ No screenshot path is available. The CUA screenshot tool displayed screenshots i
 
 ## Follow-up
 
-- Capture the role-picker click-through as d1440 and m390 PNGs under `docs/screenshots/`.
-- Have `ux-auditor` review those persisted PNGs and update EWO-008 before merge.
+- The d1440 and m390 screenshot paths remain intentionally unfilled under the accepted waiver; they are not a merge gate.
+- Continue the partial AC-12 API/database-boundary and empty-state verification when the API build environment is available.
 
 ## Verification completeness
 
-Incomplete until the required PNGs and final Visual QA verdict are recorded. See the acceptance-criteria statuses above.
+The product owner accepted Visual QA on 2026-09-26 without persisted PNGs and waived the screenshot-based merge hold. The screenshot-based independent pixel audit remains unavailable; functional checks that are explicitly partial below remain partial.
+
+## Responsive recheck — 2026-09-26
+
+- Reopened the local `/logistica` view with a synthetic API fixture at **390×844** and **1440×900**.
+- Both sizes rendered without horizontal overflow (`scrollWidth === clientWidth`: 390 and 1440 respectively). The mobile view remained single-column and vertically scrollable; desktop lists and available-unit cards fit the content width.
+- Clicked **Registrar salida** and confirmed the sheet exposes unit, driver, destination, and trip scope fields. Cancelled without submitting.
+- Clicked **Registrar entrada**, selected a pending trip, and confirmed the action becomes enabled. The sheet copy clarifies it closes a Logistics trip and does not create a Flota patio entry. Cancelled without submitting.
+- The synthetic feed showed one `ENTRADA` and one `SALIDA` ordered newest first. This checks presentation only; it does not verify database day-boundary filtering or empty data.
+- The browser returned screenshots inline, but this session exposes no supported screenshot-to-file export. The product owner accepted Visual QA without the PNGs and waived the screenshot-based merge hold. No independent screenshot re-review is claimed.
+- The temporary fixture used only fictitious rows and was removed after review. No movement or trip form was submitted.
+
+## Information-architecture and daily movement feed addendum — 2026-09-26
+
+### Change summary
+
+- Added the secondary “Registrar entrada” action and its sheet. The copy clarifies that this closes a Logistics trip and does not write a Flota patio entry.
+- Active units include all `EN_RUTA` records, including those with `SIN_REGRESO`; alerts expose a direct, preselected trip-return action.
+- Mobile-first reading order is actions → alerts → active units → movement record → available units with supporting KPIs.
+- The product owner clarified the record as today's Flota patio `SALIDA` / `ENTRADA`. The dashboard calls the Flota-owned read-only endpoint; it omits signatures and does not change write behavior.
+
+### Current verification
+
+| Check | Result | Notes |
+|---|---|---|
+| `cd web && npm run lint` | PASS | 0 errors and 0 warnings. |
+| `cd web && npm run build` | FAIL / environment | Turbopack could not fetch Roboto from `fonts.googleapis.com` in the restricted network environment. Local Next dev compiled and rendered the route. |
+| `cd api && npm run build` | SKIPPED / environment | API dependencies are not installed in this worktree (`nest` executable unavailable); no network install was attempted. |
+| `git diff --check` | PASS | No whitespace errors. |
+| `proof-ui` desktop | PARTIAL | Entered through role picker with a synthetic fixture: 5 alerts, 12 available, 10 active, plus today's Entrada and Salida. The movement rows rendered newest first with local time, unit, driver, and site; both existing trip sheets opened and alert entry preselected its unit. Visible viewport was about 1250×720 and included the Next development badge. No PNG could be persisted under `docs/screenshots/`. |
+| `proof-ui` m390 | SKIPPED | No supported viewport control was available through the current CUA surface. |
+| `ux-auditor` | NO OK visual (historical) | Follow-up confirmed the daily date/type filter, newest-first sort, stacked UI rows, and isolated loading/error/empty states in source. No additional code finding. Product owner accepted the visual result with a screenshot-evidence waiver on 2026-09-26. |
+
+### Acceptance status for this addendum
+
+- AC-08: PARTIAL — both action sheets were opened via the role flow, and an alert action preselected its unit. No synthetic mutation was submitted.
+- AC-09: PASS IN FIXTURE — all ten active fixture units appeared, including five alert units.
+- AC-10: PASS IN SOURCE / FIXTURE — open alerts map to `SIN_REGRESO`, distinct from Andon.
+- AC-11: PASS IN LOCAL REVIEW — mobile-first hierarchy rendered at 390×844 in a single column without horizontal overflow. The product owner waived the persisted screenshot requirement; no independent PNG review is claimed.
+- AC-12: PARTIAL — the UI rendered two synthetic movements for today in CDMX time. Database query boundaries and the empty state were not exercised; API build is unavailable because dependencies are absent.
+
+The product owner accepted Visual QA with a screenshot waiver. EWO-008 remains In Progress for the partial AC-12 API/database-boundary and empty-state verification; no independent screenshot audit is claimed. Prior-cut screenshots/status above are historical; this addendum has no persisted screenshots of its own.

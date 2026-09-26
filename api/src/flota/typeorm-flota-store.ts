@@ -8,7 +8,12 @@ import { MovimientoFirmaEntity } from './entities/movimiento-firma.entity';
 import { SitioEntity } from './entities/sitio.entity';
 import { UnidadOperativaEntity } from './entities/unidad-operativa.entity';
 import { FlotaStore } from './flota-store';
-import { MovimientoFlota, Sitio, UnidadOperativa } from './flota-types';
+import {
+  MovimientoFlota,
+  MovimientoFlotaResumen,
+  Sitio,
+  UnidadOperativa,
+} from './flota-types';
 
 @Injectable()
 export class TypeOrmFlotaStore implements FlotaStore {
@@ -55,6 +60,41 @@ export class TypeOrmFlotaStore implements FlotaStore {
       order: { occurredAt: 'DESC' },
     });
     return rows.map((r) => this.toMovimiento(r));
+  }
+
+  async listMovimientosEntre(
+    desde: Date,
+    hasta: Date,
+  ): Promise<MovimientoFlotaResumen[]> {
+    const rows = await this.movimientos
+      .createQueryBuilder('movimiento')
+      .select([
+        'movimiento.id',
+        'movimiento.tipo',
+        'movimiento.unidadId',
+        'movimiento.choferId',
+        'movimiento.sitioId',
+        'movimiento.occurredAt',
+        'movimiento.km',
+      ])
+      .where('movimiento.occurredAt >= :desde', { desde })
+      .andWhere('movimiento.occurredAt < :hasta', { hasta })
+      .andWhere('movimiento.tipo IN (:...tipos)', {
+        tipos: [TipoMovimientoFlota.SALIDA, TipoMovimientoFlota.ENTRADA],
+      })
+      .orderBy('movimiento.occurredAt', 'DESC')
+      .addOrderBy('movimiento.id', 'ASC')
+      .getMany();
+
+    return rows.map(({ id, tipo, unidadId, choferId, sitioId, occurredAt, km }) => ({
+      id,
+      tipo: tipo as TipoMovimientoFlota,
+      unidadId,
+      choferId,
+      sitioId,
+      occurredAt: occurredAt.toISOString(),
+      km,
+    }));
   }
 
   async choferTieneSalidaAbierta(

@@ -22,52 +22,121 @@ import { useRole } from '@/lib/role';
 import type { AmbitoUnidad, LogisticaChoferRow, LogisticaUnidadesResponse, LogisticaUnidadRow } from '@/lib/types';
 
 type ChoferesResponse = { items: LogisticaChoferRow[] };
+type MovimientoPatioHoy = {
+  id: string;
+  tipo: 'SALIDA' | 'ENTRADA';
+  unidadId: string;
+  numeroInterno: string;
+  placas: string | null;
+  choferNombre: string | null;
+  sitioNombre: string | null;
+  occurredAt: string;
+  km: number;
+};
+type MovimientosPatioHoyResponse = {
+  fecha: string;
+  zonaHoraria: string;
+  items: MovimientoPatioHoy[];
+};
 type SalidaForm = { unidadId: string; choferId: string; destino: string; ambito: AmbitoUnidad };
 const VACIO: SalidaForm = { unidadId: '', choferId: '', destino: '', ambito: 'LOCAL' };
+const EMPTY_ROWS: LogisticaUnidadRow[] = [];
+const ZONA_LOGISTICA = 'America/Mexico_City';
+
+function formatFechaLocal(fecha: string, timeZone: string) {
+  const [year, month, day] = fecha.split('-').map(Number);
+  return new Intl.DateTimeFormat('es-MX', {
+    timeZone,
+    day: 'numeric',
+    month: 'long',
+  }).format(new Date(Date.UTC(year, month - 1, day, 12)));
+}
+
+function formatHoraLocal(fecha: string, timeZone: string) {
+  return new Intl.DateTimeFormat('es-MX', {
+    timeZone,
+    hour: '2-digit',
+    minute: '2-digit',
+  }).format(new Date(fecha));
+}
 
 export function LogisticaDashboard() {
   const { role, userId } = useRole();
   const [data, setData] = useState<LogisticaUnidadesResponse | null>(null);
   const [choferes, setChoferes] = useState<LogisticaChoferRow[]>([]);
+  const [movimientosHoy, setMovimientosHoy] = useState<MovimientosPatioHoyResponse | null>(null);
+  const [movimientosLoading, setMovimientosLoading] = useState(true);
+  const [movimientosError, setMovimientosError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [salidaOpen, setSalidaOpen] = useState(false);
   const [saving, setSaving] = useState(false);
   const [form, setForm] = useState<SalidaForm>(VACIO);
+  const [regresoOpen, setRegresoOpen] = useState(false);
+  const [regresoUnidadId, setRegresoUnidadId] = useState('');
+  const [regresoSaving, setRegresoSaving] = useState(false);
+  const [regresoError, setRegresoError] = useState<string | null>(null);
 
   const cargar = useCallback(async () => {
     if (!role) return;
     setLoading(true);
+    setMovimientosLoading(true);
     setError(null);
+    setMovimientosError(null);
     try {
-      const [units, drivers] = await Promise.all([
+      const [unitsResult, driversResult, movementsResult] = await Promise.allSettled([
         api<LogisticaUnidadesResponse>('/logistica/unidades', { role, userId }),
         api<ChoferesResponse>('/logistica/choferes?chip=DISPONIBLE', { role, userId }),
+        api<MovimientosPatioHoyResponse>('/flota/movimientos/hoy', { role, userId }),
       ]);
-      setData(units);
-      setChoferes(drivers.items);
+      if (movementsResult.status === 'fulfilled') {
+        setMovimientosHoy(movementsResult.value);
+      } else {
+        setMovimientosHoy(null);
+        setMovimientosError(
+          movementsResult.reason instanceof HttpError
+            ? movementsResult.reason.message
+            : 'No pudimos cargar los movimientos de hoy.',
+        );
+      }
+      if (unitsResult.status === 'rejected') throw unitsResult.reason;
+      if (driversResult.status === 'rejected') throw driversResult.reason;
+
+      setData(unitsResult.value);
+      setChoferes(driversResult.value.items);
     } catch (err) {
       setError(err instanceof HttpError ? err.message : 'No pudimos cargar la flota.');
     } finally {
       setLoading(false);
+      setMovimientosLoading(false);
     }
   }, [role, userId]);
 
   useEffect(() => { void cargar(); }, [cargar]);
 
-  const rows = data?.items ?? [];
+  const rows = data?.items ?? EMPTY_ROWS;
   const disponibles = useMemo(() => rows.filter((row) => row.opsEstado === 'DISPONIBLE'), [rows]);
   const pendientes = useMemo(() => rows.filter((row) => row.alerta === 'SIN_REGRESO'), [rows]);
-  const activos = useMemo(() => rows.filter((row) => row.opsEstado === 'EN_RUTA' && row.alerta !== 'SIN_REGRESO'), [rows]);
+  const activos = useMemo(() => rows.filter((row) => row.opsEstado === 'EN_RUTA'), [rows]);
   const unidadElegida = disponibles.find((row) => row.unidadId === form.unidadId);
   const choferElegido = choferes.find((row) => row.choferId === form.choferId);
+  const unidadRegreso = activos.find((row) => row.unidadId === regresoUnidadId);
+  const movimientosDelDia = movimientosHoy?.items ?? [];
 
   function abrirSalida(unidadId = '') {
     setNotice(null);
     setError(null);
     setForm({ ...VACIO, unidadId });
     setSalidaOpen(true);
+  }
+
+  function abrirRegreso(unidadId = '') {
+    setNotice(null);
+    setError(null);
+    setRegresoError(null);
+    setRegresoUnidadId(unidadId);
+    setRegresoOpen(true);
   }
 
   async function registrarSalida(event: FormEvent<HTMLFormElement>) {
@@ -91,26 +160,79 @@ export function LogisticaDashboard() {
     }
   }
 
+  async function registrarRegreso(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!regresoUnidadId) return;
+    setRegresoSaving(true);
+    setRegresoError(null);
+    try {
+      await api<void>(`/logistica/regresos/${regresoUnidadId}`, {
+        role: role!, userId, method: 'POST',
+      });
+      setRegresoOpen(false);
+      setRegresoUnidadId('');
+      setNotice(`Entrada del viaje registrada para ${unidadRegreso?.numeroInterno}.`);
+      await cargar();
+    } catch (err) {
+      setRegresoError(err instanceof HttpError ? err.message : 'No se pudo registrar la entrada del viaje.');
+    } finally {
+      setRegresoSaving(false);
+    }
+  }
+
   const fecha = new Intl.DateTimeFormat('es-MX', { weekday: 'long', day: 'numeric', month: 'long' }).format(new Date());
 
   return (
-    <div className="space-y-6 pb-20 md:pb-6">
+    <div className="space-y-3 pb-20 md:pb-6">
       <header className="space-y-1">
         <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Logística</p>
-        <h1 className="text-2xl font-semibold text-navy">Movimientos de flota</h1>
+        <h1 className="text-[20px] font-semibold text-navy">Movimientos de flota</h1>
         <p className="text-sm text-muted-foreground">Registra salidas, consulta regresos pendientes y da seguimiento a las unidades en ruta.</p>
         <p className="text-sm capitalize text-muted-foreground">{fecha}</p>
       </header>
 
       <nav aria-label="Acciones de flota" className="grid gap-3 sm:grid-cols-2">
         <Button className="min-h-12 text-base" onClick={() => abrirSalida()}><Truck className="mr-2 size-5" aria-hidden />Registrar salida</Button>
-        <Button variant="secondary" className="min-h-12 text-base" asChild><Link href="/flota?alerta=SIN_REGRESO">Registrar regreso<ArrowRight className="ml-2 size-5" aria-hidden /></Link></Button>
+        <Button type="button" variant="secondary" className="min-h-12 text-base" disabled={!activos.length} onClick={() => abrirRegreso()}><ArrowRight className="mr-2 size-5" aria-hidden />Registrar entrada</Button>
       </nav>
       {notice ? <p role="status" aria-live="polite" className="rounded-md border border-emerald-200 bg-emerald-50 px-3 py-3 text-sm text-emerald-900">{notice}</p> : null}
       <FormAlert>{error && !salidaOpen ? error : null}</FormAlert>
 
-      <section aria-labelledby="resumen-title" className="space-y-3">
-        <h2 id="resumen-title" className="text-[13px] leading-5 font-semibold text-navy">Resumen de unidades</h2>
+      <section aria-labelledby="atencion-title" className="space-y-3">
+        <div><h2 id="atencion-title" className="text-[13px] leading-5 font-semibold text-navy">Alertas abiertas</h2><p className="text-sm text-muted-foreground">Unidades que superaron el tiempo de regreso.</p></div>
+        {pendientes.length ? <div role="region" aria-label="Lista desplazable de alertas abiertas" tabIndex={0} className="max-h-[min(24rem,45dvh)] overflow-y-auto overscroll-contain pr-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"><ul className="grid list-none gap-3 p-0.5">{pendientes.map((row) => <li key={row.unidadId}><AttentionCard row={row} onRegistrarEntrada={() => abrirRegreso(row.unidadId)} /></li>)}</ul></div> : <div className="rounded-lg border bg-card p-4"><h3 className="font-medium text-navy">{loading ? 'Cargando alertas…' : 'No hay alertas abiertas.'}</h3>{!loading ? <p className="mt-1 text-sm text-muted-foreground">Las unidades en ruta están dentro del tiempo esperado.</p> : null}</div>}
+      </section>
+
+      <section aria-labelledby="enruta-title" className="space-y-3">
+        <div className="flex flex-wrap items-center justify-between gap-2"><div><h2 id="enruta-title" className="text-[13px] leading-5 font-semibold text-navy">Unidades activas</h2><p className="text-sm text-muted-foreground">Unidades con un viaje en curso, incluidas las que tienen alerta.</p></div><Button variant="quiet" className="min-h-11" asChild><Link href="/flota?chip=EN_RUTA">Ver movimientos</Link></Button></div>
+        {activos.length ? <div role="region" aria-label="Lista desplazable de unidades activas" tabIndex={0} className="max-h-[min(24rem,45dvh)] overflow-y-auto overscroll-contain rounded-lg border bg-card focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"><ul className="divide-y">{activos.map((row) => <li key={row.unidadId} className="flex flex-wrap items-center justify-between gap-3 p-4">
+          <div className="min-w-0"><p className="font-medium text-navy">{row.numeroInterno} · {row.placas}</p><p className="text-sm text-muted-foreground">{row.choferNombre || 'Chofer pendiente'} · {row.destino || 'Destino pendiente'}</p></div>
+          <div className="flex items-center gap-2">{row.salidaAt ? <span className="text-sm text-muted-foreground">Salió {formatHace(row.salidaAt)}</span> : null}<UnidadOpsBadge ops="EN_RUTA" />{row.alerta ? <Badge variant="warning" className="normal-case tracking-normal">{etiquetaAlertaRegreso(row.alerta)}</Badge> : null}</div>
+        </li>)}</ul></div> : <div className="rounded-lg border bg-card p-4"><h3 className="font-medium text-navy">{loading ? 'Cargando unidades en ruta…' : 'No hay unidades en ruta.'}</h3></div>}
+      </section>
+
+      <section aria-labelledby="actividad-title" className="space-y-2">
+        <div>
+          <h2 id="actividad-title" className="text-[13px] leading-5 font-semibold text-navy">Registro de movimiento</h2>
+          <p className="text-sm text-muted-foreground">Entradas y salidas de patio · Hoy, {movimientosHoy ? formatFechaLocal(movimientosHoy.fecha, movimientosHoy.zonaHoraria) : 'hora Ciudad de México'}</p>
+        </div>
+        {movimientosLoading ? <p role="status" aria-live="polite" className="text-sm text-muted-foreground">Cargando movimientos de hoy…</p> : null}
+        <FormAlert>{movimientosError}</FormAlert>
+        {!movimientosLoading && !movimientosError && movimientosDelDia.length ? <div role="region" aria-label="Movimientos de patio de hoy" tabIndex={0} className="max-h-[min(24rem,45dvh)] overflow-y-auto overscroll-contain rounded-lg border bg-card focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"><ul className="divide-y">{movimientosDelDia.map((movimiento) => <li key={movimiento.id} className="flex flex-col gap-2 p-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+          <div className="flex min-w-0 items-start gap-3"><Badge variant={movimiento.tipo === 'SALIDA' ? 'info' : 'success'} className="mt-0.5 normal-case tracking-normal">{movimiento.tipo === 'SALIDA' ? 'Salida' : 'Entrada'}</Badge><div className="min-w-0"><p className="font-medium text-navy">{movimiento.numeroInterno}{movimiento.placas ? ` · ${movimiento.placas}` : ''}</p><p className="text-sm text-muted-foreground">{movimiento.choferNombre || 'Chofer no disponible'} · {movimiento.sitioNombre || 'Sitio no disponible'}</p></div></div>
+          <time dateTime={movimiento.occurredAt} className="pl-1 text-sm tabular-nums text-muted-foreground sm:shrink-0">{formatHoraLocal(movimiento.occurredAt, movimientosHoy?.zonaHoraria ?? ZONA_LOGISTICA)}</time>
+        </li>)}</ul></div> : null}
+        {!movimientosLoading && !movimientosError && !movimientosDelDia.length ? <div className="rounded-lg border bg-card p-4 text-sm text-muted-foreground">No hay entradas ni salidas de patio registradas hoy.</div> : null}
+      </section>
+
+      <section aria-labelledby="disponibles-title" className="space-y-4">
+        <div><h2 id="disponibles-title" className="text-[13px] leading-5 font-semibold text-navy">Unidades disponibles</h2><p className="text-sm text-muted-foreground">Listas para registrar una salida.</p></div>
+        {disponibles.length ? <div role="region" aria-label="Lista desplazable de unidades disponibles" tabIndex={0} className="max-h-[min(24rem,45dvh)] overflow-y-auto overscroll-contain pr-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"><ul className="grid list-none gap-3 p-0.5 sm:grid-cols-2 lg:grid-cols-3">{disponibles.map((row) => <li key={row.unidadId}><article className="h-full rounded-lg border bg-card p-4">
+          <div className="flex flex-wrap items-start justify-between gap-2"><div><h3 className="font-semibold text-navy">{row.numeroInterno}</h3><p className="text-sm text-muted-foreground">{row.placas}</p></div><UnidadOpsBadge ops="DISPONIBLE" /></div>
+          <Button variant="outline" className="mt-4 min-h-11 w-full" onClick={() => abrirSalida(row.unidadId)}>Registrar salida de {row.numeroInterno}</Button>
+        </article></li>)}</ul></div> : <div className="rounded-lg border bg-card p-4"><h3 className="font-medium text-navy">{loading ? 'Cargando unidades disponibles…' : 'No hay unidades disponibles.'}</h3></div>}
+        <div aria-labelledby="resumen-title" className="space-y-3">
+        <h3 id="resumen-title" className="text-[13px] leading-5 font-semibold text-navy">Resumen de unidades</h3>
         <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
           <Kpi href="/flota?chip=EN_RUTA" label="En ruta" value={data?.kpis.enRuta ?? (loading ? '…' : '—')} description="Ver unidades en ruta" />
           <Kpi href="/flota?chip=DISPONIBLE" label="Disponibles" value={data?.kpis.disponibles ?? (loading ? '…' : '—')} description="Ver unidades disponibles" />
@@ -118,32 +240,7 @@ export function LogisticaDashboard() {
         </div>
         {loading && !data ? <p role="status" aria-live="polite" className="text-sm text-muted-foreground">Cargando estado de flota…</p> : null}
         {error && !data ? <div role="alert" className="rounded-lg border bg-card p-4"><h3 className="font-semibold text-navy">No pudimos cargar las unidades.</h3><p className="mt-1 text-sm text-muted-foreground">{error}</p><Button variant="secondary" className="mt-3 min-h-11" onClick={() => void cargar()}>Reintentar</Button></div> : null}
-      </section>
-
-      <section aria-labelledby="atencion-title" className="space-y-3">
-        <div><h2 id="atencion-title" className="text-[13px] leading-5 font-semibold text-navy">Pendientes de regreso</h2><p className="text-sm text-muted-foreground">Unidades que superaron el umbral configurado.</p></div>
-        {pendientes.length ? <div role="region" aria-label="Lista desplazable de pendientes de regreso" tabIndex={0} className="max-h-[min(24rem,45dvh)] overflow-y-auto overscroll-contain pr-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"><ul className="grid list-none gap-3 p-0.5">{pendientes.map((row) => <li key={row.unidadId}><AttentionCard row={row} /></li>)}</ul></div> : <div className="rounded-lg border bg-card p-4"><h3 className="font-medium text-navy">{loading ? 'Cargando pendientes…' : 'No hay regresos pendientes.'}</h3>{!loading ? <p className="mt-1 text-sm text-muted-foreground">Las unidades en ruta están dentro del tiempo esperado.</p> : null}</div>}
-      </section>
-
-      <section aria-labelledby="disponibles-title" className="space-y-3">
-        <div><h2 id="disponibles-title" className="text-[13px] leading-5 font-semibold text-navy">Unidades disponibles</h2><p className="text-sm text-muted-foreground">Listas para registrar una salida.</p></div>
-        {disponibles.length ? <div role="region" aria-label="Lista desplazable de unidades disponibles" tabIndex={0} className="max-h-[min(24rem,45dvh)] overflow-y-auto overscroll-contain pr-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"><ul className="grid list-none gap-3 p-0.5 sm:grid-cols-2 lg:grid-cols-3">{disponibles.map((row) => <li key={row.unidadId}><article className="h-full rounded-lg border bg-card p-4">
-          <div className="flex flex-wrap items-start justify-between gap-2"><div><h3 className="font-semibold text-navy">{row.numeroInterno}</h3><p className="text-sm text-muted-foreground">{row.placas}</p></div><UnidadOpsBadge ops="DISPONIBLE" /></div>
-          <Button variant="outline" className="mt-4 min-h-11 w-full" onClick={() => abrirSalida(row.unidadId)}>Registrar salida de {row.numeroInterno}</Button>
-        </article></li>)}</ul></div> : <div className="rounded-lg border bg-card p-4"><h3 className="font-medium text-navy">{loading ? 'Cargando unidades disponibles…' : 'No hay unidades disponibles.'}</h3></div>}
-      </section>
-
-      <section aria-labelledby="enruta-title" className="space-y-3">
-        <div className="flex flex-wrap items-center justify-between gap-2"><div><h2 id="enruta-title" className="text-[13px] leading-5 font-semibold text-navy">En ruta</h2><p className="text-sm text-muted-foreground">Viajes activos que no tienen alerta de regreso.</p></div><Button variant="quiet" className="min-h-11" asChild><Link href="/flota?chip=EN_RUTA">Ver movimientos</Link></Button></div>
-        {activos.length ? <div role="region" aria-label="Lista desplazable de unidades en ruta" tabIndex={0} className="max-h-[min(24rem,45dvh)] overflow-y-auto overscroll-contain rounded-lg border bg-card focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"><ul className="divide-y">{activos.map((row) => <li key={row.unidadId} className="flex flex-wrap items-center justify-between gap-3 p-4">
-          <div className="min-w-0"><p className="font-medium text-navy">{row.numeroInterno} · {row.placas}</p><p className="text-sm text-muted-foreground">{row.choferNombre || 'Chofer pendiente'} · {row.destino || 'Destino pendiente'}</p></div>
-          <div className="flex items-center gap-2">{row.salidaAt ? <span className="text-sm text-muted-foreground">Salió {formatHace(row.salidaAt)}</span> : null}<UnidadOpsBadge ops="EN_RUTA" /></div>
-        </li>)}</ul></div> : <div className="rounded-lg border bg-card p-4"><h3 className="font-medium text-navy">{loading ? 'Cargando unidades en ruta…' : 'No hay unidades en ruta.'}</h3></div>}
-      </section>
-
-      <section aria-labelledby="actividad-title" className="space-y-2">
-        <h2 id="actividad-title" className="text-[13px] leading-5 font-semibold text-navy">Últimos movimientos</h2>
-        <p className="rounded-lg border bg-card p-4 text-sm text-muted-foreground">La API actual no ofrece un historial agregado reciente de viajes. La bitácora de patio se consulta por separado. <Link className="font-medium text-navy underline underline-offset-2" href="/flota">Abrir flota</Link></p>
+        </div>
       </section>
 
       <Sheet open={salidaOpen} onOpenChange={setSalidaOpen}>
@@ -169,6 +266,25 @@ export function LogisticaDashboard() {
           </form>
         </SheetContent>
       </Sheet>
+
+      <Sheet open={regresoOpen} onOpenChange={setRegresoOpen}>
+        <SheetContent side="bottom" className="max-h-[94dvh] overflow-y-auto sm:mx-auto sm:max-w-xl sm:rounded-t-xl">
+          <form className="flex min-h-full flex-col" onSubmit={registrarRegreso}>
+            <SheetHeader className="text-left">
+              <SheetTitle className="text-xl">Registrar entrada del viaje</SheetTitle>
+              <SheetDescription>Finaliza el viaje y devuelve la unidad a disponible. No registra una entrada en la bitácora de patio.</SheetDescription>
+            </SheetHeader>
+            <div className="grid gap-4 px-4 pb-4">
+              <Field label="Unidad en ruta" htmlFor="regreso-unidad"><NativeSelect id="regreso-unidad" required value={regresoUnidadId} onChange={(event) => setRegresoUnidadId(event.target.value)}><option value="">Selecciona una unidad</option>{activos.map((row) => <option key={row.unidadId} value={row.unidadId}>{row.numeroInterno} · {row.placas}{row.alerta ? ' · Pendiente de regreso' : ''}</option>)}</NativeSelect></Field>
+              <FormAlert>{regresoError}</FormAlert>
+            </div>
+            <SheetFooter className="sticky bottom-0 mt-auto flex-col border-t bg-background p-4 sm:flex-row">
+              <Button type="button" variant="secondary" className="min-h-12 flex-1" onClick={() => setRegresoOpen(false)}>Cancelar</Button>
+              <Button type="submit" className="min-h-12 flex-1" disabled={regresoSaving || !regresoUnidadId}>{regresoSaving ? 'Registrando…' : 'Registrar entrada'}</Button>
+            </SheetFooter>
+          </form>
+        </SheetContent>
+      </Sheet>
     </div>
   );
 }
@@ -177,7 +293,7 @@ function Kpi({ href, label, value, description }: { href: string; label: string;
   return <Link href={href} aria-label={`${label}: ${value}. ${description}`} className="flex min-h-24 flex-col justify-center rounded-lg border bg-card p-4 transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"><span className="text-sm font-medium text-muted-foreground">{label}</span><span className="mt-1 text-2xl font-semibold text-navy" aria-hidden="true">{value}</span></Link>;
 }
 
-function AttentionCard({ row }: { row: LogisticaUnidadRow }) {
+function AttentionCard({ row, onRegistrarEntrada }: { row: LogisticaUnidadRow; onRegistrarEntrada: () => void }) {
   return <article className="flex flex-col gap-3 rounded-lg border border-rose-200 bg-rose-50 p-4 sm:flex-row sm:items-center sm:justify-between">
     <div className="min-w-0 space-y-1">
       <div className="flex flex-wrap items-center gap-2"><h3 className="font-semibold text-navy">{row.numeroInterno} · {row.placas}</h3><Badge variant="warning" className="normal-case tracking-normal">{etiquetaAlertaRegreso(row.alerta)}</Badge></div>
@@ -185,6 +301,6 @@ function AttentionCard({ row }: { row: LogisticaUnidadRow }) {
       <p className="text-sm text-muted-foreground">{row.choferNombre || 'Chofer pendiente'} · {row.destino || 'Destino pendiente'}{row.salidaAt ? ` · Salió ${formatHace(row.salidaAt)}` : ''}</p>
       <p className="flex items-center gap-2 text-sm text-rose-900"><Clock3 className="size-4" aria-hidden /> Requiere seguimiento</p>
     </div>
-    <Button variant="outline" className="min-h-12 w-full shrink-0 sm:w-auto" asChild><Link href={`/flota?alerta=SIN_REGRESO&unidadId=${encodeURIComponent(row.unidadId)}`}>Registrar regreso de {row.numeroInterno}</Link></Button>
+    <Button variant="outline" className="min-h-12 w-full shrink-0 sm:w-auto" onClick={onRegistrarEntrada}>Registrar entrada de {row.numeroInterno}</Button>
   </article>;
 }
