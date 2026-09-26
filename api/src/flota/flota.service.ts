@@ -29,6 +29,7 @@ import { EstadoSitio } from './enums';
 import { FlotaDomainError, FlotaEngine } from './flota-engine';
 import { MovimientoFlota, UnidadOperativa } from './flota-types';
 import { TypeOrmFlotaStore } from './typeorm-flota-store';
+import { FLOTA_TIME_ZONE, rangoDeHoyFlota } from './flota-date';
 
 const SITIOS_SEED = ['Patio', 'Taller'];
 
@@ -108,6 +109,39 @@ export class FlotaService implements OnModuleInit {
       })
       .map((unidad) => this.filaTablero(unidad, ctx))
       .sort((a, b) => a.numeroInterno.localeCompare(b.numeroInterno, 'es'));
+  }
+
+  async movimientosDeHoy() {
+    const { fecha, desde, hasta } = rangoDeHoyFlota();
+    const [movimientos, unidades, choferes, sitios] = await Promise.all([
+      this.store.listMovimientosEntre(desde, hasta),
+      this.unidades.findAll({}),
+      this.choferes.findAll(),
+      this.sitios.find(),
+    ]);
+    const unidadById = new Map(unidades.map((unidad) => [unidad.id, unidad]));
+    const choferById = new Map(choferes.map((chofer) => [chofer.id, chofer]));
+    const sitioById = new Map(sitios.map((sitio) => [sitio.id, sitio]));
+
+    return {
+      fecha,
+      zonaHoraria: FLOTA_TIME_ZONE,
+      items: movimientos.map((movimiento) => {
+        const unidad = unidadById.get(movimiento.unidadId);
+        return {
+          id: movimiento.id,
+          tipo: movimiento.tipo,
+          unidadId: movimiento.unidadId,
+          numeroInterno: unidad?.numeroInterno ?? 'Unidad no disponible',
+          placas: unidad?.placas ?? null,
+          choferNombre:
+            choferById.get(movimiento.choferId)?.nombre ?? null,
+          sitioNombre: sitioById.get(movimiento.sitioId)?.nombre ?? null,
+          occurredAt: movimiento.occurredAt,
+          km: movimiento.km,
+        };
+      }),
+    };
   }
 
   async detalle(unidadId: string) {

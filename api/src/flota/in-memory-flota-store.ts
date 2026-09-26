@@ -1,5 +1,10 @@
 import { EstadoSitio, TipoMovimientoFlota } from './enums';
-import { MovimientoFlota, Sitio, UnidadOperativa } from './flota-types';
+import {
+  MovimientoFlota,
+  MovimientoFlotaResumen,
+  Sitio,
+  UnidadOperativa,
+} from './flota-types';
 import { FlotaStore } from './flota-store';
 
 export class InMemoryFlotaStore implements FlotaStore {
@@ -27,6 +32,35 @@ export class InMemoryFlotaStore implements FlotaStore {
     return [...this.movimientos.values()]
       .filter((m) => m.unidadId === unidadId)
       .sort((a, b) => b.occurredAt.localeCompare(a.occurredAt));
+  }
+
+  async listMovimientosEntre(desde: Date, hasta: Date) {
+    return [...this.movimientos.values()]
+      .filter((movimiento) => {
+        const occurredAt = Date.parse(movimiento.occurredAt);
+        return (
+          (movimiento.tipo === TipoMovimientoFlota.SALIDA ||
+            movimiento.tipo === TipoMovimientoFlota.ENTRADA) &&
+          occurredAt >= desde.getTime() &&
+          occurredAt < hasta.getTime()
+        );
+      })
+      .sort(
+        (a, b) =>
+          b.occurredAt.localeCompare(a.occurredAt) || a.id.localeCompare(b.id),
+      )
+      .map(
+        ({ id, tipo, unidadId, choferId, sitioId, occurredAt, km }) =>
+          ({
+            id,
+            tipo,
+            unidadId,
+            choferId,
+            sitioId,
+            occurredAt,
+            km,
+          }) satisfies MovimientoFlotaResumen,
+      );
   }
 
   async choferTieneSalidaAbierta(choferId: string, exceptUnidadId?: string) {

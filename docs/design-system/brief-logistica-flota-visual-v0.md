@@ -1,5 +1,7 @@
 # Brief — Logística Flota v0
 
+> Alcance histórico del tablero `/flota`. El dashboard de movimientos en `/logistica` se rige por [SPEC-LOGISTICA-DASHBOARD-001](../specs/logistica-dashboard-v0.md) y [su spec UX](../design/ux-logistica-dashboard-v0.md), bajo EWO-008; no reutilizar este brief como fuente de layout para esa ruta.
+
 **Status: Accepted** · rev 2026-09-19e (default Todos)  
 **HOLD merge #64** hasta Visual OK Aldo (screenshots)  
 **ADR** | canonical `architecture/ADR-010-flota-sin-regreso-alertas-v0.md` (`salida_at`) · pointer [ADR-012](../adr/012-flota-sin-regreso-alertas.md)

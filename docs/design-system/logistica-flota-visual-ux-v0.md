@@ -1,5 +1,7 @@
 # UX spec — Logística Flota visual v0
 
+> Alcance histórico: tablero detallado `/flota`. Para el dashboard `/logistica`, la fuente de verdad es [ux-logistica-dashboard-v0](../design/ux-logistica-dashboard-v0.md) bajo EWO-008. No aplicar a `/logistica` las acciones o jerarquía reemplazadas por esa spec.
+
 Complementa [brief-logistica-flota-visual-v0](brief-logistica-flota-visual-v0.md) (rev 19e) y [ADR-010](../../architecture/ADR-010-flota-sin-regreso-alertas-v0.md). Plantilla: [UX_SPEC_TEMPLATE](../design/UX_SPEC_TEMPLATE.md).
 
 ## Screen purpose

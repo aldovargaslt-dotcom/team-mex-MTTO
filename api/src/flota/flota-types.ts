@@ -26,6 +26,11 @@ export type MovimientoFlota = {
   firmas: MovimientoFirma[];
 };
 
+export type MovimientoFlotaResumen = Pick<
+  MovimientoFlota,
+  'id' | 'tipo' | 'unidadId' | 'choferId' | 'sitioId' | 'occurredAt' | 'km'
+>;
+
 export type UnidadOperativa = {
   unidadId: string;
   sitioId: string | null;

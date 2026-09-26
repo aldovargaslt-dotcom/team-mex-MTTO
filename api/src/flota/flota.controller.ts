@@ -41,6 +41,12 @@ export class FlotaController {
     return this.service.listSitios();
   }
 
+  @Get('movimientos/hoy')
+  @ApiOperation({ summary: 'Movimientos de patio del día de hoy en Ciudad de México' })
+  movimientosDeHoy() {
+    return this.service.movimientosDeHoy();
+  }
+
   @Post('sitios')
   @ApiOperation({ summary: 'Alta de sitio' })
   createSitio(@Body() dto: CreateSitioDto) {

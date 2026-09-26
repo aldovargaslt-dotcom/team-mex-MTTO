@@ -1,4 +1,9 @@
-import { MovimientoFlota, Sitio, UnidadOperativa } from './flota-types';
+import {
+  MovimientoFlota,
+  MovimientoFlotaResumen,
+  Sitio,
+  UnidadOperativa,
+} from './flota-types';
 
 export interface FlotaStore {
   getSitio(id: string): Promise<Sitio | null>;
@@ -6,6 +11,10 @@ export interface FlotaStore {
   listOperativas(): Promise<UnidadOperativa[]>;
   getMovimiento(id: string): Promise<MovimientoFlota | null>;
   listMovimientos(unidadId: string): Promise<MovimientoFlota[]>;
+  listMovimientosEntre(
+    desde: Date,
+    hasta: Date,
+  ): Promise<MovimientoFlotaResumen[]>;
   choferTieneSalidaAbierta(
     choferId: string,
     exceptUnidadId?: string,
