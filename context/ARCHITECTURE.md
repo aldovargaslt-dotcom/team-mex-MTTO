@@ -53,7 +53,7 @@ Do **not** use `docs/decisions/`. That path is not part of this repository’s S
 | `alertas` | Alertas config (sin-regreso hours) |
 | `alert_catalog` | Alert type overlay (ADR-013; not inbox, not Andon) |
 
-Rules: opaque IDs; **no** FKs or JOINs across those schemas (ADR-002). TypeORM `synchronize` is used in local/CI test DBs (`DB_SYNCHRONIZE`).
+Rules: opaque IDs; **no** FKs or JOINs across those schemas (ADR-002). TypeORM `synchronize` defaults to true in `api/src/db/postgres-options.ts` unless `DB_SYNCHRONIZE` overrides it; this default is not restricted to local/CI environments.
 
 **Unknown:** production migration strategy beyond synchronize/boot `ensureModuleSchemas` (not fully documented as a versioned migration set).
 
@@ -137,3 +137,9 @@ New ADRs: add the next number under `docs/adr/` using [ADR-TEMPLATE.md](../docs/
 - Not a proposal to split services.
 - Not a proposal to unify notify.
 - Not a classification of every folder as a confirmed DDD Bounded Context (see [domain/README.md](../domain/README.md)).
+
+## Reference freshness and verification
+
+The summary ADR table above ends at 012; the [canonical ADR index](../docs/adr/README.md) also includes 013 (Alert Catalog) and 014 (unit photo). Summary references may lag; consult that index and the accepted decision before implementation. This is a documentation gap, not a change to accepted decisions.
+
+See [testing strategy](../docs/testing/TESTING_STRATEGY.md) for actual gates, destructive E2E setup and skipped-check reporting. Production migration policy remains unknown; do not infer it from synchronize defaults. The proposed trip-board spec status, intentional notify dual-stack and header-based stub authentication remain as documented above. Business KPIs and operational assumptions remain unconfirmed in [PRODUCT](PRODUCT.md).

@@ -72,3 +72,31 @@ Then...
 ## Open Questions
 
 No material open question may remain when Status = Approved.
+
+## Traceability and impact
+
+PRD (if applicable; otherwise reason):
+Affected domain card:
+Current behavior and source evidence:
+Desired behavior (detail in Functional Behavior above):
+Data model / migration impact (or none):
+API contract impact (or none):
+UI impact and linked UX spec (or none):
+
+## Negative cases and UI states
+
+Cover relevant permission, invalid input, duplicate/retry and failure cases. For affected UI, specify loading, empty, error, success and disabled states; record why any state is not applicable.
+
+## AC-to-test plan
+
+Acceptance Criteria above is the canonical requirement source; EWOs reference its IDs.
+
+| AC ID | Positive / negative scenario | Planned test file / test ID or manual check | Evidence link after execution |
+|---|---|---|---|
+| AC-01 | | | |
+
+See [testing strategy](../testing/TESTING_STRATEGY.md). Results belong in [evidence](../evidence/EVIDENCE-TEMPLATE.md); do not mark planned tests as passed.
+
+## Risks and assumptions
+
+Identify evidence versus inference, operational/data risks, and unresolved decisions. Do not approve with material open questions. Follow the [workflow](../WORKFLOW.md).

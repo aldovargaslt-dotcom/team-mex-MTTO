@@ -16,6 +16,9 @@ Global methodology (SDD, DDD, TDD, ADR, Engineering Work Orders, verification) s
 | Domain routing cards | `domain/` (provisional areas) |
 | Technical context map | `docs/adr/context-map.md` |
 | Specs (functional) | `docs/specs/` |
+| Local workflow / artifact responsibilities | [WORKFLOW](docs/WORKFLOW.md) |
+| PRD (substantial product changes only) | [PRD template](docs/prds/PRD-TEMPLATE.md) |
+| Testing / skipped verification | [Testing strategy](docs/testing/TESTING_STRATEGY.md) |
 | UX / visual system | `docs/design/` + corte briefs `docs/design-system/` |
 | ADRs | `docs/adr/` (**only** decision SoT; no `docs/decisions/`) |
 | Engineering Work Orders | `docs/engineering-work-orders/` (`EWO-xxx`) |
@@ -167,7 +170,7 @@ Consulta/conducta: `docs/design-system/ux-consulta-conducta-cortes-v0.md` only. 
 
 Load:
 
-- EWO acceptance criteria
+- Canonical acceptance criteria linked by the EWO (SPEC AC IDs by default; tiny-task criteria may live in the EWO or issue as described in [WORKFLOW](docs/WORKFLOW.md))
 - relevant SPEC / ADR / ADR-004 test IDs
 - changed files
 - test commands: skill `verify-api` or `script/verify.sh`; UI: `proof-ui` + `docs/design/SCREENSHOT_WORKFLOW.md`
