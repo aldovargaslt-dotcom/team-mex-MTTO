@@ -89,3 +89,5 @@ Flujo local y significado de PRD / SPEC / AC / EWO / ADR / evidencia: [WORKFLOW]
 - Implementación no trivial: SPEC con criterios verificables y EWO aprobado. No refactors ajenos ni reglas de negocio inventadas.
 - Registrar supuestos, riesgos y comandos con `PASS / FAIL / SKIPPED` en evidencia. E2E omitido nunca equivale a verificación completa.
 - Cerrar sesión con estado, archivos, evidencia y siguiente paso en el EWO; actualizar contexto solo por cambios duraderos.
+
+Skills externas opcionales de UI/UX: [selección, alcance y precedencia](docs/design/EXTERNAL_SKILLS.md). No sustituyen ADRs ni Visual QA.
