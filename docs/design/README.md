@@ -61,3 +61,5 @@ Un mismo razonamiento no implementa y aprueba.
 - No introduce otro framework de UI.
 - No pide rediseñar pantallas existentes en el mismo PR que las toca por lógica.
 - “WO” = wizard de visita. El artefacto de ingeniería **histórico** es el brief / spec UX / PR, no una carpeta `work-orders/`. Ejecución no trivial nueva: **Engineering Work Order** `EWO-xxx` en [`docs/engineering-work-orders/`](../engineering-work-orders/) (nunca acrónimo WO).
+
+Skills externas opcionales: [Impeccable, UX Heuristics, Refactoring UI y Taste](EXTERNAL_SKILLS.md). Consultar alcance y restricciones antes de usarlas.
