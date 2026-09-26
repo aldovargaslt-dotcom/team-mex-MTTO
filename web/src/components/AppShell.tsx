@@ -3,7 +3,7 @@
 import { useState, type ReactNode } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { Menu } from 'lucide-react';
+import { Home, Menu, Truck } from 'lucide-react';
 import { BrandPlate } from '@/components/BrandPlate';
 import { Campanita } from '@/components/Campanita';
 import { Button } from '@/components/ui/button';
@@ -30,7 +30,8 @@ const NAV_ITEMS: {
     label: 'Órdenes',
     roles: ['SUPERVISOR', 'ADMIN_DIRECTIVO'],
   },
-  { href: '/flota', label: 'Flota', roles: ['LOGISTICA', 'ADMIN_DIRECTIVO'] },
+  { href: '/logistica', label: 'Inicio', roles: ['LOGISTICA'] },
+  { href: '/flota', label: 'Movimientos', roles: ['LOGISTICA', 'ADMIN_DIRECTIVO'] },
   { href: '/unidades', label: 'Unidades', roles: ['SUPERVISOR', 'ADMIN_DIRECTIVO'] },
   { href: '/andon', label: 'Mantenimiento vencido', roles: ['SUPERVISOR', 'ADMIN_DIRECTIVO'] },
   {
@@ -55,7 +56,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   const [menuOpen, setMenuOpen] = useState(false);
 
   const items = NAV_ITEMS.filter((item) => role && item.roles.includes(role));
-  const homeHref = isLogistica ? '/flota' : '/inicio';
+  const homeHref = isLogistica ? '/logistica' : '/inicio';
 
   function cambiarRol() {
     setMenuOpen(false);
@@ -161,13 +162,23 @@ export function AppShell({ children }: { children: ReactNode }) {
           </SheetContent>
         </Sheet>
       ) : null}
+      {showChrome && isLogistica ? (
+        <nav className="fixed inset-x-0 bottom-0 z-40 grid grid-cols-2 border-t bg-white/95 pb-[env(safe-area-inset-bottom)] shadow-[0_-4px_16px_rgba(0,0,0,0.08)] md:hidden" aria-label="Navegación de Logística">
+          <Link href="/logistica" aria-current={pathname === '/logistica' ? 'page' : undefined} className={cn('flex min-h-14 flex-col items-center justify-center gap-1 text-xs', pathname === '/logistica' ? 'font-semibold text-navy' : 'text-muted-foreground')}>
+            <Home className="size-5" aria-hidden />Inicio
+          </Link>
+          <Link href="/flota" aria-current={pathname?.startsWith('/flota') ? 'page' : undefined} className={cn('flex min-h-14 flex-col items-center justify-center gap-1 text-xs', pathname?.startsWith('/flota') ? 'font-semibold text-navy' : 'text-muted-foreground')}>
+            <Truck className="size-5" aria-hidden />Movimientos
+          </Link>
+        </nav>
+      ) : null}
       <main
         className={
           isHome
             ? 'main main-home'
             : pathname?.startsWith('/ordenes')
               ? 'main main-ordenes'
-              : 'main'
+              : isLogistica ? 'main pb-20 md:pb-4' : 'main'
         }
       >
         {children}
