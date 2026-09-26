@@ -61,6 +61,8 @@ El cliente usa el rol stub `X-Role: SUPERVISOR | ADMIN_DIRECTIVO | LOGISTICA` (y
 
 ## Deploy (Vercel + Railway)
 
+Checklist demo v1 (URLs, env, cómo terminar Vercel): [DEPLOY.md](DEPLOY.md).
+
 Monorepo: Vercel **no** puede apuntar a la raíz (Root Directory = `web`). Railway sí puede usar la raíz: el `Dockerfile` / `railway.toml` de la raíz construyen `api/`.
 
 Si el log de Railway dice `Railpack could not determine how to build` y lista `api/`, `web/`, `docs/`, el servicio está en la raíz **sin** este Dockerfile, o Railpack está forzado en el dashboard. Ponga **Builder = Dockerfile** o **Root Directory = `api`**.
