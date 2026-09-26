@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Propuesta visual — Team Mex MTTO</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="base.css">
+</head>
+<body>
+  <header class="doc-bar">
+    <div class="doc-bar-inner">
+      <img src="brand/logo-team-mex-shell-white.png" alt="Team Mex" style="height:36px;width:auto">
+      <span style="font-size:13px;color:rgb(255 255 255 / 0.7)">Propuesta visual · no es spec aceptada</span>
+    </div>
+  </header>
+  <article class="doc">
+    <h1>De módulos sueltos a herramienta de patio</h1>
+    <p>La app ya tiene la marca en los tokens: navy <strong>#24284D</strong>, naranja <strong>#EA7515</strong> para un solo acto, fondo <strong>#F3F3F3</strong>, Roboto. Lo que se siente genérico es la composición. Siete módulos pesan igual, y Unidades y Flota abren con cuatro tarjetas del mismo tamaño, una de ellas con icono azul que no es Team Mex.</p>
+    <p>Estos HTML no cambian <code>web/src</code>. Si se pintan en la app, hace falta spec UX: chocan con briefs que hoy piden la tira de KPI.</p>
+
+    <h2>Tres escritorios</h2>
+    <ul>
+      <li><strong>Taller</strong> — Supervisor y Admin. ¿Qué unidad hay que atender? Ahora, la ficha y la visita.</li>
+      <li><strong>Patio</strong> — Logística y Admin. ¿Quién salió y quién no regresó? El tablero.</li>
+      <li><strong>Almacén</strong> — Supervisor y Admin. ¿Qué pieza falta? Existencias es la puerta. <a href="#almacen">Abajo</a>.</li>
+    </ul>
+    <p id="catalogo"><strong>Catálogo quieto:</strong> choferes, tipos, sitios y umbrales siguen ahí, dentro de “Catálogo” en la barra. Dejan de ser hermanos de Inicio o Flota.</p>
+    <p id="campanita">La campanita sigue siendo el inbox. No es el escritorio. El punto naranja del conteo se conserva: es chrome, no un segundo botón.</p>
+
+    <h2>Gramática de cada pantalla</h2>
+    <ol>
+      <li><strong>Lugar</strong> — <code>TALLER · FICHA</code>. El oficio, no el nombre del feature.</li>
+      <li><strong>El caso</strong> — un solo tipo grande: FOTON, “1 requiere atención”, “2 sin regreso”.</li>
+      <li><strong>El acto</strong> — un naranja, o la fila misma.</li>
+      <li><strong>La lista</strong> — densa. La excepción con fondo cálido. Lo normal en gris.</li>
+      <li><strong>El apoyo</strong> — historial, VIN, hints, abajo y chico.</li>
+    </ol>
+    <p>El objeto de los mocks es el catálogo demo: FOTON / VU2625C es el mantenimiento vencido. RAM FORANEO (63AL5K, FEMSA) y FOTON (CEDIS) son los dos sin regreso. En los docs de jerarquía ese patrón de ficha se llama U-101.</p>
+
+    <h2>Pantallas</h2>
+    <div class="cards">
+      <a class="card-link" href="picker.html"><strong>Entrada</strong><span>Campo navy, logo blanco, tres oficios.</span></a>
+      <a class="card-link" href="taller-ahora.html"><strong>Taller · Ahora</strong><span>FOTON vencido es el caso. El stock bajo es una fila.</span></a>
+      <a class="card-link" href="taller-unidades.html"><strong>Taller · Unidades</strong><span>Sin cuatro KPI. La que requiere atención va arriba. La fila abre la ficha.</span></a>
+      <a class="card-link" href="taller-ficha.html"><strong>Taller · Ficha</strong><span>Banda de vencido, un CTA, subnav chica.</span></a>
+      <a class="card-link" href="patio-tablero.html"><strong>Patio · Tablero</strong><span>“2 sin regreso” es el único número. Lo demás son chips.</span></a>
+      <a class="card-link" href="taller-visita.html"><strong>Taller · Visita</strong><span>390px. El wizard sigue siendo un procedimiento.</span></a>
+    </div>
+
+    <h2 id="almacen">Almacén, sin sexta receta</h2>
+    <p>Existencias ya responde la pregunta (Pastillas de freno, 2 pza, mínimo 5, faltan 3, badge BAJO, un naranja “Registrar entrada”). No hace falta otra pantalla de propuesta. Lo que sobra es la barra de seis: Refacciones, Existencias, Movimientos, Consumo, Por recibir, Catálogo, al mismo nivel que el trabajo. La puerta del almacén es Existencias. El catálogo de piezas queda detrás.</p>
+    <figure>
+      <img src="hoy/almacen-existencias.png" alt="Existencias hoy: subnav de seis y la fila de pastillas en bajo">
+      <figcaption>Hoy, 23 sep 2026. La fila ya cuenta la magnitud. La navegación no dice que este es el almacén.</figcaption>
+    </figure>
+
+    <h2>Hoy</h2>
+    <p>No hay suite Playwright en el repo. Estas capturas son la app en marcha, rol Supervisor salvo el tablero (Logística).</p>
+    <div class="shots">
+      <figure>
+        <img src="hoy/picker.png" alt="Picker actual: card blanca y tres botones">
+        <figcaption>Entrada. Card blanca sobre gris.</figcaption>
+      </figure>
+      <figure>
+        <img src="hoy/taller-ahora.png" alt="Inicio actual: buenos días y dos filas">
+        <figcaption>Inicio. El saludo pesa como el caso.</figcaption>
+      </figure>
+      <figure>
+        <img src="hoy/taller-unidades.png" alt="Unidades actual con cuatro KPI">
+        <figcaption>Unidades. Cuatro números, icono azul, Ver ficha.</figcaption>
+      </figure>
+      <figure>
+        <img src="hoy/taller-ficha.png" alt="Ficha actual de FOTON con riel de acciones">
+        <figcaption>Ficha FOTON. Salud, riel y bloques al mismo nivel.</figcaption>
+      </figure>
+      <figure>
+        <img src="hoy/patio-tablero.png" alt="Tablero de flota actual con cuatro KPI">
+        <figcaption>Patio. Sin regreso es una tarjeta más.</figcaption>
+      </figure>
+      <figure>
+        <img src="hoy/almacen-existencias.png" alt="Existencias actual">
+        <figcaption>Almacén. Misma barra de módulos, otra subnav.</figcaption>
+      </figure>
+    </div>
+
+    <h2>Si esto se implementa</h2>
+    <ul>
+      <li><a href="../../design-system/ui-crm-elevation-v0.md">ui-crm-elevation-v0</a> pide la tira de KPI en Unidades. El mock de unidades la quita.</li>
+      <li><a href="../../design-system/brief-logistica-flota-visual-v0.md">brief-logistica-flota-visual-v0</a> pide En ruta / Disponibles / Total / Sin regreso como KPI. El tablero deja un solo número.</li>
+      <li><a href="../../design-system/ficha-unidad-resumen-v0.md">ficha-unidad-resumen-v0</a> usa el riel Acciones. El mock lo vuelve subnav.</li>
+      <li><a href="../PAGE_PATTERNS.md">PAGE_PATTERNS</a> deja Inicio sin naranja. Ahora propone un naranja para abrir el caso dominante.</li>
+    </ul>
+    <p>No se tocó dominio, API, notify ni el dual-stack. Andon no muestra stock. El patio no es el hub de mantenimiento.</p>
+  </article>
+</body>
+</html>
