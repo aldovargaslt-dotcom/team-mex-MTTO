@@ -9,6 +9,7 @@ import { Card } from '@/components/ui/card';
 import { Field, FormAlert } from '@/components/ui/field';
 import { Input, NativeSelect } from '@/components/ui/input';
 import { ImageDropzone } from '@/components/ImageDropzone';
+import { UnitPhotoCropEditor } from '@/components/UnitPhotoCropEditor';
 import { UnidadMarca } from '@/components/UnidadTipoMark';
 
 export type UnidadFormValues = {
@@ -52,6 +53,7 @@ export function UnidadForm({
   });
   const [saving, setSaving] = useState(false);
   const [fotoError, setFotoError] = useState<string | null>(null);
+  const [fotoPendiente, setFotoPendiente] = useState<File | null>(null);
   const tipoActual = tipos.find((tipo) => tipo.id === values.tipoId);
 
   useEffect(() => {
@@ -107,25 +109,16 @@ export function UnidadForm({
             Se guarda en la unidad. Sin foto, se usa el icono del tipo.
           </p>
           <ImageDropzone
-            label="Tomar o subir"
-            hint="Una sola foto."
+            label="Agregar foto"
+            hint="Tomar o seleccionar una imagen."
             disabled={saving}
             onFile={(file) => {
               if (!file.type.startsWith('image/')) {
                 setFotoError('Elija una imagen.');
                 return;
               }
-              const reader = new FileReader();
-              reader.onload = () => {
-                if (typeof reader.result !== 'string') return;
-                if (reader.result.length > 1_500_000) {
-                  setFotoError('La foto de la unidad es demasiado grande.');
-                  return;
-                }
-                setFotoError(null);
-                set('fotoDataUrl', reader.result);
-              };
-              reader.readAsDataURL(file);
+              setFotoError(null);
+              setFotoPendiente(file);
             }}
           />
           {values.fotoDataUrl ? (
@@ -141,6 +134,15 @@ export function UnidadForm({
             </button>
           ) : null}
           {fotoError ? <FormAlert>{fotoError}</FormAlert> : null}
+          <UnitPhotoCropEditor
+            file={fotoPendiente}
+            onCancel={() => setFotoPendiente(null)}
+            onUse={(dataUrl) => {
+              setFotoError(null);
+              set('fotoDataUrl', dataUrl);
+              setFotoPendiente(null);
+            }}
+          />
         </div>
       </Field>
       <Field label="Número interno" htmlFor="numeroInterno">

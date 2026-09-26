@@ -2579,13 +2579,111 @@
 
   .unidad-foto--lg {
     width: 88px;
-    height: 64px;
+    height: 66px;
   }
 
   .unidad-foto--editor {
     width: 160px;
-    height: 104px;
+    height: 120px;
     border-radius: 4px;
+  }
+
+  .unit-photo-crop-dialog {
+    width: min(640px, calc(100vw - 24px));
+    max-width: 640px;
+  }
+
+  .unit-photo-crop-dialog > button[data-slot='dialog-close'] {
+    display: grid;
+    width: 44px;
+    min-height: 44px;
+    place-items: center;
+  }
+
+  .unit-photo-crop-frame {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    outline: 1px solid var(--navy);
+    background: #171923;
+    cursor: grab;
+    touch-action: none;
+    user-select: none;
+  }
+
+  .unit-photo-crop-frame:active {
+    cursor: grabbing;
+  }
+
+  .unit-photo-crop-image {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    max-width: none;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  .unit-photo-crop-mask {
+    position: absolute;
+    inset: 0;
+    border: 1px solid rgb(255 255 255 / 90%);
+    box-shadow: 0 0 0 999px rgb(0 0 0 / 42%);
+    pointer-events: none;
+  }
+
+  .unit-photo-crop-loading {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    color: white;
+    font-size: 14px;
+  }
+
+  .unit-photo-crop-controls {
+    display: grid;
+    grid-template-columns: auto minmax(80px, 1fr) auto;
+    align-items: center;
+    gap: 12px;
+    color: var(--muted);
+    font-size: 13px;
+  }
+
+  .unit-photo-crop-controls input[type='range'] {
+    min-width: 0;
+    min-height: 44px;
+    accent-color: var(--cta);
+    touch-action: pan-y;
+  }
+
+  .unit-photo-crop-footer > button {
+    min-height: 44px;
+  }
+
+  @media (max-width: 480px) {
+    .unit-photo-crop-dialog {
+      max-height: calc(100dvh - 24px);
+      overflow-y: auto;
+      padding: 12px;
+    }
+
+    .unit-photo-crop-controls {
+      grid-template-columns: auto minmax(60px, 1fr);
+      gap: 8px;
+    }
+
+    .unit-photo-crop-controls > button {
+      grid-column: 1 / -1;
+      width: 100%;
+      min-height: 44px;
+    }
+
+    .unit-photo-crop-footer {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
   }
 
   .unidades-aviso {
