@@ -110,45 +110,39 @@ export function LogisticaDashboard() {
       <FormAlert>{error && !salidaOpen ? error : null}</FormAlert>
 
       <section aria-labelledby="resumen-title" className="space-y-3">
-        <h2 id="resumen-title" className="text-lg font-semibold text-navy">Resumen de unidades</h2>
+        <h2 id="resumen-title" className="text-[13px] leading-5 font-semibold text-navy">Resumen de unidades</h2>
         <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
-          <Kpi href="/flota?chip=EN_RUTA" label="En ruta" value={data?.kpis.enRuta ?? (loading ? '…' : '—')} description="Ver unidades en ruta" tone="blue" />
-          <Kpi href="/flota?chip=DISPONIBLE" label="Disponibles" value={data?.kpis.disponibles ?? (loading ? '…' : '—')} description="Ver unidades disponibles" tone="green" />
-          <Kpi href="/flota?alerta=SIN_REGRESO" label="Pendientes de regreso" value={data?.kpis.sinRegreso ?? (loading ? '…' : '—')} description="Ver regresos pendientes" tone="red" />
+          <Kpi href="/flota?chip=EN_RUTA" label="En ruta" value={data?.kpis.enRuta ?? (loading ? '…' : '—')} description="Ver unidades en ruta" />
+          <Kpi href="/flota?chip=DISPONIBLE" label="Disponibles" value={data?.kpis.disponibles ?? (loading ? '…' : '—')} description="Ver unidades disponibles" />
+          <Kpi href="/flota?alerta=SIN_REGRESO" label="Pendientes de regreso" value={data?.kpis.sinRegreso ?? (loading ? '…' : '—')} description="Ver regresos pendientes" />
         </div>
         {loading && !data ? <p role="status" aria-live="polite" className="text-sm text-muted-foreground">Cargando estado de flota…</p> : null}
         {error && !data ? <div role="alert" className="rounded-lg border bg-card p-4"><h3 className="font-semibold text-navy">No pudimos cargar las unidades.</h3><p className="mt-1 text-sm text-muted-foreground">{error}</p><Button variant="secondary" className="mt-3 min-h-11" onClick={() => void cargar()}>Reintentar</Button></div> : null}
       </section>
 
       <section aria-labelledby="atencion-title" className="space-y-3">
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <div><h2 id="atencion-title" className="text-lg font-semibold text-navy">Pendientes de regreso</h2><p className="text-sm text-muted-foreground">Unidades que superaron el umbral configurado.</p></div>
-          <Button variant="quiet" className="min-h-11" asChild><Link href="/flota?alerta=SIN_REGRESO">Ver todos</Link></Button>
-        </div>
-        {pendientes.length ? <ul className="grid list-none gap-3 p-0">{pendientes.slice(0, 4).map((row) => <li key={row.unidadId}><AttentionCard row={row} /></li>)}</ul> : <div className="rounded-lg border bg-card p-4"><h3 className="font-medium text-navy">{loading ? 'Cargando pendientes…' : 'No hay regresos pendientes.'}</h3>{!loading ? <p className="mt-1 text-sm text-muted-foreground">Las unidades en ruta están dentro del tiempo esperado.</p> : null}</div>}
+        <div><h2 id="atencion-title" className="text-[13px] leading-5 font-semibold text-navy">Pendientes de regreso</h2><p className="text-sm text-muted-foreground">Unidades que superaron el umbral configurado.</p></div>
+        {pendientes.length ? <div role="region" aria-label="Lista desplazable de pendientes de regreso" tabIndex={0} className="max-h-[min(24rem,45dvh)] overflow-y-auto overscroll-contain pr-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"><ul className="grid list-none gap-3 p-0.5">{pendientes.map((row) => <li key={row.unidadId}><AttentionCard row={row} /></li>)}</ul></div> : <div className="rounded-lg border bg-card p-4"><h3 className="font-medium text-navy">{loading ? 'Cargando pendientes…' : 'No hay regresos pendientes.'}</h3>{!loading ? <p className="mt-1 text-sm text-muted-foreground">Las unidades en ruta están dentro del tiempo esperado.</p> : null}</div>}
       </section>
 
       <section aria-labelledby="disponibles-title" className="space-y-3">
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <div><h2 id="disponibles-title" className="text-lg font-semibold text-navy">Unidades disponibles</h2><p className="text-sm text-muted-foreground">Listas para registrar una salida.</p></div>
-          <Button variant="quiet" className="min-h-11" asChild><Link href="/flota?chip=DISPONIBLE">Ver todas</Link></Button>
-        </div>
-        {disponibles.length ? <ul className="grid list-none gap-3 p-0 sm:grid-cols-2 lg:grid-cols-3">{disponibles.slice(0, 4).map((row) => <li key={row.unidadId}><article className="h-full rounded-lg border bg-card p-4">
+        <div><h2 id="disponibles-title" className="text-[13px] leading-5 font-semibold text-navy">Unidades disponibles</h2><p className="text-sm text-muted-foreground">Listas para registrar una salida.</p></div>
+        {disponibles.length ? <div role="region" aria-label="Lista desplazable de unidades disponibles" tabIndex={0} className="max-h-[min(24rem,45dvh)] overflow-y-auto overscroll-contain pr-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"><ul className="grid list-none gap-3 p-0.5 sm:grid-cols-2 lg:grid-cols-3">{disponibles.map((row) => <li key={row.unidadId}><article className="h-full rounded-lg border bg-card p-4">
           <div className="flex flex-wrap items-start justify-between gap-2"><div><h3 className="font-semibold text-navy">{row.numeroInterno}</h3><p className="text-sm text-muted-foreground">{row.placas}</p></div><UnidadOpsBadge ops="DISPONIBLE" /></div>
-          <Button className="mt-4 min-h-11 w-full" onClick={() => abrirSalida(row.unidadId)}>Registrar salida de {row.numeroInterno}</Button>
-        </article></li>)}</ul> : <div className="rounded-lg border bg-card p-4"><h3 className="font-medium text-navy">{loading ? 'Cargando unidades disponibles…' : 'No hay unidades disponibles.'}</h3></div>}
+          <Button variant="outline" className="mt-4 min-h-11 w-full" onClick={() => abrirSalida(row.unidadId)}>Registrar salida de {row.numeroInterno}</Button>
+        </article></li>)}</ul></div> : <div className="rounded-lg border bg-card p-4"><h3 className="font-medium text-navy">{loading ? 'Cargando unidades disponibles…' : 'No hay unidades disponibles.'}</h3></div>}
       </section>
 
       <section aria-labelledby="enruta-title" className="space-y-3">
-        <div className="flex flex-wrap items-center justify-between gap-2"><div><h2 id="enruta-title" className="text-lg font-semibold text-navy">En ruta</h2><p className="text-sm text-muted-foreground">Viajes activos que no tienen alerta de regreso.</p></div><Button variant="quiet" className="min-h-11" asChild><Link href="/flota?chip=EN_RUTA">Ver movimientos</Link></Button></div>
-        {activos.length ? <ul className="divide-y rounded-lg border bg-card">{activos.slice(0, 4).map((row) => <li key={row.unidadId} className="flex flex-wrap items-center justify-between gap-3 p-4">
+        <div className="flex flex-wrap items-center justify-between gap-2"><div><h2 id="enruta-title" className="text-[13px] leading-5 font-semibold text-navy">En ruta</h2><p className="text-sm text-muted-foreground">Viajes activos que no tienen alerta de regreso.</p></div><Button variant="quiet" className="min-h-11" asChild><Link href="/flota?chip=EN_RUTA">Ver movimientos</Link></Button></div>
+        {activos.length ? <div role="region" aria-label="Lista desplazable de unidades en ruta" tabIndex={0} className="max-h-[min(24rem,45dvh)] overflow-y-auto overscroll-contain rounded-lg border bg-card focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"><ul className="divide-y">{activos.map((row) => <li key={row.unidadId} className="flex flex-wrap items-center justify-between gap-3 p-4">
           <div className="min-w-0"><p className="font-medium text-navy">{row.numeroInterno} · {row.placas}</p><p className="text-sm text-muted-foreground">{row.choferNombre || 'Chofer pendiente'} · {row.destino || 'Destino pendiente'}</p></div>
           <div className="flex items-center gap-2">{row.salidaAt ? <span className="text-sm text-muted-foreground">Salió {formatHace(row.salidaAt)}</span> : null}<UnidadOpsBadge ops="EN_RUTA" /></div>
-        </li>)}</ul> : <div className="rounded-lg border bg-card p-4"><h3 className="font-medium text-navy">{loading ? 'Cargando unidades en ruta…' : 'No hay unidades en ruta.'}</h3></div>}
+        </li>)}</ul></div> : <div className="rounded-lg border bg-card p-4"><h3 className="font-medium text-navy">{loading ? 'Cargando unidades en ruta…' : 'No hay unidades en ruta.'}</h3></div>}
       </section>
 
       <section aria-labelledby="actividad-title" className="space-y-2">
-        <h2 id="actividad-title" className="text-lg font-semibold text-navy">Últimos movimientos</h2>
+        <h2 id="actividad-title" className="text-[13px] leading-5 font-semibold text-navy">Últimos movimientos</h2>
         <p className="rounded-lg border bg-card p-4 text-sm text-muted-foreground">La API actual no ofrece un historial agregado reciente de viajes. La bitácora de patio se consulta por separado. <Link className="font-medium text-navy underline underline-offset-2" href="/flota">Abrir flota</Link></p>
       </section>
 
@@ -179,9 +173,8 @@ export function LogisticaDashboard() {
   );
 }
 
-function Kpi({ href, label, value, description, tone }: { href: string; label: string; value: string | number; description: string; tone: 'blue' | 'green' | 'red' }) {
-  const toneClass = tone === 'green' ? 'border-emerald-200 bg-emerald-50' : tone === 'red' ? 'border-rose-200 bg-rose-50' : 'border-blue-200 bg-blue-50';
-  return <Link href={href} aria-label={`${label}: ${value}. ${description}`} className={`flex min-h-24 flex-col justify-center rounded-lg border bg-card p-4 transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${toneClass}`}><span className="text-sm font-medium text-muted-foreground">{label}</span><span className="mt-1 text-2xl font-semibold text-navy" aria-hidden="true">{value}</span></Link>;
+function Kpi({ href, label, value, description }: { href: string; label: string; value: string | number; description: string }) {
+  return <Link href={href} aria-label={`${label}: ${value}. ${description}`} className="flex min-h-24 flex-col justify-center rounded-lg border bg-card p-4 transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"><span className="text-sm font-medium text-muted-foreground">{label}</span><span className="mt-1 text-2xl font-semibold text-navy" aria-hidden="true">{value}</span></Link>;
 }
 
 function AttentionCard({ row }: { row: LogisticaUnidadRow }) {
@@ -192,6 +185,6 @@ function AttentionCard({ row }: { row: LogisticaUnidadRow }) {
       <p className="text-sm text-muted-foreground">{row.choferNombre || 'Chofer pendiente'} · {row.destino || 'Destino pendiente'}{row.salidaAt ? ` · Salió ${formatHace(row.salidaAt)}` : ''}</p>
       <p className="flex items-center gap-2 text-sm text-rose-900"><Clock3 className="size-4" aria-hidden /> Requiere seguimiento</p>
     </div>
-    <Button className="min-h-12 w-full shrink-0 sm:w-auto" asChild><Link href={`/flota?alerta=SIN_REGRESO&unidadId=${encodeURIComponent(row.unidadId)}`}>Registrar regreso de {row.numeroInterno}</Link></Button>
+    <Button variant="outline" className="min-h-12 w-full shrink-0 sm:w-auto" asChild><Link href={`/flota?alerta=SIN_REGRESO&unidadId=${encodeURIComponent(row.unidadId)}`}>Registrar regreso de {row.numeroInterno}</Link></Button>
   </article>;
 }
