@@ -1,13 +1,7 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { LogisticaDashboard } from '@/components/LogisticaDashboard';
 
-/** Assign-chofer desk parked (ADR-011). Nav Logística → Flota. */
-export default function LogisticaRedirectPage() {
-  const router = useRouter();
-  useEffect(() => {
-    router.replace('/flota');
-  }, [router]);
-  return <p className="muted">Abriendo Flota…</p>;
+export default function LogisticaPage() {
+  return <LogisticaDashboard />;
 }
