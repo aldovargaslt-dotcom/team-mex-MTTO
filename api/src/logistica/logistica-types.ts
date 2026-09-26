@@ -54,6 +54,12 @@ export type LogisticaUnidadRow = {
   unidadId: string;
   placas: string;
   numeroInterno: string;
+  marcaModelo: string | null;
+  anio: number | null;
+  fotoDataUrl: string | null;
+  tipoNombre: string;
+  tipoIcono: 'truck' | 'car' | 'van' | 'bus' | null;
+  estado: 'ACTIVA' | 'INACTIVA';
   choferNombre: string | null;
   opsEstado: 'EN_RUTA' | 'DISPONIBLE';
   ambito: AmbitoFlota;

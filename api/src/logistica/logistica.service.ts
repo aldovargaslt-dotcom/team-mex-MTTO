@@ -213,6 +213,12 @@ export class LogisticaService implements UnidadChoferAssignmentPort {
       unidadId: unidad.id,
       placas: unidad.placas,
       numeroInterno: unidad.numeroInterno,
+      marcaModelo: unidad.marcaModelo,
+      anio: unidad.anio,
+      fotoDataUrl: unidad.fotoDataUrl,
+      tipoNombre: unidad.tipo.nombre,
+      tipoIcono: unidad.tipo.icono,
+      estado: unidad.estado,
       choferNombre: unidad.choferId
         ? (nombreById.get(unidad.choferId) ?? null)
         : null,
