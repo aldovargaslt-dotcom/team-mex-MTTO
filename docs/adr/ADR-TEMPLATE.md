@@ -45,3 +45,11 @@ What are we choosing?
 SPEC:
 Engineering Work Orders (`EWO-xxx`):
 Previous ADR:
+
+## Ownership
+
+Date (YYYY-MM-DD):
+Owner:
+Approval / decision reference:
+
+Follow the [workflow](../WORKFLOW.md); record new decisions here, not in a competing decision log.

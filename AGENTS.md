@@ -80,3 +80,12 @@ README / [PRODUCT.md](context/PRODUCT.md): multi-almacén, lotes, costeo, OC for
 
 - `ux-auditor` — Visual QA: Must/Don’t de design-system + [VISUAL_QA.md](docs/design/VISUAL_QA.md) + heurísticas `proof-ui`. No implementa.
 - `sd-scope` — fuera de v0 + ownership ADR + aviso dual-stack
+
+## Ejecución y evidencia
+
+Flujo local y significado de PRD / SPEC / AC / EWO / ADR / evidencia: [WORKFLOW](docs/WORKFLOW.md). Pruebas: [TESTING_STRATEGY](docs/testing/TESTING_STRATEGY.md).
+
+- Usar ICM por etapa; buscar primero con `rg` en el módulo afectado. Leer solo referencias relevantes y conservar lenguaje y arquitectura existentes.
+- Implementación no trivial: SPEC con criterios verificables y EWO aprobado. No refactors ajenos ni reglas de negocio inventadas.
+- Registrar supuestos, riesgos y comandos con `PASS / FAIL / SKIPPED` en evidencia. E2E omitido nunca equivale a verificación completa.
+- Cerrar sesión con estado, archivos, evidencia y siguiente paso en el EWO; actualizar contexto solo por cambios duraderos.
