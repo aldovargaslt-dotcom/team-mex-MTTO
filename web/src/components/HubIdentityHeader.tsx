@@ -26,6 +26,7 @@ export function HubIdentityHeader({
   healthState,
   onOpenHealth,
   actions,
+  backHref = '/unidades',
 }: {
   numeroInterno: string;
   estado: 'ACTIVA' | 'INACTIVA';
@@ -43,6 +44,7 @@ export function HubIdentityHeader({
   healthState: 'loading' | 'ready' | 'error';
   onOpenHealth: () => void;
   actions: ReactNode;
+  backHref?: string;
 }) {
   const lineaMarca = marcaModelo
     ? `${marcaModelo}${anio ? ` · ${anio}` : ''}`
@@ -52,12 +54,12 @@ export function HubIdentityHeader({
     <header className="hub-identity">
       <div className="hub-identity__bar">
         <div className="hub-identity__nav">
-          <Link href="/unidades" className="hub-identity__back">
+          <Link href={backHref} className="hub-identity__back">
             <ChevronLeft className="size-4" aria-hidden />
             Volver a unidades
           </Link>
           <p className="hub-identity__crumb">
-            <Link href="/unidades">Unidades</Link>
+            <Link href={backHref}>Unidades</Link>
             <span aria-hidden> › </span>
             <span>{numeroInterno}</span>
           </p>

@@ -11,6 +11,7 @@ import {
   formatFechaHoraCorta,
   formatKm,
 } from '@/lib/format';
+import { withUnidadesReturnTo } from '@/lib/unidades-return';
 import type { AvisoAndon, UnidadHealth, UnidadHub } from '@/lib/types';
 
 const MENSAJE_PUEDE_REGISTRAR =
@@ -66,9 +67,11 @@ function activityItems(
 export function HubResumen({
   hub,
   health,
+  returnTo,
 }: {
   hub: UnidadHub;
   health: UnidadHealth | null;
+  returnTo: string;
 }) {
   const [aviso, setAviso] = useState<AvisoAndon | null>(null);
   const ficha = hub.fichaCorta;
@@ -134,7 +137,10 @@ export function HubResumen({
           <div className="hub-ops-card__head">
             <h2>Actividad reciente</h2>
             <Link
-              href={`/unidades/${ficha.id}?vista=historial`}
+              href={`/unidades/${ficha.id}?${new URLSearchParams({
+                vista: 'historial',
+                returnTo,
+              }).toString()}`}
               className="hub-ops-go text-[12px] font-medium"
             >
               Ver historial
@@ -147,7 +153,13 @@ export function HubResumen({
               {recent.map((item) => (
                 <li key={item.key}>
                   {item.href ? (
-                    <Link href={item.href}>
+                    <Link
+                      href={
+                        item.href.startsWith('/unidades/')
+                          ? withUnidadesReturnTo(item.href, returnTo)
+                          : item.href
+                      }
+                    >
                       <strong>{item.title}</strong>
                       <div className="muted">
                         {formatFechaHoraCorta(item.at)}

@@ -2,18 +2,24 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { Package, ShoppingCart, Wrench } from 'lucide-react';
+import { HeartPulse, Package, ShoppingCart, Wrench } from 'lucide-react';
 import { RoleGate } from '@/components/RoleGate';
 import { FormAlert, PageHeader } from '@/components/ui/field';
 import { api, HttpError } from '@/lib/api';
-import { fraseCuenta, saludoAhora } from '@/lib/format';
+import { saludoAhora } from '@/lib/format';
 import { useRole } from '@/lib/role';
-import type { AvisoAndon, PendienteComprobante, StockRow } from '@/lib/types';
+import type {
+  AvisoAndon,
+  InboxItem,
+  PendienteComprobante,
+  StockRow,
+} from '@/lib/types';
 
 type AttentionRow = {
   href: string;
   label: string;
-  icon: 'andon' | 'stock' | 'compra';
+  detail: string;
+  icon: 'andon' | 'stock' | 'compra' | 'salud';
 };
 
 type SourceState = {
@@ -50,55 +56,54 @@ function InicioContent() {
         api<AvisoAndon[]>('/andon/avisos', opts),
         api<StockRow[]>('/inventario/stock', opts),
         api<PendienteComprobante[]>('/inventario/pendientes-comprobante', opts),
+        api<InboxItem[]>('/notifications?filter=all', opts),
       ]);
       const avisos = settled[0].status === 'fulfilled' ? settled[0].value : [];
       const stock = settled[1].status === 'fulfilled' ? settled[1].value : [];
       const compras = settled[2].status === 'fulfilled' ? settled[2].value : [];
-      const vencidos = avisos.length;
-      const bajo = stock.filter((row) => row.alerta === 'BAJO').length;
-      const agotadas = stock.filter((row) => row.alerta === 'AGOTADO').length;
-      const pendientes = compras.filter((row) => row.estado === 'PENDIENTE').length;
+      const inbox = settled[3].status === 'fulfilled' ? settled[3].value : [];
       const andonRows: AttentionRow[] = [];
       const stockRows: AttentionRow[] = [];
       const compraRows: AttentionRow[] = [];
-      if (vencidos > 0) {
+      const saludRows: AttentionRow[] = [];
+      for (const aviso of avisos) {
         andonRows.push({
           href: '/andon',
           icon: 'andon',
-          label: fraseCuenta(
-            vencidos,
-            'mantenimiento vencido',
-            'mantenimientos vencidos',
-          ),
+          label: aviso.numeroInterno ?? 'Unidad sin nombre',
+          detail: `Mantenimiento vencido · ${aviso.estado === 'ENTERADO' ? 'Enterado; sigue activo hasta cerrar una visita' : 'Requiere revisión'}`,
         });
       }
-      if (bajo > 0) {
+      for (const row of stock.filter((item) => item.alerta === 'BAJO')) {
         stockRows.push({
           href: '/inventario/stock?alerta=BAJO',
           icon: 'stock',
-          label: fraseCuenta(
-            bajo,
-            'refacción con stock bajo',
-            'refacciones con stock bajo',
-          ),
+          label: row.nombre,
+          detail: `Existencias · ${row.qty} ${row.uom} disponibles; mínimo ${row.minQty ?? 'sin definir'}`,
         });
       }
-      if (agotadas > 0) {
+      for (const row of stock.filter((item) => item.alerta === 'AGOTADO')) {
         stockRows.push({
           href: '/inventario/stock?alerta=AGOTADO',
           icon: 'stock',
-          label: fraseCuenta(
-            agotadas,
-            'refacción agotada',
-            'refacciones agotadas',
-          ),
+          label: row.nombre,
+          detail: 'Existencias · Agotado; revise la refacción',
         });
       }
-      if (pendientes > 0) {
+      for (const row of compras.filter((item) => item.estado === 'PENDIENTE')) {
         compraRows.push({
           href: '/inventario/pendientes',
           icon: 'compra',
-          label: fraseCuenta(pendientes, 'por recibir', 'por recibir'),
+          label: `${row.sku} · ${row.nombre}`,
+          detail: 'Inventario · Evidencia pendiente de compra externa',
+        });
+      }
+      for (const item of inbox.filter((row) => row.sourceModule === 'SALUD')) {
+        saludRows.push({
+          href: item.deeplinkPath,
+          icon: 'salud',
+          label: item.title,
+          detail: `Salud · ${item.body}`,
         });
       }
       setSources([
@@ -119,6 +124,12 @@ function InicioContent() {
           name: 'por recibir',
           status: settled[2].status === 'fulfilled' ? 'ok' : 'error',
           rows: compraRows,
+        },
+        {
+          id: 'salud',
+          name: 'salud de unidad',
+          status: settled[3].status === 'fulfilled' ? 'ok' : 'error',
+          rows: saludRows,
         },
       ]);
       if (settled.every((item) => item.status === 'rejected')) {
@@ -145,7 +156,7 @@ function InicioContent() {
         <div className="empty-state">
           <h2>Nada requiere atención</h2>
           <p className="muted">
-            Mantenimiento vencido, existencias y por recibir están al día.
+            Mantenimiento vencido, existencias, por recibir y salud están al día.
           </p>
         </div>
       ) : (
@@ -178,12 +189,15 @@ function InicioContent() {
                             <Wrench className="size-4" />
                           ) : row.icon === 'compra' ? (
                             <ShoppingCart className="size-4" />
+                          ) : row.icon === 'salud' ? (
+                            <HeartPulse className="size-4" />
                           ) : (
                             <Package className="size-4" />
                           )}
                         </span>
                         <span className="inbox-copy">
                           <span className="inbox-title">{row.label}</span>
+                          <span className="inbox-body">{row.detail}</span>
                         </span>
                       </Link>
                     </li>

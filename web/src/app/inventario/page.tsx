@@ -229,28 +229,88 @@ export default function ItemsPage() {
       <FormAlert>{error}</FormAlert>
 
       {items.length > 0 || !error ? (
-        <DataTable
-          columns={columns}
-          data={filtered}
-          empty={
-            items.length === 0 ? (
-              <>
-                <span className="block font-medium text-navy">
-                  Aún no hay refacciones.
-                </span>
-                <span>Agregue la primera con Nueva refacción.</span>
-              </>
+        <>
+          <div className="inventario-refacciones-table">
+            <DataTable
+              columns={columns}
+              data={filtered}
+              empty={
+                items.length === 0 ? (
+                  <>
+                    <span className="block font-medium text-navy">
+                      Aún no hay refacciones.
+                    </span>
+                    <span>Agregue la primera con Nueva refacción.</span>
+                  </>
+                ) : (
+                  <>
+                    <span className="block font-medium text-navy">
+                      Nada que coincida.
+                    </span>
+                    <span>Ajuste la búsqueda.</span>
+                  </>
+                )
+              }
+              onRowClick={(item) => setFicha(item)}
+            />
+          </div>
+
+          <div className="inventario-refacciones-mobile">
+            {filtered.length > 0 ? (
+              <ul className="inventory-mobile-list" aria-label="Refacciones">
+                {filtered.map((item) => (
+                  <li className="inventory-mobile-item" key={item.id}>
+                    <button
+                      type="button"
+                      className="inventory-mobile-main"
+                      onClick={() => setFicha(item)}
+                    >
+                      <span className="inventory-mobile-copy">
+                        <span className="font-medium text-navy">{item.nombre}</span>
+                        <span className="text-xs text-muted-foreground">
+                          <span className="mono">{item.sku}</span>
+                          {item.familiaNombre ? ` · ${item.familiaNombre}` : ''}
+                        </span>
+                      </span>
+                      <span className="inventory-mobile-meta">
+                        <span className="mono text-sm">
+                          {item.stock} {etiquetaUom(item.uom)}
+                        </span>
+                        <StockAlertaBadge alerta={item.alerta} />
+                      </span>
+                    </button>
+                    <div className="inventory-mobile-actions">
+                      <Badge variant={item.activo ? 'success' : 'muted'}>
+                        {item.activo ? 'Activo' : 'Inactivo'}
+                      </Badge>
+                      <Button
+                        type="button"
+                        variant={item.activo ? 'dangerSoft' : 'outline'}
+                        size="compact"
+                        onClick={() => void toggleActivo(item)}
+                      >
+                        {item.activo ? 'Inactivar' : 'Activar'}
+                      </Button>
+                    </div>
+                  </li>
+                ))}
+              </ul>
             ) : (
-              <>
+              <div className="empty-state">
                 <span className="block font-medium text-navy">
-                  Nada que coincida.
+                  {items.length === 0
+                    ? 'Aún no hay refacciones.'
+                    : 'Nada que coincida.'}
                 </span>
-                <span>Ajuste la búsqueda.</span>
-              </>
-            )
-          }
-          onRowClick={(item) => setFicha(item)}
-        />
+                <span>
+                  {items.length === 0
+                    ? 'Agregue la primera con Nueva refacción.'
+                    : 'Ajuste la búsqueda.'}
+                </span>
+              </div>
+            )}
+          </div>
+        </>
       ) : null}
 
       <RefaccionFicha

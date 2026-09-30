@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Suspense, useEffect, useMemo, useState } from 'react';
-import { ArrowUpDown, Check, Inbox, ListFilter, Pause, Search } from 'lucide-react';
+import { ChevronLeft, ListFilter, Search } from 'lucide-react';
 import { OrdenCaptura } from '@/components/OrdenCaptura';
 import { UnidadMarca } from '@/components/UnidadTipoMark';
 import { hydratePiezasFromInventario, type PiezaLinea } from '@/components/PiezasStep';
@@ -44,7 +44,7 @@ type OrdenRow = VisitaResumen & {
 };
 
 const COLAS: { id: Cola; label: string }[] = [
-  { id: 'abiertas', label: 'Abiertas' },
+  { id: 'abiertas', label: 'Borradores' },
   { id: 'cerradas', label: 'Cerradas' },
 ];
 
@@ -89,6 +89,15 @@ function OrdenesContent() {
   const [detalleError, setDetalleError] = useState<string | null>(null);
   const [piezas, setPiezas] = useState<PiezaLinea[]>([]);
   const [filtroAbierto, setFiltroAbierto] = useState(false);
+  const [mobileMode, setMobileMode] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 800px)');
+    const apply = () => setMobileMode(mq.matches);
+    apply();
+    mq.addEventListener('change', apply);
+    return () => mq.removeEventListener('change', apply);
+  }, []);
 
   function setParams(patch: Record<string, string | null>) {
     const params = new URLSearchParams(searchParams.toString());
@@ -173,12 +182,15 @@ function OrdenesContent() {
       if (ordenId) setParams({ orden: null });
       return;
     }
-    if (!ordenId || !filtered.some((row) => row.id === ordenId)) {
+    if (
+      mobileMode === false &&
+      (!ordenId || !filtered.some((row) => row.id === ordenId))
+    ) {
       setParams({ orden: filtered[0].id });
     }
     // setParams identity changes with the URL; the guard stops the loop.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [rows, filtered, ordenId]);
+  }, [rows, filtered, ordenId, mobileMode]);
 
   useEffect(() => {
     if (!role || !ordenId) {
@@ -214,7 +226,7 @@ function OrdenesContent() {
   const borradorSeleccionado =
     !isAdmin && detalle?.estado === 'BORRADOR' && detalle.id === ordenId;
   const emptyTitle =
-    cola === 'abiertas' ? 'No hay órdenes abiertas.' : 'No hay órdenes cerradas.';
+    cola === 'abiertas' ? 'No hay órdenes en borrador.' : 'No hay órdenes cerradas.';
   const emptyLede = q.trim()
     ? 'Pruebe otro texto o quite el filtro de tipo.'
     : cola === 'abiertas'
@@ -226,7 +238,7 @@ function OrdenesContent() {
   return (
     <>
       <header className="ordenes-head">
-        <h1>Órdenes de trabajo</h1>
+        <h1>Órdenes</h1>
         <div className="ordenes-head__search">
           <Search
             className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground"
@@ -256,7 +268,7 @@ function OrdenesContent() {
       {rows == null ? (
         <p className="muted">Cargando órdenes…</p>
       ) : (
-        <div className="ordenes-desk">
+        <div className={ordenId ? 'ordenes-desk has-mobile-detail' : 'ordenes-desk'}>
           <div className="ordenes-list">
             <div className="ordenes-tabs">
               {isAdmin ? null : (
@@ -275,7 +287,7 @@ function OrdenesContent() {
                         })
                       }
                     >
-                      {option.id === 'abiertas' ? 'Por hacer' : 'Hechas'}
+                      {option.label}
                     </button>
                   ))}
                 </div>
@@ -361,6 +373,17 @@ function OrdenesContent() {
             )}
           </div>
           <div className="ordenes-detail">
+            {ordenId ? (
+              <Button
+                type="button"
+                variant="quiet"
+                className="ordenes-mobile-back"
+                onClick={() => setParams({ orden: null })}
+              >
+                <ChevronLeft className="size-4" aria-hidden />
+                Volver a órdenes
+              </Button>
+            ) : null}
             <FormAlert>{detalleError}</FormAlert>
             {filtered.length === 0 ? null : detalle && detalle.id === ordenId ? (
               <OrdenDetalle
@@ -451,7 +474,7 @@ function OrdenDetalle({
             className={editarPrimario ? 'ordenes-primary' : undefined}
           >
             <Link href={`/unidades/${detalle.unidadId}/visitas/${detalle.id}`}>
-              {continuar ? 'Editar' : 'Abrir'}
+              {continuar ? 'Continuar' : 'Ver detalle'}
             </Link>
           </Button>
         </div>
@@ -466,21 +489,8 @@ function OrdenDetalle({
         onVisita={onVisita}
       />
       <div className="ordenes-status" aria-label="Estado de la orden">
-        <span className={detalle.estado === 'BORRADOR' ? 'is-on' : ''}>
-          <Inbox className="size-5" aria-hidden />
-          Abierta
-        </span>
-        <span className="is-off">
-          <Pause className="size-4" aria-hidden />
-          Pausada
-        </span>
-        <span className="is-off">
-          <ArrowUpDown className="size-4" aria-hidden />
-          En progreso
-        </span>
-        <span className={detalle.estado === 'CERRADO' ? 'is-on' : ''}>
-          <Check className="size-4" aria-hidden />
-          Hecha
+        <span className="is-on">
+          {detalle.estado === 'BORRADOR' ? 'Borrador' : 'Cerrada'}
         </span>
       </div>
       <dl className="ordenes-facts">

@@ -3,7 +3,7 @@
 import { useState, type ReactNode } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { Home, Menu, Truck } from 'lucide-react';
+import { Boxes, ClipboardList, Home, Menu, Settings, Truck } from 'lucide-react';
 import { BrandPlate } from '@/components/BrandPlate';
 import { Campanita } from '@/components/Campanita';
 import { Button } from '@/components/ui/button';
@@ -47,6 +47,20 @@ const NAV_ITEMS: {
   },
 ];
 
+const SUPERVISOR_PRIMARY = new Set([
+  '/inicio',
+  '/ordenes',
+  '/unidades',
+  '/inventario',
+]);
+
+const SUPERVISOR_BOTTOM_NAV = [
+  { href: '/inicio', label: 'Inicio', icon: Home },
+  { href: '/ordenes', label: 'Órdenes', icon: ClipboardList },
+  { href: '/unidades', label: 'Unidades', icon: Truck },
+  { href: '/inventario', label: 'Inventario', icon: Boxes },
+] as const;
+
 export function AppShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
@@ -55,7 +69,15 @@ export function AppShell({ children }: { children: ReactNode }) {
   const showChrome = Boolean(!isHome && ready && role);
   const [menuOpen, setMenuOpen] = useState(false);
 
-  const items = NAV_ITEMS.filter((item) => role && item.roles.includes(role));
+  const allItems = NAV_ITEMS.filter((item) => role && item.roles.includes(role));
+  const items =
+    role === 'SUPERVISOR'
+      ? allItems.filter((item) => SUPERVISOR_PRIMARY.has(item.href))
+      : allItems;
+  const menuItems =
+    role === 'SUPERVISOR'
+      ? allItems.filter((item) => !SUPERVISOR_PRIMARY.has(item.href))
+      : allItems;
   const homeHref = isLogistica ? '/logistica' : '/inicio';
 
   function cambiarRol() {
@@ -88,6 +110,19 @@ export function AppShell({ children }: { children: ReactNode }) {
             {showChrome ? (
               <>
                 <Campanita />
+                {role === 'SUPERVISOR' ? (
+                  <Button
+                    asChild
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="hidden text-white/70 hover:bg-white/10 hover:text-white md:inline-flex"
+                  >
+                    <Link href="/configuracion/alertas" aria-label="Configuración">
+                      <Settings aria-hidden className="size-4" />
+                    </Link>
+                  </Button>
+                ) : null}
                 <span className="shell-header__role hidden md:inline">
                   {etiquetaRol(role!)}
                 </span>
@@ -103,7 +138,10 @@ export function AppShell({ children }: { children: ReactNode }) {
                   type="button"
                   variant="ghost"
                   size="icon"
-                  className="shell-header__menu md:hidden"
+                  className={cn(
+                    'shell-header__menu',
+                    role === 'SUPERVISOR' ? '' : 'md:hidden',
+                  )}
                   aria-label="Abrir menú"
                   aria-expanded={menuOpen}
                   aria-controls="shell-menu"
@@ -139,7 +177,7 @@ export function AppShell({ children }: { children: ReactNode }) {
               <SheetDescription>{etiquetaRol(role!)}</SheetDescription>
             </SheetHeader>
             <nav className="shell-menu-nav" aria-label="Principal">
-              {items.map((item) => {
+              {menuItems.map((item) => {
                 const active = Boolean(pathname?.startsWith(item.href));
                 return (
                   <Link
@@ -172,13 +210,37 @@ export function AppShell({ children }: { children: ReactNode }) {
           </Link>
         </nav>
       ) : null}
+      {showChrome && role === 'SUPERVISOR' ? (
+        <nav className="supervisor-bottom-nav md:hidden" aria-label="Navegación del Supervisor">
+          {SUPERVISOR_BOTTOM_NAV.map((item) => {
+            const Icon = item.icon;
+            const active =
+              item.href === '/inicio'
+                ? pathname === item.href
+                : pathname?.startsWith(item.href);
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                aria-current={active ? 'page' : undefined}
+                className={cn('supervisor-bottom-nav__item', active && 'active')}
+              >
+                <Icon className="size-5" aria-hidden />
+                {item.label}
+              </Link>
+            );
+          })}
+        </nav>
+      ) : null}
       <main
         className={
           isHome
             ? 'main main-home'
             : pathname?.startsWith('/ordenes')
               ? 'main main-ordenes'
-              : isLogistica ? 'main pb-20 md:pb-4' : 'main'
+              : isLogistica || role === 'SUPERVISOR'
+                ? 'main pb-20 md:pb-4'
+                : 'main'
         }
       >
         {children}
