@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 import { RoleGate } from '@/components/RoleGate';
 import { SignaturePad } from '@/components/SignaturePad';
@@ -37,6 +37,10 @@ import {
   resumenOrigenPiezas,
 } from '@/lib/format';
 import { useRole } from '@/lib/role';
+import {
+  safeUnidadesReturnTo,
+  withUnidadesReturnTo,
+} from '@/lib/unidades-return';
 import type {
   CatalogoCategoria,
   Chofer,
@@ -68,6 +72,9 @@ export default function VisitaPage() {
 
 function VisitaContent() {
   const params = useParams<{ id: string; visitaId: string }>();
+  const searchParams = useSearchParams();
+  const returnTo = safeUnidadesReturnTo(searchParams.get('returnTo'));
+  const hubHref = withUnidadesReturnTo(`/unidades/${params.id}`, returnTo);
   const { role, userId, isAdmin } = useRole();
   const [visita, setVisita] = useState<VisitaDetalle | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -101,7 +108,7 @@ function VisitaContent() {
     return (
       <div className="empty-state">
         <h2>No se encontró la visita.</h2>
-        <Link className="btn btn-outline" href={`/unidades/${params.id}`}>
+        <Link className="btn btn-outline" href={hubHref}>
           Volver al hub
         </Link>
       </div>
@@ -122,7 +129,7 @@ function VisitaContent() {
   }
 
   if (visita.estado === 'CERRADO' || isAdmin) {
-    return <VisitaReadonly visita={visita} unidadId={params.id} />;
+    return <VisitaReadonly visita={visita} hubHref={hubHref} />;
   }
 
   return (
@@ -130,16 +137,17 @@ function VisitaContent() {
       unidadId={params.id}
       visita={visita}
       onChange={setVisita}
+      hubHref={hubHref}
     />
   );
 }
 
 function VisitaReadonly({
   visita,
-  unidadId,
+  hubHref,
 }: {
   visita: VisitaDetalle;
-  unidadId: string;
+  hubHref: string;
 }) {
   const { role, userId } = useRole();
   const [piezas, setPiezas] = useState<PiezaLinea[]>([]);
@@ -173,7 +181,7 @@ function VisitaReadonly({
         }
         actions={
           <Button asChild variant="secondary">
-            <Link href={`/unidades/${unidadId}`}>Volver al hub</Link>
+            <Link href={hubHref}>Volver al hub</Link>
           </Button>
         }
       />
@@ -255,10 +263,12 @@ function VisitWizard({
   unidadId,
   visita,
   onChange,
+  hubHref,
 }: {
   unidadId: string;
   visita: VisitaDetalle;
   onChange: (visita: VisitaDetalle) => void;
+  hubHref: string;
 }) {
   const { role, userId } = useRole();
   const router = useRouter();
@@ -439,7 +449,7 @@ function VisitWizard({
         method: 'POST',
       });
       onChange(closed);
-      router.push(`/unidades/${unidadId}`);
+      router.push(hubHref);
     } catch (err) {
       setError(
         err instanceof HttpError
@@ -512,7 +522,7 @@ function VisitWizard({
             disabled={saving}
             onClick={() =>
               void persist().then((saved) => {
-                if (saved) router.push(`/unidades/${unidadId}`);
+                if (saved) router.push(hubHref);
               })
             }
           >
@@ -739,7 +749,7 @@ function VisitWizard({
           </Button>
         ) : (
           <Button asChild variant="secondary">
-            <Link href={`/unidades/${unidadId}`}>Cancelar</Link>
+            <Link href={hubHref}>Cancelar</Link>
           </Button>
         )}
         {step !== 'confirmar' ? (

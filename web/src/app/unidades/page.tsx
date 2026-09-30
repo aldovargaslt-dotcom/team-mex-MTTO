@@ -1,8 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { FormEvent, useEffect, useState } from 'react';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { FormEvent, Suspense, useEffect, useState } from 'react';
 import { RoleGate } from '@/components/RoleGate';
 import { HealthConfigDialog } from '@/components/HealthConfigDialog';
 import { UnidadesAdminMenu } from '@/components/UnidadesAdminMenu';
@@ -31,7 +31,9 @@ const DEFAULT_T_DIAS = 90;
 export default function UnidadesPage() {
   return (
     <RoleGate allow={['SUPERVISOR', 'ADMIN_DIRECTIVO']}>
-      <UnidadesList />
+      <Suspense fallback={<p className="muted">Cargando unidades…</p>}>
+        <UnidadesList />
+      </Suspense>
     </RoleGate>
   );
 }
@@ -39,10 +41,12 @@ export default function UnidadesPage() {
 function UnidadesList() {
   const { role, userId, isAdmin } = useRole();
   const router = useRouter();
-  const [q, setQ] = useState('');
-  const [tipoFiltro, setTipoFiltro] = useState('');
-  const [estadoFiltro, setEstadoFiltro] = useState('');
-  const [atencionFiltro, setAtencionFiltro] = useState(false);
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const q = searchParams.get('q') ?? '';
+  const tipoFiltro = searchParams.get('tipo') ?? '';
+  const estadoFiltro = searchParams.get('estado') ?? '';
+  const atencionFiltro = searchParams.get('atencion') === '1';
   const [tipos, setTipos] = useState<TipoVehiculo[]>([]);
   const [unidades, setUnidades] = useState<Unidad[] | null>(null);
   const [flota, setFlota] = useState<Unidad[]>([]);
@@ -64,6 +68,16 @@ function UnidadesList() {
     Record<string, { tKm: string; tDias: string }>
   >({});
   const [savingAlertas, setSavingAlertas] = useState(false);
+
+  function setCatalogParams(patch: Record<string, string | null>) {
+    const next = new URLSearchParams(searchParams.toString());
+    for (const [key, value] of Object.entries(patch)) {
+      if (!value) next.delete(key);
+      else next.set(key, value);
+    }
+    const qs = next.toString();
+    router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
+  }
 
   async function cargar() {
     if (!role) return;
@@ -311,12 +325,20 @@ function UnidadesList() {
             buscando={buscando}
             isAdmin={isAdmin}
             actions={adminActions}
-            onQ={setQ}
-            onTipoFiltro={setTipoFiltro}
-            onEstadoFiltro={setEstadoFiltro}
-            onAtencionFiltro={setAtencionFiltro}
+            onQ={(value) => setCatalogParams({ q: value.trim() ? value : null })}
+            onTipoFiltro={(value) => setCatalogParams({ tipo: value || null })}
+            onEstadoFiltro={(value) => setCatalogParams({ estado: value || null })}
+            onAtencionFiltro={(value) =>
+              setCatalogParams({ atencion: value ? '1' : null })
+            }
             onSearch={onSearch}
-            onOpenUnidad={(unidad) => router.push(`/unidades/${unidad.id}`)}
+            onOpenUnidad={(unidad) => {
+              const qs = searchParams.toString();
+              const returnTo = qs ? `${pathname}?${qs}` : pathname;
+              router.push(
+                `/unidades/${unidad.id}?${new URLSearchParams({ returnTo }).toString()}`,
+              );
+            }}
             onEditarTipo={abrirEdicionFamilia}
             onEliminarTipo={(tipo) => void eliminarFamilia(tipo)}
           />

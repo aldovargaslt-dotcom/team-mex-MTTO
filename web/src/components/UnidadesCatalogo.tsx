@@ -1,6 +1,5 @@
 'use client';
 
-import Link from 'next/link';
 import { FormEvent, ReactNode, useEffect, useMemo, useState } from 'react';
 import { ColumnDef } from '@tanstack/react-table';
 import {
@@ -292,22 +291,22 @@ export function UnidadesCatalogo({
         cell: ({ row }) => (
           <div className="flex justify-end">
             <Button
-              asChild
               size="compact"
               variant="outline"
               className="border-navy bg-navy text-white hover:bg-[#1c2040] hover:text-white"
-              onClick={(event) => event.stopPropagation()}
+              onClick={(event) => {
+                event.stopPropagation();
+                onOpenUnidad(row.original);
+              }}
             >
-              <Link href={`/unidades/${row.original.id}`}>
-                Ver ficha
-                <ArrowRight className="size-3.5" aria-hidden />
-              </Link>
+              Ver ficha
+              <ArrowRight className="size-3.5" aria-hidden />
             </Button>
           </div>
         ),
       },
     ],
-    [avisos],
+    [avisos, onOpenUnidad],
   );
 
   const from = ordenadas.length === 0 ? 0 : (pagina - 1) * UNIDADES_PAGE_SIZE + 1;
@@ -685,16 +684,16 @@ export function UnidadesCatalogo({
                 </div>
                 <CeldaAtencion unidad={unidad} avisos={avisos} />
                 <Button
-                  asChild
                   size="compact"
                   variant="outline"
                   className="mt-1 w-full border-navy bg-navy text-white hover:bg-[#1c2040] hover:text-white"
-                  onClick={(event) => event.stopPropagation()}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    onOpenUnidad(unidad);
+                  }}
                 >
-                  <Link href={`/unidades/${unidad.id}`}>
-                    Ver ficha
-                    <ArrowRight className="size-3.5" aria-hidden />
-                  </Link>
+                  Ver ficha
+                  <ArrowRight className="size-3.5" aria-hidden />
                 </Button>
               </article>
             ))}

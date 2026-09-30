@@ -29,19 +29,22 @@ export function parseHubVista(value: string | null): HubVista {
 export function HubFichaNav({
   unidadId,
   vista,
+  returnTo,
 }: {
   unidadId: string;
   vista: HubVista;
+  returnTo?: string;
 }) {
   return (
     <nav className="hub-side" aria-label="Acciones de la unidad">
       <p className="hub-side__title">Acciones</p>
       <div className="hub-side__links">
         {VISTAS.map((item) => {
-          const href =
-            item.id === 'resumen'
-              ? `/unidades/${unidadId}`
-              : `/unidades/${unidadId}?vista=${item.id}`;
+          const query = new URLSearchParams();
+          if (item.id !== 'resumen') query.set('vista', item.id);
+          if (returnTo) query.set('returnTo', returnTo);
+          const qs = query.toString();
+          const href = `/unidades/${unidadId}${qs ? `?${qs}` : ''}`;
           const active = vista === item.id;
           const Icon = item.icon;
           return (

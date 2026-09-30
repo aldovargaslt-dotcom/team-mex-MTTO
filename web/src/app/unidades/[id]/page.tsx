@@ -32,6 +32,10 @@ import {
   formatKm,
 } from '@/lib/format';
 import { useRole } from '@/lib/role';
+import {
+  safeUnidadesReturnTo,
+  withUnidadesReturnTo,
+} from '@/lib/unidades-return';
 import type {
   ItemInventario,
   OrigenPieza,
@@ -55,6 +59,7 @@ function HubContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const vista = parseHubVista(searchParams.get('vista'));
+  const returnTo = safeUnidadesReturnTo(searchParams.get('returnTo'));
   const { role, userId, isAdmin } = useRole();
   const [hub, setHub] = useState<UnidadHub | null>(null);
   const [unidad, setUnidad] = useState<Unidad | null>(null);
@@ -122,7 +127,12 @@ function HubContent() {
         `/unidades/${params.id}/visitas`,
         { role: role!, userId, method: 'POST' },
       );
-      router.push(`/unidades/${params.id}/visitas/${created.id}`);
+      router.push(
+        withUnidadesReturnTo(
+          `/unidades/${params.id}/visitas/${created.id}`,
+          returnTo,
+        ),
+      );
     } catch (err) {
       setError(
         err instanceof HttpError
@@ -162,7 +172,7 @@ function HubContent() {
     return (
       <div className="empty-state">
         <h2>No se encontró la unidad.</h2>
-        <Link className="btn btn-outline" href="/unidades">
+        <Link className="btn btn-outline" href={returnTo}>
           Volver a unidades
         </Link>
       </div>
@@ -209,7 +219,12 @@ function HubContent() {
       ) : null}
       {borrador ? (
         <Button asChild>
-          <Link href={`/unidades/${ficha.id}/visitas/${borrador.id}`}>
+          <Link
+            href={withUnidadesReturnTo(
+              `/unidades/${ficha.id}/visitas/${borrador.id}`,
+              returnTo,
+            )}
+          >
             Continuar
           </Link>
         </Button>
@@ -245,10 +260,11 @@ function HubContent() {
         healthState={healthState}
         onOpenHealth={() => setHealthOpen(true)}
         actions={actions}
+        backHref={returnTo}
       />
 
       <div className="hub-ficha">
-        <HubFichaNav unidadId={ficha.id} vista={vista} />
+        <HubFichaNav unidadId={ficha.id} vista={vista} returnTo={returnTo} />
         <div className="hub-ficha-main">
           {error ? (
             <p className="alert" style={{ marginBottom: 12 }}>
@@ -257,7 +273,7 @@ function HubContent() {
           ) : null}
 
           {vista === 'resumen' ? (
-            <HubResumen hub={hub} health={health} />
+            <HubResumen hub={hub} health={health} returnTo={returnTo} />
           ) : null}
 
           {vista === 'tecnica' ? (
@@ -339,7 +355,10 @@ function HubContent() {
                           <div className="hub-actions" style={{ marginTop: 0 }}>
                             <Link
                               className="btn btn-outline"
-                              href={`/unidades/${ficha.id}/visitas/${visita.id}`}
+                              href={withUnidadesReturnTo(
+                                `/unidades/${ficha.id}/visitas/${visita.id}`,
+                                returnTo,
+                              )}
                             >
                               Continuar
                             </Link>
@@ -379,6 +398,7 @@ function HubContent() {
                       key={visita.id}
                       unidadId={ficha.id}
                       visita={visita}
+                      returnTo={returnTo}
                     />
                   ))}
                 </ul>
@@ -386,6 +406,7 @@ function HubContent() {
               <HubRefacciones
                 unidadId={ficha.id}
                 historial={hub.historialCerrado}
+                returnTo={returnTo}
               />
             </section>
           ) : null}
@@ -418,13 +439,20 @@ function HubContent() {
 function HistorialItem({
   unidadId,
   visita,
+  returnTo,
 }: {
   unidadId: string;
   visita: VisitaResumen;
+  returnTo: string;
 }) {
   return (
     <li>
-      <Link href={`/unidades/${unidadId}/visitas/${visita.id}`}>
+      <Link
+        href={withUnidadesReturnTo(
+          `/unidades/${unidadId}/visitas/${visita.id}`,
+          returnTo,
+        )}
+      >
         <strong>
           {etiquetaTipoVisita(visita.tipo)} · {etiquetaEstadoVisita(visita.estado)}
         </strong>
@@ -451,9 +479,11 @@ type HubPiezaRow = {
 function HubRefacciones({
   unidadId,
   historial,
+  returnTo,
 }: {
   unidadId: string;
   historial: VisitaResumen[];
+  returnTo: string;
 }) {
   const { role, userId } = useRole();
   const router = useRouter();
@@ -518,7 +548,10 @@ function HubRefacciones({
         header: 'Visita',
         cell: ({ row }) => (
           <Link
-            href={`/unidades/${unidadId}/visitas/${row.original.visitaId}`}
+            href={withUnidadesReturnTo(
+              `/unidades/${unidadId}/visitas/${row.original.visitaId}`,
+              returnTo,
+            )}
             className="font-medium text-navy underline-offset-2 hover:underline"
             onClick={(e) => e.stopPropagation()}
           >
@@ -557,7 +590,7 @@ function HubRefacciones({
         cell: ({ row }) => etiquetaOrigenPieza(row.original.origen),
       },
     ],
-    [labels, unidadId],
+    [labels, returnTo, unidadId],
   );
 
   return (
@@ -570,7 +603,12 @@ function HubRefacciones({
           columns={columns}
           data={rows}
           onRowClick={(row) =>
-            router.push(`/unidades/${unidadId}/visitas/${row.visitaId}`)
+            router.push(
+              withUnidadesReturnTo(
+                `/unidades/${unidadId}/visitas/${row.visitaId}`,
+                returnTo,
+              ),
+            )
           }
         />
       )}
