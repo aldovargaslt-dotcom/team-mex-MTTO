@@ -28,4 +28,7 @@ Do not add speculative EWOs. An EWO is created when there is approved work to ex
 | [EWO-007](EWO-007.md) | Cola de órdenes de trabajo (lista + ficha) | Ready |
 | [EWO-009](EWO-009.md) | Editor y optimización de foto principal de unidad | Verification |
 | [EWO-010](EWO-010.md) | Experiencia de entrada y continuidad del Supervisor | Verification |
-| [EWO-006](EWO-006.md) | Operator commits name the state they write | Verification |
+| [EWO-011](EWO-011.md) | Contrato e invariante de borrador único | Closed |
+| [EWO-012](EWO-012.md) | Creación contextual y captura en Órdenes | Verification |
+| [EWO-013](EWO-013.md) | Expediente e historial de unidad | Verification |
+| [EWO-014](EWO-014.md) | Feedback de incompletitud y estados de carga | Proposed |

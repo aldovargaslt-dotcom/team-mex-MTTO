@@ -9,7 +9,7 @@ services:
       POSTGRES_DB: team_mex_mtto
     ports:
       # Solo en esta máquina (desarrollo local). No se publica a la LAN.
-      - '127.0.0.1:5432:5432'
+      - '127.0.0.1:${POSTGRES_PORT:-5432}:5432'
     volumes:
       - team_mex_pgdata:/var/lib/postgresql/data
       - ./docker/init.sql:/docker-entrypoint-initdb.d/init.sql

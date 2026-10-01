@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useEffect, useRef } from 'react';
 import {
   ClipboardList,
   History,
@@ -14,7 +15,7 @@ export type HubVista = 'resumen' | 'tecnica' | 'mantenimiento' | 'historial';
 
 const VISTAS: { id: HubVista; label: string; icon: LucideIcon }[] = [
   { id: 'resumen', label: 'Resumen', icon: LayoutDashboard },
-  { id: 'tecnica', label: 'Información técnica', icon: ClipboardList },
+  { id: 'tecnica', label: 'Datos de unidad', icon: ClipboardList },
   { id: 'mantenimiento', label: 'Mantenimiento', icon: Wrench },
   { id: 'historial', label: 'Historial', icon: History },
 ];
@@ -35,9 +36,13 @@ export function HubFichaNav({
   vista: HubVista;
   returnTo?: string;
 }) {
+  const activeRef = useRef<HTMLAnchorElement>(null);
+  useEffect(() => {
+    activeRef.current?.scrollIntoView({ block: 'nearest', inline: 'center' });
+  }, [vista]);
   return (
-    <nav className="hub-side" aria-label="Acciones de la unidad">
-      <p className="hub-side__title">Acciones</p>
+    <nav className="hub-side" aria-label="Secciones de la unidad">
+      <p className="hub-side__title">Secciones</p>
       <div className="hub-side__links">
         {VISTAS.map((item) => {
           const query = new URLSearchParams();
@@ -50,6 +55,7 @@ export function HubFichaNav({
           return (
             <Link
               key={item.id}
+              ref={active ? activeRef : undefined}
               href={href}
               className={cn('hub-side__link', active && 'is-active')}
               aria-current={active ? 'page' : undefined}

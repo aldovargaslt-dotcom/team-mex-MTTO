@@ -9,14 +9,17 @@ import {
   ParseUUIDPipe,
   Patch,
   Post,
+  Res,
 } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { Response } from 'express';
 import { CurrentUser } from '../auth/current-user';
 import { CurrentUserParam } from '../auth/current-user.decorator';
 import { Roles } from '../auth/roles.decorator';
 import { Rol } from '../auth/roles.enum';
 import { CATALOGO_TRABAJOS } from './trabajos-catalogo';
 import { UpdateVisitaDto } from './dto/update-visita.dto';
+import { CreateVisitaDto } from './dto/create-visita.dto';
 import { VisitasService } from './visitas.service';
 
 @ApiTags('visitas')
@@ -36,9 +39,16 @@ export class VisitasController {
   @ApiOperation({ summary: 'Crear borrador de visita (supervisor)' })
   create(
     @Param('unidadId', ParseUUIDPipe) unidadId: string,
+    @Body() dto: CreateVisitaDto,
     @CurrentUserParam() user: CurrentUser,
+    @Res({ passthrough: true }) response: Response,
   ) {
-    return this.service.createDraft(unidadId, user);
+    return this.service.createDraft(unidadId, dto, user).then((result) => {
+      response.status(
+        result.outcome === 'CREATED' ? HttpStatus.CREATED : HttpStatus.OK,
+      );
+      return result;
+    });
   }
 
   @Get('unidades/:unidadId/visitas')

@@ -396,13 +396,18 @@ export class SeedService implements OnModuleInit {
       nombre: CHOFER_ANDON_DEMO,
     });
     const user = { rol: Rol.SUPERVISOR, userId: 'seed' };
-    const draft = await this.visitasService.createDraft(unidad.id, user);
-    await this.visitasService.updateDraft(
-      draft.id,
+    const draft = await this.visitasService.createDraft(
+      unidad.id,
       {
         choferId: chofer.id,
         km: SEED_ANDON_KM,
         tipo: TipoVisita.PREDICTIVO,
+      },
+      user,
+    );
+    await this.visitasService.updateDraft(
+      draft.id,
+      {
         observaciones: SEED_ANDON_OBS,
         trabajos: [
           {

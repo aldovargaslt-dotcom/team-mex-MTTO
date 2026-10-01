@@ -37,6 +37,17 @@ npm install
 npm run dev
 ```
 
+Si `5432` ya está ocupado por otro PostgreSQL local, publique el contenedor en
+otro puerto y use el mismo valor desde los procesos Node del host:
+
+```powershell
+$env:POSTGRES_PORT = '5433'
+docker compose up -d
+$env:DB_PORT = '5433'
+```
+
+El puerto interno del contenedor y el valor por defecto permanecen en `5432`.
+
 ### Stack completo en Docker (red local)
 
 Para abrir la app desde el celular u otra PC de la misma Wi‑Fi/LAN, sin instalar Node:

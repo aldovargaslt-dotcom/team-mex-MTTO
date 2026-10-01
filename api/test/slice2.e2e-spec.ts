@@ -65,6 +65,13 @@ describe('Slice 2 visitas y choferes (e2e)', () => {
     return found;
   }
 
+  function crearBorrador(unidadId: string, choferId: string, km = 1000) {
+    return request(server)
+      .post(`/unidades/${unidadId}/visitas`)
+      .set(SUPERVISOR)
+      .send({ choferId, km, tipo: 'PREDICTIVO' });
+  }
+
   it('admin CRUD de choferes: trim, vacío 400 y duplicado 409', async () => {
     const created = await request(server)
       .post('/choferes')
@@ -160,10 +167,7 @@ describe('Slice 2 visitas y choferes (e2e)', () => {
         ?.estado,
     ).toBe('INACTIVO');
 
-    const draft = await request(server)
-      .post(`/unidades/${u101.id}/visitas`)
-      .set(SUPERVISOR)
-      .expect(201);
+    const draft = await crearBorrador(u101.id, created.body.id, 100).expect(201);
     const assign = await request(server)
       .patch(`/visitas/${draft.body.id}`)
       .set(SUPERVISOR)
@@ -271,16 +275,15 @@ describe('Slice 2 visitas y choferes (e2e)', () => {
 
   it('admin no puede crear ni cerrar visitas', async () => {
     const u101 = await unidadPorNumero(UNIDAD_ANDON_DEMO);
+    const chofer = await choferPorNombre(CHOFER_ANDON_DEMO);
     const crear = await request(server)
       .post(`/unidades/${u101.id}/visitas`)
       .set(ADMIN)
+      .send({ choferId: chofer.id, km: 100, tipo: 'PREDICTIVO' })
       .expect(403);
     expect(crear.body.message).toMatch(/administrador/i);
 
-    const draft = await request(server)
-      .post(`/unidades/${u101.id}/visitas`)
-      .set(SUPERVISOR)
-      .expect(201);
+    const draft = await crearBorrador(u101.id, chofer.id, 3000).expect(201);
 
     const cerrar = await request(server)
       .post(`/visitas/${draft.body.id}/cerrar`)
@@ -293,10 +296,8 @@ describe('Slice 2 visitas y choferes (e2e)', () => {
 
   it('admin hub oculta borradores y nunca puedeCrearVisita', async () => {
     const u101 = await unidadPorNumero(UNIDAD_ANDON_DEMO);
-    const draft = await request(server)
-      .post(`/unidades/${u101.id}/visitas`)
-      .set(SUPERVISOR)
-      .expect(201);
+    const chofer = await choferPorNombre(CHOFER_ANDON_DEMO);
+    const draft = await crearBorrador(u101.id, chofer.id, 100).expect(201);
 
     const hubAdmin = await request(server)
       .get(`/unidades/${u101.id}/hub`)
@@ -318,6 +319,7 @@ describe('Slice 2 visitas y choferes (e2e)', () => {
   });
 
   it('no crea visita en unidad inactiva', async () => {
+    const chofer = await choferPorNombre(CHOFER_ANDON_DEMO);
     const tipos = await request(server).get('/unidades/tipos').set(ADMIN);
     const created = await request(server)
       .post('/unidades')
@@ -332,6 +334,7 @@ describe('Slice 2 visitas y choferes (e2e)', () => {
     const res = await request(server)
       .post(`/unidades/${created.body.id}/visitas`)
       .set(SUPERVISOR)
+      .send({ choferId: chofer.id, km: 0, tipo: 'PREDICTIVO' })
       .expect(400);
     expect(res.body.message).toMatch(/inactiva/i);
   });
@@ -339,10 +342,7 @@ describe('Slice 2 visitas y choferes (e2e)', () => {
   it('C2 rechaza km menor al último cerrado incluso en borrador y chofer inexistente', async () => {
     const u101 = await unidadPorNumero(UNIDAD_ANDON_DEMO);
     const chofer = await choferPorNombre(CHOFER_ANDON_DEMO);
-    const draft = await request(server)
-      .post(`/unidades/${u101.id}/visitas`)
-      .set(SUPERVISOR)
-      .expect(201);
+    const draft = await crearBorrador(u101.id, chofer.id, 100).expect(201);
 
     const kmNeg = await request(server)
       .patch(`/visitas/${draft.body.id}`)
@@ -378,32 +378,18 @@ describe('Slice 2 visitas y choferes (e2e)', () => {
       .set(SUPERVISOR)
       .expect(200);
 
-    const segundo = await request(server)
-      .post(`/unidades/${u101.id}/visitas`)
-      .set(SUPERVISOR)
-      .expect(201);
-    const kmBajo = await request(server)
-      .patch(`/visitas/${segundo.body.id}`)
-      .set(SUPERVISOR)
-      .send({ km: 999 })
+    const kmBajo = await crearBorrador(u101.id, chofer.id, 999)
       .expect(400);
     expect(kmBajo.body.message).toMatch(/último km cerrado/i);
-
-    await request(server).delete(`/visitas/${segundo.body.id}`).set(SUPERVISOR);
   });
 
   it('C1 cierra solo con las 6 reglas y actualiza último km; C3/C4 outbox solo en CERRADO', async () => {
     const u102 = await unidadPorNumero(UNIDAD_SEGUNDA_DEMO);
     const chofer = await choferPorNombre(CHOFER_SEGUNDO_DEMO);
-    const a = await request(server)
-      .post(`/unidades/${u102.id}/visitas`)
-      .set(SUPERVISOR)
-      .expect(201);
-    const b = await request(server)
-      .post(`/unidades/${u102.id}/visitas`)
-      .set(SUPERVISOR)
-      .expect(201);
-    expect(a.body.id).not.toBe(b.body.id);
+    const a = await crearBorrador(u102.id, chofer.id, 250).expect(201);
+    const b = await crearBorrador(u102.id, chofer.id, 251).expect(200);
+    expect(a.body.id).toBe(b.body.id);
+    expect(b.body.outcome).toBe('EXISTING_DRAFT');
 
     const cerrarVacio = await request(server)
       .post(`/visitas/${a.body.id}/cerrar`)
@@ -485,9 +471,7 @@ describe('Slice 2 visitas y choferes (e2e)', () => {
       .expect(200);
     expect(hub.body.fichaCorta.ultimoKm).toBe(250);
     expect(hub.body.historialCerrado[0].id).toBe(a.body.id);
-    expect(hub.body.borradores.some((v: { id: string }) => v.id === b.body.id)).toBe(
-      true,
-    );
+    expect(hub.body.borradores).toEqual([]);
 
     const noEditar = await request(server)
       .patch(`/visitas/${a.body.id}`)
@@ -495,8 +479,6 @@ describe('Slice 2 visitas y choferes (e2e)', () => {
       .send({ km: 300 })
       .expect(400);
     expect(noEditar.body.message).toMatch(/cerrada/i);
-
-    await request(server).delete(`/visitas/${b.body.id}`).set(SUPERVISOR).expect(200);
 
     const hubAdmin = await request(server)
       .get(`/unidades/${u102.id}/hub`)
@@ -513,12 +495,43 @@ describe('Slice 2 visitas y choferes (e2e)', () => {
     expect(detalleAdmin.body.estado).toBe('CERRADO');
   });
 
+  it('O-04 dos solicitudes concurrentes dejan un solo borrador accionable', async () => {
+    const base = await unidadPorNumero(UNIDAD_ANDON_DEMO);
+    const chofer = await choferPorNombre(CHOFER_ANDON_DEMO);
+    const unidad = await request(server)
+      .post('/unidades')
+      .set(ADMIN)
+      .send({
+        numeroInterno: 'U-CONCURRENT-DRAFT',
+        placas: 'TEST-DRAFT-1',
+        tipoId: base.tipo.id,
+        estado: 'ACTIVA',
+      })
+      .expect(201);
+
+    const [first, second] = await Promise.all([
+      crearBorrador(unidad.body.id, chofer.id, 10),
+      crearBorrador(unidad.body.id, chofer.id, 11),
+    ]);
+    expect([first.status, second.status].sort()).toEqual([200, 201]);
+    expect(first.body.id).toBe(second.body.id);
+    expect([first.body.outcome, second.body.outcome].sort()).toEqual([
+      'CREATED',
+      'EXISTING_DRAFT',
+    ]);
+
+    const hub = await request(server)
+      .get(`/unidades/${unidad.body.id}/hub`)
+      .set(SUPERVISOR)
+      .expect(200);
+    expect(hub.body.borradores).toHaveLength(1);
+    expect(hub.body.borradores[0].id).toBe(first.body.id);
+  });
+
   it('rechaza trabajo fuera del catálogo A–E', async () => {
     const u101 = await unidadPorNumero(UNIDAD_ANDON_DEMO);
-    const draft = await request(server)
-      .post(`/unidades/${u101.id}/visitas`)
-      .set(SUPERVISOR)
-      .expect(201);
+    const chofer = await choferPorNombre(CHOFER_ANDON_DEMO);
+    const draft = await crearBorrador(u101.id, chofer.id, 3000).expect(201);
     const res = await request(server)
       .patch(`/visitas/${draft.body.id}`)
       .set(SUPERVISOR)

@@ -9,6 +9,7 @@ import { VisitaPieza } from './visita-pieza.entity';
 import { VisitaTrabajo } from './visita-trabajo.entity';
 import { VisitasController } from './visitas.controller';
 import { VisitasService } from './visitas.service';
+import { VisitasInvariantService } from './visitas-invariant.service';
 
 @Module({
   imports: [
@@ -23,7 +24,7 @@ import { VisitasService } from './visitas.service';
     ChoferesModule,
   ],
   controllers: [VisitasController],
-  providers: [VisitasService],
+  providers: [VisitasService, VisitasInvariantService],
   exports: [TypeOrmModule, VisitasService],
 })
 export class VisitasModule {}
