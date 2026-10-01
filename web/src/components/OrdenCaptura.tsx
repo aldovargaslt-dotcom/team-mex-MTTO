@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { ImagePlus, Package } from 'lucide-react';
 import { ImageDropzone } from '@/components/ImageDropzone';
 import { Button } from '@/components/ui/button';
@@ -31,6 +31,9 @@ export function OrdenCaptura({
   const [error, setError] = useState<string | null>(null);
   const [listo, setListo] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const panelRef = useRef<HTMLDivElement>(null);
+  const piezaTriggerRef = useRef<HTMLButtonElement>(null);
+  const fotoTriggerRef = useRef<HTMLButtonElement>(null);
   const opts = { role, userId };
 
   useEffect(() => {
@@ -40,31 +43,41 @@ export function OrdenCaptura({
   function abrir(next: Panel) {
     setError(null);
     setListo(null);
-    setPanel((current) => (current === next ? null : next));
+    setPanel((current) => {
+      if (current === next) {
+        window.setTimeout(() => (next === 'pieza' ? piezaTriggerRef : fotoTriggerRef).current?.focus());
+        return null;
+      }
+      window.setTimeout(() => panelRef.current?.focus());
+      return next;
+    });
   }
 
   return (
     <div className="ordenes-captura">
-      <div className="ordenes-captura__menu" role="toolbar" aria-label="Captura de la orden">
+      <h2>{editable ? 'Capturar en esta orden' : 'Piezas y fotos'}</h2>
+      {editable ? <div className="ordenes-captura__menu" role="toolbar" aria-label="Captura de la orden">
         <button
+          ref={piezaTriggerRef}
           type="button"
-          disabled={!editable}
-          aria-pressed={panel === 'pieza'}
+          aria-expanded={panel === 'pieza'}
+          aria-controls="orden-captura-pieza"
           onClick={() => abrir('pieza')}
         >
           <Package aria-hidden />
-          Agregar pieza
+          Agregar pieza · {detalle.piezas.length}
         </button>
         <button
+          ref={fotoTriggerRef}
           type="button"
-          disabled={!editable}
-          aria-pressed={panel === 'foto'}
+          aria-expanded={panel === 'foto'}
+          aria-controls="orden-captura-foto"
           onClick={() => abrir('foto')}
         >
           <ImagePlus aria-hidden />
-          Subir foto
+          Subir foto · {detalle.fotos.length} de 8
         </button>
-      </div>
+      </div> : null}
       {editable ? null : (
         <p className="ordenes-captura__note">
           Las piezas y las fotos de la orden se capturan mientras está abierta.
@@ -73,6 +86,7 @@ export function OrdenCaptura({
       {listo ? <p className="ordenes-captura__note">{listo}</p> : null}
       <FormAlert>{error}</FormAlert>
       {panel === 'pieza' && editable ? (
+        <div id="orden-captura-pieza" ref={panelRef} tabIndex={-1}>
         <PiezaPanel
           detalle={detalle}
           busy={busy}
@@ -83,9 +97,10 @@ export function OrdenCaptura({
             onVisita(visita);
             setListo('Pieza agregada a la orden.');
           }}
-        />
+        /></div>
       ) : null}
       {panel === 'foto' && editable ? (
+        <div id="orden-captura-foto" ref={panelRef} tabIndex={-1}>
         <FotoOrdenPanel
           detalle={detalle}
           busy={busy}
@@ -96,7 +111,7 @@ export function OrdenCaptura({
             onVisita(visita);
             setListo('Foto agregada a la orden.');
           }}
-        />
+        /></div>
       ) : null}
     </div>
   );

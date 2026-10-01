@@ -10,6 +10,7 @@ import { CurrentUser } from '../auth/current-user';
 import { Rol } from '../auth/roles.enum';
 import { EstadoUnidad } from '../common/estado-unidad.enum';
 import { ChoferesService } from '../choferes/choferes.service';
+import { Chofer } from '../choferes/chofer.entity';
 import { puedeAsignarChoferAVisita } from '../choferes/estado-chofer.enum';
 import {
   OrigenConsumo,
@@ -18,8 +19,10 @@ import {
 } from '../kernel/events/visita-cerrada';
 import { OutboxService } from '../kernel/outbox/outbox.service';
 import { UnidadesService } from '../unidades/unidades.service';
+import { Unidad } from '../unidades/unidad.entity';
 import { erroresCierre, mensajeKmInvalido } from './close-rules';
 import { EstadoVisita, TipoFirma } from './enums';
+import { CreateVisitaDto } from './dto/create-visita.dto';
 import { UpdateVisitaDto } from './dto/update-visita.dto';
 import { esTrabajoCatalogo } from './trabajos-catalogo';
 import { Visita } from './visita.entity';
@@ -47,28 +50,95 @@ export class VisitasService {
     private readonly dataSource: DataSource,
   ) {}
 
-  async createDraft(unidadId: string, user: CurrentUser) {
-    const unidad = await this.unidades.findOne(unidadId);
-    if (unidad.estado !== EstadoUnidad.ACTIVA) {
-      throw new BadRequestException(
-        'No se puede crear una visita porque la unidad está inactiva.',
-      );
+  async createDraft(
+    unidadId: string,
+    dto: CreateVisitaDto,
+    user: CurrentUser,
+  ) {
+    try {
+      const result = await this.dataSource.transaction(async (manager) => {
+        const existing = await manager.findOne(Visita, {
+          where: { unidad: { id: unidadId }, estado: EstadoVisita.BORRADOR },
+        });
+        if (existing) {
+          return { outcome: 'EXISTING_DRAFT' as const, id: existing.id };
+        }
+
+        const unidad = await manager.findOne(Unidad, {
+          where: { id: unidadId },
+          relations: { tipo: true },
+        });
+        if (!unidad) {
+          throw new NotFoundException('No se encontró la unidad.');
+        }
+        if (unidad.estado !== EstadoUnidad.ACTIVA) {
+          throw new BadRequestException(
+            'No se puede crear una visita porque la unidad está inactiva.',
+          );
+        }
+
+        const chofer = await manager.findOne(Chofer, {
+          where: { id: dto.choferId },
+        });
+        if (!chofer) {
+          throw new NotFoundException('No se encontró el chofer.');
+        }
+        if (!puedeAsignarChoferAVisita(chofer.estado)) {
+          throw new BadRequestException(
+            'El chofer no está activo. Seleccione un chofer activo.',
+          );
+        }
+
+        const ultimo = await manager.findOne(Visita, {
+          where: { unidad: { id: unidadId }, estado: EstadoVisita.CERRADO },
+          order: { cerradoAt: 'DESC' },
+        });
+        const errorKm = mensajeKmInvalido(dto.km, ultimo?.km ?? null);
+        if (errorKm) {
+          throw new BadRequestException(errorKm);
+        }
+
+        const visita = manager.create(Visita, {
+          unidad,
+          estado: EstadoVisita.BORRADOR,
+          createdBy: user.userId,
+          chofer,
+          km: dto.km,
+          tipo: dto.tipo,
+          observaciones: null,
+          trabajos: [],
+          fotos: [],
+          firmas: [],
+          piezas: [],
+        });
+        const saved = await manager.save(visita);
+        return { outcome: 'CREATED' as const, id: saved.id };
+      });
+      const detail = await this.findDetalle(result.id, user);
+      return { outcome: result.outcome, ...detail };
+    } catch (error: unknown) {
+      if (!this.isSingleDraftViolation(error)) throw error;
+      const winner = await this.repo.findOne({
+        where: { unidad: { id: unidadId }, estado: EstadoVisita.BORRADOR },
+      });
+      if (!winner) throw error;
+      const detail = await this.findDetalle(winner.id, user);
+      return { outcome: 'EXISTING_DRAFT' as const, ...detail };
     }
-    const visita = this.repo.create({
-      unidad,
-      estado: EstadoVisita.BORRADOR,
-      createdBy: user.userId,
-      chofer: null,
-      km: null,
-      tipo: null,
-      observaciones: null,
-      trabajos: [],
-      fotos: [],
-      firmas: [],
-      piezas: [],
-    });
-    const saved = await this.repo.save(visita);
-    return this.findDetalle(saved.id, user);
+  }
+
+  private isSingleDraftViolation(error: unknown) {
+    if (typeof error !== 'object' || error === null) return false;
+    const direct = error as { code?: string; constraint?: string };
+    const wrapped = 'driverError' in error
+      ? (error.driverError as { code?: string; constraint?: string })
+      : undefined;
+    return (
+      (direct.code === '23505' &&
+        direct.constraint === 'visitas_un_borrador_por_unidad_uidx') ||
+      (wrapped?.code === '23505' &&
+        wrapped.constraint === 'visitas_un_borrador_por_unidad_uidx')
+    );
   }
 
   async findDetalle(id: string, user: CurrentUser) {

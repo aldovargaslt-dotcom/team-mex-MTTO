@@ -197,6 +197,7 @@ describe('Inventario v0 + piezas en visita (e2e)', () => {
     const draft = await request(server)
       .post(`/unidades/${u101.id}/visitas`)
       .set(SUPERVISOR)
+      .send({ choferId: chofer.id, km: 1800, tipo: 'PREDICTIVO' })
       .expect(201);
 
     await prepararCierre(draft.body.id, chofer.id, 1800);
@@ -290,6 +291,7 @@ describe('Inventario v0 + piezas en visita (e2e)', () => {
     const draft = await request(server)
       .post(`/unidades/${u101.id}/visitas`)
       .set(SUPERVISOR)
+      .send({ choferId: chofer.id, km: 1900, tipo: 'PREDICTIVO' })
       .expect(201);
     await prepararCierre(draft.body.id, chofer.id, 1900);
     await request(server)
@@ -414,9 +416,11 @@ describe('Inventario v0 + piezas en visita (e2e)', () => {
     expect(mal.body.message).toMatch(/negativo/i);
 
     const u101 = await unidadPorNumero(UNIDAD_ANDON_DEMO);
+    const chofer = await choferPorNombre(CHOFER_ANDON_DEMO);
     const draft = await request(server)
       .post(`/unidades/${u101.id}/visitas`)
       .set(SUPERVISOR)
+      .send({ choferId: chofer.id, km: 2000, tipo: 'PREDICTIVO' })
       .expect(201);
     expect(draft.body.piezas).toEqual([]);
     expect(draft.body).not.toHaveProperty('stockQty');

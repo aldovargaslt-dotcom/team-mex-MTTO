@@ -23,6 +23,7 @@ El archivo 004 se llama `ADR-004-…` (histórico). No renombrar en un overlay d
 | 012 | [012-flota-sin-regreso-alertas.md](012-flota-sin-regreso-alertas.md) | `salida_at`, schema `alertas`, emit `FLOTA_SIN_REGRESO`. Canónico Aldo: [architecture/ADR-010](../../architecture/ADR-010-flota-sin-regreso-alertas-v0.md). No sustituye [010-salud](010-salud-unidad.md). |
 | 013 | [013-alert-catalog-ownership.md](013-alert-catalog-ownership.md) | Catálogo de Alertas: façade de umbrales + overlay `alert_catalog.tipo`. No mergea `andon` / `alertas` / `notifications`. |
 | 014 | [014-foto-unidad.md](014-foto-unidad.md) | Una foto opcional en `unidades`. No entra en `VisitaCerrada`. |
+| 015 | [015-borrador-unico-creacion-atomica-visita.md](015-borrador-unico-creacion-atomica-visita.md) | Un borrador por unidad + creación atómica de visita. |
 
 Mapa de bounded contexts → directorios: [context-map.md](context-map.md). Briefs visuales de corte: [docs/design-system/](../design-system/). Sistema de ingeniería UI (spec UX, Visual QA): [docs/design/](../design/).
 

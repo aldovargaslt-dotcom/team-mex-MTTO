@@ -584,7 +584,7 @@ function VisitWizard({
                 onChange={(e) => setTipo(e.target.value as TipoVisita | '')}
               >
                 <option value="">Seleccione</option>
-                <option value="PREDICTIVO">Predictivo</option>
+                <option value="PREDICTIVO">Preventivo</option>
                 <option value="CORRECTIVO">Correctivo</option>
               </NativeSelect>
             </Field>

@@ -129,7 +129,7 @@ export function formatFechaHoraCorta(value: string | null | undefined) {
 }
 
 export function etiquetaTipoVisita(tipo: string | null) {
-  if (tipo === 'PREDICTIVO') return 'Predictivo';
+  if (tipo === 'PREDICTIVO') return 'Preventivo';
   if (tipo === 'CORRECTIVO') return 'Correctivo';
   return 'Sin tipo';
 }

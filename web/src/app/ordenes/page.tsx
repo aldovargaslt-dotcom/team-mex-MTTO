@@ -5,6 +5,7 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Suspense, useEffect, useMemo, useState } from 'react';
 import { ChevronLeft, ListFilter, Search } from 'lucide-react';
 import { OrdenCaptura } from '@/components/OrdenCaptura';
+import { NuevaOrdenDialog } from '@/components/NuevaOrdenDialog';
 import { UnidadMarca } from '@/components/UnidadTipoMark';
 import { hydratePiezasFromInventario, type PiezaLinea } from '@/components/PiezasStep';
 import { RoleGate } from '@/components/RoleGate';
@@ -50,7 +51,7 @@ const COLAS: { id: Cola; label: string }[] = [
 
 const TIPOS: { id: TipoFiltro; label: string }[] = [
   { id: 'todos', label: 'Todos' },
-  { id: 'PREDICTIVO', label: 'Predictivo' },
+  { id: 'PREDICTIVO', label: 'Preventivo' },
   { id: 'CORRECTIVO', label: 'Correctivo' },
 ];
 
@@ -90,6 +91,7 @@ function OrdenesContent() {
   const [piezas, setPiezas] = useState<PiezaLinea[]>([]);
   const [filtroAbierto, setFiltroAbierto] = useState(false);
   const [mobileMode, setMobileMode] = useState<boolean | null>(null);
+  const [nuevaOrdenOpen, setNuevaOrdenOpen] = useState(false);
 
   useEffect(() => {
     const mq = window.matchMedia('(max-width: 800px)');
@@ -230,7 +232,7 @@ function OrdenesContent() {
   const emptyLede = q.trim()
     ? 'Pruebe otro texto o quite el filtro de tipo.'
     : cola === 'abiertas'
-      ? 'Un borrador nace en la unidad. Desde ahí se capturan trabajos, fotos y piezas.'
+      ? 'Crea una orden aquí para comenzar la captura.'
       : isAdmin
         ? 'El administrador ve las visitas ya cerradas.'
         : 'Al cerrar una visita pasa a esta lista.';
@@ -256,11 +258,12 @@ function OrdenesContent() {
         </div>
         {isAdmin ? null : (
           <Button
-            asChild
             variant={borradorSeleccionado ? 'outline' : 'default'}
             className={borradorSeleccionado ? undefined : 'ordenes-primary'}
+            type="button"
+            onClick={() => setNuevaOrdenOpen(true)}
           >
-            <Link href="/unidades">+ Nueva orden</Link>
+            + Nueva orden
           </Button>
         )}
       </header>
@@ -407,6 +410,20 @@ function OrdenesContent() {
           </div>
         </div>
       )}
+      {!isAdmin && role ? (
+        <NuevaOrdenDialog
+          open={nuevaOrdenOpen}
+          onOpenChange={setNuevaOrdenOpen}
+          role={role}
+          userId={userId}
+          onContinue={(visita) => {
+            setNuevaOrdenOpen(false);
+            const current = `${pathname}${searchParams.toString() ? `?${searchParams.toString()}` : ''}`;
+            const query = new URLSearchParams({ returnTo: current });
+            router.push(`/unidades/${visita.unidadId}/visitas/${visita.id}?${query.toString()}`);
+          }}
+        />
+      ) : null}
     </>
   );
 }
