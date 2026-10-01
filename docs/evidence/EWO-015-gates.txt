@@ -40,3 +40,11 @@ Web build with system CA — PASS
  ✓ Generating static pages (26/26)
 ○  (Static)   prerendered as static content
 ƒ  (Dynamic)  server-rendered on demand
+
+Hosted Verify — PASS
+Run: https://github.com/aldovargaslt-dotcom/team-mex-MTTO/actions/runs/36929533933
+Implementation commit: 06bccd6323b046894e3543cda08d8a1f05fa269a
+Node 20 / PostgreSQL 16
+api test + e2e: success (npm ci, unit, build, e2e, isolated migrations)
+web lint + build: success (npm ci, lint, build)
+Exclusive cloud PostgreSQL container cleanup: PASS (stop/remove)
