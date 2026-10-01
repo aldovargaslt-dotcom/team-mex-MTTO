@@ -30,3 +30,11 @@ Opaque IDs to kernel unidades/choferes. `AndonAbiertoPort` read-only. **Must not
 ## UI
 
 `web/src/app/flota`. Do not change Mantenimiento `/unidades` in a Flota visual cut.
+
+
+## Approved CHECK movement seam — target
+
+[ADR017](../../docs/adr/017-check-movement-seam.md) preserves patio SALIDA/ENTRADA and CHOFER+AVAL. New departures validate valid signed operable CHECK and insurance via server ports coordinated with writers; invalid insurance must not prevent return. Opaque CHECK snapshot reference, no cross-schema FK/JOIN. No implicit sync of Logistics journey. EN_TALLER needs explicit authorized physical transition/source (R04 adoptada), never Corrective existence. Current code unchanged; [contract](../../docs/contracts/CHK-001-contract.md) for future implementation. /flota movement surface, /logistica dashboard/Tower.
+
+
+Approved owner update2026-10-01: R01–R05 adoptadas en [Slice0 package](../../docs/engineering-work-orders/CHK-001-slice-0-review.md). Mapping facility por vehículo; MexicoCity día local; daily ACTIVA+Flota EN_PATIO/sinCHECKactivo; hard blockers aceite/refrigerante crítico/fuga severa/llanta severa-ponchadura/PSIcriticalconfig; claim/assign/invalidation en authorizedfacility; physical source Flota enum4 y divergence explícita; retorno overdue<=2hAttention/>2hCritical configurables. Sin decisiones owner pendientes ni código implementado; EWO015 Ready técnico, ejecución retenida.

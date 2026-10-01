@@ -1,5 +1,7 @@
 # ADR-015 — Borrador único y creación atómica de visita
 
+> Supersession parcial aprobada en Slice 0 (2026-10-01): [ADR-016](016-visita-check-evolution.md) sustituye exclusividad global/índice y selección global de borrador para el modelo nuevo; conserva creación atómica, auditoría no destructiva y contrato legacy mediante adapter. El cuerpo histórico siguiente permanece intacto. Aplicación/migraciones aún no ejecutadas.
+
 ## Status
 
 Accepted — aprobado explícitamente por el product owner en Codex el 2026-09-29.

@@ -143,3 +143,13 @@ New ADRs: add the next number under `docs/adr/` using [ADR-TEMPLATE.md](../docs/
 The summary ADR table above ends at 012; the [canonical ADR index](../docs/adr/README.md) also includes 013 (Alert Catalog) and 014 (unit photo). Summary references may lag; consult that index and the accepted decision before implementation. This is a documentation gap, not a change to accepted decisions.
 
 See [testing strategy](../docs/testing/TESTING_STRATEGY.md) for actual gates, destructive E2E setup and skipped-check reporting. Production migration policy remains unknown; do not infer it from synchronize defaults. The proposed trip-board spec status, intentional notify dual-stack and header-based stub authentication remain as documented above. Business KPIs and operational assumptions remain unconfirmed in [PRODUCT](PRODUCT.md).
+
+
+## Approved target decisions — CHECK / Slice 0
+
+As-is sections above describe current code. [ADR-016](../docs/adr/016-visita-check-evolution.md)–[ADR-020](../docs/adr/020-check-storage-migrations-scheduler.md) record owner decisions of 2026-10-01, not deployed changes: Visita extension1:1, active CHECK partial index (partial supersession ADR015), canonical types/status with legacy adapter, new CHECK_COMPLETED without maintenance effects; TrustedActor/MECANICO; minimal vehicle_documents ownership proposal; S3 private port; versioned TypeORM migrations and idempotent daily scheduler command. New schemas/ports/runners are target only. No BC reclassification nor notify unification.
+
+[Contract](../docs/contracts/CHK-001-contract.md) and [migration/backfill plan](../docs/migrations/CHK-001-visita-backfill-plan.md) are reviewable details; old synchronize/index remain until authorized execution. Departure uses coordinated server-side ports without JOIN/FK cross-module and preserves independent loops/CHOFER+AVAL. Navigation clarification ADR017: /logistica dashboard/Tower, /flota movements; earlier summary of /flota-only is historical. [Decisiones adoptadas y review](../docs/engineering-work-orders/CHK-001-slice-0-review.md).
+
+
+Approved owner update2026-10-01: R01–R05 adoptadas en [Slice0 package](../docs/engineering-work-orders/CHK-001-slice-0-review.md). Mapping facility por vehículo; MexicoCity día local; daily ACTIVA+Flota EN_PATIO/sinCHECKactivo; hard blockers aceite/refrigerante crítico/fuga severa/llanta severa-ponchadura/PSIcriticalconfig; claim/assign/invalidation en authorizedfacility; physical source Flota enum4 y divergence explícita; retorno overdue<=2hAttention/>2hCritical configurables. Sin decisiones owner pendientes ni código implementado; EWO015 Ready técnico, ejecución retenida.

@@ -97,3 +97,11 @@ Evidence in docs (not a new product claim):
 **Evidence of how the repo already verifies:** ADR-004 test IDs; `cd api && npm test && npm run test:e2e`; UI click-through screenshots (`proof-ui`); Visual QA via `ux-auditor`; PR Hold until SD / visual OK if UI changed.
 
 **Unknown:** field KPIs or business SLAs beyond those engineering bars.
+
+
+## Approved target increment — CHECK (Slice 0, 2026-10-01)
+
+Owner approved SPEC-CHK-001 discovery and decisions D01–D14; durable [Slice 0 package](../docs/engineering-work-orders/CHK-001-slice-0-review.md) records them. This is target behavior, NOT shipped capability. Introduce MECANICO/trusted identity, extend Visita with CHECK1:1 (no new inspections BC), permit 0..N maintenance, private evidence/tactile signature, readiness/docs policy and daily command. CHECK_COMPLETED must not count as maintenance, consume inventory or reset cadence. Existing v0 non-goals remain except the explicitly approved operational CHECK capability. Actual new docs/auth/schema are not implemented. /logistica remains dashboard/Tower and /flota movements; no global typography migration. R01–R05 adoptadas y paquete Slice0 aprobado; EWO015 técnicamente Ready, ejecución retenida.
+
+
+Approved owner update2026-10-01: R01–R05 adoptadas en [Slice0 package](../docs/engineering-work-orders/CHK-001-slice-0-review.md). Mapping facility por vehículo; MexicoCity día local; daily ACTIVA+Flota EN_PATIO/sinCHECKactivo; hard blockers aceite/refrigerante crítico/fuga severa/llanta severa-ponchadura/PSIcriticalconfig; claim/assign/invalidation en authorizedfacility; physical source Flota enum4 y divergence explícita; retorno overdue<=2hAttention/>2hCritical configurables. Sin decisiones owner pendientes ni código implementado; EWO015 Ready técnico, ejecución retenida.

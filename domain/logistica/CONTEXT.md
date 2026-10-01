@@ -26,3 +26,11 @@ Writes Kernel unidad fields. `FlotaSinRegresoPort` → Notifications. Must not m
 ## Escalation
 
 Any attempt to derive `ops_estado` from patio movements, or to un-park assignment UI, needs a product/architecture decision — do not silently decide.
+
+
+## Approved target / navigation clarification (2026-10-01)
+
+[ADR017](../../docs/adr/017-check-movement-seam.md) clarifies /logistica dashboard/Tower and /flota movements, matching AppShell/current approved dashboard spec; older /flota-only notes are historical. Assign-chofer desk remains parked; CHECK assignment is a separate Logistics/Admin capability. Read-only technical CHECK access; no mechanic edits/signature. Tower composes physical/readiness/check/urgency and max active severity; independent journey loop preserved. Policy/doc/check validation is server-side at departure, no UI authority. [ADR019](../../docs/adr/019-vehicle-insurance-policy.md) documentary owner proposed via port. Target only, no new schema or UI shipped in Slice0.
+
+
+Approved owner update2026-10-01: R01–R05 adoptadas en [Slice0 package](../../docs/engineering-work-orders/CHK-001-slice-0-review.md). Mapping facility por vehículo; MexicoCity día local; daily ACTIVA+Flota EN_PATIO/sinCHECKactivo; hard blockers aceite/refrigerante crítico/fuga severa/llanta severa-ponchadura/PSIcriticalconfig; claim/assign/invalidation en authorizedfacility; physical source Flota enum4 y divergence explícita; retorno overdue<=2hAttention/>2hCritical configurables. Sin decisiones owner pendientes ni código implementado; EWO015 Ready técnico, ejecución retenida.

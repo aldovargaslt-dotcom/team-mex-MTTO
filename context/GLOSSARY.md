@@ -72,3 +72,11 @@ Terms found in code, UI, database, tests, or documentation. **Do not invent busi
 - Prefer accepted business/UI Spanish terms over new English synonyms in copy.
 - New accepted terms go here or on the relevant `domain/*/CONTEXT.md` card.
 - Do not rename WO in the visit UI to “EWO” or “Engineering Work Order”.
+
+
+## CHECK approved target vocabulary (not implemented)
+
+[Contract](../docs/contracts/CHK-001-contract.md), owner decisions 2026-10-01. MECANICO is a new explicit role, not a Supervisor rename. CHECK is a Visita subtype with four steps, not maintenance performed. PREVENTIVE canonical maps legacy PREDICTIVO (UI Preventivo); CORRECTIVE maps CORRECTIVO. COMPLETED is lifecycle, FIT/FIT_WITH_OBSERVATION/UNFIT result. Operational expiration is end of operational_date, invalidation append-only has a separate cause. REQUIRES_WORK itself selects Corrective creation at signed completion; PREPARED before close, not an OT already created. POLIZA_SEGURO is the only V1 documentary type. CHECK_COMPLETED never means VisitaCerrada. WO/EWO distinction unchanged.
+
+
+Approved owner update2026-10-01: R01–R05 adoptadas en [Slice0 package](../docs/engineering-work-orders/CHK-001-slice-0-review.md). Mapping facility por vehículo; MexicoCity día local; daily ACTIVA+Flota EN_PATIO/sinCHECKactivo; hard blockers aceite/refrigerante crítico/fuga severa/llanta severa-ponchadura/PSIcriticalconfig; claim/assign/invalidation en authorizedfacility; physical source Flota enum4 y divergence explícita; retorno overdue<=2hAttention/>2hCritical configurables. Sin decisiones owner pendientes ni código implementado; EWO015 Ready técnico, ejecución retenida.

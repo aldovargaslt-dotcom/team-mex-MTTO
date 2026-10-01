@@ -25,6 +25,14 @@ El archivo 004 se llama `ADR-004-…` (histórico). No renombrar en un overlay d
 | 014 | [014-foto-unidad.md](014-foto-unidad.md) | Una foto opcional en `unidades`. No entra en `VisitaCerrada`. |
 | 015 | [015-borrador-unico-creacion-atomica-visita.md](015-borrador-unico-creacion-atomica-visita.md) | Un borrador por unidad + creación atómica de visita. |
 
+| 016 | [016-visita-check-evolution.md](016-visita-check-evolution.md) | Visita/CHECK1:1; supersession parcial ADR-015; CHECK_COMPLETED separado de mantenimiento. |
+| 017 | [017-check-movement-seam.md](017-check-movement-seam.md) | CHECK válido y puertos de salida, loops independientes, Torre y navegación. |
+| 018 | [018-mecanico-auth-signature-identity.md](018-mecanico-auth-signature-identity.md) | MECANICO y identidad production confiable; stub sólo no-production. |
+| 019 | [019-vehicle-insurance-policy.md](019-vehicle-insurance-policy.md) | Documentos mínimos POLIZA_SEGURO y policy de salida. |
+| 020 | [020-check-storage-migrations-scheduler.md](020-check-storage-migrations-scheduler.md) | S3 privado, migrations TypeORM y daily command/scheduler. |
+
+ADR-016–020 registran decisiones de owner aprobadas el 2026-10-01; contratos técnicos detallados del [paquete Slice 0](../engineering-work-orders/CHK-001-slice-0-review.md) fueron aprobados por owner junto a R01–R05; addenda explícitos preservan cuerpos anteriores. No son evidencia de implementación. ADR-015 permanece como histórico con supersession parcial enlazada.
+
 Mapa de bounded contexts → directorios: [context-map.md](context-map.md). Briefs visuales de corte: [docs/design-system/](../design-system/). Sistema de ingeniería UI (spec UX, Visual QA): [docs/design/](../design/).
 
 ## Cuándo escribir un ADR
