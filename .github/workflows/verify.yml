@@ -36,6 +36,7 @@ jobs:
       DB_NAME: team_mex_mtto_test
       DB_SYNCHRONIZE: 'true'
       DB_DROP_SCHEMA: 'true'
+      EWO_DISPOSABLE_DB: 'true'
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -66,7 +67,13 @@ jobs:
           done
       - run: npm ci
       - run: npm test
+      - run: npm run build
       - run: npm run test:e2e
+      - name: Isolated CHECK migration rehearsal (no synchronize)
+        run: npm run test:migrations
+        env:
+          DB_SYNCHRONIZE: 'false'
+          DB_DROP_SCHEMA: 'false'
 
   web:
     name: web lint + build

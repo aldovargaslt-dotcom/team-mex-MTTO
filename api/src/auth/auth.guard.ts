@@ -2,23 +2,69 @@ import {
   CanActivate,
   ExecutionContext,
   Injectable,
+  Inject,
   UnauthorizedException,
 } from '@nestjs/common';
 import { Request } from 'express';
 import { CurrentUser } from './current-user';
 import { Rol, ROLES_VALIDOS } from './roles.enum';
+import { Reflector } from '@nestjs/core';
+import { ConfigService } from '@nestjs/config';
+import {
+  AuthenticationPort,
+  TrustedActor,
+  validateActor,
+} from './trusted-actor';
+import { TRUSTED_AUTH } from './trusted-auth.decorator';
 
 const RUTAS_PUBLICAS = ['/health', '/docs', '/docs-json'];
 
 @Injectable()
 export class AuthGuard implements CanActivate {
-  canActivate(context: ExecutionContext): boolean {
+  constructor(
+    private readonly reflector: Reflector,
+    private readonly config: ConfigService,
+    @Inject(AuthenticationPort)
+    private readonly authentication: AuthenticationPort,
+  ) {}
+
+  async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context
       .switchToHttp()
-      .getRequest<Request & { user?: CurrentUser }>();
+      .getRequest<Request & { user?: CurrentUser; actor?: TrustedActor }>();
     const path = request.path || '';
 
-    if (RUTAS_PUBLICAS.some((ruta) => path === ruta || path.startsWith(`${ruta}/`))) {
+    if (
+      RUTAS_PUBLICAS.some(
+        (ruta) => path === ruta || path.startsWith(`${ruta}/`),
+      )
+    ) {
+      return true;
+    }
+
+    const trusted = this.reflector.getAllAndOverride<boolean>(TRUSTED_AUTH, [
+      context.getHandler(),
+      context.getClass(),
+    ]);
+    if (trusted || this.config.get('NODE_ENV') === 'production') {
+      const actor = validateActor(
+        await this.authentication.authenticate(request),
+        this.config.get('NODE_ENV'),
+      );
+      request.actor = actor;
+      // Legacy controllers retain CurrentUser; authorization still checks all
+      // trusted roles server-side. Caller headers never choose that identity.
+      const required = this.reflector.getAllAndOverride<Rol[]>('roles', [
+        context.getHandler(),
+        context.getClass(),
+      ]);
+      const role = actor.roles.find(
+        (r) => r !== 'SYSTEM' && (!required || required.includes(r)),
+      ) as Rol | undefined;
+      request.user = {
+        rol: role ?? (actor.roles[0] as Rol),
+        userId: actor.subject,
+      };
       return true;
     }
 

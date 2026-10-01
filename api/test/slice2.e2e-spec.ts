@@ -495,7 +495,7 @@ describe('Slice 2 visitas y choferes (e2e)', () => {
     expect(detalleAdmin.body.estado).toBe('CERRADO');
   });
 
-  it('O-04 dos solicitudes concurrentes dejan un solo borrador accionable', async () => {
+  it('O-04 / S1-T04 dos solicitudes legacy concurrentes conservan un solo slot de borrador', async () => {
     const base = await unidadPorNumero(UNIDAD_ANDON_DEMO);
     const chofer = await choferPorNombre(CHOFER_ANDON_DEMO);
     const unidad = await request(server)

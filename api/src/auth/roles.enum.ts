@@ -2,6 +2,7 @@ export enum Rol {
   SUPERVISOR = 'SUPERVISOR',
   ADMIN_DIRECTIVO = 'ADMIN_DIRECTIVO',
   LOGISTICA = 'LOGISTICA',
+  MECANICO = 'MECANICO',
 }
 
 export const ROLES_VALIDOS = Object.values(Rol);

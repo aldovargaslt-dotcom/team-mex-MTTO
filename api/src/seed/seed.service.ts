@@ -372,11 +372,13 @@ export class SeedService implements OnModuleInit {
       const cerradoAt = new Date();
       cerradoAt.setUTCDate(cerradoAt.getUTCDate() - SEED_ANDON_DAYS_AGO);
       prior.cerradoAt = cerradoAt;
+      prior.completedAt = cerradoAt;
       await this.visitas.save(prior);
     } else if (prior.observaciones === SEED_ANDON_OBS) {
       const cerradoAt = new Date();
       cerradoAt.setUTCDate(cerradoAt.getUTCDate() - SEED_ANDON_DAYS_AGO);
       prior.cerradoAt = cerradoAt;
+      prior.completedAt = cerradoAt;
       await this.visitas.save(prior);
     }
 

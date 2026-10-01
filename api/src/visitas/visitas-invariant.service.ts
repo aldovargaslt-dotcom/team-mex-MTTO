@@ -1,45 +1,36 @@
-import { Injectable, Logger, OnApplicationBootstrap } from '@nestjs/common';
+import { Injectable, OnApplicationBootstrap } from '@nestjs/common';
 import { DataSource } from 'typeorm';
-
-type DuplicateDraftRow = {
-  unidad_id: string;
-  visita_ids: string[];
-};
+import {
+  FOUNDATION_CONSTRAINTS,
+  installFoundationConstraints,
+  verifyFoundation,
+} from '../db/check-foundation';
 
 @Injectable()
 export class VisitasInvariantService implements OnApplicationBootstrap {
-  private readonly logger = new Logger(VisitasInvariantService.name);
-
   constructor(private readonly dataSource: DataSource) {}
-
   async onApplicationBootstrap() {
-    await this.ensureSingleDraftPerUnidad();
-  }
-
-  async ensureSingleDraftPerUnidad() {
-    const duplicates = (await this.dataSource.query(`
-      SELECT unidad_id, array_agg(id ORDER BY created_at) AS visita_ids
-      FROM public.visitas
-      WHERE estado = 'BORRADOR'
-      GROUP BY unidad_id
-      HAVING COUNT(*) > 1
-      ORDER BY unidad_id
-    `)) as DuplicateDraftRow[];
-
-    if (duplicates.length > 0) {
-      const detail = duplicates
-        .map((row) => `${row.unidad_id}: ${row.visita_ids.join(', ')}`)
-        .join('; ');
-      throw new Error(
-        `No se instaló el invariante de borrador único. Resuelva los duplicados sin borrar datos en silencio: ${detail}`,
-      );
+    // synchronize is only supported for explicitly disposable development/tests.
+    // Controlled environments verify migrations; bootstrap never restores the
+    // superseded global draft index or performs a production backfill.
+    if (this.dataSource.options.synchronize) {
+      if (!['test', 'development'].includes(process.env.NODE_ENV ?? ''))
+        throw new Error(
+          'Explicit non-production environment required for synchronize',
+        );
+      await installFoundationConstraints(this.dataSource);
+      for (const name of Object.keys(FOUNDATION_CONSTRAINTS))
+        await this.dataSource.query(
+          `ALTER TABLE public.visitas VALIDATE CONSTRAINT ${name}`,
+        );
     }
-
-    await this.dataSource.query(`
-      CREATE UNIQUE INDEX IF NOT EXISTS visitas_un_borrador_por_unidad_uidx
-      ON public.visitas (unidad_id)
-      WHERE estado = 'BORRADOR'
-    `);
-    this.logger.log('Invariante de un borrador por unidad verificado.');
+    await verifyFoundation(this.dataSource);
+    const old = await this.dataSource.query(
+      "SELECT 1 FROM pg_indexes WHERE schemaname='public' AND indexname='visitas_un_borrador_por_unidad_uidx'",
+    );
+    if (old.length)
+      throw new Error(
+        'LEGACY_GLOBAL_INDEX_PRESENT: complete the writer-drain/migration gate before startup.',
+      );
   }
 }
