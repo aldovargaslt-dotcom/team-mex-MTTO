@@ -33,3 +33,11 @@ Visita, WO (wizard), trabajos A–E, piezas, `DESDE_STOCK`, `COMPRA_EXTERNA`, fi
 ## Do not load by default
 
 Flota tablero, Logística assignment, dual-stack notify implementation details.
+
+
+## Approved CHECK target — Slice0 only
+
+Owner 2026-10-01: [ADR016](../../docs/adr/016-visita-check-evolution.md), [contract](../../docs/contracts/CHK-001-contract.md), [SPEC](../../docs/specs/SPEC-CHK-001.md). Extend Visita, CHECK1:1; unique active CHECK per unit, maintenance0..N with legacy slot adapter (partial supersession ADR015). CHECK own condition/PSI/evidence/findings/review/tactile signature; signedimmutable; REQUIRES_WORK selects atomically derived Corrective. CHECK_COMPLETED distinct from VisitaCerrada and no inventory/cadence/maintenance-consumer effects. Explicit requires_reinspection maintenance can append invalidation, ordinary completion does not implicitly invalidate. All as-is code unchanged; no new BC declaration. [R01–05 adoptadas / review](../../docs/engineering-work-orders/CHK-001-slice-0-review.md).
+
+
+Approved owner update2026-10-01: R01–R05 adoptadas en [Slice0 package](../../docs/engineering-work-orders/CHK-001-slice-0-review.md). Mapping facility por vehículo; MexicoCity día local; daily ACTIVA+Flota EN_PATIO/sinCHECKactivo; hard blockers aceite/refrigerante crítico/fuga severa/llanta severa-ponchadura/PSIcriticalconfig; claim/assign/invalidation en authorizedfacility; physical source Flota enum4 y divergence explícita; retorno overdue<=2hAttention/>2hCritical configurables. Sin decisiones owner pendientes ni código implementado; EWO015 Ready técnico, ejecución retenida.

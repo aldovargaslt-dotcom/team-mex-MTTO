@@ -258,3 +258,11 @@ Consulta / conducta
 → ux-consulta-conducta-cortes-v0.md
 → not A–E, not tablero viaje
 ```
+
+
+## CHECK — approved target routing (Slice0)
+
+Start with [Slice0 review](docs/engineering-work-orders/CHK-001-slice-0-review.md), [SPEC](docs/specs/SPEC-CHK-001.md), [contract](docs/contracts/CHK-001-contract.md), ADR016–020 and [migrationplan](docs/migrations/CHK-001-visita-backfill-plan.md). Execution requires the separately approved EWO015–022 for the slice; EWO015 Ready técnico,016–022 Draft por dependencias, ejecución retenida. Load Mantenimiento first; Kernel/Auth, Flota/Logística, Documents/Notifications only at named seam. No new BC declared. R01–05 adoptadas por owner; runtime config data es input de ejecución; targetdocs do not establish deployed capability. /logistica dashboard/Tower, /flota movements per ADR017.
+
+
+Approved owner update2026-10-01: R01–R05 adoptadas en [Slice0 package](docs/engineering-work-orders/CHK-001-slice-0-review.md). Mapping facility por vehículo; MexicoCity día local; daily ACTIVA+Flota EN_PATIO/sinCHECKactivo; hard blockers aceite/refrigerante crítico/fuga severa/llanta severa-ponchadura/PSIcriticalconfig; claim/assign/invalidation en authorizedfacility; physical source Flota enum4 y divergence explícita; retorno overdue<=2hAttention/>2hCritical configurables. Sin decisiones owner pendientes ni código implementado; EWO015 Ready técnico, ejecución retenida.

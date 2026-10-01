@@ -18,3 +18,11 @@
 Seams (puertos): `NotifyPort`, `StockAlertPort`, `AvisoInboxPort`, `AndonAbiertoPort` (Flota lee aviso Andon abierto; sin UI Andon), `HealthAlertPort` (Salud → inbox; sin WhatsApp), `FlotaSinRegresoPort` (Logística → inbox `FLOTA_SIN_REGRESO`; sin `andon.*`), `UnidadChoferAssignmentPort` (Logística escribe Kernel `unidad.choferId`; sin schema propio), `AlertTypeActivePort` (catálogo → emitters; sin reglas sobre schemas ajenos). IDs opacos; sin FKs/JOINs cruzadas (ADR-002).
 
 Notify dual-stack (no unificar): `andon-notifier.factory.ts` vs `andon/notify/` — [AGENTS.md](../../AGENTS.md).
+
+
+## Approved target overlay — CHECK Slice0
+
+No change to as-is module/schema table until implemented. [ADR016–020](README.md) target Visita/CHECK1:1, trusted identity, documentary capability, private storage/versioned migrations and scheduler. /logistica dashboard/Tower and /flota movements clarification ADR017 replaces the historical redirect/navigation note above. Proposed documentary owner/schema vehicle_documents is a capability, not a newly declared BC. SignedCheckReadPort, VehicleInsurancePolicyPort, coordinated DeparturePolicyPort are proposed seams; no cross-schema SQL. [Contract/review](../engineering-work-orders/CHK-001-slice-0-review.md).
+
+
+Approved owner update2026-10-01: R01–R05 adoptadas en [Slice0 package](../engineering-work-orders/CHK-001-slice-0-review.md). Mapping facility por vehículo; MexicoCity día local; daily ACTIVA+Flota EN_PATIO/sinCHECKactivo; hard blockers aceite/refrigerante crítico/fuga severa/llanta severa-ponchadura/PSIcriticalconfig; claim/assign/invalidation en authorizedfacility; physical source Flota enum4 y divergence explícita; retorno overdue<=2hAttention/>2hCritical configurables. Sin decisiones owner pendientes ni código implementado; EWO015 Ready técnico, ejecución retenida.

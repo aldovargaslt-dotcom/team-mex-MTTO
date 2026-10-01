@@ -91,3 +91,11 @@ Flujo local y significado de PRD / SPEC / AC / EWO / ADR / evidencia: [WORKFLOW]
 - Cerrar sesión con estado, archivos, evidencia y siguiente paso en el EWO; actualizar contexto solo por cambios duraderos.
 
 Skills externas opcionales de UI/UX: [selección, alcance y precedencia](docs/design/EXTERNAL_SKILLS.md). No sustituyen ADRs ni Visual QA.
+
+
+## CHECK — approved target overlay (Slice0)
+
+Owner approved CHECK discovery/D01–14 on 2026-10-01; only documentation authorized. [Slice0 review](docs/engineering-work-orders/CHK-001-slice-0-review.md), [SPEC](docs/specs/SPEC-CHK-001.md), ADR016–020, [contract](docs/contracts/CHK-001-contract.md), [backfill](docs/migrations/CHK-001-visita-backfill-plan.md) govern new feature. Legacy ADR015 is partially superseded explicitly; its runtime index unchanged until migration execution. MECANICO/TrustedActor and POLIZA_SEGURO capability are target, not implemented. New CHECK_COMPLETED has no VisitaCerrada/maintenance effects. Preserve existing DS; /logistica dashboard/Tower, /flota movements (ADR017 supersedes older navigation-only restriction above). No implementation approval for EWOs015–022; EWO015 es Ready técnico y016–022 Draft por dependencias; ejecución sigue retenida. No schema/migration/auth/storage/runtime actions inferred from durable docs.
+
+
+Approved owner update2026-10-01: R01–R05 adoptadas en [Slice0 package](docs/engineering-work-orders/CHK-001-slice-0-review.md). Mapping facility por vehículo; MexicoCity día local; daily ACTIVA+Flota EN_PATIO/sinCHECKactivo; hard blockers aceite/refrigerante crítico/fuga severa/llanta severa-ponchadura/PSIcriticalconfig; claim/assign/invalidation en authorizedfacility; physical source Flota enum4 y divergence explícita; retorno overdue<=2hAttention/>2hCritical configurables. Sin decisiones owner pendientes ni código implementado; EWO015 Ready técnico, ejecución retenida.
