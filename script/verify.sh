@@ -1,18 +1,30 @@
 #!/usr/bin/env bash
 # Orquesta las mismas pruebas que CI: cd api / cd web (no hay package.json raíz).
-# Humanos: docker compose (README). Cloud Agent: .cursor/wait-for-db.sh.
+# Requires an explicitly disposable PostgreSQL target; never starts or reuses
+# an unverified database automatically. DATABASE_URL would override DB_NAME.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
 
-E2E_SKIPPED=0
+if [ -n "${DATABASE_URL:-}" ]; then
+  echo "Clear DATABASE_URL before destructive test fixtures." >&2
+  exit 1
+fi
+if [ "${EWO_DISPOSABLE_DB:-}" != "true" ]; then
+  echo "Verify a disposable PostgreSQL target, then set EWO_DISPOSABLE_DB=true." >&2
+  exit 1
+fi
+export DATABASE_URL=''
+export DB_HOST="${DB_HOST:-localhost}"
+export DB_PORT="${DB_PORT:-5432}"
+export DB_NAME=team_mex_mtto_test
 
 db_ready() {
   if command -v pg_isready >/dev/null 2>&1; then
-    pg_isready -h 127.0.0.1 -p 5432 -q && return 0
+    pg_isready -h "$DB_HOST" -p "$DB_PORT" -q && return 0
   fi
-  (echo >/dev/tcp/127.0.0.1/5432) >/dev/null 2>&1
+  (echo >"/dev/tcp/$DB_HOST/$DB_PORT") >/dev/null 2>&1
 }
 
 wait_for_port() {
@@ -26,29 +38,18 @@ wait_for_port() {
 
 ensure_db() {
   if db_ready; then
-    echo "==> Postgres already accepting connections on 127.0.0.1:5432"
+    echo "==> Confirmed disposable PostgreSQL target is accepting connections"
     return 0
   fi
-  if command -v docker >/dev/null 2>&1 && docker compose version >/dev/null 2>&1; then
-    echo "==> docker compose up -d (Postgres only; README human path)"
-    docker compose up -d
-    wait_for_port && return 0
-    echo "WARN: docker compose started but Postgres is not ready" >&2
-    return 1
-  fi
-  if [ -f "$ROOT/.cursor/wait-for-db.sh" ]; then
-    echo "==> .cursor/wait-for-db.sh (Cloud Agent native Postgres)"
-    bash "$ROOT/.cursor/wait-for-db.sh"
-    return $?
-  fi
-  return 1
+  wait_for_port
 }
 
 echo "==> api unit tests"
 (cd "$ROOT/api" && npm test)
+(cd "$ROOT/api" && npm run build)
 
 if ensure_db; then
-  echo "==> api e2e (DB_HOST=localhost, team_mex_mtto_test, synchronize/drop)"
+  echo "==> api e2e (team_mex_mtto_test, synchronize/drop; explicit disposable target)"
   (
     cd "$ROOT/api"
     export DB_HOST="${DB_HOST:-localhost}"
@@ -59,15 +60,12 @@ if ensure_db; then
     export DB_SYNCHRONIZE=true
     export DB_DROP_SCHEMA=true
     npm run test:e2e
+    DB_SYNCHRONIZE=false DB_DROP_SCHEMA=false npm run test:migrations
   )
 else
-  echo "SKIP: api e2e — Postgres not available (no docker compose / wait-for-db)."
-  E2E_SKIPPED=1
+  echo "FAIL: disposable PostgreSQL target unavailable; required e2e/migration gates cannot be skipped." >&2
+  exit 1
 fi
 
 echo "==> web lint + build"
 (cd "$ROOT/web" && npm run lint && npm run build)
-
-if [ "$E2E_SKIPPED" -eq 1 ]; then
-  echo "verify.sh: unit + web OK; e2e SKIPPED (no Postgres)."
-fi

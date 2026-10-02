@@ -1,6 +1,10 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, In, Not, IsNull } from 'typeorm';
 import { CurrentUser } from '../auth/current-user';
 import { Rol } from '../auth/roles.enum';
 import { mensajesHub, puedeCrearVisita } from '../common/hub-policy';
@@ -12,6 +16,7 @@ import { EstadoChofer } from '../choferes/estado-chofer.enum';
 import { TiposVehiculoService } from './tipos-vehiculo.service';
 import { EstadoVisita } from '../visitas/enums';
 import { Visita } from '../visitas/visita.entity';
+import { maintenanceTypes } from '../visitas/work-order';
 import { CreateUnidadDto } from './dto/create-unidad.dto';
 import { FiltrarUnidadesDto } from './dto/filtrar-unidades.dto';
 import { UpdateUnidadDto } from './dto/update-unidad.dto';
@@ -164,7 +169,9 @@ export class UnidadesService {
     if (value == null || value.trim() === '') return null;
     const foto = value.trim();
     if (!foto.startsWith('data:image/')) {
-      throw new BadRequestException('La foto de la unidad debe ser una imagen.');
+      throw new BadRequestException(
+        'La foto de la unidad debe ser una imagen.',
+      );
     }
     return foto;
   }
@@ -185,7 +192,11 @@ export class UnidadesService {
 
   async ultimoKmCerrado(unidadId: string): Promise<number | null> {
     const ultimoCerrado = await this.visitas.findOne({
-      where: { unidad: { id: unidadId }, estado: EstadoVisita.CERRADO },
+      where: {
+        unidad: { id: unidadId },
+        estado: EstadoVisita.CERRADO,
+        workOrderType: In(maintenanceTypes),
+      },
       order: { cerradoAt: 'DESC' },
     });
     return ultimoCerrado?.km ?? null;
@@ -195,14 +206,22 @@ export class UnidadesService {
     const unidad = await this.findOne(id);
     const [ultimoCerrado, hayChoferesActivos, visitas] = await Promise.all([
       this.visitas.findOne({
-        where: { unidad: { id }, estado: EstadoVisita.CERRADO },
+        where: {
+          unidad: { id },
+          estado: EstadoVisita.CERRADO,
+          workOrderType: In(maintenanceTypes),
+        },
         order: { cerradoAt: 'DESC' },
       }),
       this.choferes
         .count({ where: { estado: EstadoChofer.ACTIVO } })
         .then((n) => n > 0),
       this.visitas.find({
-        where: { unidad: { id } },
+        where: {
+          unidad: { id },
+          workOrderType: In(maintenanceTypes),
+          estado: Not(IsNull()),
+        },
         relations: { chofer: true, trabajos: true, piezas: true },
         order: { updatedAt: 'DESC' },
       }),
@@ -210,7 +229,7 @@ export class UnidadesService {
 
     const toItem = (visita: Visita) => ({
       id: visita.id,
-      estado: visita.estado,
+      estado: visita.estado!,
       tipo: visita.tipo,
       km: visita.km,
       choferId: visita.chofer?.id ?? null,
@@ -241,7 +260,9 @@ export class UnidadesService {
       user.rol === Rol.ADMIN_DIRECTIVO
         ? []
         : visitas
-            .filter((v) => v.estado === EstadoVisita.BORRADOR)
+            .filter(
+              (v) => v.estado === EstadoVisita.BORRADOR && v.legacyCompatDraft,
+            )
             .map(toItem);
 
     return {

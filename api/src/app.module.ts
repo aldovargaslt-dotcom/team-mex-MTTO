@@ -3,6 +3,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthGuard } from './auth/auth.guard';
+import { TrustedAuthModule } from './auth/trusted-auth.module';
 import { RolesGuard } from './auth/roles.guard';
 import { HealthController } from './health.controller';
 import { ChoferesModule } from './choferes/choferes.module';
@@ -24,6 +25,7 @@ import { SaludModule } from './salud/salud.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
+    TrustedAuthModule,
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
       useFactory: async (config: ConfigService) => {

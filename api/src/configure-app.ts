@@ -40,7 +40,7 @@ export function configureApp(app: INestApplication): void {
             .map((origin) => origin.trim())
             .filter(Boolean),
     credentials: true,
-    allowedHeaders: ['Content-Type', 'X-Role', 'X-User-Id'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Role', 'X-User-Id'],
   });
 
   app.useGlobalPipes(
@@ -58,7 +58,7 @@ export function configureApp(app: INestApplication): void {
   const swaggerConfig = new DocumentBuilder()
     .setTitle('Team Mex — Mantenimiento')
     .setDescription(
-    'API: kernel, visitas, Inventario, Andon, Notifications, Flota, Logística, Salud y catálogo de Alertas (schema-per-module). Autenticación stub por encabezado X-Role.',
+      'API: kernel, visitas, Inventario, Andon, Notifications, Flota, Logística, Salud y catálogo de Alertas (schema-per-module). Autenticación stub por encabezado X-Role.',
     )
     .setVersion('3.0')
     .addApiKey({ type: 'apiKey', name: 'X-Role', in: 'header' }, 'X-Role')

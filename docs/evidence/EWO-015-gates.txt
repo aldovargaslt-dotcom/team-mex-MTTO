@@ -1,0 +1,50 @@
+EWO-015 local gate excerpts — 2026-10-01
+Full command/environment descriptions: EWO-015.md
+All final commands exited 0; no required tests skipped.
+
+API unit — PASS
+Test Suites: 34 passed, 34 total
+Tests:       192 passed, 192 total
+Snapshots:   0 total
+Time:        12.927 s
+Ran all test suites.
+
+API build — PASS
+
+> api@0.0.1 build
+> nest build
+
+
+API e2e final guarded — PASS
+Test Suites: 12 passed, 12 total
+Tests:       97 passed, 97 total
+Snapshots:   0 total
+Time:        39.658 s, estimated 67 s
+Ran all test suites.
+
+Isolated migrations — PASS
+Test Suites: 1 passed, 1 total
+Tests:       16 passed, 16 total
+Snapshots:   0 total
+Time:        12.117 s
+Ran all test suites.
+
+Web lint — PASS
+
+> web@0.1.0 lint
+> eslint
+
+
+Web build with system CA — PASS
+ ✓ Compiled successfully in 14.3s
+ ✓ Generating static pages (26/26)
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+
+Hosted Verify — PASS
+Run: https://github.com/aldovargaslt-dotcom/team-mex-MTTO/actions/runs/36929533933
+Implementation commit: 06bccd6323b046894e3543cda08d8a1f05fa269a
+Node 20 / PostgreSQL 16
+api test + e2e: success (npm ci, unit, build, e2e, isolated migrations)
+web lint + build: success (npm ci, lint, build)
+Exclusive cloud PostgreSQL container cleanup: PASS (stop/remove)

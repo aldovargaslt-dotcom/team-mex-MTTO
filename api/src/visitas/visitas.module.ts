@@ -10,6 +10,14 @@ import { VisitaTrabajo } from './visita-trabajo.entity';
 import { VisitasController } from './visitas.controller';
 import { VisitasService } from './visitas.service';
 import { VisitasInvariantService } from './visitas-invariant.service';
+import { Facility, VehicleFacility } from './checks/facility.entity';
+import { CheckInspection } from './checks/check-inspection.entity';
+import { CanonicalOrdersService } from './checks/canonical-orders.service';
+import { CanonicalOrdersController } from './checks/canonical-orders.controller';
+import {
+  ConfiguredFacilityCalendar,
+  FacilityCalendarPort,
+} from './checks/facility-calendar.port';
 
 @Module({
   imports: [
@@ -19,12 +27,20 @@ import { VisitasInvariantService } from './visitas-invariant.service';
       VisitaFoto,
       VisitaFirma,
       VisitaPieza,
+      Facility,
+      VehicleFacility,
+      CheckInspection,
     ]),
     UnidadesModule,
     ChoferesModule,
   ],
-  controllers: [VisitasController],
-  providers: [VisitasService, VisitasInvariantService],
+  controllers: [VisitasController, CanonicalOrdersController],
+  providers: [
+    VisitasService,
+    VisitasInvariantService,
+    CanonicalOrdersService,
+    { provide: FacilityCalendarPort, useClass: ConfiguredFacilityCalendar },
+  ],
   exports: [TypeOrmModule, VisitasService],
 })
 export class VisitasModule {}

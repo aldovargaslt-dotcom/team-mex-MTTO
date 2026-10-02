@@ -4,7 +4,14 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, Repository } from 'typeorm';
+import {
+  DataSource,
+  EntityManager,
+  Repository,
+  In,
+  Not,
+  IsNull,
+} from 'typeorm';
 import { randomUUID } from 'crypto';
 import { CurrentUser } from '../auth/current-user';
 import { Rol } from '../auth/roles.enum';
@@ -26,6 +33,12 @@ import { CreateVisitaDto } from './dto/create-visita.dto';
 import { UpdateVisitaDto } from './dto/update-visita.dto';
 import { esTrabajoCatalogo } from './trabajos-catalogo';
 import { Visita } from './visita.entity';
+import {
+  maintenanceTypes,
+  canonicalMaintenanceType,
+  WorkOrderStatus,
+  LEGACY_SLOT_INDEX,
+} from './work-order';
 import { VisitaFirma } from './visita-firma.entity';
 import { VisitaFoto } from './visita-foto.entity';
 import { VisitaPieza } from './visita-pieza.entity';
@@ -50,16 +63,43 @@ export class VisitasService {
     private readonly dataSource: DataSource,
   ) {}
 
-  async createDraft(
+  async createDraft(unidadId: string, dto: CreateVisitaDto, user: CurrentUser) {
+    return this.createMaintenance(unidadId, dto, user, true);
+  }
+
+  async createMaintenance(
     unidadId: string,
     dto: CreateVisitaDto,
     user: CurrentUser,
+    legacySlot: boolean,
+    metadata: Partial<
+      Pick<
+        Visita,
+        | 'blocksOperation'
+        | 'blockReason'
+        | 'blockActor'
+        | 'requiresReinspection'
+        | 'createdActorName'
+        | 'attributionLevel'
+        | 'creationKey'
+        | 'creationHash'
+      >
+    > = {},
+    authorizeInTransaction?: (manager: EntityManager) => Promise<void>,
   ) {
     try {
       const result = await this.dataSource.transaction(async (manager) => {
-        const existing = await manager.findOne(Visita, {
-          where: { unidad: { id: unidadId }, estado: EstadoVisita.BORRADOR },
-        });
+        await authorizeInTransaction?.(manager);
+        const existing = legacySlot
+          ? await manager.findOne(Visita, {
+              where: {
+                unidad: { id: unidadId },
+                estado: EstadoVisita.BORRADOR,
+                legacyCompatDraft: true,
+                workOrderType: In(maintenanceTypes),
+              },
+            })
+          : null;
         if (existing) {
           return { outcome: 'EXISTING_DRAFT' as const, id: existing.id };
         }
@@ -90,7 +130,11 @@ export class VisitasService {
         }
 
         const ultimo = await manager.findOne(Visita, {
-          where: { unidad: { id: unidadId }, estado: EstadoVisita.CERRADO },
+          where: {
+            unidad: { id: unidadId },
+            estado: EstadoVisita.CERRADO,
+            workOrderType: In(maintenanceTypes),
+          },
           order: { cerradoAt: 'DESC' },
         });
         const errorKm = mensajeKmInvalido(dto.km, ultimo?.km ?? null);
@@ -101,6 +145,10 @@ export class VisitasService {
         const visita = manager.create(Visita, {
           unidad,
           estado: EstadoVisita.BORRADOR,
+          workOrderType: canonicalMaintenanceType(dto.tipo),
+          workOrderStatus: WorkOrderStatus.PENDING,
+          legacyCompatDraft: legacySlot,
+          ...metadata,
           createdBy: user.userId,
           chofer,
           km: dto.km,
@@ -119,7 +167,12 @@ export class VisitasService {
     } catch (error: unknown) {
       if (!this.isSingleDraftViolation(error)) throw error;
       const winner = await this.repo.findOne({
-        where: { unidad: { id: unidadId }, estado: EstadoVisita.BORRADOR },
+        where: {
+          unidad: { id: unidadId },
+          estado: EstadoVisita.BORRADOR,
+          workOrderType: In(maintenanceTypes),
+          legacyCompatDraft: true,
+        },
       });
       if (!winner) throw error;
       const detail = await this.findDetalle(winner.id, user);
@@ -130,20 +183,19 @@ export class VisitasService {
   private isSingleDraftViolation(error: unknown) {
     if (typeof error !== 'object' || error === null) return false;
     const direct = error as { code?: string; constraint?: string };
-    const wrapped = 'driverError' in error
-      ? (error.driverError as { code?: string; constraint?: string })
-      : undefined;
+    const wrapped =
+      'driverError' in error
+        ? (error.driverError as { code?: string; constraint?: string })
+        : undefined;
     return (
-      (direct.code === '23505' &&
-        direct.constraint === 'visitas_un_borrador_por_unidad_uidx') ||
-      (wrapped?.code === '23505' &&
-        wrapped.constraint === 'visitas_un_borrador_por_unidad_uidx')
+      (direct.code === '23505' && direct.constraint === LEGACY_SLOT_INDEX) ||
+      (wrapped?.code === '23505' && wrapped.constraint === LEGACY_SLOT_INDEX)
     );
   }
 
   async findDetalle(id: string, user: CurrentUser) {
     const visita = await this.repo.findOne({
-      where: { id },
+      where: { id, workOrderType: In(maintenanceTypes), estado: Not(IsNull()) },
       relations: {
         trabajos: true,
         fotos: true,
@@ -168,7 +220,11 @@ export class VisitasService {
   async listByUnidad(unidadId: string, user: CurrentUser) {
     await this.unidades.findOne(unidadId);
     const visitas = await this.repo.find({
-      where: { unidad: { id: unidadId } },
+      where: {
+        unidad: { id: unidadId },
+        workOrderType: In(maintenanceTypes),
+        estado: Not(IsNull()),
+      },
       relations: { chofer: true, trabajos: true },
       order: { createdAt: 'DESC' },
     });
@@ -194,6 +250,8 @@ export class VisitasService {
     }
     if (dto.tipo !== undefined) {
       visita.tipo = dto.tipo;
+      if (dto.tipo !== null)
+        visita.workOrderType = canonicalMaintenanceType(dto.tipo);
     }
     if (dto.observaciones !== undefined) {
       visita.observaciones = dto.observaciones?.trim() || null;
@@ -263,7 +321,11 @@ export class VisitasService {
   async close(id: string, user: CurrentUser) {
     await this.dataSource.transaction(async (manager) => {
       const visita = await manager.findOne(Visita, {
-        where: { id },
+        where: {
+          id,
+          workOrderType: In(maintenanceTypes),
+          estado: Not(IsNull()),
+        },
         relations: {
           chofer: true,
           unidad: { tipo: true },
@@ -277,7 +339,7 @@ export class VisitasService {
       }
       const ultimoKm = await this.ultimoKmCerrado(visita.unidad.id);
       const errores = erroresCierre({
-        estadoVisita: visita.estado,
+        estadoVisita: visita.estado!,
         unidadEstado: visita.unidad.estado,
         choferId: visita.chofer?.id ?? null,
         km: visita.km,
@@ -289,16 +351,16 @@ export class VisitasService {
       if (errores.length) {
         throw new BadRequestException(errores[0]);
       }
-      if (
-        visita.chofer &&
-        !puedeAsignarChoferAVisita(visita.chofer.estado)
-      ) {
+      if (visita.chofer && !puedeAsignarChoferAVisita(visita.chofer.estado)) {
         throw new BadRequestException(
           'El chofer no está activo. Seleccione un chofer activo.',
         );
       }
       visita.estado = EstadoVisita.CERRADO;
       visita.cerradoAt = new Date();
+      visita.workOrderStatus = WorkOrderStatus.COMPLETED;
+      visita.completedAt = visita.cerradoAt;
+      visita.legacyCompatDraft = false;
       await manager.save(visita);
       const payload = buildVisitaCerrada({
         eventId: randomUUID(),
@@ -320,7 +382,11 @@ export class VisitasService {
 
   async ultimoKmCerrado(unidadId: string): Promise<number | null> {
     const last = await this.repo.findOne({
-      where: { unidad: { id: unidadId }, estado: EstadoVisita.CERRADO },
+      where: {
+        unidad: { id: unidadId },
+        estado: EstadoVisita.CERRADO,
+        workOrderType: In(maintenanceTypes),
+      },
       order: { cerradoAt: 'DESC' },
     });
     return last?.km ?? null;
@@ -328,7 +394,12 @@ export class VisitasService {
 
   async listBorradores(unidadId: string) {
     const visitas = await this.repo.find({
-      where: { unidad: { id: unidadId }, estado: EstadoVisita.BORRADOR },
+      where: {
+        unidad: { id: unidadId },
+        estado: EstadoVisita.BORRADOR,
+        workOrderType: In(maintenanceTypes),
+        legacyCompatDraft: true,
+      },
       relations: { chofer: true, trabajos: true },
       order: { updatedAt: 'DESC' },
     });
@@ -337,7 +408,11 @@ export class VisitasService {
 
   async listHistorial(unidadId: string) {
     const visitas = await this.repo.find({
-      where: { unidad: { id: unidadId }, estado: EstadoVisita.CERRADO },
+      where: {
+        unidad: { id: unidadId },
+        estado: EstadoVisita.CERRADO,
+        workOrderType: In(maintenanceTypes),
+      },
       relations: { chofer: true, trabajos: true },
       order: { cerradoAt: 'DESC' },
     });
@@ -377,7 +452,9 @@ export class VisitasService {
       }
       seen.add(pieza.itemId);
       if (pieza.qty < 1) {
-        throw new BadRequestException('La cantidad de cada pieza debe ser al menos 1.');
+        throw new BadRequestException(
+          'La cantidad de cada pieza debe ser al menos 1.',
+        );
       }
     }
     await this.piezas.delete({ visita: { id: visitaId } });
@@ -397,7 +474,7 @@ export class VisitasService {
 
   private async requireDraft(id: string) {
     const visita = await this.repo.findOne({
-      where: { id },
+      where: { id, workOrderType: In(maintenanceTypes), estado: Not(IsNull()) },
       relations: { chofer: true, unidad: true },
     });
     if (!visita) {
