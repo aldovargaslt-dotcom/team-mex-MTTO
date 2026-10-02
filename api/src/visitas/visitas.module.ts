@@ -1,3 +1,19 @@
+import {
+  CheckDailyGeneration,
+  CheckAudit,
+} from './checks/check-generation.entity';
+import {
+  CheckEventsService,
+  CheckDeliveryRunner,
+} from './checks/check-events.service';
+import { CheckDeliveryPort } from './checks/check-delivery.port';
+import {
+  DailyChecksService,
+  DailyCheckScheduler,
+} from './checks/daily-checks.service';
+import { PhysicalStateReadPort } from '../flota/physical-state-read.port';
+import { NotificationsModule } from '../notifications/notifications.module';
+import { CheckInboxAdapter } from '../notifications/check-inbox.adapter';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ChoferesModule } from '../choferes/choferes.module';
@@ -30,15 +46,32 @@ import {
       Facility,
       VehicleFacility,
       CheckInspection,
+      CheckDailyGeneration,
+      CheckAudit,
     ]),
     UnidadesModule,
     ChoferesModule,
+    NotificationsModule,
   ],
   controllers: [VisitasController, CanonicalOrdersController],
   providers: [
     VisitasService,
     VisitasInvariantService,
     CanonicalOrdersService,
+    CheckEventsService,
+    CheckDeliveryRunner,
+    DailyChecksService,
+    DailyCheckScheduler,
+    { provide: CheckDeliveryPort, useExisting: CheckInboxAdapter },
+    {
+      provide: PhysicalStateReadPort,
+      useValue: {
+        read: async () => ({
+          physicalKnowledge: 'UNAVAILABLE',
+          physicalState: null,
+        }),
+      },
+    },
     { provide: FacilityCalendarPort, useClass: ConfiguredFacilityCalendar },
   ],
   exports: [TypeOrmModule, VisitasService],

@@ -1,3 +1,4 @@
+import { CheckGenerationDelivery1790985600007 } from './migrations/1790985600007-CheckGenerationDelivery';
 import 'reflect-metadata';
 import { DataSource } from 'typeorm';
 import {
@@ -32,6 +33,7 @@ export function createMigrationDataSource(
       DrainLegacyWriters1790899200004,
       RetireGlobalDraftIndex1790899200005,
       ValidateCheckFoundation1790899200006,
+      CheckGenerationDelivery1790985600007,
     ],
   });
 }

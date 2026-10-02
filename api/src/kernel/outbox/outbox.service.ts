@@ -19,6 +19,20 @@ export class OutboxService {
     this.handlers.set(type, list);
   }
 
+  /** Durable enqueue without dispatch, for CHECK's post-commit runner. */
+  async enqueue(
+    manager: EntityManager,
+    type: string,
+    payload: Record<string, unknown>,
+  ) {
+    const id = payload.eventId;
+    if (typeof id !== 'string') throw new Error('Outbox eventId required');
+    await manager.query(
+      'INSERT INTO public.outbox_events(id,type,payload,processed_at) VALUES ($1,$2,$3::jsonb,NULL)',
+      [id, type, JSON.stringify(payload)],
+    );
+  }
+
   async enqueueAndDispatch(
     manager: EntityManager,
     type: string,

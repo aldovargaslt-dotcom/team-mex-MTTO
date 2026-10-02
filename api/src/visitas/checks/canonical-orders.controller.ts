@@ -52,6 +52,10 @@ export class CanonicalOrdersController {
   ) {
     return this.service.active(unidadId, actor);
   }
+  @Get('check-request-units')
+  requestableUnits(@Actor() actor: TrustedActor) {
+    return this.service.requestableUnits(actor);
+  }
   @Get('checks/:id')
   detail(@Param('id', ParseUUIDPipe) id: string, @Actor() actor: TrustedActor) {
     return this.service.detail(id, actor);

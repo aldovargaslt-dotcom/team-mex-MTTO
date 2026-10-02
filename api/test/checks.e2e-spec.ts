@@ -1,3 +1,5 @@
+import { PhysicalStateReadPort } from '../src/flota/physical-state-read.port';
+import { operationalDay } from '../src/visitas/checks/facility-calendar';
 import { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { DataSource, EntityManager } from 'typeorm';
@@ -53,6 +55,16 @@ describe('EWO-015 canonical CHECK / maintenance APIs', () => {
   let fixtureNumber = 0;
   beforeAll(async () => {
     const module = await Test.createTestingModule({ imports: [AppModule] })
+      .overrideProvider(PhysicalStateReadPort)
+      .useValue({
+        read: async () => ({
+          physicalKnowledge: 'KNOWN',
+          physicalState: 'EN_PATIO',
+          version: 1,
+          observedAt: new Date(),
+          operationalInconsistency: false,
+        }),
+      })
       .overrideProvider(AuthenticationPort)
       .useValue({
         kind: 'TRUSTED',
@@ -154,7 +166,11 @@ describe('EWO-015 canonical CHECK / maintenance APIs', () => {
     try {
       const results = await Promise.allSettled([
         service.createCheck(vehicle, CheckSource.LOGISTICS_MANUAL, logistics),
-        service.createCheck(vehicle, CheckSource.DAILY_AUTOMATIC, system),
+        service.createCheck(vehicle, CheckSource.DAILY_AUTOMATIC, system, {
+          facilityId: 'mex',
+          operationalDate: operationalDay(new Date()).operationalDate,
+          commandId: 's1-race',
+        }),
       ]);
       expect(pids.size).toBe(2);
       expect(transactionStates).toEqual([true, true, false]);
@@ -386,7 +402,9 @@ describe('EWO-015 canonical CHECK / maintenance APIs', () => {
   });
   it('S1-T09 CHECK creation/read never change inventory/outbox/history/ultimoKm/Andon/Salud', async () => {
     const snapshot = async () => ({
-      outbox: await db.query('SELECT * FROM outbox_events ORDER BY id'),
+      outbox: await db.query(
+        "SELECT * FROM outbox_events WHERE type<>'CHECK_CREATED' ORDER BY id",
+      ),
       stock: await db.query(
         'SELECT row_to_json(s) AS row FROM inventario.stock s ORDER BY item_id',
       ),

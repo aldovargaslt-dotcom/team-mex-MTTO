@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { useCallback, useEffect, useState } from 'react';
-import { Bell } from 'lucide-react';
-import { api } from '@/lib/api';
-import { INBOX_CHANGED } from '@/lib/inbox';
-import { useRole } from '@/lib/role';
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
+import { Bell } from "lucide-react";
+import { api } from "@/lib/api";
+import { INBOX_CHANGED } from "@/lib/inbox";
+import { useRole } from "@/lib/role";
 
 export function Campanita() {
   const pathname = usePathname();
@@ -16,11 +16,24 @@ export function Campanita() {
   const cargar = useCallback(async () => {
     if (!role) return;
     try {
-      const data = await api<{ unread: number }>('/notifications/badge', {
+      const data = await api<{ unread: number }>("/notifications/badge", {
         role,
         userId,
       });
-      setUnread(data.unread);
+      let checks = 0;
+      if (role === "LOGISTICA" || role === "ADMIN_DIRECTIVO") {
+        try {
+          checks = (
+            await api<{ unread: number }>("/notifications/checks", {
+              role,
+              userId,
+            })
+          ).unread;
+        } catch {
+          /* Authenticated CHECK inbox is separate; legacy remains available. */
+        }
+      }
+      setUnread(data.unread + checks);
     } catch {
       /* campanita no bloquea el shell */
     }
@@ -42,8 +55,7 @@ export function Campanita() {
     };
   }, [cargar]);
 
-  const label =
-    unread > 0 ? `Alertas, ${unread} sin leer` : 'Alertas';
+  const label = unread > 0 ? `Alertas, ${unread} sin leer` : "Alertas";
 
   return (
     <Link
@@ -55,7 +67,7 @@ export function Campanita() {
       <Bell aria-hidden className="size-5" strokeWidth={2} />
       {unread > 0 ? (
         <span className="campanita-badge" aria-hidden>
-          {unread > 99 ? '99+' : unread}
+          {unread > 99 ? "99+" : unread}
         </span>
       ) : null}
     </Link>
