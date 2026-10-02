@@ -53,7 +53,9 @@ describe('S1-T05/T06/T07 isolated migration rehearsal (synchronize=false)', () =
     if (db?.isInitialized) await db.destroy();
   });
   beforeEach(async () => {
-    await db.query('DROP SCHEMA public CASCADE');
+    await db.query(
+      'DROP SCHEMA public CASCADE; DROP SCHEMA IF EXISTS notifications CASCADE',
+    );
     await db.query(
       readFileSync(join(__dirname, 'fixtures/legacy-public.sql'), 'utf8'),
     );
@@ -116,6 +118,7 @@ describe('S1-T05/T06/T07 isolated migration rehearsal (synchronize=false)', () =
     });
     expect(first).toContain('ExpandVisita1790899200001');
     expect(first).toContain('ValidateCheckFoundation1790899200006');
+    expect(first).toContain('CheckGenerationDelivery1790985600007');
     expect(
       execFileSync(process.execPath, args, {
         cwd: join(__dirname, '..'),
@@ -124,7 +127,7 @@ describe('S1-T05/T06/T07 isolated migration rehearsal (synchronize=false)', () =
       }).trim(),
     ).toBe('[]');
     expect(await db.query('SELECT * FROM chk_schema_migrations')).toHaveLength(
-      6,
+      7,
     );
   }, 30000);
   it('S1-T05 maps known values, preserves IDs/children, records versions and reruns idempotently', async () => {
@@ -139,7 +142,7 @@ describe('S1-T05/T06/T07 isolated migration rehearsal (synchronize=false)', () =
         db.query(`SELECT * FROM ${table} ORDER BY id`),
       ),
     );
-    expect(await upgrade()).toHaveLength(6);
+    expect(await upgrade()).toHaveLength(7);
     expect(await upgrade()).toHaveLength(0);
     await new VisitasInvariantService(db).onApplicationBootstrap();
     const rows = await db.query(
@@ -312,9 +315,9 @@ describe('S1-T05/T06/T07 isolated migration rehearsal (synchronize=false)', () =
     await db.query(
       "DELETE FROM visitas WHERE id='77777777-7777-4777-8777-777777777777'",
     );
-    for (let i = 0; i < 6; i++) await db.undoLastMigration();
+    for (let i = 0; i < 7; i++) await db.undoLastMigration();
     expect(await db.query('SELECT id FROM visitas')).toHaveLength(2);
     expect(await db.query('SELECT * FROM visita_trabajos')).toHaveLength(1);
-    expect(await upgrade()).toHaveLength(6);
+    expect(await upgrade()).toHaveLength(7);
   });
 });

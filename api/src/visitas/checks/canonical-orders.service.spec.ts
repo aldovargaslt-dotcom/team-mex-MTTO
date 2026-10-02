@@ -1,3 +1,5 @@
+import { CheckEventsService } from './check-events.service';
+import { PhysicalStateReadPort } from '../../flota/physical-state-read.port';
 import { DataSource, EntityManager } from 'typeorm';
 import { CanonicalOrdersService } from './canonical-orders.service';
 import { VisitasService } from '../visitas.service';
@@ -26,20 +28,20 @@ describe('S1-T11 constraint error translation', () => {
       } as unknown as DataSource,
       {} as VisitasService,
       new ConfiguredFacilityCalendar(),
+      {} as CheckEventsService,
+      {} as PhysicalStateReadPort,
     );
     await expect(
       service.createCheck('vehicle', CheckSource.LOGISTICS_MANUAL, actor),
     ).rejects.toBe(error);
   });
   it('returns refresh conflict without silently recreating if the race winner has already terminated', async () => {
-    const transaction = jest
-      .fn()
-      .mockRejectedValue({
-        driverError: {
-          code: '23505',
-          constraint: 'check_un_activo_por_unidad_uidx',
-        },
-      });
+    const transaction = jest.fn().mockRejectedValue({
+      driverError: {
+        code: '23505',
+        constraint: 'check_un_activo_por_unidad_uidx',
+      },
+    });
     const manager = {
       findOneBy: jest.fn().mockResolvedValue({ id: 'vehicle' }),
       findOne: jest
@@ -54,6 +56,8 @@ describe('S1-T11 constraint error translation', () => {
       { transaction, manager } as unknown as DataSource,
       {} as VisitasService,
       new ConfiguredFacilityCalendar(),
+      {} as CheckEventsService,
+      {} as PhysicalStateReadPort,
     );
     try {
       await service.createCheck('vehicle', CheckSource.LOGISTICS_MANUAL, actor);

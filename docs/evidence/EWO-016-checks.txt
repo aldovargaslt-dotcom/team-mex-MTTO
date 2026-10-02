@@ -1,0 +1,82 @@
+EWO-016 executed check excerpts (2026-10-02)
+Full commands and environment: EWO-016.md
+
+
+unit-final
+[Nest] 334623  - 10/02/2026, 3:45:22 PM    WARN [AndonNotifier] ANDON_NOTIFY_PROVIDER=evolution: adapter no cableado en este PR (lab Baileys/ToS; otro agente). noop/log.
+[Nest] 334623  - 10/02/2026, 3:45:22 PM     LOG [AndonNotifier] Andon notifier: noop/log (default). Enterado es in-app.
+[Nest] 334623  - 10/02/2026, 3:45:22 PM     LOG [AndonNotifier] Andon notifier: noop/log (default). Enterado es in-app.
+[Nest] 334623  - 10/02/2026, 3:45:22 PM     LOG [AndonNotifier] Andon notifier: Twilio opcional, fan-out a 2 teléfono(s) ops.
+
+Test Suites: 35 passed, 35 total
+Tests:       196 passed, 196 total
+Snapshots:   0 total
+Time:        26.637 s
+Ran all test suites.
+
+api-build-final
+
+> api@0.0.1 build
+> nest build
+
+
+e2e-final
+
+> api@0.0.1 test:e2e
+> jest --config ./test/jest-e2e.json --runInBand
+
+
+Test Suites: 13 passed, 13 total
+Tests:       103 passed, 103 total
+Snapshots:   0 total
+Time:        118.769 s
+Ran all test suites.
+
+migration-second
+  console.log
+    Migration "DrainLegacyWriters1790899200004" failed, error: WRITERS_NOT_DRAINED: stop all legacy writers/bootstrap before proceeding.
+
+      at PlatformTools.log (../src/platform/PlatformTools.ts:222:17)
+
+Test Suites: 1 passed, 1 total
+Tests:       16 passed, 16 total
+Snapshots:   0 total
+Time:        10.684 s, estimated 12 s
+Ran all test suites.
+
+web-lint-final
+
+> web@0.1.0 lint
+> eslint
+
+
+web-build-final
+   Creating an optimized production build ...
+ ✓ Compiled successfully in 11.0s
+   Linting and checking validity of types ...
+   Generating static pages (0/26) ...
+   Generating static pages (6/26) 
+   Generating static pages (12/26) 
+   Generating static pages (19/26) 
+ ✓ Generating static pages (26/26)
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+
+
+proof-flow-final
+disabledBeforeSelection true
+createdPath /checks/d894d8d0-2ca7-4a78-a4be-86dd1ceab17e
+focusAfterEscape Solicitar chequeo
+layoutOverflow false
+
+proof-states-final
+mobileOverflow false
+retryRestoredScope true
+
+proof-extra
+realStoredElapsed 2026-10-02T15:37:29.295Z
+deniedHidesData true
+inboxAuthorizedDeepLink /checks/d894d8d0-2ca7-4a78-a4be-86dd1ceab17e
+inboxMarkAllRead true
+mobileOverflow false

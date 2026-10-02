@@ -1,3 +1,6 @@
+import { CheckInboxAdapter } from './check-inbox.adapter';
+import { CheckNotificationsController } from './check-notifications.controller';
+import { CheckInboxItem, CheckInboxRead } from './entities/check-inbox.entity';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AndonInboxAdapter } from './andon-inbox.adapter';
@@ -10,12 +13,18 @@ import { NotificationsController } from './notifications.controller';
 import { NotificationsService } from './notifications.service';
 import { TypeOrmInboxStore } from './typeorm-inbox-store';
 
-export const NOTIFICATIONS_ENTITIES = [InboxItemEntity, InboxReadEntity];
+export const NOTIFICATIONS_ENTITIES = [
+  InboxItemEntity,
+  InboxReadEntity,
+  CheckInboxItem,
+  CheckInboxRead,
+];
 
 @Module({
   imports: [TypeOrmModule.forFeature(NOTIFICATIONS_ENTITIES)],
-  controllers: [NotificationsController],
+  controllers: [NotificationsController, CheckNotificationsController],
   providers: [
+    CheckInboxAdapter,
     TypeOrmInboxStore,
     NotificationsService,
     AndonInboxAdapter,
@@ -25,6 +34,7 @@ export const NOTIFICATIONS_ENTITIES = [InboxItemEntity, InboxReadEntity];
   ],
   exports: [
     TypeOrmModule,
+    CheckInboxAdapter,
     NotificationsService,
     AndonInboxAdapter,
     InventarioInboxAdapter,

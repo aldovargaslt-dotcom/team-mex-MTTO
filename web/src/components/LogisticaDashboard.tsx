@@ -1,4 +1,5 @@
 'use client';
+import { CheckRequests } from './CheckRequests';
 
 import { FormEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
@@ -232,6 +233,8 @@ export function LogisticaDashboard() {
         })}</ul></div> : null}
         {!movimientosLoading && !movimientosError && !movimientosDelDia.length ? <div className="rounded-lg border bg-card p-4 text-sm text-muted-foreground">No hay entradas ni salidas de patio registradas hoy.</div> : null}
       </section>
+
+      <CheckRequests />
 
       <Sheet open={salidaOpen} onOpenChange={setSalidaOpen}>
         <SheetContent side="bottom" className="max-h-[94dvh] overflow-y-auto sm:mx-auto sm:max-w-xl sm:rounded-t-xl">

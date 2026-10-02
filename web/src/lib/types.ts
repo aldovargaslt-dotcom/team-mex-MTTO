@@ -339,7 +339,7 @@ export type CatalogUmbrales = {
   } | null;
 };
 
-export type SourceModule = 'ANDON' | 'INVENTARIO' | 'SALUD' | 'LOGISTICA';
+export type SourceModule = 'CHECK' | 'ANDON' | 'INVENTARIO' | 'SALUD' | 'LOGISTICA';
 
 export type SubjectType = 'UNIDAD' | 'ITEM' | 'NONE';
 
@@ -409,6 +409,8 @@ export type FlotaUnidadDetalle = {
 };
 
 export type ApiError = {
+  code?: string;
+  details?: Record<string, unknown>;
   statusCode: number;
   message: string;
 };

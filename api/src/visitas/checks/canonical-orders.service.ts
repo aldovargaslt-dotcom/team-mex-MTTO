@@ -1,3 +1,9 @@
+import { Inject } from '@nestjs/common';
+import { PhysicalStateReadPort } from '../../flota/physical-state-read.port';
+import { CheckEventsService } from './check-events.service';
+import { CheckDailyGeneration } from './check-generation.entity';
+import { dailyEligibility } from './daily-check-rules';
+import { operationalDay } from './facility-calendar';
 import {
   BadRequestException,
   ConflictException,
@@ -35,6 +41,9 @@ export class CanonicalOrdersService {
     private readonly db: DataSource,
     private readonly legacy: VisitasService,
     private readonly calendar: FacilityCalendarPort,
+    private readonly events: CheckEventsService,
+    @Inject(PhysicalStateReadPort)
+    private readonly physical: PhysicalStateReadPort,
   ) {}
   private authorize(actor: TrustedActor, roles: (Rol | 'SYSTEM')[]) {
     validateActor(actor, process.env.NODE_ENV);
@@ -78,6 +87,7 @@ export class CanonicalOrdersService {
     manager: EntityManager,
     winner: Visita,
     actor: TrustedActor,
+    concurrent = false,
   ) {
     const check = await manager.findOneByOrFail(CheckInspection, {
       visitaId: winner.id,
@@ -92,8 +102,13 @@ export class CanonicalOrdersService {
       code: 'ACTIVE_CHECK_ALREADY_EXISTS',
       message: 'La unidad ya tiene un CHECK activo.',
       details: {
+        concurrent,
         active: {
           id: winner.id,
+          unidad: {
+            numeroInterno: winner.unidad.numeroInterno,
+            placas: winner.unidad.placas,
+          },
           folio: `CHK-${winner.id}`,
           status: winner.workOrderStatus,
           step: null,
@@ -109,6 +124,7 @@ export class CanonicalOrdersService {
     unidadId: string,
     source: CheckSource,
     actor: TrustedActor,
+    daily?: { facilityId: string; operationalDate: string; commandId: string },
   ) {
     this.authorize(
       actor,
@@ -118,6 +134,8 @@ export class CanonicalOrdersService {
     );
     if (!Object.values(CheckSource).includes(source))
       throw new BadRequestException('Origen CHECK inválido.');
+    if (source === CheckSource.DAILY_AUTOMATIC && !daily)
+      throw new BadRequestException('Daily generation context required.');
     try {
       const id = await this.db.transaction(async (manager) => {
         const { unidad, mapping, day } = await this.facility(
@@ -125,6 +143,38 @@ export class CanonicalOrdersService {
           unidadId,
           actor,
         );
+        if (daily) {
+          if (mapping.facilityId !== daily.facilityId)
+            throw new ForbiddenException('Vehicle mapping changed facility.');
+          if (day.operationalDate !== daily.operationalDate)
+            throw new ConflictException({
+              code: 'DAILY_INELIGIBLE',
+              message: 'La jornada cambió.',
+              details: { reason: 'OPERATIONAL_DATE_CHANGED' },
+            });
+          const generated = await manager.findOneBy(CheckDailyGeneration, {
+            unidadId,
+            operationalDate: daily.operationalDate,
+          });
+          if (generated && !actor.facilityScopes.includes(generated.facilityId))
+            throw new ForbiddenException('Facility fuera de scope.');
+          if (generated)
+            throw new ConflictException({
+              code: 'DAILY_ALREADY_GENERATED',
+              message: 'La jornada ya tiene generación diaria.',
+              details: { checkId: generated.checkId },
+            });
+          const reason = dailyEligibility(
+            unidad.estado,
+            await this.physical.read(unidadId, manager),
+          );
+          if (reason)
+            throw new ConflictException({
+              code: 'DAILY_INELIGIBLE',
+              message: 'Unidad no elegible para generación diaria.',
+              details: { reason },
+            });
+        }
         if (unidad.estado !== EstadoUnidad.ACTIVA)
           throw new BadRequestException('La unidad está inactiva.');
         const existing = await this.findActiveIn(manager, unidadId);
@@ -145,7 +195,7 @@ export class CanonicalOrdersService {
             attributionLevel: actor.attributionLevel,
           }),
         );
-        await manager.save(CheckInspection, {
+        const check = await manager.save(CheckInspection, {
           visitaId: visita.id,
           source,
           facilityId: mapping.facilityId,
@@ -155,16 +205,55 @@ export class CanonicalOrdersService {
           mappingVersion: mapping.version,
           dayEndInstant: day.dayEndInstant,
         });
+        if (daily) {
+          if (
+            operationalDay(new Date()).operationalDate !== daily.operationalDate
+          )
+            throw new ConflictException({
+              code: 'DAILY_INELIGIBLE',
+              message: 'La jornada cambió.',
+              details: { reason: 'OPERATIONAL_DATE_CHANGED' },
+            });
+          await manager.insert(CheckDailyGeneration, {
+            unidadId,
+            operationalDate: daily.operationalDate,
+            facilityId: mapping.facilityId,
+            checkId: visita.id,
+            commandId: daily.commandId,
+            createdAt: new Date(),
+          });
+        }
+        await this.events.created(manager, visita, check, actor);
         return visita.id;
       });
       return this.detail(id, actor);
     } catch (error) {
+      if (
+        daily &&
+        (uniqueViolation(error, 'check_daily_generation_pkey') ||
+          uniqueViolation(error, ACTIVE_CHECK_INDEX))
+      ) {
+        await this.facility(this.db.manager, unidadId, actor);
+        const generated = await this.db.manager.findOneBy(
+          CheckDailyGeneration,
+          { unidadId, operationalDate: daily.operationalDate },
+        );
+        if (generated && !actor.facilityScopes.includes(generated.facilityId))
+          throw new ForbiddenException('Facility fuera de scope.');
+        if (generated)
+          throw new ConflictException({
+            code: 'DAILY_ALREADY_GENERATED',
+            message: 'La jornada ya tiene generación diaria.',
+            details: { checkId: generated.checkId },
+          });
+      }
       if (!uniqueViolation(error, ACTIVE_CHECK_INDEX)) throw error;
       // transaction() has already rolled back/released the failed transaction.
       // Reauthorize and query via the root manager, never the aborted manager.
       await this.facility(this.db.manager, unidadId, actor);
       const winner = await this.findActiveIn(this.db.manager, unidadId);
-      if (winner) throw await this.conflict(this.db.manager, winner, actor);
+      if (winner)
+        throw await this.conflict(this.db.manager, winner, actor, true);
       throw new ConflictException({
         code: 'CHECK_CREATION_CONFLICT',
         message:
@@ -172,6 +261,24 @@ export class CanonicalOrdersService {
         details: { unidadId, refresh: true },
       });
     }
+  }
+  async requestableUnits(actor: TrustedActor) {
+    this.authorize(actor, [Rol.LOGISTICA, Rol.ADMIN_DIRECTIVO]);
+    return this.db
+      .getRepository(Unidad)
+      .createQueryBuilder('u')
+      .innerJoin(VehicleFacility, 'f', 'f.unidad_id=u.id')
+      .where('f.facility_id IN (:...facilities)', {
+        facilities: actor.facilityScopes,
+      })
+      .andWhere('u.estado=:estado', { estado: EstadoUnidad.ACTIVA })
+      .select([
+        'u.id AS id',
+        'u.numero_interno AS "numeroInterno"',
+        'u.placas AS placas',
+      ])
+      .orderBy('u.numero_interno', 'ASC')
+      .getRawMany();
   }
   async active(unidadId: string, actor: TrustedActor) {
     this.authorize(actor, [Rol.MECANICO, Rol.LOGISTICA, Rol.ADMIN_DIRECTIVO]);
@@ -224,6 +331,12 @@ export class CanonicalOrdersService {
     return {
       id: v.id,
       unidadId: v.unidad.id,
+      unidad: {
+        numeroInterno: v.unidad.numeroInterno,
+        placas: v.unidad.placas,
+      },
+      step: null,
+      anomalySummary: null,
       folio: `${v.workOrderType === 'CHECK' ? 'CHK' : 'MTT'}-${v.id}`,
       type: v.workOrderType,
       status: v.workOrderStatus,
