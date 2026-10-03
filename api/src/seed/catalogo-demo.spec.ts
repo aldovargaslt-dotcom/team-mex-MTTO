@@ -42,6 +42,7 @@ describe('catalogo-demo (Aldo fleet, Slice 1)', () => {
     const placas = UNIDADES_DEMO.map((u) => u.placas);
     expect(placas).not.toContain('TMX-101-A');
     expect([...CHOFERES_DEMO]).not.toContain('Juan Pérez');
+    expect([...CHOFERES_DEMO]).not.toContain('Carlos Ruiz2');
     expect(TIPOS_DEMO.map((t) => t.nombre)).not.toContain('Camión');
   });
 
