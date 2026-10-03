@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Propuesta · Patio · Tablero — Team Mex</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="base.css">
+</head>
+<body>
+  <div class="canvas">
+    <p class="eyebrow">Propuesta visual · no está en la app</p>
+    <div class="app">
+      <header class="shell">
+        <a class="brand" href="patio-tablero.html" aria-label="Team Mex, patio">
+          <img src="brand/logo-team-mex-shell-white.png" alt="">
+        </a>
+        <nav class="nav" aria-label="Patio">
+          <a class="is-on" href="patio-tablero.html" aria-current="page">Tablero</a>
+        </nav>
+        <div class="shell-end">
+          <nav class="desk-switch" aria-label="Otros escritorios">
+            <a href="taller-ahora.html">Taller</a>
+            <a href="index.html#almacen">Almacén</a>
+          </nav>
+          <details class="catalogo">
+            <summary>Catálogo</summary>
+            <div class="catalogo-menu">
+              <a href="index.html#catalogo">Sitios</a>
+              <a href="index.html#catalogo">Umbrales de regreso</a>
+            </div>
+          </details>
+          <a class="bell" href="index.html#campanita" aria-label="Campanita, 2 sin leer">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 7 3 9H3c0-2 3-2 3-9"/><path d="M10 21a2 2 0 0 0 4 0"/></svg>
+            <span class="bell-count">2</span>
+          </a>
+          <span class="role">Logística</span>
+          <a class="ghost" href="picker.html">Cambiar rol</a>
+        </div>
+      </header>
+      <main class="main">
+        <p class="kicker">Patio · Tablero</p>
+        <div class="head">
+          <div>
+            <h1 class="case">2 sin regreso</h1>
+            <p class="lede">RAM FORANEO va a FEMSA desde ayer. FOTON salió al CEDIS y ya pasó el límite local.</p>
+          </div>
+          <div class="actions">
+            <button class="btn btn-secondary" type="button">Configurar alertas</button>
+            <button class="btn btn-primary" type="button">Registrar regreso</button>
+          </div>
+        </div>
+        <div class="chips" role="group" aria-label="Filtrar tablero" style="margin-bottom:12px">
+          <button class="chip is-on" type="button">Todos 13</button>
+          <button class="chip" type="button">En ruta 3</button>
+          <button class="chip" type="button">Disponibles 10</button>
+          <button class="chip" type="button">Local</button>
+          <button class="chip" type="button">Foráneo</button>
+        </div>
+        <div class="sheet">
+          <table>
+            <thead>
+              <tr>
+                <th>Placas</th>
+                <th>Unidad</th>
+                <th>Viaje</th>
+                <th>Ubicación</th>
+                <th>Destino</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="is-warn">
+                <td class="placas">63AL5K</td>
+                <td class="interno">RAM FORANEO</td>
+                <td><span class="badge badge-warn">Sin regreso</span></td>
+                <td>Foráneo</td>
+                <td>Cliente FEMSA</td>
+              </tr>
+              <tr class="is-warn">
+                <td class="placas">VU2625C</td>
+                <td class="interno">FOTON</td>
+                <td><span class="badge badge-warn">Sin regreso</span></td>
+                <td>Local</td>
+                <td>CEDIS local</td>
+              </tr>
+              <tr>
+                <td class="placas">VU2627C</td>
+                <td class="interno">DUCATO 2023</td>
+                <td><span class="badge badge-info">En ruta</span></td>
+                <td>Foráneo</td>
+                <td>Taller externo</td>
+              </tr>
+              <tr>
+                <td class="placas">VU2626C</td>
+                <td class="interno">DUCATO 2021</td>
+                <td class="quiet">Disponible</td>
+                <td>Local</td>
+                <td class="quiet">—</td>
+              </tr>
+              <tr>
+                <td class="placas">VU2624C</td>
+                <td class="interno">FORD 2017</td>
+                <td class="quiet">Disponible</td>
+                <td>Local</td>
+                <td class="quiet">—</td>
+              </tr>
+              <tr>
+                <td class="placas">WR2023C</td>
+                <td class="interno">CHATO NUEVO</td>
+                <td class="quiet">Disponible</td>
+                <td>Local</td>
+                <td class="quiet">—</td>
+              </tr>
+              <tr>
+                <td class="placas">WH9236C</td>
+                <td class="interno">TRANSIT 2023</td>
+                <td class="quiet">Disponible</td>
+                <td>Local</td>
+                <td class="quiet">—</td>
+              </tr>
+              <tr>
+                <td class="placas">VU2630C</td>
+                <td class="interno">NISSAN CERRADA</td>
+                <td class="quiet">Disponible</td>
+                <td>Local</td>
+                <td class="quiet">—</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="foot-note">Chofer no se muestra: la asignación chofer↔unidad sigue aparcada. DUCATO 2023 está en ruta y todavía dentro del límite.</p>
+      </main>
+    </div>
+    <aside class="nota">
+      <p class="nota-k">Nota de propuesta</p>
+      <p>Qué cambió: “2 sin regreso” es el único número. En ruta, disponibles y total pasan a chips.</p>
+      <p>Hoy: cuatro KPI del mismo peso, con icono azul en En ruta. <a href="hoy/patio-tablero.png">Ver captura</a>.</p>
+      <p>Choca con: <a href="../../design-system/brief-logistica-flota-visual-v0.md">brief-logistica-flota-visual-v0</a> exige esa tira. Sin regreso no es un chip de filtro.</p>
+      <p>No es spec aceptada. No cambia la app. <a href="index.html">Índice</a>.</p>
+    </aside>
+  </div>
+</body>
+</html>
