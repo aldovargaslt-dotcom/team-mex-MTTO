@@ -3,6 +3,12 @@ import { Test, TestingModule } from '@nestjs/testing';
 import request from 'supertest';
 import { App } from 'supertest/types';
 import { DataSource } from 'typeorm';
+import { AuthenticationPort } from '../src/auth/trusted-actor';
+import { Rol } from '../src/auth/roles.enum';
+import {
+  prepareDepartureFixture,
+  trustedTestActor,
+} from './departure-test-fixture';
 import { AppModule } from '../src/app.module';
 import { configureApp } from '../src/configure-app';
 import {
@@ -20,6 +26,8 @@ import {
 const SUPERVISOR = { 'X-Role': 'SUPERVISOR', 'X-User-Id': 'sup-log' };
 const ADMIN = { 'X-Role': 'ADMIN_DIRECTIVO', 'X-User-Id': 'adm-log' };
 const LOGISTICA = { 'X-Role': 'LOGISTICA', 'X-User-Id': 'log-asig' };
+const TRUSTED_LOGISTICA = { Authorization: 'Bearer logistics' };
+const FACILITY = 'logistica-e2e-mex';
 
 type ChoferRow = {
   choferId: string;
@@ -42,7 +50,16 @@ describe('Logística asignación chofer↔unidad (e2e L1–L4)', () => {
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
-    }).compile();
+    })
+      .overrideProvider(AuthenticationPort)
+      .useValue({
+        kind: 'TRUSTED',
+        authenticate: async (req: { headers: Record<string, string> }) =>
+          req.headers.authorization === 'Bearer logistics'
+            ? trustedTestActor('log-asig', Rol.LOGISTICA, FACILITY)
+            : null,
+      })
+      .compile();
     app = moduleFixture.createNestApplication();
     configureApp(app);
     await app.init();
@@ -73,7 +90,10 @@ describe('Logística asignación chofer↔unidad (e2e L1–L4)', () => {
   }
 
   async function chofer(nombre: string) {
-    const res = await request(server).get('/choferes').set(LOGISTICA).expect(200);
+    const res = await request(server)
+      .get('/choferes')
+      .set(LOGISTICA)
+      .expect(200);
     const found = (res.body as { id: string; nombre: string }[]).find(
       (c) => c.nombre === nombre,
     );
@@ -100,7 +120,10 @@ describe('Logística asignación chofer↔unidad (e2e L1–L4)', () => {
       .set(SUPERVISOR)
       .expect(403);
     expect(denied.body.message).toMatch(/supervisor/i);
-    await request(server).get('/logistica/unidades').set(SUPERVISOR).expect(403);
+    await request(server)
+      .get('/logistica/unidades')
+      .set(SUPERVISOR)
+      .expect(403);
   });
 
   it('L2 lista solo ACTIVO; INACTIVO no aparece; kpis ACTIVO', async () => {
@@ -126,9 +149,9 @@ describe('Logística asignación chofer↔unidad (e2e L1–L4)', () => {
       .expect(200);
 
     const after = await list();
-    expect(after.items.some((r) => r.nombre === 'Chofer Logística Inactivo')).toBe(
-      false,
-    );
+    expect(
+      after.items.some((r) => r.nombre === 'Chofer Logística Inactivo'),
+    ).toBe(false);
     expect(after.kpis.total).toBe(CHOFERES_DEMO.length);
   });
 
@@ -138,11 +161,7 @@ describe('Logística asignación chofer↔unidad (e2e L1–L4)', () => {
     const wero = await chofer('WERO');
     const noe = await chofer('DON NOE');
     const outboxBefore = Number(
-      (
-        await ds.query(
-          `SELECT count(*)::int AS n FROM outbox_events`,
-        )
-      )[0].n,
+      (await ds.query(`SELECT count(*)::int AS n FROM outbox_events`))[0].n,
     );
 
     await request(server)
@@ -196,11 +215,7 @@ describe('Logística asignación chofer↔unidad (e2e L1–L4)', () => {
     expect(after.body.choferId).toBeNull();
 
     const outboxAfter = Number(
-      (
-        await ds.query(
-          `SELECT count(*)::int AS n FROM outbox_events`,
-        )
-      )[0].n,
+      (await ds.query(`SELECT count(*)::int AS n FROM outbox_events`))[0].n,
     );
     expect(outboxAfter).toBe(outboxBefore);
   });
@@ -285,7 +300,12 @@ describe('Logística asignación chofer↔unidad (e2e L1–L4)', () => {
         destino: string | null;
         alerta: string | null;
       }[];
-      kpis: { enRuta: number; disponibles: number; total: number; sinRegreso: number };
+      kpis: {
+        enRuta: number;
+        disponibles: number;
+        total: number;
+        sinRegreso: number;
+      };
     };
     expect(body.kpis.total).toBe(body.items.length);
     expect(body.kpis.enRuta + body.kpis.disponibles).toBe(body.kpis.total);
@@ -311,9 +331,9 @@ describe('Logística asignación chofer↔unidad (e2e L1–L4)', () => {
       opsEstado: 'EN_RUTA',
       alerta: null,
     });
-    expect(body.items.every((r) => r.ambito === 'FORANEO' || r.ambito === 'LOCAL')).toBe(
-      true,
-    );
+    expect(
+      body.items.every((r) => r.ambito === 'FORANEO' || r.ambito === 'LOCAL'),
+    ).toBe(true);
   });
 
   it('L6/L7 registrar regreso EN_RUTA → DISPONIBLE; DISPONIBLE falla', async () => {
@@ -378,10 +398,11 @@ describe('Logística asignación chofer↔unidad (e2e L1–L4)', () => {
       }[]
     ).find((r) => r.placas === 'VU2632C');
     expect(nissan?.opsEstado).toBe('DISPONIBLE');
+    await prepareDepartureFixture(ds, nissan!.unidadId, FACILITY, 'log-asig');
 
     await request(server)
       .post(`/logistica/salidas/${nissan!.unidadId}`)
-      .set(LOGISTICA)
+      .set(TRUSTED_LOGISTICA)
       .send({ ambito: 'LOCAL', destino: 'CEDIS prueba' })
       .expect(204);
 
@@ -430,6 +451,12 @@ describe('Logística asignación chofer↔unidad (e2e L1–L4)', () => {
       list.body.items as { unidadId: string; placas: string }[]
     ).find((r) => r.placas === 'VU2626C');
     expect(ducatoRutas).toBeTruthy();
+    await prepareDepartureFixture(
+      ds,
+      ducatoRutas!.unidadId,
+      FACILITY,
+      'log-asig',
+    );
 
     await request(server)
       .patch('/logistica/alertas/sin-regreso')
@@ -443,11 +470,10 @@ describe('Logística asignación chofer↔unidad (e2e L1–L4)', () => {
 
     await request(server)
       .post(`/logistica/salidas/${ducatoRutas!.unidadId}`)
-      .set(LOGISTICA)
+      .set(TRUSTED_LOGISTICA)
       .send({ ambito: 'LOCAL', destino: 'Override 1h' })
       .expect(204);
 
-    const ds = app.get(DataSource);
     await ds.query(
       `UPDATE unidades SET salida_at = NOW() - INTERVAL '2 hours' WHERE id = $1`,
       [ducatoRutas!.unidadId],
@@ -501,10 +527,12 @@ describe('Logística asignación chofer↔unidad (e2e L1–L4)', () => {
     expect(item!.deeplinkPath).toBe('/flota?alerta=SIN_REGRESO');
     expect(item!.expiresAt).toBeNull();
 
-    const andonRows = await app.get(DataSource).query(
-      `SELECT count(*)::int AS n FROM andon.avisos WHERE unidad_id = $1`,
-      [foton!.unidadId],
-    );
+    const andonRows = await app
+      .get(DataSource)
+      .query(
+        `SELECT count(*)::int AS n FROM andon.avisos WHERE unidad_id = $1`,
+        [foton!.unidadId],
+      );
     const beforeAndon = andonRows[0].n as number;
 
     await request(server)
@@ -519,15 +547,15 @@ describe('Logística asignación chofer↔unidad (e2e L1–L4)', () => {
       .expect(200);
     const gone = (
       afterInbox.body as { sourceEvent: string; dedupeKey: string }[]
-    ).find(
-      (row) => row.dedupeKey === `FLOTA:sin-regreso:${foton!.unidadId}`,
-    );
+    ).find((row) => row.dedupeKey === `FLOTA:sin-regreso:${foton!.unidadId}`);
     expect(gone).toBeUndefined();
 
-    const andonAfter = await app.get(DataSource).query(
-      `SELECT count(*)::int AS n FROM andon.avisos WHERE unidad_id = $1`,
-      [foton!.unidadId],
-    );
+    const andonAfter = await app
+      .get(DataSource)
+      .query(
+        `SELECT count(*)::int AS n FROM andon.avisos WHERE unidad_id = $1`,
+        [foton!.unidadId],
+      );
     expect(andonAfter[0].n).toBe(beforeAndon);
   });
 });

@@ -36,9 +36,7 @@ export class OutboxService {
       const existing = await manager.findOne(OutboxEvent, {
         where: { id: eventId },
       });
-      if (existing?.processedAt) {
-        return existing;
-      }
+      if (existing) return existing;
     }
 
     const event = manager.create(OutboxEvent, {

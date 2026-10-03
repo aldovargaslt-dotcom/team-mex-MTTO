@@ -3,6 +3,7 @@ import {
   BadRequestException,
   Inject,
   Injectable,
+  NotFoundException,
   Optional,
 } from '@nestjs/common';
 import {
@@ -12,15 +13,20 @@ import {
 } from '../alert-catalog/ports';
 import { SEED_ALERT_CODES } from '../alert-catalog/alert-catalog.types';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { AlertasService } from '../alertas/alertas.service';
 import { elapsedHoras, resolveUmbralHoras } from '../alertas/umbral-rules';
 import { ChoferesService } from '../choferes/choferes.service';
+import { Chofer } from '../choferes/chofer.entity';
 import { EstadoChofer } from '../choferes/estado-chofer.enum';
 import { AmbitoUnidad } from '../unidades/ambito-unidad.enum';
 import { Unidad } from '../unidades/unidad.entity';
 import { UnidadesService } from '../unidades/unidades.service';
 import { OpsEstadoUnidad } from '../unidades/ops-estado-unidad.enum';
+import { TrustedActor } from '../auth/trusted-actor';
+import { UnitOperationCoordinator } from '../kernel/unit-operation.module';
+import { DeparturePolicyPort } from './departure-policy.port';
+import { LogisticaDepartureAudit } from './departure-audit.entity';
 import {
   alertaSinRegreso,
   errorAssign,
@@ -53,6 +59,9 @@ export class LogisticaService implements UnidadChoferAssignmentPort {
     private readonly unidadRepo: Repository<Unidad>,
     @Inject(FLOTA_SIN_REGRESO_PORT)
     private readonly flotaAlert: FlotaSinRegresoPort,
+    private readonly dataSource: DataSource,
+    private readonly departurePolicy: DeparturePolicyPort,
+    private readonly unitOperations: UnitOperationCoordinator,
     @Optional()
     @Inject(ALERT_TYPE_ACTIVE_PORT)
     private readonly alertTypes?: AlertTypeActivePort,
@@ -92,7 +101,9 @@ export class LogisticaService implements UnidadChoferAssignmentPort {
     ]);
     const choferIds = [
       ...new Set(
-        unidades.map((u) => u.choferId).filter((id): id is string => Boolean(id)),
+        unidades
+          .map((u) => u.choferId)
+          .filter((id): id is string => Boolean(id)),
       ),
     ];
     const choferes = await Promise.all(
@@ -127,36 +138,83 @@ export class LogisticaService implements UnidadChoferAssignmentPort {
   async registrarSalida(
     unidadId: string,
     input: RegistrarSalidaInput,
+    actor: TrustedActor,
   ): Promise<void> {
     const error = errorSalida(input.ambito);
     if (error) {
       throw new BadRequestException(error);
     }
-    const unidad = await this.unidades.findOne(unidadId);
-    unidad.opsEstado = OpsEstadoUnidad.EN_RUTA;
-    unidad.ambito =
-      input.ambito === 'FORANEO' ? AmbitoUnidad.FORANEO : AmbitoUnidad.LOCAL;
-    if (input.destino !== undefined) {
-      unidad.destino = input.destino.trim() || null;
-    }
-    unidad.salidaAt = new Date();
-    await this.unidadRepo.save(unidad);
-    if (input.choferId) {
-      await this.assign(unidadId, input.choferId);
-    }
+    await this.dataSource.transaction(async (manager) => {
+      await this.unitOperations.lock(manager, unidadId);
+      const authorization = await this.departurePolicy.authorize(
+        unidadId,
+        actor,
+        manager,
+      );
+      const unidad = await manager
+        .getRepository(Unidad)
+        .createQueryBuilder('unit')
+        .where('unit.id=:unidadId', { unidadId })
+        .setLock('pessimistic_write')
+        .getOne();
+      if (!unidad) throw new NotFoundException('No se encontró la unidad.');
+      if (input.choferId) {
+        const chofer = await manager.findOneBy(Chofer, { id: input.choferId });
+        if (!chofer) throw new NotFoundException('No se encontró el chofer.');
+        const ocupadaPorChofer = await manager.findOne(Unidad, {
+          where: { choferId: input.choferId },
+        });
+        const assignmentError = errorAssign({
+          choferEstado: chofer?.estado ?? null,
+          unidadExiste: true,
+          unidadChoferId: unidad.choferId,
+          choferUnidadId: ocupadaPorChofer?.id ?? null,
+          choferId: input.choferId,
+        });
+        if (assignmentError) throw new BadRequestException(assignmentError);
+        unidad.choferId = input.choferId;
+      }
+      unidad.opsEstado = OpsEstadoUnidad.EN_RUTA;
+      unidad.ambito =
+        input.ambito === 'FORANEO' ? AmbitoUnidad.FORANEO : AmbitoUnidad.LOCAL;
+      if (input.destino !== undefined) {
+        unidad.destino = input.destino.trim() || null;
+      }
+      unidad.salidaAt = new Date();
+      await manager.save(unidad);
+      await manager.save(
+        manager.create(LogisticaDepartureAudit, {
+          unidadId,
+          actorId: actor.subject,
+          sourceCheckId: authorization.signedCheckRef.checkId,
+          snapshotHash: authorization.signedCheckRef.snapshotHash,
+          checkVersion: authorization.signedCheckRef.version,
+          validationRefs: authorization,
+          evaluatedAt: new Date(authorization.evaluatedAt),
+          operationalDate: authorization.operationalDate,
+        }),
+      );
+    });
     await this.evalUnidad(await this.unidades.findOne(unidadId));
   }
 
   async registrarRegreso(unidadId: string): Promise<void> {
-    const unidad = await this.unidades.findOne(unidadId);
-    const error = errorRegreso(unidad.opsEstado);
-    if (error) {
-      throw new BadRequestException(error);
-    }
-    unidad.opsEstado = OpsEstadoUnidad.DISPONIBLE;
-    unidad.salidaAt = null;
-    await this.unidadRepo.save(unidad);
-    await this.evalUnidad(unidad);
+    await this.dataSource.transaction(async (manager) => {
+      await this.unitOperations.lock(manager, unidadId);
+      const unidad = await manager
+        .getRepository(Unidad)
+        .createQueryBuilder('unit')
+        .where('unit.id=:unidadId', { unidadId })
+        .setLock('pessimistic_write')
+        .getOne();
+      if (!unidad) throw new NotFoundException('No se encontró la unidad.');
+      const error = errorRegreso(unidad.opsEstado);
+      if (error) throw new BadRequestException(error);
+      unidad.opsEstado = OpsEstadoUnidad.DISPONIBLE;
+      unidad.salidaAt = null;
+      await manager.save(unidad);
+    });
+    await this.evalUnidad(await this.unidades.findOne(unidadId));
   }
 
   getAlertasSinRegreso() {

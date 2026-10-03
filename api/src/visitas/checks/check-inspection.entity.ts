@@ -34,4 +34,23 @@ export class CheckInspection {
   @Column({ name: 'calendar_version', type: 'int' }) calendarVersion: number;
   @Column({ name: 'mapping_version', type: 'int' }) mappingVersion: number;
   @Column({ name: 'day_end_instant', type: 'timestamptz' }) dayEndInstant: Date;
+  @Column({ type: 'varchar', length: 32, nullable: true }) result:
+    | 'FIT'
+    | 'FIT_WITH_OBSERVATION'
+    | 'UNFIT'
+    | null;
+  @Column({ name: 'reviewed_version', type: 'int', nullable: true })
+  reviewedVersion: number | null;
+  @Column({ name: 'review_hash', type: 'varchar', length: 64, nullable: true })
+  reviewHash: string | null;
+  @Column({ name: 'review_snapshot', type: 'jsonb', nullable: true })
+  reviewSnapshot: Record<string, unknown> | null;
+  @Column({ name: 'snapshot_hash', type: 'varchar', length: 64, nullable: true })
+  snapshotHash: string | null;
+  @Column({ name: 'signed_snapshot', type: 'jsonb', nullable: true })
+  signedSnapshot: Record<string, unknown> | null;
+  @Column({ name: 'completion_key', type: 'varchar', length: 128, nullable: true })
+  completionKey: string | null;
+  @Column({ name: 'completion_hash', type: 'varchar', length: 64, nullable: true })
+  completionHash: string | null;
 }

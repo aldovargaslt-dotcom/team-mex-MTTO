@@ -1,30 +1,30 @@
-export type Role = 'SUPERVISOR' | 'ADMIN_DIRECTIVO' | 'LOGISTICA';
+export type Role = "SUPERVISOR" | "ADMIN_DIRECTIVO" | "LOGISTICA" | "MECANICO";
 
-export type EstadoUnidad = 'ACTIVA' | 'INACTIVA';
+export type EstadoUnidad = "ACTIVA" | "INACTIVA";
 
-export type MotivoInactivacion = 'ENVIO_ESPECIAL';
+export type MotivoInactivacion = "ENVIO_ESPECIAL";
 
-export type EstadoChofer = 'ACTIVO' | 'INACTIVO';
+export type EstadoChofer = "ACTIVO" | "INACTIVO";
 
-export type EstadoVisita = 'BORRADOR' | 'CERRADO';
+export type EstadoVisita = "BORRADOR" | "CERRADO";
 
-export type TipoVisita = 'PREDICTIVO' | 'CORRECTIVO';
+export type TipoVisita = "PREDICTIVO" | "CORRECTIVO";
 
-export type CategoriaTrabajo = 'A' | 'B' | 'C' | 'D' | 'E';
+export type CategoriaTrabajo = "A" | "B" | "C" | "D" | "E";
 
-export type TipoFirma = 'CHOFER' | 'JEFE';
+export type TipoFirma = "CHOFER" | "JEFE";
 
-export type OrigenPieza = 'DESDE_STOCK' | 'COMPRA_EXTERNA';
+export type OrigenPieza = "DESDE_STOCK" | "COMPRA_EXTERNA";
 
-export type TipoMovimiento = 'ENTRADA' | 'SALIDA_OT' | 'AJUSTE';
+export type TipoMovimiento = "ENTRADA" | "SALIDA_OT" | "AJUSTE";
 
-export type EstadoPendiente = 'PENDIENTE' | 'RECIBIDA';
+export type EstadoPendiente = "PENDIENTE" | "RECIBIDA";
 
-export type AlertaStock = 'OK' | 'BAJO' | 'AGOTADO';
+export type AlertaStock = "OK" | "BAJO" | "AGOTADO";
 
-export type EstadoAviso = 'ABIERTO' | 'ENTERADO' | 'RESUELTO';
+export type EstadoAviso = "ABIERTO" | "ENTERADO" | "RESUELTO";
 
-export type IconoTipoVehiculo = 'truck' | 'car' | 'van' | 'bus';
+export type IconoTipoVehiculo = "truck" | "car" | "van" | "bus";
 
 export type TipoVehiculo = {
   id: string;
@@ -54,9 +54,9 @@ export type Unidad = {
   fotoDataUrl?: string | null;
 };
 
-export type OpsChofer = 'DISPONIBLE' | 'EN_RUTA';
+export type OpsChofer = "DISPONIBLE" | "EN_RUTA";
 
-export type ChipLogistica = 'DISPONIBLE' | 'EN_RUTA' | 'TODOS';
+export type ChipLogistica = "DISPONIBLE" | "EN_RUTA" | "TODOS";
 
 export type LogisticaChoferRow = {
   choferId: string;
@@ -66,11 +66,11 @@ export type LogisticaChoferRow = {
   placas?: string;
 };
 
-export type OpsEstadoUnidad = 'EN_RUTA' | 'DISPONIBLE';
+export type OpsEstadoUnidad = "EN_RUTA" | "DISPONIBLE";
 
-export type AmbitoUnidad = 'FORANEO' | 'LOCAL';
+export type AmbitoUnidad = "FORANEO" | "LOCAL";
 
-export type ChipLogisticaUnidad = 'EN_RUTA' | 'DISPONIBLE' | 'TODAS';
+export type ChipLogisticaUnidad = "EN_RUTA" | "DISPONIBLE" | "TODAS";
 
 export type LogisticaUnidadRow = {
   unidadId: string;
@@ -87,7 +87,7 @@ export type LogisticaUnidadRow = {
   ambito: AmbitoUnidad;
   destino: string | null;
   salidaAt?: string | null;
-  alerta: 'SIN_REGRESO' | null;
+  alerta: "SIN_REGRESO" | null;
 };
 
 export type LogisticaUnidadesResponse = {
@@ -98,6 +98,73 @@ export type LogisticaUnidadesResponse = {
     total: number;
     sinRegreso: number;
   };
+};
+
+export type TowerUrgency = "CRITICAL" | "ATTENTION" | "NORMAL";
+export type TowerReadiness = "LISTA" | "PENDIENTE" | "BLOQUEADA" | "DESPACHADA";
+export type TowerCheckState =
+  "APTA" | "APTA_CON_OBSERVACION" | "NO_APTA" | "EN_PROGRESO" | "REQUERIDO";
+export type TowerPhysicalState =
+  "EN_PATIO" | "EN_RUTA" | "EN_TALLER" | "INACTIVA";
+
+export type ControlTowerRow = {
+  unidadId: string;
+  identification: { numeroInterno: string; placas: string };
+  physicalKnowledge: "KNOWN" | "UNAVAILABLE" | "UNINITIALIZED";
+  physicalState: TowerPhysicalState | null;
+  physicalSource: "FLOTA_MOVEMENT" | "FLOTA_TRANSITION" | null;
+  operationalInconsistency: boolean;
+  readiness: TowerReadiness;
+  checkState: TowerCheckState;
+  urgency: TowerUrgency;
+  activeCauses: {
+    code: string;
+    severity: Exclude<TowerUrgency, "NORMAL">;
+    message: string;
+    blocking: boolean;
+  }[];
+  activeCheck: {
+    checkId: string;
+    status: string;
+    version: number;
+    startedAt: string | null;
+  } | null;
+  lastValidCheck: {
+    checkId: string;
+    snapshotHash: string;
+    result: "FIT" | "FIT_WITH_OBSERVATION" | "UNFIT";
+    valid: boolean;
+    reason: string | null;
+    version: number;
+    dayEndInstant: string;
+  } | null;
+  insurance: {
+    status:
+      | "PRESENT_VALID"
+      | "MISSING"
+      | "EXPIRED_OR_EXPIRES_TODAY"
+      | "SOURCE_UNAVAILABLE";
+    operationalDate: string;
+    documentId: string | null;
+    version: number | null;
+    expirationDate: string | null;
+    reason: string | null;
+  };
+  asOf: string;
+  sourceVersions: Record<string, number | null>;
+  staleSources: string[];
+};
+
+export type ControlTowerResponse = {
+  items: ControlTowerRow[];
+  counts: {
+    total: number;
+    urgency: Partial<Record<TowerUrgency, number>>;
+    readiness: Partial<Record<TowerReadiness, number>>;
+    checkState: Partial<Record<TowerCheckState, number>>;
+  };
+  asOf: string;
+  nextCursor: string | null;
 };
 
 export type AlertasSinRegresoConfig = {
@@ -304,16 +371,12 @@ export type InboxItem = {
   deeplinkPath: string;
 };
 
-export type AlertFamily = 'MTTO' | 'FLOTA';
+export type AlertFamily = "MTTO" | "FLOTA";
 
 export type AlertOwningModule =
-  | 'ANDON'
-  | 'INVENTARIO'
-  | 'SALUD'
-  | 'ALERTAS'
-  | 'OTRO';
+  "ANDON" | "INVENTARIO" | "SALUD" | "ALERTAS" | "OTRO";
 
-export type ThresholdMode = 'MODULE' | 'CATALOG';
+export type ThresholdMode = "MODULE" | "CATALOG";
 
 export type AlertType = {
   code: string;
@@ -339,17 +402,17 @@ export type CatalogUmbrales = {
   } | null;
 };
 
-export type SourceModule = 'ANDON' | 'INVENTARIO' | 'SALUD' | 'LOGISTICA';
+export type SourceModule = "ANDON" | "INVENTARIO" | "SALUD" | "LOGISTICA";
 
-export type SubjectType = 'UNIDAD' | 'ITEM' | 'NONE';
+export type SubjectType = "UNIDAD" | "ITEM" | "NONE";
 
-export type Severity = 'LOW' | 'INFO' | 'WARNING' | 'CRITICAL';
+export type Severity = "LOW" | "INFO" | "WARNING" | "CRITICAL";
 
-export type TipoMovimientoFlota = 'SALIDA' | 'ENTRADA';
+export type TipoMovimientoFlota = "SALIDA" | "ENTRADA";
 
-export type TipoFirmaFlota = 'CHOFER' | 'AVAL';
+export type TipoFirmaFlota = "CHOFER" | "AVAL";
 
-export type EstadoSitio = 'ACTIVO' | 'INACTIVO';
+export type EstadoSitio = "ACTIVO" | "INACTIVO";
 
 export type SitioFlota = {
   id: string;
@@ -410,21 +473,19 @@ export type FlotaUnidadDetalle = {
 
 export type ApiError = {
   statusCode: number;
-  message: string;
+  message: string | string[];
+  code?: string;
+  details?: Record<string, unknown>;
 };
 
 export type HealthStatus =
-  | 'EXCELLENT'
-  | 'GOOD'
-  | 'ATTENTION'
-  | 'POOR'
-  | 'CRITICAL';
+  "EXCELLENT" | "GOOD" | "ATTENTION" | "POOR" | "CRITICAL";
 
-export type HealthDimensionId = 'maintenance' | 'alerts' | 'inspections';
+export type HealthDimensionId = "maintenance" | "alerts" | "inspections";
 
 export type HealthDimensionBreakdown = {
   id: HealthDimensionId;
-  availability: 'APPLICABLE' | 'NOT_APPLICABLE' | 'NO_DATA';
+  availability: "APPLICABLE" | "NOT_APPLICABLE" | "NO_DATA";
   score: number | null;
   weight: number;
   contribution: number | null;

@@ -43,6 +43,20 @@ export class MovimientoEntity {
   @Column({ name: 'aval_rol', type: 'varchar', length: 32 })
   avalRol: Rol;
 
+  @Column({ name: 'source_check_id', type: 'uuid', nullable: true })
+  sourceCheckId: string | null;
+
+  @Column({
+    name: 'snapshot_hash',
+    type: 'varchar',
+    length: 64,
+    nullable: true,
+  })
+  snapshotHash: string | null;
+
+  @Column({ name: 'departure_validation_refs', type: 'jsonb', nullable: true })
+  departureValidationRefs: Record<string, unknown> | null;
+
   @OneToMany(() => MovimientoFirmaEntity, (f) => f.movimiento, {
     cascade: true,
     eager: true,

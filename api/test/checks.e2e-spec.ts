@@ -234,7 +234,7 @@ describe('EWO-015 canonical CHECK / maintenance APIs', () => {
     await request(app.getHttpServer())
       .post(`/checks/${check.id}/complete`)
       .set('Authorization', 'Bearer mechanic')
-      .expect(404);
+      .expect(400);
     expect(
       (
         await db.query('SELECT work_order_status FROM visitas WHERE id=$1', [
@@ -411,11 +411,16 @@ describe('EWO-015 canonical CHECK / maintenance APIs', () => {
     });
     const before = await snapshot();
     const check = (await create(vehicle).expect(201)).body;
+    const afterCreate = await snapshot();
+    expect(afterCreate.outbox).toHaveLength(before.outbox.length + 1);
+    expect(afterCreate.outbox[afterCreate.outbox.length - 1]?.type).toBe(
+      'CHECK_CREATED',
+    );
     await request(app.getHttpServer())
       .get(`/checks/${check.id}`)
       .set('Authorization', 'Bearer mechanic')
       .expect(200);
-    expect(await snapshot()).toEqual(before);
+    expect(await snapshot()).toEqual(afterCreate);
     await db.query(
       "UPDATE visitas SET work_order_status='COMPLETED', km=999999, cerrado_at=now() WHERE id=$1",
       [check.id],

@@ -11,7 +11,7 @@ export default function HomePage() {
 
   function elegir(next: Role) {
     setRole(next);
-    router.push(next === 'LOGISTICA' ? '/flota' : '/inicio');
+    router.push(next === 'LOGISTICA' ? '/flota' : next === 'MECANICO' ? '/mi-trabajo' : '/inicio');
   }
 
   return (
@@ -50,6 +50,9 @@ export default function HomePage() {
             onClick={() => elegir('LOGISTICA')}
           >
             Entrar como logística
+          </Button>
+          <Button type="button" variant="outline" className="w-full" onClick={() => elegir('MECANICO')}>
+            Entrar como mecánico
           </Button>
         </div>
       </div>

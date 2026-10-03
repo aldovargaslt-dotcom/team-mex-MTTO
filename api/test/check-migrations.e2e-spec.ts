@@ -124,7 +124,7 @@ describe('S1-T05/T06/T07 isolated migration rehearsal (synchronize=false)', () =
       }).trim(),
     ).toBe('[]');
     expect(await db.query('SELECT * FROM chk_schema_migrations')).toHaveLength(
-      6,
+      13,
     );
   }, 30000);
   it('S1-T05 maps known values, preserves IDs/children, records versions and reruns idempotently', async () => {
@@ -139,7 +139,7 @@ describe('S1-T05/T06/T07 isolated migration rehearsal (synchronize=false)', () =
         db.query(`SELECT * FROM ${table} ORDER BY id`),
       ),
     );
-    expect(await upgrade()).toHaveLength(6);
+    expect(await upgrade()).toHaveLength(13);
     expect(await upgrade()).toHaveLength(0);
     await new VisitasInvariantService(db).onApplicationBootstrap();
     const rows = await db.query(
@@ -306,6 +306,7 @@ describe('S1-T05/T06/T07 isolated migration rehearsal (synchronize=false)', () =
       `INSERT INTO visitas(id,unidad_id,estado,tipo,work_order_type,work_order_status,version) VALUES ('77777777-7777-4777-8777-777777777777',$1,'BORRADOR','CORRECTIVO','CORRECTIVE','PENDING',1)`,
       [vehicle],
     );
+    for (let i = 0; i < 7; i++) await db.undoLastMigration();
     await expect(db.undoLastMigration()).rejects.toThrow(
       /FORWARD_RECOVERY_REQUIRED/,
     );
@@ -315,6 +316,6 @@ describe('S1-T05/T06/T07 isolated migration rehearsal (synchronize=false)', () =
     for (let i = 0; i < 6; i++) await db.undoLastMigration();
     expect(await db.query('SELECT id FROM visitas')).toHaveLength(2);
     expect(await db.query('SELECT * FROM visita_trabajos')).toHaveLength(1);
-    expect(await upgrade()).toHaveLength(6);
+    expect(await upgrade()).toHaveLength(13);
   });
 });

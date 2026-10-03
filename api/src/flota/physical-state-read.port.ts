@@ -5,6 +5,7 @@ export type PhysicalStateSnapshot =
   | {
       physicalKnowledge: 'KNOWN';
       physicalState: 'EN_PATIO' | 'EN_RUTA' | 'EN_TALLER' | 'INACTIVA';
+      physicalSource: 'FLOTA_MOVEMENT' | 'FLOTA_TRANSITION';
       version: number;
       observedAt: Date;
       operationalInconsistency: boolean;
@@ -16,4 +17,8 @@ export abstract class PhysicalStateReadPort {
     unidadId: string,
     transactionContext: EntityManager,
   ): Promise<PhysicalStateSnapshot>;
+  abstract readBatch(
+    unidadIds: string[],
+    transactionContext: EntityManager,
+  ): Promise<Map<string, PhysicalStateSnapshot>>;
 }

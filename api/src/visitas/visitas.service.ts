@@ -43,6 +43,10 @@ import { VisitaFirma } from './visita-firma.entity';
 import { VisitaFoto } from './visita-foto.entity';
 import { VisitaPieza } from './visita-pieza.entity';
 import { VisitaTrabajo } from './visita-trabajo.entity';
+import { CheckInvalidation } from './checks/check-invalidation.entity';
+import { CheckAuditEvent } from './checks/check-audit.entity';
+import { CheckInspection } from './checks/check-inspection.entity';
+import { UnitOperationCoordinator } from '../kernel/unit-operation.module';
 
 @Injectable()
 export class VisitasService {
@@ -61,6 +65,7 @@ export class VisitasService {
     private readonly choferes: ChoferesService,
     private readonly outbox: OutboxService,
     private readonly dataSource: DataSource,
+    private readonly unitOperations: UnitOperationCoordinator,
   ) {}
 
   async createDraft(unidadId: string, dto: CreateVisitaDto, user: CurrentUser) {
@@ -337,6 +342,7 @@ export class VisitasService {
       if (!visita) {
         throw new NotFoundException('No se encontró la visita.');
       }
+      await this.unitOperations.lock(manager, visita.unidad.id);
       const ultimoKm = await this.ultimoKmCerrado(visita.unidad.id);
       const errores = erroresCierre({
         estadoVisita: visita.estado!,
@@ -376,6 +382,79 @@ export class VisitasService {
         })),
       });
       await this.outbox.enqueueAndDispatch(manager, VISITA_CERRADA, payload);
+      if (visita.requiresReinspection) {
+        const completedCheck = await manager
+          .getRepository(Visita)
+          .createQueryBuilder('check')
+          .innerJoin(
+            CheckInspection,
+            'inspection',
+            'inspection.visita_id=check.id',
+          )
+          .where('check.unidad_id=:unidadId', { unidadId: visita.unidad.id })
+          .andWhere("check.work_order_type='CHECK'")
+          .andWhere("check.work_order_status='COMPLETED'")
+          .andWhere('inspection.snapshot_hash IS NOT NULL')
+          .andWhere('inspection.day_end_instant>:now', { now: new Date() })
+          .orderBy('check.completed_at', 'DESC')
+          .getOne();
+        if (completedCheck) {
+          const sourceEventId = `maintenance:${visita.id}:completed`;
+          const existing = await manager.findOneBy(CheckInvalidation, {
+            sourceEventId,
+          });
+          if (!existing) {
+            const actorId = user.userId ?? `legacy:${user.rol}`;
+            const invalidationRow: CheckInvalidation = manager.create(
+              CheckInvalidation,
+              {
+                id: randomUUID(),
+                checkId: completedCheck.id,
+                unidadId: visita.unidad.id,
+                type: 'MAINTENANCE_REINSPECTION_REQUIRED' as const,
+                reason:
+                  'El mantenimiento completado requiere reinspección explícita.',
+                sourceEventId,
+                actorId,
+                actorName: actorId,
+                sourceWorkOrderId: visita.id,
+              },
+            );
+            const invalidation = await manager.save(invalidationRow);
+            await manager.save(
+              CheckAuditEvent,
+              manager.create(CheckAuditEvent, {
+                id: randomUUID(),
+                checkId: completedCheck.id,
+                unidadId: visita.unidad.id,
+                event: 'INVALIDATED',
+                actorId,
+                actorName: actorId,
+                details: {
+                  invalidationId: invalidation.id,
+                  type: invalidation.type,
+                  sourceEventId,
+                  sourceWorkOrderId: visita.id,
+                },
+              }),
+            );
+            await this.outbox.enqueueAndDispatch(manager, 'CHECK_INVALIDATED', {
+              eventId: randomUUID(),
+              eventType: 'CHECK_INVALIDATED',
+              schemaVersion: 1,
+              occurredAt: invalidation.createdAt.toISOString(),
+              actorRef: actorId,
+              unidadId: visita.unidad.id,
+              checkId: completedCheck.id,
+              invalidationId: invalidation.id,
+              sourceEventId,
+              reason: invalidation.reason,
+              type: invalidation.type,
+              sourceWorkOrderId: visita.id,
+            });
+          }
+        }
+      }
     });
     return this.findDetalle(id, user);
   }

@@ -45,6 +45,7 @@ const NAV_ITEMS: {
     label: 'Configuración',
     roles: ['SUPERVISOR', 'ADMIN_DIRECTIVO', 'LOGISTICA'],
   },
+  { href: '/mi-trabajo', label: 'Mi trabajo', roles: ['MECANICO'] },
 ];
 
 const SUPERVISOR_PRIMARY = new Set([
@@ -78,7 +79,7 @@ export function AppShell({ children }: { children: ReactNode }) {
     role === 'SUPERVISOR'
       ? allItems.filter((item) => !SUPERVISOR_PRIMARY.has(item.href))
       : allItems;
-  const homeHref = isLogistica ? '/logistica' : '/inicio';
+  const homeHref = isLogistica ? '/logistica' : role === 'MECANICO' ? '/mi-trabajo' : '/inicio';
 
   function cambiarRol() {
     setMenuOpen(false);

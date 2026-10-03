@@ -3,6 +3,13 @@ import { Test, TestingModule } from '@nestjs/testing';
 import request from 'supertest';
 import { App } from 'supertest/types';
 import { AppModule } from '../src/app.module';
+import { DataSource } from 'typeorm';
+import { AuthenticationPort } from '../src/auth/trusted-actor';
+import { Rol } from '../src/auth/roles.enum';
+import {
+  prepareDepartureFixture,
+  trustedTestActor,
+} from './departure-test-fixture';
 import { configureApp } from '../src/configure-app';
 import { MotivoInactivacion } from '../src/common/motivo-inactivacion.enum';
 import {
@@ -13,21 +20,38 @@ import {
 const SUPERVISOR = { 'X-Role': 'SUPERVISOR', 'X-User-Id': 'sup-1' };
 const ADMIN = { 'X-Role': 'ADMIN_DIRECTIVO', 'X-User-Id': 'adm-1' };
 const LOGISTICA = { 'X-Role': 'LOGISTICA', 'X-User-Id': 'log-1' };
+const TRUSTED_LOGISTICA = { Authorization: 'Bearer logistics' };
+const TRUSTED_ADMIN = { Authorization: 'Bearer admin' };
+const FACILITY = 'flota-e2e-mex';
 const FIRMA =
   'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==';
 
 describe('Flota v0 (e2e)', () => {
   let app: INestApplication<App>;
   let server: App;
+  let db: DataSource;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
-    }).compile();
+    })
+      .overrideProvider(AuthenticationPort)
+      .useValue({
+        kind: 'TRUSTED',
+        authenticate: async (req: { headers: Record<string, string> }) => {
+          if (req.headers.authorization === 'Bearer logistics')
+            return trustedTestActor('log-1', Rol.LOGISTICA, FACILITY);
+          if (req.headers.authorization === 'Bearer admin')
+            return trustedTestActor('adm-1', Rol.ADMIN_DIRECTIVO, FACILITY);
+          return null;
+        },
+      })
+      .compile();
     app = moduleFixture.createNestApplication();
     configureApp(app);
     await app.init();
     server = app.getHttpServer();
+    db = app.get(DataSource);
   });
 
   afterAll(async () => {
@@ -62,7 +86,9 @@ describe('Flota v0 (e2e)', () => {
       .get('/notifications/badge')
       .set(LOGISTICA)
       .expect(200);
-    expect(badge.body).toEqual(expect.objectContaining({ unread: expect.any(Number) }));
+    expect(badge.body).toEqual(
+      expect.objectContaining({ unread: expect.any(Number) }),
+    );
     await request(server).post('/unidades').set(LOGISTICA).send({}).expect(403);
     await request(server).post('/choferes').set(LOGISTICA).send({}).expect(403);
     const u101 = await unidad(UNIDAD_ANDON_DEMO);
@@ -97,11 +123,12 @@ describe('Flota v0 (e2e)', () => {
       .expect(200);
     const chofer = (choferes.body as { id: string }[])[0];
     const u102 = await unidad(UNIDAD_SEGUNDA_DEMO);
+    await prepareDepartureFixture(db, u102.id, FACILITY, 'log-1');
 
     const occurredSalida = new Date(Date.now() - 2 * 3600_000).toISOString();
     const salida = await request(server)
       .post('/flota/movimientos')
-      .set(LOGISTICA)
+      .set(TRUSTED_LOGISTICA)
       .send({
         tipo: 'SALIDA',
         unidadId: u102.id,
@@ -138,7 +165,7 @@ describe('Flota v0 (e2e)', () => {
     const occurredEntrada = new Date(Date.now() - 30 * 60_000).toISOString();
     await request(server)
       .post('/flota/movimientos')
-      .set(ADMIN)
+      .set(TRUSTED_ADMIN)
       .send({
         tipo: 'ENTRADA',
         unidadId: u102.id,
@@ -214,14 +241,17 @@ describe('Flota v0 (e2e)', () => {
       .query({ estado: 'ACTIVO' })
       .set(LOGISTICA)
       .expect(200);
-    const chofer = (choferes.body as { id: string }[])[1] ?? (choferes.body as { id: string }[])[0];
+    const chofer =
+      (choferes.body as { id: string }[])[1] ??
+      (choferes.body as { id: string }[])[0];
     const u101 = await unidad(UNIDAD_ANDON_DEMO);
+    await prepareDepartureFixture(db, u101.id, FACILITY, 'log-1');
     const gif =
       'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
 
     const bad = await request(server)
       .post('/flota/movimientos')
-      .set(LOGISTICA)
+      .set(TRUSTED_LOGISTICA)
       .send({
         tipo: 'SALIDA',
         unidadId: u101.id,
@@ -239,7 +269,7 @@ describe('Flota v0 (e2e)', () => {
 
     const salida = await request(server)
       .post('/flota/movimientos')
-      .set(LOGISTICA)
+      .set(TRUSTED_LOGISTICA)
       .send({
         tipo: 'SALIDA',
         unidadId: u101.id,
@@ -253,13 +283,13 @@ describe('Flota v0 (e2e)', () => {
         ],
       })
       .expect(201);
-    expect(salida.body.avisos.some((a: string) => /alerta abierta/i.test(a))).toBe(
-      true,
-    );
+    expect(
+      salida.body.avisos.some((a: string) => /alerta abierta/i.test(a)),
+    ).toBe(true);
 
     await request(server)
       .post('/flota/movimientos')
-      .set(LOGISTICA)
+      .set(TRUSTED_LOGISTICA)
       .send({
         tipo: 'ENTRADA',
         unidadId: u101.id,

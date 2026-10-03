@@ -38,7 +38,8 @@ export function RoleProvider({ children }: { children: React.ReactNode }) {
     if (
       stored === 'SUPERVISOR' ||
       stored === 'ADMIN_DIRECTIVO' ||
-      stored === 'LOGISTICA'
+      stored === 'LOGISTICA' ||
+      stored === 'MECANICO'
     ) {
       setRoleState(stored);
     }
@@ -91,5 +92,6 @@ export function useRole() {
 export function etiquetaRol(role: Role) {
   if (role === 'ADMIN_DIRECTIVO') return 'Administrador directivo';
   if (role === 'LOGISTICA') return 'Logística';
+  if (role === 'MECANICO') return 'Mecánico';
   return 'Supervisor';
 }

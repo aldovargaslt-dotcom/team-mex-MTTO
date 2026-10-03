@@ -1,5 +1,5 @@
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
-import { EntityManager } from 'typeorm';
+import { EntityManager, In } from 'typeorm';
 import { FACILITY_TIMEZONE, operationalDay } from './facility-calendar';
 import { VehicleFacility } from './facility.entity';
 
@@ -12,6 +12,16 @@ export abstract class FacilityCalendarPort {
     mapping: VehicleFacility;
     day: ReturnType<typeof operationalDay>;
   }>;
+  abstract resolveBatch(
+    unidadIds: string[],
+    manager: EntityManager,
+    now: Date,
+  ): Promise<
+    Map<
+      string,
+      { mapping: VehicleFacility; day: ReturnType<typeof operationalDay> }
+    >
+  >;
 }
 
 @Injectable()
@@ -36,5 +46,23 @@ export class ConfiguredFacilityCalendar extends FacilityCalendarPort {
         details: { unidadId },
       });
     return { mapping, day: operationalDay(now) };
+  }
+
+  async resolveBatch(unidadIds: string[], manager: EntityManager, now: Date) {
+    const mappings = await manager.find(VehicleFacility, {
+      where: { unidadId: In(unidadIds) },
+      relations: { facility: true },
+    });
+    const result = new Map<
+      string,
+      { mapping: VehicleFacility; day: ReturnType<typeof operationalDay> }
+    >();
+    const day = operationalDay(now);
+    for (const mapping of mappings) {
+      if (mapping.facility.timezone === FACILITY_TIMEZONE) {
+        result.set(mapping.unidadId, { mapping, day });
+      }
+    }
+    return result;
   }
 }

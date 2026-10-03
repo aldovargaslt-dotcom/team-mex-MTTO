@@ -1,39 +1,39 @@
-'use client';
+"use client";
 
-import { FormEvent, useEffect, useMemo, useState } from 'react';
-import Link from 'next/link';
-import { useParams } from 'next/navigation';
-import { RoleGate } from '@/components/RoleGate';
-import { SignaturePad } from '@/components/SignaturePad';
-import { Button } from '@/components/ui/button';
-import { Field, FormAlert, Note, PageHeader } from '@/components/ui/field';
-import { Input, NativeSelect, Textarea } from '@/components/ui/input';
-import { IndicadoresStrip } from '@/components/IndicadoresStrip';
-import { api, HttpError } from '@/lib/api';
+import { FormEvent, useEffect, useMemo, useState } from "react";
+import Link from "next/link";
+import { useParams } from "next/navigation";
+import { RoleGate } from "@/components/RoleGate";
+import { SignaturePad } from "@/components/SignaturePad";
+import { Button } from "@/components/ui/button";
+import { Field, FormAlert, Note, PageHeader } from "@/components/ui/field";
+import { Input, NativeSelect, Textarea } from "@/components/ui/input";
+import { IndicadoresStrip } from "@/components/IndicadoresStrip";
+import { api, departureErrorMessage, HttpError } from "@/lib/api";
 import {
   ciclosDeHistorial,
   detalleCicloFlota,
   etiquetaAdminFlota,
   fraseCicloFlota,
-} from '@/lib/flota-viaje';
-import { indicadoresDePatio } from '@/lib/hub-indicadores';
-import { useRole } from '@/lib/role';
+} from "@/lib/flota-viaje";
+import { indicadoresDePatio } from "@/lib/hub-indicadores";
+import { useRole } from "@/lib/role";
 import type {
   Chofer,
   FlotaUnidadDetalle,
   SitioFlota,
   TipoMovimientoFlota,
-} from '@/lib/types';
+} from "@/lib/types";
 
 function toLocalInput(iso?: string) {
   const d = iso ? new Date(iso) : new Date();
-  const pad = (n: number) => String(n).padStart(2, '0');
+  const pad = (n: number) => String(n).padStart(2, "0");
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
 }
 
 export default function FlotaUnidadPage() {
   return (
-    <RoleGate allow={['LOGISTICA', 'ADMIN_DIRECTIVO']}>
+    <RoleGate allow={["LOGISTICA", "ADMIN_DIRECTIVO"]}>
       <FlotaUnidad />
     </RoleGate>
   );
@@ -51,13 +51,13 @@ function FlotaUnidad() {
   const [busyEstado, setBusyEstado] = useState(false);
 
   const enRuta = Boolean(detalle?.tablero?.salidaAbiertaId);
-  const tipo: TipoMovimientoFlota = enRuta ? 'ENTRADA' : 'SALIDA';
+  const tipo: TipoMovimientoFlota = enRuta ? "ENTRADA" : "SALIDA";
 
-  const [choferId, setChoferId] = useState('');
-  const [sitioId, setSitioId] = useState('');
+  const [choferId, setChoferId] = useState("");
+  const [sitioId, setSitioId] = useState("");
   const [occurredAt, setOccurredAt] = useState(toLocalInput());
-  const [km, setKm] = useState('');
-  const [notas, setNotas] = useState('');
+  const [km, setKm] = useState("");
+  const [notas, setNotas] = useState("");
   const [firmaChofer, setFirmaChofer] = useState<string | null>(null);
   const [firmaAval, setFirmaAval] = useState<string | null>(null);
   const [padsNonce, setPadsNonce] = useState(0);
@@ -68,23 +68,23 @@ function FlotaUnidad() {
         role: role!,
         userId,
       }),
-      api<SitioFlota[]>('/flota/sitios', { role: role!, userId }),
-      api<Chofer[]>('/choferes?estado=ACTIVO', { role: role!, userId }),
+      api<SitioFlota[]>("/flota/sitios", { role: role!, userId }),
+      api<Chofer[]>("/choferes?estado=ACTIVO", { role: role!, userId }),
     ]);
     setDetalle(d);
-    setSitios(s.filter((x) => x.estado === 'ACTIVO'));
+    setSitios(s.filter((x) => x.estado === "ACTIVO"));
     setChoferes(c);
-    const patio = s.find((x) => x.nombre === 'Patio' && x.estado === 'ACTIVO');
+    const patio = s.find((x) => x.nombre === "Patio" && x.estado === "ACTIVO");
     const abierta = Boolean(d.tablero?.salidaAbiertaId);
     if (abierta) {
-      setSitioId(patio?.id || s.find((x) => x.estado === 'ACTIVO')?.id || '');
-      setChoferId(d.tablero?.choferActualId || c[0]?.id || '');
+      setSitioId(patio?.id || s.find((x) => x.estado === "ACTIVO")?.id || "");
+      setChoferId(d.tablero?.choferActualId || c[0]?.id || "");
       if (d.tablero?.kmSalida != null) {
         setKm(String(d.tablero.kmSalida));
       }
     } else {
-      setSitioId('');
-      setChoferId((current) => current || c[0]?.id || '');
+      setSitioId("");
+      setChoferId((current) => current || c[0]?.id || "");
     }
   }
 
@@ -92,7 +92,7 @@ function FlotaUnidad() {
     if (!role || !params.id) return;
     void cargar().catch((err) => {
       setError(
-        err instanceof HttpError ? err.message : 'No se pudo cargar la unidad.',
+        err instanceof HttpError ? err.message : "No se pudo cargar la unidad.",
       );
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -106,17 +106,17 @@ function FlotaUnidad() {
   async function registrar(event: FormEvent) {
     event.preventDefault();
     if (!firmaChofer || !firmaAval) {
-      setError('Se requieren las firmas del chofer y del aval.');
+      setError("Se requieren las firmas del chofer y del aval.");
       return;
     }
     setSaving(true);
     setError(null);
     setAvisos([]);
     try {
-      const res = await api<{ avisos: string[] }>('/flota/movimientos', {
+      const res = await api<{ avisos: string[] }>("/flota/movimientos", {
         role: role!,
         userId,
-        method: 'POST',
+        method: "POST",
         body: JSON.stringify({
           tipo,
           unidadId: params.id,
@@ -126,8 +126,8 @@ function FlotaUnidad() {
           km: Number(km),
           notas: notas.trim() || undefined,
           firmas: [
-            { tipo: 'CHOFER', dataUrl: firmaChofer },
-            { tipo: 'AVAL', dataUrl: firmaAval },
+            { tipo: "CHOFER", dataUrl: firmaChofer },
+            { tipo: "AVAL", dataUrl: firmaAval },
           ],
         }),
       });
@@ -135,14 +135,16 @@ function FlotaUnidad() {
       setFirmaChofer(null);
       setFirmaAval(null);
       setPadsNonce((n) => n + 1);
-      setNotas('');
+      setNotas("");
       setOccurredAt(toLocalInput());
       await cargar();
     } catch (err) {
       setError(
-        err instanceof HttpError
-          ? err.message
-          : 'No se pudo registrar el movimiento.',
+        tipo === "SALIDA"
+          ? departureErrorMessage(err)
+          : err instanceof HttpError
+            ? err.message
+            : "No se pudo registrar el movimiento.",
       );
     } finally {
       setSaving(false);
@@ -156,14 +158,14 @@ function FlotaUnidad() {
       await api(`/flota/unidades/${params.id}/envio-especial`, {
         role: role!,
         userId,
-        method: 'POST',
+        method: "POST",
       });
       await cargar();
     } catch (err) {
       setError(
         err instanceof HttpError
           ? err.message
-          : 'No se pudo marcar el envío especial.',
+          : "No se pudo marcar el envío especial.",
       );
     } finally {
       setBusyEstado(false);
@@ -177,12 +179,14 @@ function FlotaUnidad() {
       await api(`/flota/unidades/${params.id}/reactivar`, {
         role: role!,
         userId,
-        method: 'POST',
+        method: "POST",
       });
       await cargar();
     } catch (err) {
       setError(
-        err instanceof HttpError ? err.message : 'No se pudo reactivar la unidad.',
+        err instanceof HttpError
+          ? err.message
+          : "No se pudo reactivar la unidad.",
       );
     } finally {
       setBusyEstado(false);
@@ -209,7 +213,7 @@ function FlotaUnidad() {
         title={unidad.numeroInterno}
         lede={`${unidad.placas} · ${unidad.tipoNombre}`}
         actions={
-          unidad.estado === 'INACTIVA' ? (
+          unidad.estado === "INACTIVA" ? (
             <Button
               type="button"
               variant="secondary"
@@ -252,7 +256,7 @@ function FlotaUnidad() {
       </section>
 
       <section className="card panel">
-        <h2>Registrar {tipo === 'SALIDA' ? 'salida' : 'entrada'}</h2>
+        <h2>Registrar {tipo === "SALIDA" ? "salida" : "entrada"}</h2>
         <form className="grid gap-3" onSubmit={(e) => void registrar(e)}>
           <Field label="Chofer" htmlFor="flota-chofer">
             <NativeSelect
@@ -317,7 +321,8 @@ function FlotaUnidad() {
           </Field>
           {choferes.length === 0 ? (
             <Note variant="warn">
-              No hay choferes activos. Pide alta o reactivación a administración.
+              No hay choferes activos. Pide alta o reactivación a
+              administración.
             </Note>
           ) : null}
           <SignaturePad
@@ -334,10 +339,10 @@ function FlotaUnidad() {
           />
           <Button type="submit" disabled={saving || !choferId || !sitioId}>
             {saving
-              ? 'Registrando…'
-              : tipo === 'SALIDA'
-                ? 'Registrar salida'
-                : 'Registrar entrada'}
+              ? "Registrando…"
+              : tipo === "SALIDA"
+                ? "Registrar salida"
+                : "Registrar entrada"}
           </Button>
         </form>
       </section>

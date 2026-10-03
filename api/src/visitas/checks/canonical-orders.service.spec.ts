@@ -5,6 +5,7 @@ import { CheckSource } from '../work-order';
 import { TrustedActor } from '../../auth/trusted-actor';
 import { ConfiguredFacilityCalendar } from './facility-calendar.port';
 import { Rol } from '../../auth/roles.enum';
+import { UnitOperationCoordinator } from '../../kernel/unit-operation.module';
 
 describe('S1-T11 constraint error translation', () => {
   const actor: TrustedActor = {
@@ -26,20 +27,19 @@ describe('S1-T11 constraint error translation', () => {
       } as unknown as DataSource,
       {} as VisitasService,
       new ConfiguredFacilityCalendar(),
+      {} as UnitOperationCoordinator,
     );
     await expect(
       service.createCheck('vehicle', CheckSource.LOGISTICS_MANUAL, actor),
     ).rejects.toBe(error);
   });
   it('returns refresh conflict without silently recreating if the race winner has already terminated', async () => {
-    const transaction = jest
-      .fn()
-      .mockRejectedValue({
-        driverError: {
-          code: '23505',
-          constraint: 'check_un_activo_por_unidad_uidx',
-        },
-      });
+    const transaction = jest.fn().mockRejectedValue({
+      driverError: {
+        code: '23505',
+        constraint: 'check_un_activo_por_unidad_uidx',
+      },
+    });
     const manager = {
       findOneBy: jest.fn().mockResolvedValue({ id: 'vehicle' }),
       findOne: jest
@@ -54,6 +54,7 @@ describe('S1-T11 constraint error translation', () => {
       { transaction, manager } as unknown as DataSource,
       {} as VisitasService,
       new ConfiguredFacilityCalendar(),
+      {} as UnitOperationCoordinator,
     );
     try {
       await service.createCheck('vehicle', CheckSource.LOGISTICS_MANUAL, actor);

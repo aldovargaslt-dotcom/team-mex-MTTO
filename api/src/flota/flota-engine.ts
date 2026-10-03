@@ -72,6 +72,9 @@ export class FlotaEngine {
       notas: input.notas,
       createdBy: input.createdBy,
       avalRol: input.avalRol,
+      sourceCheckId: input.sourceCheckId ?? null,
+      snapshotHash: input.snapshotHash ?? null,
+      departureValidationRefs: input.departureValidationRefs ?? null,
       firmas: input.firmas,
     };
 
@@ -108,5 +111,7 @@ function salidaChoferUltimo(
   operativa: UnidadOperativa | null,
   entradaChoferId: string,
 ): string {
-  return operativa?.choferActualId ?? operativa?.choferUltimoId ?? entradaChoferId;
+  return (
+    operativa?.choferActualId ?? operativa?.choferUltimoId ?? entradaChoferId
+  );
 }

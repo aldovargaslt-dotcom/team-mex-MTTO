@@ -17,14 +17,21 @@ import {
   CreateMovimientoFlotaDto,
   CreateSitioDto,
   UpdateSitioDto,
+  RecordPhysicalStateDto,
 } from './dto/flota.dto';
 import { FlotaService } from './flota.service';
+import { PhysicalStateTransitionService } from './physical-state-transition.service';
+import { Actor, TrustedAuthentication } from '../auth/trusted-auth.decorator';
+import { TrustedActor } from '../auth/trusted-actor';
 
 @ApiTags('flota')
 @Controller('flota')
 @Roles(Rol.LOGISTICA, Rol.ADMIN_DIRECTIVO)
 export class FlotaController {
-  constructor(private readonly service: FlotaService) {}
+  constructor(
+    private readonly service: FlotaService,
+    private readonly physicalStates: PhysicalStateTransitionService,
+  ) {}
 
   @Get('tablero')
   @ApiOperation({
@@ -42,7 +49,9 @@ export class FlotaController {
   }
 
   @Get('movimientos/hoy')
-  @ApiOperation({ summary: 'Movimientos de patio del día de hoy en Ciudad de México' })
+  @ApiOperation({
+    summary: 'Movimientos de patio del día de hoy en Ciudad de México',
+  })
   movimientosDeHoy() {
     return this.service.movimientosDeHoy();
   }
@@ -63,12 +72,14 @@ export class FlotaController {
   }
 
   @Post('movimientos')
+  @TrustedAuthentication()
   @ApiOperation({ summary: 'Registrar SALIDA o ENTRADA (dos firmas)' })
   registrar(
     @Body() dto: CreateMovimientoFlotaDto,
     @CurrentUserParam() user: CurrentUser,
+    @Actor() actor: TrustedActor,
   ) {
-    return this.service.registrar(dto, user);
+    return this.service.registrar(dto, user, actor);
   }
 
   @Get('unidades/:unidadId')
@@ -87,5 +98,17 @@ export class FlotaController {
   @ApiOperation({ summary: 'Reactivar unidad y limpiar motivo' })
   reactivar(@Param('unidadId', ParseUUIDPipe) unidadId: string) {
     return this.service.reactivar(unidadId);
+  }
+
+  @Post('unidades/:unidadId/estado-fisico')
+  @ApiOperation({
+    summary: 'Registrar una transición física explícita de Flota/Patio',
+  })
+  recordPhysicalState(
+    @Param('unidadId', ParseUUIDPipe) unidadId: string,
+    @Body() dto: RecordPhysicalStateDto,
+    @CurrentUserParam() actor: CurrentUser,
+  ) {
+    return this.physicalStates.record(unidadId, dto, actor);
   }
 }

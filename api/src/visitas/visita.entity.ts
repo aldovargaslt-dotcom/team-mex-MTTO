@@ -5,6 +5,7 @@ import {
   CreateDateColumn,
   Entity,
   JoinColumn,
+  Index,
   ManyToOne,
   OneToMany,
   PrimaryColumn,
@@ -21,6 +22,10 @@ import { VisitaTrabajo } from './visita-trabajo.entity';
 import { WorkOrderStatus, WorkOrderType } from './work-order';
 
 @Entity('visitas')
+@Index('corrective_from_check_finding_uidx', ['sourceCheckId', 'findingId'], {
+  unique: true,
+  where: "work_order_type='CORRECTIVE' AND source_check_id IS NOT NULL AND finding_id IS NOT NULL",
+})
 export class Visita {
   @PrimaryColumn('uuid')
   id: string;

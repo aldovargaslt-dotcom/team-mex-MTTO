@@ -21,11 +21,14 @@ import { VisitasModule } from './visitas/visitas.module';
 import { AlertasModule } from './alertas/alertas.module';
 import { AlertCatalogModule } from './alert-catalog/alert-catalog.module';
 import { SaludModule } from './salud/salud.module';
+import { VehicleDocumentsModule } from './vehicle-documents/vehicle-documents.module';
+import { UnitOperationModule } from './kernel/unit-operation.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     TrustedAuthModule,
+    UnitOperationModule,
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
       useFactory: async (config: ConfigService) => {
@@ -45,6 +48,7 @@ import { SaludModule } from './salud/salud.module';
     AndonModule,
     VisitasModule,
     SaludModule,
+    VehicleDocumentsModule,
     SeedModule,
   ],
   controllers: [HealthController],

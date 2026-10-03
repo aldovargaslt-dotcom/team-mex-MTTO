@@ -8,6 +8,7 @@ import {
   IsInt,
   IsISO8601,
   IsOptional,
+  IsString,
   IsUUID,
   Matches,
   MaxLength,
@@ -16,6 +17,10 @@ import {
 } from 'class-validator';
 import { OptionalTrimmed, RequiredTrimmed } from '../../common/trim';
 import { TipoFirmaFlota, TipoMovimientoFlota } from '../enums';
+import {
+  PHYSICAL_STATES,
+  PhysicalState,
+} from '../entities/physical-state-event.entity';
 
 export class FirmaFlotaDto {
   @ApiProperty({ enum: TipoFirmaFlota })
@@ -103,4 +108,9 @@ export class UpdateSitioDto {
     message: 'El estado del sitio debe ser ACTIVO o INACTIVO.',
   })
   estado?: 'ACTIVO' | 'INACTIVO';
+}
+
+export class RecordPhysicalStateDto {
+  @IsEnum(PHYSICAL_STATES) state: PhysicalState;
+  @IsString() @Matches(/\S/) @MaxLength(500) reason: string;
 }

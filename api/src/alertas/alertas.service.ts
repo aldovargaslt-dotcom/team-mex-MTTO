@@ -4,11 +4,9 @@ import { Repository } from 'typeorm';
 import { AmbitoUnidad } from '../unidades/ambito-unidad.enum';
 import { ReglaFlotaSinRegresoEntity } from './entities/regla-flota-sin-regreso.entity';
 import { UmbralUnidadEntity } from './entities/umbral-unidad.entity';
-import {
-  DEFAULT_UMBRAL_FORANEO_H,
-  DEFAULT_UMBRAL_LOCAL_H,
-} from './enums';
+import { DEFAULT_UMBRAL_FORANEO_H, DEFAULT_UMBRAL_LOCAL_H } from './enums';
 import { resolveUmbralHoras } from './umbral-rules';
+import { TorreUrgencyConfigEntity } from './entities/torre-urgency-config.entity';
 
 export type AlertasSinRegresoConfig = {
   localH: number;
@@ -23,7 +21,26 @@ export class AlertasService {
     private readonly reglas: Repository<ReglaFlotaSinRegresoEntity>,
     @InjectRepository(UmbralUnidadEntity)
     private readonly umbrales: Repository<UmbralUnidadEntity>,
+    @InjectRepository(TorreUrgencyConfigEntity)
+    private readonly urgency: Repository<TorreUrgencyConfigEntity>,
   ) {}
+
+  async getTorreUrgencyConfig() {
+    const current = await this.urgency.find({ take: 1 });
+    if (current[0]) {
+      return {
+        attentionWindowSeconds: current[0].attentionWindowSeconds,
+        version: current[0].version,
+      };
+    }
+    const created = await this.urgency.save(
+      this.urgency.create({ attentionWindowSeconds: 7200, version: 1 }),
+    );
+    return {
+      attentionWindowSeconds: created.attentionWindowSeconds,
+      version: created.version,
+    };
+  }
 
   async resolveUmbralHoras(unidad: {
     id: string;

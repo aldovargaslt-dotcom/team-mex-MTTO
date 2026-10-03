@@ -23,6 +23,9 @@ export type MovimientoFlota = {
   notas: string | null;
   createdBy: string | null;
   avalRol: Rol;
+  sourceCheckId?: string | null;
+  snapshotHash?: string | null;
+  departureValidationRefs?: Record<string, unknown> | null;
   firmas: MovimientoFirma[];
 };
 
@@ -51,6 +54,9 @@ export type RegistrarMovimientoInput = {
   firmas: MovimientoFirma[];
   createdBy: string | null;
   avalRol: Rol;
+  sourceCheckId?: string | null;
+  snapshotHash?: string | null;
+  departureValidationRefs?: Record<string, unknown> | null;
 };
 
 export type CatalogoUnidad = {

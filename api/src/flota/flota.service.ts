@@ -8,10 +8,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 import { CurrentUser } from '../auth/current-user';
-import {
-  ANDON_ABIERTO_PORT,
-  AndonAbiertoPort,
-} from '../andon/ports';
+import { ANDON_ABIERTO_PORT, AndonAbiertoPort } from '../andon/ports';
 import { ChoferesService } from '../choferes/choferes.service';
 import { Chofer } from '../choferes/chofer.entity';
 import { EstadoChofer } from '../choferes/estado-chofer.enum';
@@ -30,6 +27,10 @@ import { FlotaDomainError, FlotaEngine } from './flota-engine';
 import { MovimientoFlota, UnidadOperativa } from './flota-types';
 import { TypeOrmFlotaStore } from './typeorm-flota-store';
 import { FLOTA_TIME_ZONE, rangoDeHoyFlota } from './flota-date';
+import { DeparturePolicyPort } from '../logistica/departure-policy.port';
+import { TrustedActor } from '../auth/trusted-actor';
+import { UnitOperationCoordinator } from '../kernel/unit-operation.module';
+import { TipoMovimientoFlota } from './enums';
 
 const SITIOS_SEED = ['Patio', 'Taller'];
 
@@ -44,6 +45,8 @@ export class FlotaService implements OnModuleInit {
     @Inject(ANDON_ABIERTO_PORT)
     private readonly andon: AndonAbiertoPort,
     private readonly dataSource: DataSource,
+    private readonly departurePolicy: DeparturePolicyPort,
+    private readonly unitOperations: UnitOperationCoordinator,
   ) {}
 
   async onModuleInit() {
@@ -134,8 +137,7 @@ export class FlotaService implements OnModuleInit {
           unidadId: movimiento.unidadId,
           numeroInterno: unidad?.numeroInterno ?? 'Unidad no disponible',
           placas: unidad?.placas ?? null,
-          choferNombre:
-            choferById.get(movimiento.choferId)?.nombre ?? null,
+          choferNombre: choferById.get(movimiento.choferId)?.nombre ?? null,
           sitioNombre: sitioById.get(movimiento.sitioId)?.nombre ?? null,
           occurredAt: movimiento.occurredAt,
           km: movimiento.km,
@@ -170,7 +172,11 @@ export class FlotaService implements OnModuleInit {
     };
   }
 
-  async registrar(dto: CreateMovimientoFlotaDto, user: CurrentUser) {
+  async registrar(
+    dto: CreateMovimientoFlotaDto,
+    user: CurrentUser,
+    actor: TrustedActor,
+  ) {
     let unidad: { id: string; activa: boolean } | null = null;
     try {
       const u = await this.unidades.findOne(dto.unidadId);
@@ -196,6 +202,11 @@ export class FlotaService implements OnModuleInit {
 
     try {
       return await this.dataSource.transaction(async (manager) => {
+        await this.unitOperations.lock(manager, dto.unidadId);
+        const departureAuthorization =
+          dto.tipo === TipoMovimientoFlota.SALIDA
+            ? await this.departurePolicy.authorize(dto.unidadId, actor, manager)
+            : null;
         const engine = new FlotaEngine(this.store.withManager(manager));
         return engine.registrar(
           {
@@ -212,6 +223,11 @@ export class FlotaService implements OnModuleInit {
             })),
             createdBy: user.userId,
             avalRol: user.rol,
+            sourceCheckId:
+              departureAuthorization?.signedCheckRef.checkId ?? null,
+            snapshotHash:
+              departureAuthorization?.signedCheckRef.snapshotHash ?? null,
+            departureValidationRefs: departureAuthorization,
           },
           {
             nowIso: new Date().toISOString(),

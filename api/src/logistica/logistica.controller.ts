@@ -13,6 +13,8 @@ import {
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Roles } from '../auth/roles.decorator';
 import { Rol } from '../auth/roles.enum';
+import { Actor, TrustedAuthentication } from '../auth/trusted-auth.decorator';
+import { TrustedActor } from '../auth/trusted-actor';
 import {
   CreateAsignacionDto,
   FiltrarLogisticaChoferesDto,
@@ -21,12 +23,29 @@ import {
   RegistrarSalidaDto,
 } from './dto/logistica.dto';
 import { LogisticaService } from './logistica.service';
+import { ControlTowerService } from './control-tower.service';
+import { ControlTowerQueryDto } from './control-tower.dto';
 
 @ApiTags('logistica')
 @Controller('logistica')
 @Roles(Rol.LOGISTICA, Rol.ADMIN_DIRECTIVO)
 export class LogisticaController {
-  constructor(private readonly service: LogisticaService) {}
+  constructor(
+    private readonly service: LogisticaService,
+    private readonly tower: ControlTowerService,
+  ) {}
+
+  @Get('torre-control')
+  @TrustedAuthentication()
+  @ApiOperation({
+    summary: 'Torre compuesta: físico, habilitación, CHECK y urgencia',
+  })
+  controlTower(
+    @Query() query: ControlTowerQueryDto,
+    @Actor() actor: TrustedActor,
+  ) {
+    return this.tower.snapshot(query, actor);
+  }
 
   @Get('choferes')
   @ApiOperation({
@@ -55,12 +74,15 @@ export class LogisticaController {
   }
 
   @Patch('alertas/sin-regreso')
-  @ApiOperation({ summary: 'Actualizar umbrales default y override por unidad.' })
+  @ApiOperation({
+    summary: 'Actualizar umbrales default y override por unidad.',
+  })
   patchAlertasSinRegreso(@Body() dto: PatchAlertasSinRegresoDto) {
     return this.service.patchAlertasSinRegreso(dto);
   }
 
   @Post('salidas/:unidadId')
+  @TrustedAuthentication()
   @HttpCode(204)
   @ApiOperation({
     summary: 'Registrar salida: EN_RUTA + salida_at=now (ADR-010).',
@@ -68,8 +90,9 @@ export class LogisticaController {
   registrarSalida(
     @Param('unidadId', ParseUUIDPipe) unidadId: string,
     @Body() dto: RegistrarSalidaDto,
+    @Actor() actor: TrustedActor,
   ) {
-    return this.service.registrarSalida(unidadId, dto);
+    return this.service.registrarSalida(unidadId, dto, actor);
   }
 
   @Post('regresos/:unidadId')
@@ -77,9 +100,7 @@ export class LogisticaController {
   @ApiOperation({
     summary: 'Registrar regreso: DISPONIBLE y limpia salida_at.',
   })
-  registrarRegreso(
-    @Param('unidadId', ParseUUIDPipe) unidadId: string,
-  ) {
+  registrarRegreso(@Param('unidadId', ParseUUIDPipe) unidadId: string) {
     return this.service.registrarRegreso(unidadId);
   }
 

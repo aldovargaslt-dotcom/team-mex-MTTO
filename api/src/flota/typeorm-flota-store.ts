@@ -86,15 +86,17 @@ export class TypeOrmFlotaStore implements FlotaStore {
       .addOrderBy('movimiento.id', 'ASC')
       .getMany();
 
-    return rows.map(({ id, tipo, unidadId, choferId, sitioId, occurredAt, km }) => ({
-      id,
-      tipo: tipo as TipoMovimientoFlota,
-      unidadId,
-      choferId,
-      sitioId,
-      occurredAt: occurredAt.toISOString(),
-      km,
-    }));
+    return rows.map(
+      ({ id, tipo, unidadId, choferId, sitioId, occurredAt, km }) => ({
+        id,
+        tipo: tipo as TipoMovimientoFlota,
+        unidadId,
+        choferId,
+        sitioId,
+        occurredAt: occurredAt.toISOString(),
+        km,
+      }),
+    );
   }
 
   async choferTieneSalidaAbierta(
@@ -126,6 +128,9 @@ export class TypeOrmFlotaStore implements FlotaStore {
       notas: mov.notas,
       createdBy: mov.createdBy,
       avalRol: mov.avalRol,
+      sourceCheckId: mov.sourceCheckId ?? null,
+      snapshotHash: mov.snapshotHash ?? null,
+      departureValidationRefs: mov.departureValidationRefs ?? null,
       firmas: mov.firmas.map((f) => {
         const firma = new MovimientoFirmaEntity();
         firma.tipo = f.tipo;
@@ -140,7 +145,8 @@ export class TypeOrmFlotaStore implements FlotaStore {
     const existing = await this.operativas.findOne({
       where: { unidadId: row.unidadId },
     });
-    const entity = existing ?? this.operativas.create({ unidadId: row.unidadId });
+    const entity =
+      existing ?? this.operativas.create({ unidadId: row.unidadId });
     entity.sitioId = row.sitioId;
     entity.choferActualId = row.choferActualId;
     entity.choferUltimoId = row.choferUltimoId;
@@ -160,7 +166,11 @@ export class TypeOrmFlotaStore implements FlotaStore {
   }
 
   private toSitio(row: SitioEntity): Sitio {
-    return { id: row.id, nombre: row.nombre, estado: row.estado as EstadoSitio };
+    return {
+      id: row.id,
+      nombre: row.nombre,
+      estado: row.estado as EstadoSitio,
+    };
   }
 
   private toOperativa(row: UnidadOperativaEntity): UnidadOperativa {
@@ -188,6 +198,9 @@ export class TypeOrmFlotaStore implements FlotaStore {
       notas: row.notas,
       createdBy: row.createdBy,
       avalRol: row.avalRol as Rol,
+      sourceCheckId: row.sourceCheckId,
+      snapshotHash: row.snapshotHash,
+      departureValidationRefs: row.departureValidationRefs,
       firmas: (row.firmas ?? []).map((f) => ({
         tipo: f.tipo as TipoFirmaFlota,
         dataUrl: f.dataUrl,

@@ -36,15 +36,15 @@ Do not add speculative EWOs. An EWO is created when there is approved work to ex
 
 ## CHECK — breakdown solicitado en Slice 0
 
-Owner autorizó crear estos artefactos de planificación (2026-10-01), no ejecutar los slices. Paquete aprobado2026-10-01; EWO015 Ready técnicamente y016–022 Draft por dependencias/preflight. Ninguno autoriza ejecución. La regla de no inventar EWOs no impide el breakdown explícitamente pedido. [Review/gates](CHK-001-slice-0-review.md).
+Owner autorizó crear estos artefactos de planificación (2026-10-01) y después instruyó continuar la implementación de EWO-016–022. EWO-022 completa el paquete a nivel de desarrollo local; despliegue/piloto e inputs productivos conservan sus gates. La regla de no inventar EWOs no impide el breakdown explícitamente pedido. [Review/gates](CHK-001-slice-0-review.md).
 
 | ID | Slice | Status |
 |---|---|---|
 | [EWO-015](EWO-015.md) | 1 — dominio/migrations/exclusividad/compatibilidad/auth foundation | Ready — execution hold |
-| [EWO-016](EWO-016.md) | 2 — manual/daily/audit | Draft |
-| [EWO-017](EWO-017.md) | 3 — queue/claim/Condition | Draft |
-| [EWO-018](EWO-018.md) | 4 — Evidence/private S3 | Draft |
-| [EWO-019](EWO-019.md) | 5 — Findings/Corrective preparada | Draft |
-| [EWO-020](EWO-020.md) | 6 — review/sign/immutable completion/invalidation | Draft |
-| [EWO-021](EWO-021.md) | 7 — documents/Tower/readiness | Draft |
-| [EWO-022](EWO-022.md) | 8 — departure/return/hardening | Draft |
+| [EWO-016](EWO-016.md) | 2 — manual/daily/audit | Verification |
+| [EWO-017](EWO-017.md) | 3 — queue/claim/Condition | Verification |
+| [EWO-018](EWO-018.md) | 4 — Evidence/private S3 | Verification |
+| [EWO-019](EWO-019.md) | 5 — Findings/Corrective preparada | Verification |
+| [EWO-020](EWO-020.md) | 6 — review/sign/immutable completion/invalidation | Verification |
+| [EWO-021](EWO-021.md) | 7 — documents/Tower/readiness | Verification |
+| [EWO-022](EWO-022.md) | 8 — departure/return/hardening | Verification |
