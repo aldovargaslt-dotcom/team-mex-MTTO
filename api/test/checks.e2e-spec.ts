@@ -725,9 +725,17 @@ describe('EWO-015 canonical CHECK / maintenance APIs', () => {
     const check = (await create(vehicle).expect(201)).body;
     const afterCreate = await snapshot();
     expect(afterCreate.outbox).toHaveLength(before.outbox.length + 1);
-    expect(afterCreate.outbox[afterCreate.outbox.length - 1]?.type).toBe(
-      'CHECK_CREATED',
+    const existingIds = new Set(
+      before.outbox.map((event: { id: string }) => event.id),
     );
+    const createdEvents = afterCreate.outbox.filter(
+      (event: { id: string }) => !existingIds.has(event.id),
+    );
+    expect(createdEvents).toHaveLength(1);
+    expect(createdEvents[0].type).toBe('CHECK_CREATED');
+    expect(
+      afterCreate.outbox.filter((event: { id: string }) => existingIds.has(event.id)),
+    ).toEqual(before.outbox);
     await request(app.getHttpServer())
       .get(`/checks/${check.id}`)
       .set('Authorization', 'Bearer mechanic')
