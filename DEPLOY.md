@@ -21,8 +21,10 @@ La autenticación no otorga permisos operativos pendientes ni activa CHECK/stora
 ## Vercel
 
 1. Proyecto Team Mex, repositorio `aldovargaslt-dotcom/team-mex-MTTO`.
-   Root Directory **web**. El `vercel.json` de la raíz falla intencionalmente si
-   se intenta desplegar el monorepo desde allí; `web/vercel.json` usa Next.js.
+   Root Directory **web**; `web/vercel.json` usa Next.js. La propuesta de #60 de
+   forzar un fallo desde la raíz se conserva sólo como ejemplo en
+   `docs/deployment/vercel-root-guard.example.json`: no está activa ni sobrescribe
+   comandos/configuración de un proyecto Vercel existente.
 2. Configurar las variables en el entorno que realmente usa el despliegue:
    **Production** para el dominio estable, **Preview** para ramas de revisión.
    `API_URL` es la URL HTTPS verificada de la API y se lee en el servidor.
