@@ -56,12 +56,12 @@ Patrón 3 (listado + filtro) con la ficha del patrón 5 en la misma vista, para 
 
 ## Interaction notes
 
-La fila selecciona; no hay botón “Detalle”. La primera fila visible queda seleccionada. Cambiar cola o tipo limpia la selección y elige la primera de la nueva lista.
+La fila selecciona; no hay botón “Detalle”. En escritorio la primera fila visible queda seleccionada. En celular la lista espera el toque. Cambiar cola o tipo limpia la selección.
 
 ## Mobile / responsive
 
-- Desktop 1440: dos columnas dentro del ancho 1040.
-- 800 y menos: lista arriba (altura acotada) y ficha abajo. Hits ≥44px.
+- Desktop: dos columnas. La primera fila queda seleccionada.
+- 767 y menos: una pantalla a la vez. La lista no abre sola el detalle. Al tocar una orden, el detalle ocupa la pantalla. Arriba a la izquierda, «Órdenes» con chevron regresa a la lista. Hits ≥44px.
 
 ## Fuera / Don’t
 

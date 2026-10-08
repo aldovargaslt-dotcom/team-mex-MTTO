@@ -179,9 +179,13 @@ function OrdenesContent() {
   }, [rows, cola, tipo, q]);
 
   useEffect(() => {
-    if (rows == null) return;
+    if (rows == null || mobileMode === null) return;
     if (filtered.length === 0) {
       if (ordenId) setParams({ orden: null });
+      return;
+    }
+    if (mobileMode && ordenId && !filtered.some((row) => row.id === ordenId)) {
+      setParams({ orden: null });
       return;
     }
     if (
@@ -237,8 +241,22 @@ function OrdenesContent() {
         ? 'El administrador ve las visitas ya cerradas.'
         : 'Al cerrar una visita pasa a esta lista.';
 
+  const detalleAbierto = Boolean(ordenId);
+  const soloDetalle = mobileMode === true && detalleAbierto;
+
   return (
     <>
+      {soloDetalle ? (
+        <Button
+          type="button"
+          variant="quiet"
+          className="ordenes-back"
+          onClick={() => setParams({ orden: null })}
+        >
+          <ChevronLeft className="size-5" aria-hidden />
+          Órdenes
+        </Button>
+      ) : (
       <header className="ordenes-head">
         <h1>Órdenes</h1>
         <div className="ordenes-head__search">
@@ -267,11 +285,12 @@ function OrdenesContent() {
           </Button>
         )}
       </header>
+      )}
       <FormAlert>{error}</FormAlert>
       {rows == null ? (
         <p className="muted">Cargando órdenes…</p>
       ) : (
-        <div className={ordenId ? 'ordenes-desk has-mobile-detail' : 'ordenes-desk'}>
+        <div className={soloDetalle ? 'ordenes-desk has-mobile-detail is-detail' : 'ordenes-desk'}>
           <div className="ordenes-list">
             <div className="ordenes-tabs">
               {isAdmin ? null : (
@@ -376,17 +395,6 @@ function OrdenesContent() {
             )}
           </div>
           <div className="ordenes-detail">
-            {ordenId ? (
-              <Button
-                type="button"
-                variant="quiet"
-                className="ordenes-mobile-back"
-                onClick={() => setParams({ orden: null })}
-              >
-                <ChevronLeft className="size-4" aria-hidden />
-                Volver a órdenes
-              </Button>
-            ) : null}
             <FormAlert>{detalleError}</FormAlert>
             {filtered.length === 0 ? null : detalle && detalle.id === ordenId ? (
               <OrdenDetalle
