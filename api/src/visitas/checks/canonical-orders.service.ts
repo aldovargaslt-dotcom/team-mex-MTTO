@@ -360,7 +360,7 @@ export class CanonicalOrdersService {
       where: { id, workOrderType: WorkOrderType.CHECK },
       relations: { unidad: true },
       lock: manager.queryRunner?.isTransactionActive
-        ? { mode: 'pessimistic_write' }
+        ? { mode: 'pessimistic_write', tables: ['visitas'] }
         : undefined,
     });
     if (!visita) throw new NotFoundException('No se encontró el CHECK.');
@@ -664,6 +664,25 @@ export class CanonicalOrdersService {
       normalMax: policy.normalMax,
       criticalMin: policy.criticalMin,
       criticalMax: policy.criticalMax,
+    };
+  }
+
+  async conditionDetail(id: string, actor: TrustedActor) {
+    this.authorize(actor, [Rol.MECANICO]);
+    const detail = await this.detail(id, actor);
+    const condition = await this.db.manager.findOneBy(CheckCondition, {
+      visitaId: id,
+    });
+    return {
+      condition: condition
+        ? {
+            revision: condition.revision,
+            payload: condition.payload,
+            progress: condition.progress,
+            derivedResult: condition.derivedResult,
+          }
+        : null,
+      version: detail.version,
     };
   }
 
@@ -1754,11 +1773,16 @@ export class CanonicalOrdersService {
         !actor.roles.some((r) =>
           [Rol.LOGISTICA, Rol.ADMIN_DIRECTIVO].includes(r as Rol),
         )
-      )
+      ) {
         qb.andWhere(
-          '((v.assigned_user_id IS NULL AND v.work_order_status IN (:...eligibleStatuses)) OR v.assigned_user_id=:subject)',
-          { subject: actor.subject, eligibleStatuses: activeStatuses },
+          'v.work_order_status IN (:...activeStatuses) AND ((v.assigned_user_id IS NULL AND v.work_order_status IN (:...eligibleStatuses)) OR v.assigned_user_id=:subject)',
+          {
+            subject: actor.subject,
+            eligibleStatuses: activeStatuses,
+            activeStatuses,
+          },
         );
+      }
     }
     if (query.unidadId)
       qb.andWhere('u.id=:unidadId', { unidadId: query.unidadId });

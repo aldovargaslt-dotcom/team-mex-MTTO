@@ -67,6 +67,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   const router = useRouter();
   const { role, isLogistica, clearRole, ready } = useRole();
   const isHome = pathname === '/';
+  const isCheckWorkflow = pathname?.startsWith('/checks/');
   const showChrome = Boolean(!isHome && ready && role);
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -89,11 +90,17 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   return (
     <div className="app">
-      <header className="shell-header">
+      {!isCheckWorkflow ? <header className="shell-header">
         <div className="shell-header__bar">
           <Link href={role ? homeHref : '/'} className="shell-header__brand">
             <BrandPlate />
           </Link>
+          {role === 'MECANICO' && pathname === '/mi-trabajo' ? (
+            <span className="flex min-w-0 flex-col leading-tight md:hidden">
+              <span className="truncate text-sm font-semibold text-white">TEAM MEX MTTO</span>
+              <span className="flex items-center gap-1 text-[10px] text-emerald-100"><span className="size-1.5 rounded-full bg-emerald-300" aria-hidden />En línea</span>
+            </span>
+          ) : null}
           {showChrome ? (
             <nav className="shell-header__nav hidden md:flex" aria-label="Principal">
               {items.map((item) => (
@@ -154,8 +161,8 @@ export function AppShell({ children }: { children: ReactNode }) {
             ) : null}
           </div>
         </div>
-      </header>
-      {showChrome ? (
+      </header> : null}
+      {showChrome && !isCheckWorkflow ? (
         <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
           <SheetContent
             id="shell-menu"

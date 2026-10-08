@@ -127,6 +127,7 @@ All mutation requests include expectedVersion except first create; signed comple
 | GET /unidades/:id/checks/active | 200 detail-or-null; role/scope enforced |
 | GET /checks?scope=mine-or-eligible | 200 paginated items + scoped counts; no unsupported free actor filter |
 | POST /checks/:id/assign or /claim or /start | 200 current revision; ASSIGNMENT_CONFLICT, INVALID_STATE, denied policy |
+| GET /checks/:id/condition | 200 saved condition payload/progress/version or null; MECANICO + resource/facility scope |
 | PATCH /checks/:id/condition | 200 condition+derived findings/progress/version; numeric/config/source validation |
 | POST /checks/:id/evidence/uploads | 201 reserved slot/key/upload instructions; PHOTO_LIMIT_EXCEEDED; auth |
 | POST /checks/:id/evidence | 201 verified READY metadata/version; object/config/count failure |

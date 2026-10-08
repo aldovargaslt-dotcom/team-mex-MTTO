@@ -2,7 +2,7 @@
 
 ## Status / sources
 
-Approved — paquete Slice0 aprobado por owner 2026-10-01, sin implementación UI. [SPEC](../specs/SPEC-CHK-001.md), [contrato](../contracts/CHK-001-contract.md), owner D14; hierarchy de siete pantallas adjuntas. No UI implementada ni pixel-perfect/Visual QA reclamados.
+Approved — paquete Slice0 aprobado por owner 2026-10-01. Ajustes de layout y navegación del flujo mecánico implementados y revisados con click-through visual; las capturas están en [screenshots](../screenshots/). La aprobación visual independiente sigue pendiente. [SPEC](../specs/SPEC-CHK-001.md), [contrato](../contracts/CHK-001-contract.md), owner D14; hierarchy de siete pantallas adjuntas.
 
 ## Actors / navigation
 
@@ -14,7 +14,7 @@ Rutas contractuales aprobadas: /mi-trabajo, /checks/[id] con modo edit/read deri
 
 Primitivas existentes shadcn/Field/Button/Dialog/Sheet/DataTable, Roboto/tokens repo. Navy shell, canvas gris, superficies blancas/bordes, warning pairs desaturados y una acción primaria naranja. No Inter migration/global restyle, sombras decorativas, badges naranja sólido ni copias de folios/PSI/mock.
 
-Queue: counts server-side mismo scope, Chequeos vs Mantenimiento, cards mobile y split desk desktop. Highlight unidad/placas/folio/status+nextAction, nombre asignado sólo real, startedAt para elapsed. Pending tomable sólo con policy de autorización; claim no inicia automáticamente sin acción explícita.
+Queue: counts server-side mismo scope, Chequeos vs Mantenimiento, cards mobile y split desk desktop. Highlight unidad/placas/folio/status+nextAction, nombre asignado sólo real, startedAt para elapsed. Pending tomable sólo con policy de autorización; claim no inicia automáticamente sin acción explícita. La implementación actual sólo dispone de CHECK en la cola del mecánico; no debe inventar una cola de mantenimiento sin endpoint.
 
 Exactly 4 visible steps:
 1. Condición: A fluidos/fugas; B llantas/PSI. Todo conforme y sin daños requieren acción, no checkbox inicial. Expand sólo ítems anómalos. PSI por posiciones configuradas; backend devuelve range/result.
@@ -46,8 +46,8 @@ No offline persistence prometida. Readiness en UI no autoriza nuevas salidas.
 
 ## Responsive / proof plan
 
-390×844 una columna con targets>=44px, safe-area sticky y espacio para último control/canvas; tablet1024×768 dos columnas posibles; desktop1440×900 cola380+detalle o tabla dentro de max1040. Teclado/foco/labels y estados no sólo color; canvas touch/mouse sin scroll accidental. Stepper recibe completion real, no asume pasos previos done sólo por navegar.
-Proof UI click-through+PNG y reviewer independiente ux-auditor después de implementación, sin Playwright. Futuros tests manuales AC-30/31/35; resultados no ejecutados en Slice0.
+390×844 una columna con targets>=44px, safe-area sticky y espacio para último control/canvas; tablet1024×768 dos columnas posibles; desktop1440×900 cola380+detalle o tabla dentro de max1040. Teclado/foco/labels y estados no sólo color; canvas touch/mouse sin scroll accidental. Stepper recibe completion real, no asume pasos previos done sólo por navegar. En el flujo mecánico, encabezado del activo/folio y stepper quedan visibles; un footer fijo mantiene Atrás + el CTA del paso actual. El paso y los campos de Condición se rehidratan desde el estado guardado del servidor.
+Proof UI click-through+PNG completado sin Playwright: `check_mi-trabajo_m390.png`, `check_condicion_anomalia_m390.png`, `check_evidencia_vacia_m390.png`, `check_hallazgos_clasificado_m390.png` y `check_firma_m390.png`; también se capturó la cola desktop en `check_mi-trabajo_d1440.png`. La revisión visual independiente ux-auditor sigue pendiente. Futuros tests manuales AC-30/31/35; resultados no ejecutados en Slice0.
 
 ## Impact / dependencies
 
