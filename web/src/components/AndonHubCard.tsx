@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { Check, ChevronRight, TriangleAlert } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Note } from '@/components/ui/field';
+import { FormAlert, Note } from '@/components/ui/field';
 import { api, HttpError } from '@/lib/api';
 import {
   explicacionAlertaAndon,
@@ -234,9 +234,7 @@ export function AndonHubCard({
           </>
         )}
         {error ? (
-          <p className="alert" style={{ marginTop: 8 }}>
-            {error}
-          </p>
+          <FormAlert>{error}</FormAlert>
         ) : null}
       </section>
     </div>

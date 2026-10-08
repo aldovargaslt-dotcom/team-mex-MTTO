@@ -4,7 +4,9 @@ import { FormEvent, useEffect, useState } from 'react';
 import { api, HttpError } from '@/lib/api';
 import { useRole } from '@/lib/role';
 import type { Proveedor } from '@/lib/types';
-import { PageHeader } from '@/components/ui/field';
+import { Button } from '@/components/ui/button';
+import { Field, FormAlert, PageHeader } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
 
 export default function ProveedoresPage() {
   const { role, userId } = useRole();
@@ -62,25 +64,26 @@ export default function ProveedoresPage() {
 
   return (
     <>
-      <PageHeader title="Proveedores" />
-      <form className="card form-grid" onSubmit={crear}>
-        <div className="field">
-          <label htmlFor="provNombre">Nombre</label>
-          <input
+      <PageHeader
+        title="Proveedores"
+        actions={
+          <Button type="submit" form="nuevo-proveedor">
+            Agregar proveedor
+          </Button>
+        }
+      />
+      <form id="nuevo-proveedor" className="mb-3 max-w-sm" onSubmit={crear}>
+        <Field label="Nombre" htmlFor="provNombre">
+          <Input
             id="provNombre"
             required
             value={nombre}
             onChange={(e) => setNombre(e.target.value)}
             placeholder="Refacciones del Norte"
           />
-        </div>
-        <div className="form-actions">
-          <button className="btn btn-primary" type="submit">
-            Agregar proveedor
-          </button>
-        </div>
+        </Field>
       </form>
-      {error ? <p className="alert" style={{ margin: '12px 0' }}>{error}</p> : null}
+      <FormAlert>{error}</FormAlert>
       {proveedores.length > 0 || !error ? (
       <div className="card list" style={{ marginTop: 12 }}>
         {proveedores.length > 0
@@ -90,13 +93,13 @@ export default function ProveedoresPage() {
                   <strong>{proveedor.nombre}</strong>
                   <div className="muted">{proveedor.activo ? 'Activo' : 'Inactivo'}</div>
                 </div>
-                <button
+                <Button
                   type="button"
-                  className="btn btn-secondary"
+                  variant="secondary"
                   onClick={() => void toggle(proveedor)}
                 >
                   {proveedor.activo ? 'Inactivar' : 'Activar'}
-                </button>
+                </Button>
               </div>
             ))
           : (

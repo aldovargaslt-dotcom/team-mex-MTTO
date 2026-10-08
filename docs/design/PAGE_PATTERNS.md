@@ -42,8 +42,8 @@ Unidades / Existencias (post-#65 revert): KPI strip + `unidades-toolbar` / tabla
 
 - Un naranja en header si hay alta/entrada; Flota Sitios / Configurar alertas = secondary. Configuración → Alertas: Admin **Nueva alerta** (`default`); Supervisor/Logística cero naranja (la fila abre el diálogo).
 - Fila clickeable → ficha o hub. Evitar “Detalle”.
-- Configuración v0: `.subnav` con **Configuración** muted + **Alertas** activo (ubicación). Mismo chrome que Inventario/Flota — **no** sidebar de settings (anti-patrón). No es un patrón de página extra.
-- Filtros enumerados = `ListFilter` (chips). Búsqueda de texto = `Input` en el header o una fila, **sin** card de un solo campo (Choferes es deuda).
+- Configuración v0: `.subnav` con **Configuración** muted + **Alertas / Usuarios** según la vista activa (ubicación). Mismo chrome que Inventario/Flota — **no** sidebar de settings (anti-patrón). No es un patrón de página extra.
+- Filtros enumerados = `ListFilter` (chips). Búsqueda de texto = `Input` en el header o una fila, **sin** card de un solo campo. Clone: Andon.
 - URL comparte filtros cuando el corte lo pide (`?alerta=`, `?filtro=`, movimientos).
 
 ---
@@ -61,16 +61,16 @@ Búsqueda `q` + tipo + estado. Empty de filtros ≠ empty de catálogo.
 **Rutas:** `/unidades/:id` (MTTO), `/flota/unidades/:id` (viaje).
 
 ```
-PageHeader: id + StatusBadge + lede (tipo · placas)
-P0 excepción (Andon / Note warn / Atención)
-P1 CTA (Nueva visita | Registrar salida/entrada) — un naranja
+PageHeader: id + StatusBadge + lede + Salud (MTTO) + Volver secondary
+P0 un panel de excepción (Andon / Note warn / Atención)
+P1 CTA (Nueva visita | Continuar | Registrar salida/entrada) — un naranja
 P2 hechos actuales (dl .dl o panel Situación)
-P3 historial / refacciones / ciclos
+P3 historial / refacciones / ciclos / actividad (sin repetir la alerta)
 ```
 
-MTTO: `.hub-grid` dos columnas (ficha | mantenimiento). Flota: una columna (situación + form de movimiento + historial). **No** unificar esos dos BCs.
+MTTO: `PageHeader` + `HubFichaNav` (Resumen · Información técnica · Mantenimiento · Historial). **No** añadir tab Andon ni un quinto tab. Resumen: un panel Andon (causa una vez; km/fecha viven en Estado y operación). Nueva visita naranja en Resumen solo si vencido + puedeCrear. Flota: una columna (situación + form de movimiento + historial). **No** unificar esos dos BCs.
 
-No tabs de expediente. No card por cada dl.
+No card por cada dl. No `.btn`. Clone chrome: Inicio / Andon `PageHeader` + `Button`.
 
 ---
 
@@ -88,7 +88,7 @@ Sticky Continuar / Cerrar visita (primary) + Atrás/Cancelar (secondary)
 
 Pasos: Datos → Trabajos → Obs → Fotos → Piezas → Firmas → Confirmar. Hits 44px `<768`. Piezas: card por línea en mobile está permitido. Dropzone: **Tomar o subir**.
 
-Detalle **cerrado**: patrón (5) documento, no siete cards apiladas (deuda).
+Detalle **cerrado** (o Admin readonly): un `Card` documento con `.doc-section` (`border-b`). Clone: el Card del paso actual, no siete. Wizard en borrador sigue un Card por paso.
 
 ---
 
@@ -98,7 +98,7 @@ Corta: **Dialog** (tipo, chofer, alertas, sitio, nueva refacción).
 
 Larga: página + `UnidadForm` en `Card` de una vez (no un campo = una card). Footer: primary Guardar + secondary Cancelar.
 
-Sheets: ficha refacción, movimiento inventario — no dialog centrado.
+Sheets: ficha refacción, movimiento inventario — no dialog centrado. Overlay por portal ([OPERATE_CRAFT.md](OPERATE_CRAFT.md)).
 
 ---
 

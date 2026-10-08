@@ -802,8 +802,22 @@
     margin: 8px 0 0;
   }
 
-  .hub-ops-dl dt {
-    color: var(--muted-foreground);
+  .doc-section {
+    padding-bottom: 16px;
+    margin-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .doc-section:last-child {
+    border-bottom: 0;
+    margin-bottom: 0;
+    padding-bottom: 0;
+  }
+
+  .doc-section h2 {
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 8px;
   }
 
   .hub-facts {
@@ -1457,6 +1471,13 @@
     border-radius: 6px;
     border: 1px solid var(--border);
     background: white;
+  }
+
+  .doc-section .signature-img {
+    width: 100%;
+    max-height: 96px;
+    object-fit: contain;
+    object-position: left center;
   }
 
   .photo-item {

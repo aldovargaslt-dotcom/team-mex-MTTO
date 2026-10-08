@@ -4,8 +4,8 @@ import { FormEvent, useEffect, useState } from 'react';
 import { ColumnDef } from '@tanstack/react-table';
 import { RoleGate } from '@/components/RoleGate';
 import { ChoferEstadoBadge } from '@/components/StatusBadge';
+import { ListFilter } from '@/components/ListFilter';
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
 import { DataTable } from '@/components/ui/data-table';
 import {
   Dialog,
@@ -208,20 +208,17 @@ function ChoferesAdmin() {
             Agregar chofer
           </Button>
         }
-      />
+        />
 
-      <Card className="mb-3 flex flex-wrap items-end gap-2 p-3">
-        <Field label="Mostrar" htmlFor="filtroEstado" className="w-[200px]">
-          <NativeSelect
-            id="filtroEstado"
-            value={filtro}
-            onChange={(e) => setFiltro(e.target.value as FiltroEstado)}
-          >
-            <option value="ACTIVO">Activos</option>
-            <option value="TODOS">Todos</option>
-          </NativeSelect>
-        </Field>
-      </Card>
+      <ListFilter
+        label="Mostrar choferes"
+        value={filtro}
+        options={[
+          { id: 'ACTIVO', label: 'Activos' },
+          { id: 'TODOS', label: 'Todos' },
+        ]}
+        onChange={setFiltro}
+      />
 
       <FormAlert>{error && !open ? error : null}</FormAlert>
 
