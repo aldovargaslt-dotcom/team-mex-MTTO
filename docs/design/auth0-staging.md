@@ -70,8 +70,11 @@ Discovery público verificado: issuer exacto, JWKS, S256, RS256 y
 `client_secret_post` soportados por el tenant. Esto no demuestra la configuración
 de la aplicación individual ni un login real.
 
-Para habilitar staging faltan: configurar la aplicación confidencial, secreto
-en servidor, origin/API de staging y administrador/patios reales.
+El usuario confirmó la aplicación confidencial y variables de Vercel; sus valores
+privados y despliegue efectivo siguen sin verificarse. Patio y administrador
+iniciales definidos en [Monterrey/Aldo](monterrey-admin-bootstrap.md).
+Falta inspeccionar/migrar la base real, provisionar ese catálogo/directorio y
+validar los despliegues/configuración efectivos antes del login real.
 Ejecutar la checklist de [auth-web-staging](auth-web-staging.md) y la del panel.
 No se modificó el dashboard ni se desplegó en esta ejecución.
 

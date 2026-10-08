@@ -93,9 +93,10 @@ interpretar «todos» como wildcard. Usuario aprobó:
 - Subject: `auth0|6ac7ef8f2cf3ff248d3e60db`.
 - Nombre: `Aldo Vargas`.
 - Rol: `ADMIN_DIRECTIVO`.
-- Alcance: todos los patios existentes; IDs reales aún pendientes. La migración
-  no crea datos de patios ni asigna vehículos. Si no hay patios, solicitar sus
-  nombres/IDs y provisionamiento explícito antes del bootstrap.
+- Alcance confirmado después: únicamente **Monterrey**, el único patio actual.
+  Las otras sucursales quedan fuera de este incremento; no crear scopes para ellas.
+  La migración no crea patios ni asigna vehículos. Configuración inicial concreta:
+  [Monterrey y Aldo](../design/monterrey-admin-bootstrap.md).
 
 Configurar Auth0 conforme a [auth0-staging](../design/auth0-staging.md) y directorio
 conforme a [usuarios-admin-staging](../design/usuarios-admin-staging.md).
