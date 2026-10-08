@@ -7,6 +7,7 @@ import { postgresConnectionOptions } from '../src/db/postgres-options';
 import { verifyFoundation } from '../src/db/check-foundation';
 import { RetireGlobalDraftIndex1790899200005 } from '../src/db/migrations/1790899200005-RetireGlobalDraftIndex';
 import { VisitasInvariantService } from '../src/visitas/visitas-invariant.service';
+import { controlledCheckMigration } from '../src/db/controlled-check-migration';
 
 const vehicle = '11111111-1111-4111-8111-111111111111';
 const draft = '22222222-2222-4222-8222-222222222222';
@@ -91,11 +92,184 @@ describe('S1-T05/T06/T07 isolated migration rehearsal (synchronize=false)', () =
       `INSERT INTO visita_piezas(id,visita_id,item_id,qty,origen) VALUES ('cccccccc-cccc-4ccc-8ccc-cccccccccccc',$1,'dddddddd-dddd-4ddd-8ddd-dddddddddddd',1,'COMPRA_EXTERNA')`,
       [closed],
     );
+    const eventId = '12345678-1234-4234-8234-123456789abc';
+    await db.query(
+      'INSERT INTO outbox_events(id,type,payload) VALUES ($1,$2,$3)',
+      [
+        eventId,
+        'VisitaCerrada',
+        {
+          eventId,
+          eventType: 'VisitaCerrada',
+          occurredAt: '2026-09-01T00:00:00Z',
+          cerradoAt: '2026-09-01T00:00:00Z',
+          visitaId: closed,
+          unidadId: vehicle,
+          tipoVehiculoId: type,
+          km: 90,
+          consumos: [],
+        },
+      ],
+    );
     process.env.CHK_LEGACY_WRITERS_DRAINED = 'true';
   });
   async function upgrade() {
     return db.runMigrations({ transaction: 'all' });
   }
+  const releaseEnv = () => ({
+    ...process.env,
+    DB_SYNCHRONIZE: 'false',
+    DB_DROP_SCHEMA: 'false',
+    CHECK_MIGRATION_DATABASE: database,
+    CHK_LEGACY_WRITERS_DRAINED: 'true',
+    CHECK_MIGRATION_WITHOUT_BACKUP: 'ACKNOWLEDGED',
+  });
+  it('DEPLOY-01/02 compiled CLI runs in production mode without ts-node or Nest', () => {
+    const env = { ...releaseEnv(), NODE_ENV: 'production', DB_NAME: database };
+    const run = (action: string) =>
+      JSON.parse(
+        execFileSync(
+          process.execPath,
+          ['dist/db/run-controlled-check-migrations.js', action],
+          { cwd: join(__dirname, '..'), env, encoding: 'utf8' },
+        ),
+      );
+    expect(run('inspect').state).toBe('LEGACY');
+    expect(run('apply').applied).toHaveLength(13);
+    expect(run('apply').applied).toEqual([]);
+  }, 30000);
+  it('DEPLOY-01/03 inspects without writes, applies preserving legacy data, and reruns', async () => {
+    const before = await db.query('SELECT * FROM visitas ORDER BY id');
+    const inspected = await controlledCheckMigration(
+      db,
+      'inspect',
+      releaseEnv(),
+    );
+    expect(inspected.state).toBe('LEGACY');
+    expect(inspected.pending).toHaveLength(13);
+    expect(
+      (
+        await db.query("SELECT to_regclass('chk_schema_migrations') AS history")
+      )[0].history,
+    ).toBeNull();
+    expect(await db.query('SELECT * FROM visitas ORDER BY id')).toEqual(before);
+    const applied = await controlledCheckMigration(db, 'apply', releaseEnv());
+    expect(applied.applied).toHaveLength(13);
+    expect(applied.preserved).toEqual(inspected.preserved);
+    expect(
+      (await controlledCheckMigration(db, 'apply', releaseEnv())).applied,
+    ).toEqual([]);
+    expect(
+      (await controlledCheckMigration(db, 'inspect', releaseEnv())).state,
+    ).toBe('COMPLETE');
+  });
+  it('DEPLOY-02 rejects wrong target, automatic sync, missing drain/ack and down', async () => {
+    for (const override of [
+      { CHECK_MIGRATION_DATABASE: 'wrong' },
+      { DB_SYNCHRONIZE: 'true' },
+      { DB_DROP_SCHEMA: 'true' },
+      { CHK_LEGACY_WRITERS_DRAINED: 'false' },
+      { CHECK_MIGRATION_WITHOUT_BACKUP: '' },
+    ])
+      await expect(
+        controlledCheckMigration(db, 'apply', { ...releaseEnv(), ...override }),
+      ).rejects.toThrow();
+    await expect(
+      controlledCheckMigration(db, 'down', releaseEnv()),
+    ).rejects.toThrow(/unsupported/);
+    expect(
+      (
+        await db.query("SELECT to_regclass('chk_schema_migrations') AS history")
+      )[0].history,
+    ).toBeNull();
+  });
+  it('DEPLOY-04 rejects inconsistent data and schema drift without repair', async () => {
+    await db.query(`UPDATE visitas SET cerrado_at=NULL WHERE id=$1`, [closed]);
+    await expect(
+      controlledCheckMigration(db, 'inspect', releaseEnv()),
+    ).rejects.toThrow(/LEGACY_AUDIT_FAILED/);
+    await expect(
+      controlledCheckMigration(db, 'apply', releaseEnv()),
+    ).rejects.toThrow(/LEGACY_AUDIT_FAILED/);
+    expect(
+      (
+        await db.query("SELECT to_regclass('chk_schema_migrations') AS history")
+      )[0].history,
+    ).toBeNull();
+    await db.query('ALTER TABLE visitas ADD COLUMN work_order_type varchar');
+    await expect(
+      controlledCheckMigration(db, 'apply', releaseEnv()),
+    ).rejects.toThrow(/SCHEMA_DRIFT/);
+  });
+  it('DEPLOY-03 rolls back DDL, history and backfill if a late migration fails', async () => {
+    const before = await db.query('SELECT * FROM visitas ORDER BY id');
+    // Conflicting independently owned schema causes slice 7 to fail after backfill.
+    await db.query('CREATE SCHEMA IF NOT EXISTS vehicle_documents');
+    await db.query('DROP TABLE IF EXISTS vehicle_documents.document_versions');
+    await db.query(
+      'CREATE TABLE vehicle_documents.document_versions (id uuid PRIMARY KEY)',
+    );
+    try {
+      await expect(
+        controlledCheckMigration(db, 'apply', releaseEnv()),
+      ).rejects.toThrow();
+      expect(await db.query('SELECT * FROM visitas ORDER BY id')).toEqual(
+        before,
+      );
+      expect(
+        (await db.query("SELECT to_regclass('facilities') AS facilities"))[0]
+          .facilities,
+      ).toBeNull();
+      expect(
+        (
+          await db.query(
+            "SELECT to_regclass('chk_schema_migrations') AS history",
+          )
+        )[0].history,
+      ).toBeNull();
+    } finally {
+      await db.query('DROP TABLE vehicle_documents.document_versions');
+    }
+  });
+  it('DEPLOY-04 rejects a concurrent migration and incomplete history', async () => {
+    const blocker = db.createQueryRunner();
+    await blocker.connect();
+    await blocker.startTransaction();
+    await blocker.query('SELECT pg_advisory_xact_lock(825027)');
+    try {
+      await expect(
+        controlledCheckMigration(db, 'apply', releaseEnv()),
+      ).rejects.toThrow(/ALREADY_RUNNING/);
+    } finally {
+      await blocker.rollbackTransaction();
+      await blocker.release();
+    }
+    await db.query(
+      'CREATE TABLE chk_schema_migrations (id serial, timestamp bigint, name varchar)',
+    );
+    await db.query(
+      "INSERT INTO chk_schema_migrations(timestamp,name) VALUES (1,'unknown')",
+    );
+    await expect(
+      controlledCheckMigration(db, 'apply', releaseEnv()),
+    ).rejects.toThrow(/HISTORY_PARTIAL_OR_UNKNOWN/);
+  });
+  it('DEPLOY-03 detects changes to legacy content and rolls back before commit', async () => {
+    await db.query(`CREATE FUNCTION corrupt_legacy() RETURNS trigger LANGUAGE plpgsql AS $$
+      BEGIN NEW.created_by:='tampered'; RETURN NEW; END $$;
+      CREATE TRIGGER corrupt_legacy BEFORE UPDATE ON visitas FOR EACH ROW EXECUTE FUNCTION corrupt_legacy()`);
+    await expect(
+      controlledCheckMigration(db, 'apply', releaseEnv()),
+    ).rejects.toThrow(/LEGACY_PRESERVATION_FAILED/);
+    expect(
+      (await db.query('SELECT created_by FROM visitas WHERE id=$1', [draft]))[0]
+        .created_by,
+    ).toBe('legacy-subject');
+    expect(
+      (await db.query("SELECT to_regclass('facilities') AS facilities"))[0]
+        .facilities,
+    ).toBeNull();
+  });
   it('S1-T05 executes the isolated CLI runner up and idempotent rerun with synchronize=false', async () => {
     const env = {
       ...process.env,

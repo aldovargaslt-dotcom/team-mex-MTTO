@@ -97,16 +97,29 @@ export function postgresConnectionOptions(
 }
 
 function truthyEnv(config: EnvReader, key: string, fallback: string): boolean {
-  return String(config.get(key) ?? fallback)
-    .trim()
-    .toLowerCase() === 'true';
+  return (
+    String(config.get(key) ?? fallback)
+      .trim()
+      .toLowerCase() === 'true'
+  );
 }
 
 export function typeormRootOptions(config: EnvReader) {
+  const production = config.get('NODE_ENV') === 'production';
+  const synchronize = truthyEnv(
+    config,
+    'DB_SYNCHRONIZE',
+    production ? 'false' : 'true',
+  );
+  const dropSchema = truthyEnv(config, 'DB_DROP_SCHEMA', 'false');
+  if (production && (synchronize || dropSchema))
+    throw new Error(
+      'Production requires DB_SYNCHRONIZE=false and DB_DROP_SCHEMA=false.',
+    );
   return {
     ...postgresConnectionOptions(config),
     autoLoadEntities: true,
-    synchronize: truthyEnv(config, 'DB_SYNCHRONIZE', 'true'),
-    dropSchema: truthyEnv(config, 'DB_DROP_SCHEMA', 'false'),
+    synchronize,
+    dropSchema,
   };
 }

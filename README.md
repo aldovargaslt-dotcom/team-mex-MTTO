@@ -68,7 +68,10 @@ La UI habla con la API por el proxy `/backend` (mismo origen), así no hay que p
 
 Pare el stack con `docker compose --profile app down`. Si también desarrolla con Node en el host, no mezcle ambos: o el perfil `app`, o `npm run dev` / `start:dev`.
 
-El cliente usa el rol stub `X-Role: SUPERVISOR | ADMIN_DIRECTIVO | LOGISTICA` (y `X-User-Id` opcional). En la pantalla inicial elija el rol; sin encabezado la API responde 401.
+El acceso de prueba por rol se conserva en desarrollo local. CHECK exige una
+identidad confiable incluso en desarrollo. Para login real se implementó
+[OpenID Connect](docs/design/auth-web-staging.md): roles y patios asignados por
+el servidor, sin identidad aleatoria del navegador ni fallback de headers en producción.
 
 ## Deploy (Vercel + Railway)
 
@@ -102,12 +105,12 @@ Segundo servicio del mismo repo, **Root Directory = `web`**, builder Dockerfile 
 | Variable | Valor |
 |----------|--------|
 | `API_URL` | `https://<api>.up.railway.app` (sin `/` final; en Railway: `https://${{team-mex-MTTO.RAILWAY_PUBLIC_DOMAIN}}`) |
-| `NEXT_PUBLIC_API_BASE` | `/backend` |
 | `HOSTNAME` | `0.0.0.0` |
 
 No fije `PORT` ni el target port del dominio a 3000: Next escucha el `PORT` que inyecta Railway (suele ser 8080). Generate Domain **sin** target port, o apunte al puerto del proceso.
 
-`API_URL` entra en el **build** (rewrite `/backend` → API).
+`API_URL` se lee en el proxy del servidor `/backend`. Configurar también las
+variables OIDC de la [guía de staging](docs/design/auth-web-staging.md).
 
 ### 3. Vercel — UI
 
@@ -119,13 +122,20 @@ Si el log repite `Using TypeScript 5.9.3 (local user-provided)` cada ~2 s, Verce
    | Variable | Valor |
    |----------|--------|
    | `API_URL` | `https://<api>.up.railway.app` (sin `/` final) |
-   | `NEXT_PUBLIC_API_BASE` | `/backend` |
 
-   `API_URL` entra en el **build** (rewrite `/backend` → API). Si la cambia, redespliegue la UI.
+   Configurar las variables OIDC de la [guía de staging](docs/design/auth-web-staging.md).
+   `API_URL` se lee en el servidor; redesplegar al cambiar variables del entorno.
 3. Deploy. La UI queda en `https://<app>.vercel.app`.
 4. Vuelva a Railway y ponga `CORS_ORIGIN=https://<app>.vercel.app` (opcional; el browser usa el proxy `/backend`).
 
-Auth sigue siendo el stub `X-Role`. Use Protection de Vercel o no indexe la URL si es solo demo.
+Producción requiere autenticación OIDC configurada en web y API. Protection de
+Vercel no sustituye la identidad de aplicación. Sin proveedor/configuración,
+el login permanece no disponible; no se habilita el picker libre de roles.
+
+Para actualizar una base con visitas existentes, seguir el
+[procedimiento CHECK/Auth de Railway](docs/migrations/railway-check-auth-release.md).
+Producción desactiva synchronize y rechaza synchronize/dropSchema activos;
+las migraciones se ejecutan por separado antes del nuevo arranque.
 
 ### 4. Orden
 
@@ -181,7 +191,16 @@ Inventario: familias Filtros/Frenos; SKUs `FIL-ACEITE-01` (stock 10, CAMIONES 3 
 
 ## API
 
-Autenticación stub: encabezado `X-Role`. Falta el encabezado → 401.
+Con `AUTH_MODE=OIDC`, los endpoints protegidos requieren Bearer JWT verificado;
+`GET /auth/me` devuelve la identidad autorizada. `X-Role`/`X-User-Id` no acreditan
+identidad en ese modo. La tabla siguiente conserva permisos de dominio existentes.
+
+Administración de usuarios: `/configuracion/usuarios`, sólo `ADMIN_DIRECTIVO`
+autenticado. Con `AUTH_ACTOR_STORE=DATABASE`, el panel agrega/vincula cuentas OIDC,
+edita nombre/roles/patios y activa/desactiva accesos con auditoría. La cuenta inicial
+se configura explícitamente y se importa sólo en directorio vacío. Migración y
+bootstrap: [guía de usuarios](docs/design/usuarios-admin-staging.md). Las cuentas e
+invitaciones externas necesitan un proveedor; no se generan contraseñas locales.
 
 | Recurso | Supervisor | Admin directivo | Logística |
 |---------|------------|-----------------|-----------|

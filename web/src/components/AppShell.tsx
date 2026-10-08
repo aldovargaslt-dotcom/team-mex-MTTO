@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, type ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { Boxes, ClipboardList, Home, Menu, Settings, Truck } from 'lucide-react';
@@ -65,11 +65,15 @@ const SUPERVISOR_BOTTOM_NAV = [
 export function AppShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
-  const { role, isLogistica, clearRole, ready } = useRole();
+  const { role, roles, isLogistica, clearRole, ready, development } = useRole();
   const isHome = pathname === '/';
   const isCheckWorkflow = pathname?.startsWith('/checks/');
   const showChrome = Boolean(!isHome && ready && role);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [logoutError, setLogoutError] = useState('');
+  useEffect(() => {
+    if (ready && !role && !isHome) router.replace('/');
+  }, [ready, role, isHome, router]);
 
   const allItems = NAV_ITEMS.filter((item) => role && item.roles.includes(role));
   const items =
@@ -79,13 +83,20 @@ export function AppShell({ children }: { children: ReactNode }) {
   const menuItems =
     role === 'SUPERVISOR'
       ? allItems.filter((item) => !SUPERVISOR_PRIMARY.has(item.href))
-      : allItems;
+      : role === 'ADMIN_DIRECTIVO'
+        ? [...allItems, { href: '/configuracion/usuarios', label: 'Usuarios' }]
+        : allItems;
   const homeHref = isLogistica ? '/logistica' : role === 'MECANICO' ? '/mi-trabajo' : '/inicio';
 
-  function cambiarRol() {
-    setMenuOpen(false);
-    clearRole();
-    router.push('/');
+  async function cambiarRol() {
+    setLogoutError('');
+    try {
+      await clearRole();
+      setMenuOpen(false);
+      router.push('/');
+    } catch {
+      setLogoutError('No se pudo cerrar sesión. Intenta de nuevo.');
+    }
   }
 
   return (
@@ -98,7 +109,6 @@ export function AppShell({ children }: { children: ReactNode }) {
           {role === 'MECANICO' && pathname === '/mi-trabajo' ? (
             <span className="flex min-w-0 flex-col leading-tight md:hidden">
               <span className="truncate text-sm font-semibold text-white">TEAM MEX MTTO</span>
-              <span className="flex items-center gap-1 text-[10px] text-emerald-100"><span className="size-1.5 rounded-full bg-emerald-300" aria-hidden />En línea</span>
             </span>
           ) : null}
           {showChrome ? (
@@ -134,13 +144,18 @@ export function AppShell({ children }: { children: ReactNode }) {
                 <span className="shell-header__role hidden md:inline">
                   {etiquetaRol(role!)}
                 </span>
+                {!development && roles.length > 1 ? (
+                  <Button asChild variant="ghost" className="shell-header__role-switch hidden md:inline-flex">
+                    <Link href="/">Elegir rol</Link>
+                  </Button>
+                ) : null}
                 <Button
                   type="button"
                   variant="ghost"
                   className="shell-header__role-switch hidden md:inline-flex"
                   onClick={cambiarRol}
                 >
-                  Cambiar rol
+                  {development ? 'Cambiar rol' : 'Cerrar sesión'}
                 </Button>
                 <Button
                   type="button"
@@ -201,10 +216,16 @@ export function AppShell({ children }: { children: ReactNode }) {
               })}
             </nav>
             <SheetFooter>
+              {!development && roles.length > 1 ? (
+                <Button asChild variant="secondary">
+                  <Link href="/" onClick={() => setMenuOpen(false)}>Elegir rol</Link>
+                </Button>
+              ) : null}
               <Button type="button" variant="quiet" onClick={cambiarRol}>
-                Cambiar rol
+                {development ? 'Cambiar rol' : 'Cerrar sesión'}
               </Button>
             </SheetFooter>
+            {logoutError ? <p role="alert" className="px-4 text-sm text-destructive">{logoutError}</p> : null}
           </SheetContent>
         </Sheet>
       ) : null}
@@ -251,7 +272,8 @@ export function AppShell({ children }: { children: ReactNode }) {
                 : 'main'
         }
       >
-        {children}
+        {logoutError && !menuOpen ? <p role="alert" className="text-sm text-destructive">{logoutError}</p> : null}
+        {isHome || (ready && role) ? children : <p role="status">Verificando sesión…</p>}
       </main>
     </div>
   );

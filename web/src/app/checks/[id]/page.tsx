@@ -7,12 +7,14 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Field, FormAlert } from '@/components/ui/field';
 import { Input, NativeSelect } from '@/components/ui/input';
-import { api, HttpError } from '@/lib/api';
+import { api, authenticatedFetch, HttpError } from '@/lib/api';
 import { useRole } from '@/lib/role';
 import { SignaturePad } from '@/components/SignaturePad';
 import { ImageDropzone } from '@/components/ImageDropzone';
 
-type Detail = { id: string; folio: string; unidadId: string; status: string; version: number; assignedActor: string | null; startedAt?: string | null; result?: string | null; reviewedVersion?: number | null; reviewedHash?: string | null; snapshotHash?: string | null; completedAt?: string | null; signatureContentPath?: string | null; validity?: { valid: boolean; expired: boolean; invalidated: boolean } | null };
+type SignedSummary = { unit: UnitIdentity; condition: { payload: NonNullable<SavedCondition['condition']>['payload']; policy: Config }; findings: Finding[]; evidence: Array<Omit<Evidence, 'contentPath'>>; disposition: { result: string } };
+type CorrectiveReference = { id: string; folio: string; sourceCheckId: string; findingId: string };
+type Detail = { id: string; folio: string; unidadId: string; unit: Pick<UnitIdentity, 'numeroInterno' | 'placas'>; signedSummary: SignedSummary | null; correctives: CorrectiveReference[]; status: string; version: number; assignedActor: string | null; startedAt?: string | null; result?: string | null; reviewedVersion?: number | null; reviewedHash?: string | null; snapshotHash?: string | null; completedAt?: string | null; signatureContentPath?: string | null; validity?: { valid: boolean; expired: boolean; invalidated: boolean } | null };
 type SavedCondition = { condition: { payload: { fluids?: Record<string, { status?: string }>; tires?: Array<{ position: string; psi: number }> }; progress: 'INCOMPLETE' | 'COMPLETE'; derivedResult: string | null } | null; version: number };
 type Config = { positions: string[]; version: number; normalMin: number; normalMax: number; criticalMin: number; criticalMax: number };
 type Evidence = { id: string; tags: string[]; bytes: number; contentPath: string };
@@ -21,7 +23,7 @@ type Finding = { id: string; sourceKey: string; severity: 'OBSERVATION' | 'HARD_
 type FindingsList = { items: Finding[]; complete: boolean; version: number };
 type Review = { reviewedVersion: number; reviewedHash: string; result: string; exceptions: Array<{ id: string; sourceKey: string; severity: string; classification: string }> };
 type Completion = { status: string; version: number; completedAt: string; result: string; snapshotHash: string; correctiveIds: string[]; signatureContentPath: string };
-type UnitIdentity = { numeroInterno: string; placas: string; tipo?: { nombre: string } | null; marcaModelo: string | null };
+type UnitIdentity = { numeroInterno: string; placas: string; tipo?: { nombre: string } | null; marcaModelo?: string | null };
 const STEPS = [
   { id: 'condition', label: 'Condición' },
   { id: 'evidence', label: 'Evidencia' },
@@ -44,7 +46,7 @@ function PrivateEvidencePreview({ item, role, userId }: { item: Evidence; role: 
   const [src, setSrc] = useState<string | null>(null);
   useEffect(() => {
     let objectUrl: string | null = null;
-    fetch(`/backend${item.contentPath}`, { headers: { 'X-Role': role, 'X-User-Id': userId } })
+    authenticatedFetch(`/backend${item.contentPath}`, { headers: { 'X-Role': role, 'X-User-Id': userId } })
       .then((response) => { if (!response.ok) throw new Error('preview'); return response.blob(); })
       .then((blob) => { objectUrl = URL.createObjectURL(blob); setSrc(objectUrl); })
       .catch(() => setSrc(null));
@@ -62,7 +64,7 @@ function PrivateSignaturePreview({ path, role, userId }: { path: string; role: s
   const [src, setSrc] = useState<string | null>(null);
   useEffect(() => {
     let objectUrl: string | null = null;
-    fetch(`/backend${path}`, { headers: { 'X-Role': role, 'X-User-Id': userId } })
+    authenticatedFetch(`/backend${path}`, { headers: { 'X-Role': role, 'X-User-Id': userId } })
       .then((response) => { if (!response.ok) throw new Error('signature'); return response.blob(); })
       .then((blob) => { objectUrl = URL.createObjectURL(blob); setSrc(objectUrl); })
       .catch(() => setSrc(null));
@@ -100,6 +102,21 @@ export default function CheckPage() {
     if (!role || !id) return;
     try {
       const next = await api<Detail>(`/checks/${id}`, { role, userId });
+      if (next.status === 'COMPLETED') {
+        if (!next.signedSummary) throw new Error('El resumen firmado no está disponible.');
+        const signed = next.signedSummary;
+        setDetail(next); setUnit(signed.unit); setConfig(signed.condition.policy);
+        setFluids(Object.fromEntries(FLUIDS.map((key) => [key, signed.condition.payload.fluids?.[key]?.status ?? ''])));
+        setPsi(Object.fromEntries((signed.condition.payload.tires ?? []).map((tire) => [tire.position, String(tire.psi)])));
+        const signedPhotos = signed.evidence.map((item) => ({ ...item, contentPath: `/checks/${id}/evidence/${item.id}/content` }));
+        const covers = (tag: string) => signedPhotos.some((item) => item.tags.includes(tag));
+        const coverage = { odometer: covers('ODOMETER'), fuel: covers('FUEL'), witnesses: covers('WITNESSES'), complete: TAGS.every(covers) };
+        setEvidence({ items: signedPhotos, count: signedPhotos.length, coverage, ready: signedPhotos.length >= 2 && signedPhotos.length <= 5 && coverage.complete });
+        setFindings({ items: signed.findings, complete: true, version: next.version });
+        setReview({ reviewedVersion: next.reviewedVersion!, reviewedHash: next.snapshotHash!, result: signed.disposition.result, exceptions: signed.findings.filter((item) => item.classification).map((item) => ({ id: item.id, sourceKey: item.sourceKey, severity: item.severity, classification: item.classification! })) });
+        setCompletion(null); setSignature(''); setCompletedSteps(new Set(STEPS.map((item) => item.id))); setStep('review'); setError(null);
+        return;
+      }
       const [policy, photos, nextFindings, savedCondition] = await Promise.all([
         role === 'MECANICO' && next.status !== 'COMPLETED'
           ? api<Config>(`/checks/${id}/condition-config`, { role, userId })
@@ -110,9 +127,8 @@ export default function CheckPage() {
           ? api<SavedCondition>(`/checks/${id}/condition`, { role, userId })
           : Promise.resolve(null),
       ]);
-      const unitIdentity = await api<UnitIdentity>(`/unidades/${next.unidadId}`, { role, userId }).catch(() => null);
       setDetail(next); setConfig(policy); setEvidence(photos); setFindings(nextFindings);
-      setUnit(unitIdentity);
+      setUnit(next.unit);
       if (savedCondition?.condition) {
         setFluids((current) => Object.fromEntries(FLUIDS.map((key) => [key, savedCondition.condition?.payload.fluids?.[key]?.status ?? current[key]])));
         setPsi(Object.fromEntries((savedCondition.condition.payload.tires ?? []).map((tire) => [tire.position, String(tire.psi)])));
@@ -129,20 +145,7 @@ export default function CheckPage() {
         }
         return done;
       });
-      if (next.status === 'COMPLETED' && next.result && next.snapshotHash) {
-        setReview({
-          reviewedVersion: next.reviewedVersion ?? next.version,
-          reviewedHash: next.reviewedHash ?? next.snapshotHash,
-          result: next.result,
-          exceptions: nextFindings.items.filter((item) => item.classification).map((item) => ({
-            id: item.id,
-            sourceKey: item.sourceKey,
-            severity: item.severity,
-            classification: item.classification!,
-          })),
-        });
-        setStep('review');
-      } else if (next.reviewedVersion === next.version && next.reviewedHash && savedCondition?.condition?.derivedResult) {
+      if (next.reviewedVersion === next.version && next.reviewedHash && savedCondition?.condition?.derivedResult) {
         setReview({
           reviewedVersion: next.reviewedVersion,
           reviewedHash: next.reviewedHash,
@@ -165,7 +168,10 @@ export default function CheckPage() {
         setStep('condition');
       }
       setError(null);
-    } catch (err) { setError(err instanceof HttpError ? err.message : 'No se pudo cargar el CHECK.'); }
+    } catch (err) {
+      setDetail(null); setUnit(null); setConfig(null); setEvidence(null); setFindings(null); setReview(null); setCompletion(null); setSignature('');
+      setError(err instanceof HttpError ? err.message : 'No se pudo cargar el CHECK.');
+    }
   }, [id, role, userId]);
   useEffect(() => { void load(); }, [load]);
 
@@ -259,7 +265,7 @@ export default function CheckPage() {
 
   const stepIndex = STEPS.findIndex((item) => item.id === step);
   const compactFolio = detail?.folio.replace(/^(CHK-[0-9a-f]{8})-[0-9a-f-]+$/i, '$1…') ?? '—';
-  const preparedFinding = findings?.items.find((finding) => finding.classification === 'REQUIRES_WORK' && finding.preparedContext);
+  const preparedFinding = detail?.status !== 'COMPLETED' && !completion ? findings?.items.find((finding) => finding.classification === 'REQUIRES_WORK' && finding.preparedContext) : undefined;
   const isCompleted = detail?.status === 'COMPLETED' || Boolean(completion);
 
   return <main className="mx-auto min-h-[calc(100dvh-4rem)] w-full max-w-[1040px] space-y-3 px-3 pb-32 pt-3 sm:px-4">
@@ -274,9 +280,9 @@ export default function CheckPage() {
             <h1 className="truncate text-[20px] font-semibold leading-6 text-navy">{unit?.numeroInterno ?? 'Chequeo operativo'}</h1>
             <p className="mt-0.5 text-sm text-muted-foreground">{unit ? `${unit.tipo?.nombre ?? unit.marcaModelo ?? 'Unidad'} · ${unit.placas}` : 'Inspección de flota'} · <span title={detail?.folio}>Folio {compactFolio}</span></p>
           </div>
-          <Badge variant={isCompleted ? 'success' : 'warning'}>{isCompleted ? 'Completado' : 'En progreso'}</Badge>
+          {detail ? <Badge variant={isCompleted ? 'success' : 'warning'}>{isCompleted ? 'Completado' : detail.status === 'IN_PROGRESS' ? 'En progreso' : detail.status === 'ASSIGNED' ? 'Asignado' : detail.status === 'PENDING' ? 'Pendiente' : detail.status === 'CANCELLED' ? 'Cancelado' : detail.status}</Badge> : null}
         </div>
-        <nav className="mt-3 flex items-start gap-2" aria-label={`Paso ${stepIndex + 1} de 4: ${STEPS[stepIndex]?.label ?? ''}`}>
+        {detail ? <nav className="mt-3 flex items-start gap-2" aria-label={`Paso ${stepIndex + 1} de 4: ${STEPS[stepIndex]?.label ?? ''}`}>
           {STEPS.map((item, index) => {
             const done = completedSteps.has(item.id) || (isCompleted && index < STEPS.length - 1);
             const active = index === stepIndex;
@@ -286,10 +292,12 @@ export default function CheckPage() {
               <span className={`block truncate text-xs ${active ? 'font-semibold text-primary' : done ? 'text-emerald-800' : 'text-muted-foreground'}`}>{index + 1}. {item.label}</span>
             </button>;
           })}
-        </nav>
+        </nav> : null}
       </div>
     </header>
     <FormAlert>{error}</FormAlert>
+    {error ? <Button type="button" variant="secondary" onClick={() => void load()}>Reintentar carga</Button> : null}
+    {!detail ? <p className="text-sm text-muted-foreground" aria-live="polite">{error ? 'CHECK no disponible.' : 'Cargando CHECK…'}</p> : <>
     <div className="mx-auto w-full max-w-[560px]">
     {!detail && !error ? <p aria-live="polite" className="py-4 text-sm text-muted-foreground">Cargando datos del chequeo…</p> : null}
     {step === 'condition' && config ? <form id="check-condition-form" className="space-y-3" onSubmit={saveCondition}>
@@ -306,15 +314,15 @@ export default function CheckPage() {
       {findings?.items.length ? <ul className="space-y-3">{findings.items.map((finding) => <li key={finding.id} className="rounded-md border bg-card p-3"><div className="flex items-start justify-between gap-3"><div><p className="font-medium text-navy">{finding.sourceKey.startsWith('fluid:') ? `Fluido/fuga · ${finding.sourceKey.slice(6)}` : `Llanta · ${finding.sourceKey.slice(5)}`}</p><p className="text-sm text-muted-foreground">Origen derivado de Condición · {finding.severity === 'HARD_BLOCKER' ? 'Bloqueo de seguridad' : 'Observación'}</p></div>{finding.preparedContext ? <span className="rounded-sm border border-orange-300 bg-orange-50 px-2 py-1 text-xs font-medium text-orange-800">Correctiva preparada</span> : null}</div><div className="mt-3 grid gap-2 sm:grid-cols-[1fr_auto]"><NativeSelect aria-label={`Clasificación ${finding.sourceKey}`} value={classifications[finding.id] ?? ''} onChange={(event) => setClassifications({ ...classifications, [finding.id]: event.target.value })}><option value="">Selecciona clasificación</option><option value="OBSERVATION">Observación</option><option value="FIXED_DURING_CHECK">Corregido durante CHECK</option><option value="REQUIRES_WORK">Requiere trabajo</option></NativeSelect><Button type="button" className="min-h-11" disabled={saving || !classifications[finding.id]} onClick={() => void classify(finding)}>Guardar clasificación</Button></div>{finding.preparedContext ? <div className="mt-3 rounded-sm border border-orange-300 bg-orange-50 p-3 text-sm"><p className="font-semibold text-orange-800">Se generará y vinculará la orden correctiva al firmar.</p><ul className="mt-2 space-y-1 text-muted-foreground"><li>Unidad: {unit?.numeroInterno ?? 'Unidad'}{unit?.placas ? ` (${unit.placas})` : ''}</li><li>Hallazgo: {finding.sourceKey.startsWith('fluid:') ? `Fuga o fluido · ${finding.sourceKey.slice(6)}` : `Llanta · ${finding.sourceKey.slice(5)}`}</li><li>Evidencia asociada: {Array.isArray(finding.preparedContext.evidenceRefs) ? finding.preparedContext.evidenceRefs.length : 0} fotos</li></ul><p className="mt-2 border-t border-orange-200 pt-2 text-xs text-muted-foreground">El diagnóstico y el método de reparación se definirán dentro de la Orden Correctiva.</p></div> : null}{finding.severity === 'HARD_BLOCKER' && classifications[finding.id] === 'FIXED_DURING_CHECK' ? <p className="mt-2 text-sm text-rose-800">La clasificación no elimina el bloqueo: la condición debe recapturarse con hechos verificados.</p> : null}</li>)}</ul> : <div className="rounded-lg border bg-card p-4 text-sm text-muted-foreground">No se derivaron hallazgos. Puedes continuar a revisión.</div>}
     </section> : null}
     {step === 'review' ? <section className="space-y-4">
-      {review?.exceptions.length ? <section className="rounded-md border border-amber-300 bg-amber-50 p-3"><p className="text-xs font-semibold uppercase tracking-wide text-amber-900">Hallazgo requiere atención</p><h2 className="mt-1 font-semibold text-navy">{review.exceptions.length} {review.exceptions.length === 1 ? 'hallazgo' : 'hallazgos'} · {review.exceptions.some((item) => item.classification === 'REQUIRES_WORK') ? 'correctiva preparada' : 'clasificación registrada'}</h2><ul className="mt-2 space-y-2 text-sm text-foreground">{review.exceptions.map((item) => <li key={item.id}>{item.sourceKey.startsWith('fluid:') ? `Fluido o fuga · ${item.sourceKey.slice(6)}` : item.sourceKey} · {item.classification === 'REQUIRES_WORK' ? 'Requiere trabajo' : item.classification === 'FIXED_DURING_CHECK' ? 'Corregido durante CHECK' : 'Observación'}</li>)}</ul>{preparedFinding ? <div className="mt-3 border-t border-amber-200 pt-3 text-sm"><p className="font-semibold text-amber-900">La orden correctiva se generará al firmar y concluir este CHECK.</p><ul className="mt-2 space-y-1 text-muted-foreground"><li>Unidad: {unit?.numeroInterno ?? 'Unidad'}{unit?.placas ? ` (${unit.placas})` : ''}</li><li>Hallazgo: {preparedFinding.sourceKey.startsWith('fluid:') ? `Fuga o fluido · ${preparedFinding.sourceKey.slice(6)}` : `Llanta · ${preparedFinding.sourceKey.slice(5)}`}</li><li>Evidencia asociada: {Array.isArray(preparedFinding.preparedContext?.evidenceRefs) ? preparedFinding.preparedContext.evidenceRefs.length : evidence?.count ?? 0} fotos</li></ul></div> : null}</section> : null}
-      <section className="rounded-md border bg-card p-3"><div className="flex items-center justify-between gap-2"><h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Resumen congelado · solo lectura</h2><span className="text-xs text-muted-foreground">v{review?.reviewedVersion ?? detail?.reviewedVersion ?? '—'}</span></div><div className="mt-3 grid grid-cols-3 gap-2 border-y py-3 text-center text-xs"><span className="font-medium text-emerald-800">✓ Condición</span><span className="font-medium text-emerald-800">✓ Llantas</span><span className="font-medium text-emerald-800">✓ Evidencia</span></div><details className="mt-2"><summary className="min-h-11 cursor-pointer py-3 text-sm font-medium text-navy">Ver detalles de inspección</summary><div className="space-y-3 border-t pt-3"><div><h3 className="text-xs font-semibold uppercase text-muted-foreground">Fluidos y fugas</h3><dl className="mt-2 space-y-2 text-sm">{FLUIDS.map((key) => <div key={key} className="flex justify-between gap-3"><dt>{key === 'washerFluid' ? 'Limpiaparabrisas' : key === 'coolant' ? 'Refrigerante' : key === 'leaks' ? 'Fugas visibles' : 'Aceite motor'}</dt><dd className={fluids[key] === 'OK' ? 'text-emerald-800' : 'text-amber-800'}>{fluids[key] === 'OK' ? 'Conforme' : 'Reportada'}</dd></div>)}</dl></div><div><h3 className="text-xs font-semibold uppercase text-muted-foreground">Llantas y presión</h3><dl className="mt-2 grid grid-cols-2 gap-2 text-sm">{(config?.positions ?? Object.keys(psi)).map((position) => <div key={position} className="flex justify-between gap-2"><dt>{position}</dt><dd>{psi[position] ?? '—'} PSI</dd></div>)}</dl></div><div><h3 className="text-xs font-semibold uppercase text-muted-foreground">Evidencia del clúster</h3><p className="mt-1 text-sm">{evidence?.count ?? 0} fotos · {evidence?.ready ? 'Cobertura completa' : 'Cobertura pendiente'}</p><p className="mt-1 text-xs text-muted-foreground">Odómetro · Combustible · Testigos</p></div></div></details></section>
-      <div className="rounded-md border bg-card p-3"><p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Dictamen propuesto</p><h2 className={`mt-1 text-xl font-semibold ${((completion?.result ?? review?.result ?? detail?.result) === 'UNFIT') ? 'text-rose-800' : 'text-emerald-800'}`}>{(completion?.result ?? review?.result ?? detail?.result) === 'FIT' ? 'Apta' : (completion?.result ?? review?.result ?? detail?.result) === 'FIT_WITH_OBSERVATION' ? 'Apta con observación' : (completion?.result ?? review?.result ?? detail?.result) === 'UNFIT' ? 'No apta' : 'Pendiente'}</h2><p className="mt-1 text-xs text-muted-foreground">Resultado calculado por el servidor · {(completion?.result ?? review?.result ?? detail?.result ?? 'Pendiente')}</p><details className="mt-2 border-t pt-2"><summary className="min-h-11 cursor-pointer py-2 text-sm font-medium text-navy">Ver sello de revisión</summary><p className="break-all font-mono text-[11px] text-muted-foreground">Hash: {completion?.snapshotHash ?? review?.reviewedHash ?? detail?.snapshotHash ?? detail?.reviewedHash}</p></details></div>
+      {review?.exceptions.length ? <section className="rounded-md border border-amber-300 bg-amber-50 p-3"><p className="text-xs font-semibold uppercase tracking-wide text-amber-900">Hallazgo requiere atención</p><h2 className="mt-1 font-semibold text-navy">{review.exceptions.length} {review.exceptions.length === 1 ? 'hallazgo' : 'hallazgos'} · {review.exceptions.some((item) => item.classification === 'REQUIRES_WORK') ? (isCompleted ? 'trabajo requerido' : 'correctiva preparada') : 'clasificación registrada'}</h2><ul className="mt-2 space-y-2 text-sm text-foreground">{review.exceptions.map((item) => <li key={item.id}>{item.sourceKey.startsWith('fluid:') ? `Fluido o fuga · ${item.sourceKey.slice(6)}` : item.sourceKey} · {item.classification === 'REQUIRES_WORK' ? 'Requiere trabajo' : item.classification === 'FIXED_DURING_CHECK' ? 'Corregido durante CHECK' : 'Observación'}</li>)}</ul>{preparedFinding ? <div className="mt-3 border-t border-amber-200 pt-3 text-sm"><p className="font-semibold text-amber-900">La orden correctiva se generará al firmar y concluir este CHECK.</p><ul className="mt-2 space-y-1 text-muted-foreground"><li>Unidad: {unit?.numeroInterno ?? 'Unidad'}{unit?.placas ? ` (${unit.placas})` : ''}</li><li>Hallazgo: {preparedFinding.sourceKey.startsWith('fluid:') ? `Fuga o fluido · ${preparedFinding.sourceKey.slice(6)}` : `Llanta · ${preparedFinding.sourceKey.slice(5)}`}</li><li>Evidencia asociada: {Array.isArray(preparedFinding.preparedContext?.evidenceRefs) ? preparedFinding.preparedContext.evidenceRefs.length : evidence?.count ?? 0} fotos</li></ul></div> : null}</section> : null}
+      <section className="rounded-md border bg-card p-3"><div className="flex items-center justify-between gap-2"><h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Resumen congelado · solo lectura</h2><span className="text-xs text-muted-foreground">v{review?.reviewedVersion ?? detail?.reviewedVersion ?? '—'}</span></div><div className="mt-3 grid grid-cols-3 gap-2 border-y py-3 text-center text-xs"><span className="font-medium text-emerald-800">✓ Condición</span><span className="font-medium text-emerald-800">✓ Llantas</span><span className="font-medium text-emerald-800">✓ Evidencia</span></div><details className="mt-2"><summary className="min-h-11 cursor-pointer py-3 text-sm font-medium text-navy">Ver detalles de inspección</summary><div className="space-y-3 border-t pt-3"><div><h3 className="text-xs font-semibold uppercase text-muted-foreground">Fluidos y fugas</h3><dl className="mt-2 space-y-2 text-sm">{FLUIDS.map((key) => <div key={key} className="flex justify-between gap-3"><dt>{key === 'washerFluid' ? 'Limpiaparabrisas' : key === 'coolant' ? 'Refrigerante' : key === 'leaks' ? 'Fugas visibles' : 'Aceite motor'}</dt><dd className={fluids[key] === 'OK' ? 'text-emerald-800' : 'text-amber-800'}>{fluids[key] === 'OK' ? 'Conforme' : fluids[key] ? 'Reportada' : 'Sin dato'}</dd></div>)}</dl></div><div><h3 className="text-xs font-semibold uppercase text-muted-foreground">Llantas y presión</h3><dl className="mt-2 grid grid-cols-2 gap-2 text-sm">{(config?.positions ?? Object.keys(psi)).map((position) => <div key={position} className="flex justify-between gap-2"><dt>{position}</dt><dd>{psi[position] ?? '—'} PSI</dd></div>)}</dl></div><div><h3 className="text-xs font-semibold uppercase text-muted-foreground">Evidencia del clúster</h3><p className="mt-1 text-sm">{evidence?.count ?? 0} fotos · {evidence?.ready ? 'Cobertura completa' : 'Cobertura pendiente'}</p><p className="mt-1 text-xs text-muted-foreground">Odómetro · Combustible · Testigos</p>{isCompleted && role ? <ul className="mt-2 grid gap-2 sm:grid-cols-2">{evidence?.items.map((item) => <li key={item.id}><PrivateEvidencePreview item={item} role={role} userId={userId} /></li>)}</ul> : null}</div></div></details></section>
+      <div className="rounded-md border bg-card p-3"><p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{isCompleted ? 'Dictamen firmado' : 'Dictamen propuesto'}</p><h2 className={`mt-1 text-xl font-semibold ${((completion?.result ?? review?.result ?? detail?.result) === 'UNFIT') ? 'text-rose-800' : 'text-emerald-800'}`}>{(completion?.result ?? review?.result ?? detail?.result) === 'FIT' ? 'Apta' : (completion?.result ?? review?.result ?? detail?.result) === 'FIT_WITH_OBSERVATION' ? 'Apta con observación' : (completion?.result ?? review?.result ?? detail?.result) === 'UNFIT' ? 'No apta' : 'Pendiente'}</h2><p className="mt-1 text-xs text-muted-foreground">Resultado calculado por el servidor · {(completion?.result ?? review?.result ?? detail?.result ?? 'Pendiente')}</p><details className="mt-2 border-t pt-2"><summary className="min-h-11 cursor-pointer py-2 text-sm font-medium text-navy">Ver sello de revisión</summary><p className="break-all font-mono text-[11px] text-muted-foreground">Hash: {completion?.snapshotHash ?? review?.reviewedHash ?? detail?.snapshotHash ?? detail?.reviewedHash}</p></details></div>
       {detail?.status === 'COMPLETED' || completion ? <div className="space-y-3 rounded-md border bg-card p-3">
         <h3 className="font-semibold text-navy">CHECK firmado · sólo lectura</h3>
         <p className="text-sm text-muted-foreground">Completado {completion?.completedAt || detail?.completedAt ? new Date(completion?.completedAt ?? detail?.completedAt ?? '').toLocaleString('es-MX') : ''}. El snapshot y sus evidencias ya no pueden editarse.</p>
         {role && (completion?.signatureContentPath ?? detail?.signatureContentPath) ? <PrivateSignaturePreview path={(completion?.signatureContentPath ?? detail?.signatureContentPath)!} role={role} userId={userId} /> : null}
         {detail?.validity ? <p className="text-sm">Vigencia: {detail.validity.invalidated ? 'Invalidado' : detail.validity.expired ? 'Expirado' : detail.validity.valid ? 'Vigente' : 'No vigente'}</p> : null}
-        {completion?.correctiveIds.length ? <p className="text-sm">Correctivas creadas: {completion.correctiveIds.length}</p> : null}
+        {(detail?.correctives?.length || completion?.correctiveIds.length || 0) > 0 ? <div className="text-sm"><p>Correctivas creadas: {detail?.correctives?.length || completion?.correctiveIds.length}</p><ul className="mt-2 space-y-1">{(detail?.correctives?.length ? detail.correctives : (completion?.correctiveIds ?? []).map((correctiveId) => ({ id: correctiveId, folio: `MTT-${correctiveId}` }))).map((item) => <li key={item.id}><details><summary className="min-h-11 cursor-pointer py-2" aria-label={`Ver folio completo ${item.folio}`}>{item.folio.replace(/^(MTT-[0-9a-f]{8})-[0-9a-f-]+$/i, '$1…')}</summary><p className="break-all text-xs text-muted-foreground">{item.folio}</p></details></li>)}</ul></div> : null}
       </div> : <div className="space-y-3 rounded-md border bg-card p-3">
         <h3 className="font-semibold text-navy">Firma atribuible</h3>
         <p className="text-sm text-muted-foreground">Firma dentro del recuadro. Al completar se sella exactamente el hash mostrado.</p>
@@ -323,5 +331,6 @@ export default function CheckPage() {
     </section> : null}
     </div>
     {!isCompleted ? <footer className="fixed inset-x-0 bottom-0 z-30 border-t bg-background px-3 pb-[max(12px,env(safe-area-inset-bottom))] pt-3 sm:px-4"><div className="mx-auto flex w-full max-w-[560px] items-center gap-2">{stepIndex > 0 ? <Button type="button" variant="secondary" className="min-h-12 shrink-0" onClick={() => goToStep(STEPS[stepIndex - 1].id)} disabled={saving}>Atrás</Button> : null}{step === 'condition' ? <Button type="submit" form="check-condition-form" className="min-h-12 flex-1" disabled={saving || !config}>{saving ? 'Guardando…' : 'Continuar a Evidencia'}</Button> : null}{step === 'evidence' ? <Button type="button" className="min-h-12 flex-1" disabled={!evidence?.ready || saving} onClick={() => { setCompletedSteps((current) => new Set(current).add('evidence')); setStep('findings'); }}>Continuar a Hallazgos</Button> : null}{step === 'findings' ? <Button type="button" className="min-h-12 flex-1" disabled={!findings?.complete || saving} onClick={() => void startReview()}>{saving ? 'Preparando…' : 'Continuar a Revisión y firma'}</Button> : null}{step === 'review' ? <Button type="button" className="min-h-12 flex-1" disabled={saving || !review || !signature} onClick={() => void completeCheck()}>{saving ? 'Cerrando…' : 'Firmar y concluir chequeo'}</Button> : null}</div></footer> : null}
+    </>}
   </main>;
 }

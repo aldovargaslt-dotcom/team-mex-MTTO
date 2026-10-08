@@ -7,30 +7,23 @@ import { Badge } from '@/components/ui/badge';
 import { api, HttpError } from '@/lib/api';
 import { useRole } from '@/lib/role';
 
-type Check = { id: string; folio: string; unidadId: string; status: string; version: number; assignedActor: string | null; startedAt: string | null };
+type Check = { id: string; folio: string; unidadId: string; unit: UnitIdentity; status: string; version: number; assignedActor: string | null; startedAt: string | null };
 type Queue = { items: Check[]; counts: { total: number; active: number } };
 type UnitIdentity = { numeroInterno: string; placas: string };
 
 export default function MiTrabajoPage() {
   const { role, userId } = useRole();
   const [queue, setQueue] = useState<Queue | null>(null);
-  const [units, setUnits] = useState<Record<string, UnitIdentity>>({});
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
   const cargar = useCallback(async () => {
     if (!role) return;
     try {
       const next = await api<Queue>('/checks?scope=mine-or-eligible', { role, userId });
-      const identities = await Promise.all([...new Set(next.items.map((check) => check.unidadId))].map(async (unidadId) => {
-        const identity = await api<UnitIdentity>(`/unidades/${unidadId}`, { role, userId }).catch(() => null);
-        return identity ? [unidadId, identity] as const : null;
-      }));
-      setUnits(Object.fromEntries(identities.filter((entry): entry is readonly [string, UnitIdentity] => entry !== null)));
       setQueue(next); setError(null);
     }
     catch (err) {
       setQueue(null);
-      setUnits({});
       setError(err instanceof HttpError ? err.message : 'No se pudo cargar Mi trabajo.');
     }
   }, [role, userId]);
@@ -54,7 +47,7 @@ export default function MiTrabajoPage() {
     <section aria-labelledby="checks-title" className="space-y-3"><div className="flex items-center justify-between border-b pb-2"><h2 id="checks-title" className="text-sm font-semibold text-navy">Cola de chequeos</h2><span className="text-xs text-muted-foreground">{queue?.counts.total ?? '—'} visibles</span></div>{!queue && !error ? <p aria-live="polite" className="py-4 text-sm text-muted-foreground">Cargando chequeos…</p> : queue?.items.length ? <ul className="grid gap-3 lg:grid-cols-2">{queue.items.map((check) => {
       const own = check.assignedActor === userId;
       const inProgress = check.status === 'IN_PROGRESS';
-      const identity = units[check.unidadId];
+      const identity = check.unit;
       const compactFolio = check.folio.replace(/^(CHK-[0-9a-f]{8})-[0-9a-f-]+$/i, '$1…');
       const statusLabel = check.status === 'IN_PROGRESS' ? 'En progreso' : check.status === 'ASSIGNED' ? 'Asignado' : check.status === 'PENDING' ? 'Pendiente' : check.status;
       const action = check.status === 'PENDING' && !check.assignedActor ? 'claim' : check.status === 'ASSIGNED' && own ? 'start' : null;

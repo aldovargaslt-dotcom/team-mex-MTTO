@@ -1,6 +1,6 @@
 import type { ApiError } from "./types";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE ?? "/backend";
+const API_BASE = "/backend";
 
 export class HttpError extends Error {
   status: number;
@@ -17,6 +17,13 @@ export class HttpError extends Error {
     this.code = code;
     this.details = details;
   }
+}
+
+export async function authenticatedFetch(path: string, options?: RequestInit) {
+  const response = await fetch(path, { ...options, credentials: 'same-origin', cache: 'no-store' });
+  if (response.status === 401 && typeof window !== 'undefined')
+    window.dispatchEvent(new Event('team-mex-session-expired'));
+  return response;
 }
 
 const DEPARTURE_REASON_LABELS: Record<string, string> = {
@@ -58,7 +65,7 @@ export async function api<T>(
   options: RequestInit & { role: string; userId?: string },
 ): Promise<T> {
   const { role, userId, headers, ...rest } = options;
-  const res = await fetch(`${API_BASE}${path}`, {
+  const res = await authenticatedFetch(`${API_BASE}${path}`, {
     ...rest,
     headers: {
       "Content-Type": "application/json",

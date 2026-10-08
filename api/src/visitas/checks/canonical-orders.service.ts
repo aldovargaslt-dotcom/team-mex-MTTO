@@ -27,6 +27,7 @@ import {
   WorkOrderType,
 } from '../work-order';
 import { CheckInspection } from './check-inspection.entity';
+import { signedCheckSummary } from './signed-check-summary';
 import { VehicleFacility } from './facility.entity';
 import { FacilityCalendarPort } from './facility-calendar.port';
 import {
@@ -1617,8 +1618,27 @@ export class CanonicalOrdersService {
           })
         : [];
     const expired = new Date() >= check.dayEndInstant;
+    const correctives = visita.workOrderStatus === WorkOrderStatus.COMPLETED
+      ? await manager.find(Visita, {
+          where: {
+            sourceCheckId: id,
+            workOrderType: WorkOrderType.CORRECTIVE,
+            unidad: { id: visita.unidad.id },
+          },
+          order: { id: 'ASC' },
+        })
+      : [];
     return {
       ...this.summary(visita),
+      signedSummary: visita.workOrderStatus === WorkOrderStatus.COMPLETED
+        ? signedCheckSummary(check.signedSnapshot)
+        : null,
+      correctives: correctives.map((item) => ({
+        id: item.id,
+        folio: `MTT-${item.id}`,
+        sourceCheckId: item.sourceCheckId,
+        findingId: item.findingId,
+      })),
       source: check.source,
       facilityId: check.facilityId,
       operationalDate: check.operationalDate,
@@ -1649,6 +1669,10 @@ export class CanonicalOrdersService {
     return {
       id: v.id,
       unidadId: v.unidad.id,
+      unit: {
+        numeroInterno: v.unidad.numeroInterno,
+        placas: v.unidad.placas,
+      },
       folio: `${v.workOrderType === 'CHECK' ? 'CHK' : 'MTT'}-${v.id}`,
       type: v.workOrderType,
       status: v.workOrderStatus,
@@ -1659,6 +1683,8 @@ export class CanonicalOrdersService {
       requiresReinspection: v.requiresReinspection,
       assignedActor: v.assignedUserId,
       startedAt: v.startedAt,
+      sourceCheckId: v.sourceCheckId,
+      findingId: v.findingId,
       createdBy: v.createdBy,
       createdActorName: v.createdActorName,
       attributionLevel: v.attributionLevel,
