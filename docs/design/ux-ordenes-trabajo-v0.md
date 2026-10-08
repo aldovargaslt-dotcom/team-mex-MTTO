@@ -61,7 +61,7 @@ La fila selecciona; no hay botón “Detalle”. En escritorio la primera fila v
 ## Mobile / responsive
 
 - Desktop: dos columnas. La primera fila queda seleccionada.
-- 767 y menos: una pantalla a la vez. La lista no abre sola el detalle. Al tocar una orden, el detalle ocupa la pantalla. Arriba a la izquierda, «Órdenes» con chevron regresa a la lista. Hits ≥44px.
+- 800 y menos (breakpoint actual conservado al integrar #75): una pantalla a la vez. La lista no abre sola el detalle. Al tocar una orden, el detalle ocupa la pantalla. Arriba a la izquierda, «Órdenes» con chevron regresa a la lista. Hits ≥44px.
 
 ## Fuera / Don’t
 

@@ -68,7 +68,7 @@ P2 hechos actuales (dl .dl o panel Situación)
 P3 historial / refacciones / ciclos / actividad (sin repetir la alerta)
 ```
 
-MTTO: `PageHeader` + `HubFichaNav` (Resumen · Información técnica · Mantenimiento · Historial). **No** añadir tab Andon ni un quinto tab. Resumen: un panel Andon (causa una vez; km/fecha viven en Estado y operación). Nueva visita naranja en Resumen solo si vencido + puedeCrear. Flota: una columna (situación + form de movimiento + historial). **No** unificar esos dos BCs.
+MTTO actual: `HubIdentityHeader` + riel `HubFichaNav` (Resumen · Información técnica · Mantenimiento · Historial), conforme a [ficha-unidad-resumen-v0](../design-system/ficha-unidad-resumen-v0.md). Se conservan Próximo mantenimiento y Últimas alertas, Salud y la acción Registrar mantenimiento / Continuar orden existente. **No** añadir tab Andon ni un quinto tab. La propuesta antigua de panel único de #58 no sustituye este contrato al integrarse en #87. Flota: una columna (situación + form de movimiento + historial). **No** unificar esos dos BCs.
 
 No card por cada dl. No `.btn`. Clone chrome: Inicio / Andon `PageHeader` + `Button`.
 

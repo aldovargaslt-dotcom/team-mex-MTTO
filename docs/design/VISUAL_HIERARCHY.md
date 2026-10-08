@@ -59,7 +59,7 @@ Si el diseño se pasa, **simplificar** (quitar contenedor, badge o botón) antes
 
 **Flota tablero.** P0 = título Flota. P1 = columna Atención (ámbar solo si falta entrada). P2 = Viaje + Chofer. Estado ACTIVA/INACTIVA = P3 muted. Sin KPI.
 
-**Hub unidad.** P0 = `U-101` + badge + un panel Andon si vencido. P1 = un naranja (Nueva visita en Resumen si vencido+puedeCrear, o Continuar en Mantenimiento). P2 = Estado y operación. P3 = actividad (cierre + borrador) e historial. Salud = widget de header. No repetir la alerta en actividad.
+**Hub unidad actual.** Contrato vigente: [ficha-unidad-resumen-v0](../design-system/ficha-unidad-resumen-v0.md). P0 = identidad, Salud y los bloques Próximo mantenimiento / Últimas alertas. P1 = una acción Registrar mantenimiento / Continuar orden. P2 = Estado y operación. P3 = actividad e historial. La propuesta antigua de panel único de #58 queda sin aplicar en la consolidación #87.
 
 **Wizard WO.** P0 = id unidad + Borrador. P1 = Continuar sticky. P2 = paso actual. P3 = stepper desktop. Warn de choferes = P0 temporal.
 
