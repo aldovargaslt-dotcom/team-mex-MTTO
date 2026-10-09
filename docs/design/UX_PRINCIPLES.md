@@ -50,6 +50,8 @@ Jerarquía visual: [VISUAL_HIERARCHY.md](VISUAL_HIERARCHY.md).
 
 **No ampliar v0 por estética.** Multi-almacén, GPS, kardex, OC, etc. siguen fuera. Cortes visual only no tocan `api/src`.
 
+**Craft de tarea.** Controles con hover/focus/disabled; overlays por portal; motion 150–250 ms solo de estado. Detalle: [OPERATE_CRAFT.md](OPERATE_CRAFT.md). No instalar skills de landing.
+
 ---
 
 ## Densidad

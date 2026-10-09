@@ -53,9 +53,9 @@ Do **not** use `docs/decisions/`. That path is not part of this repository’s S
 | `alertas` | Alertas config (sin-regreso hours) |
 | `alert_catalog` | Alert type overlay (ADR-013; not inbox, not Andon) |
 
-Rules: opaque IDs; **no** FKs or JOINs across those schemas (ADR-002). TypeORM `synchronize` defaults to true in `api/src/db/postgres-options.ts` unless `DB_SYNCHRONIZE` overrides it; this default is not restricted to local/CI environments.
+Rules: opaque IDs; **no** FKs or JOINs across those schemas (ADR-002). TypeORM `synchronize` defaults to true outside production for demo/fixtures; in `NODE_ENV=production` it defaults to false and overrides enabling synchronize/dropSchema are rejected. Controlled CHECK migrations use an isolated runner, not app startup.
 
-**Unknown:** production migration strategy beyond synchronize/boot `ensureModuleSchemas` (not fully documented as a versioned migration set).
+**Release preparation:** EWO-027 adds read-only inspection and controlled CHECK up with target confirmation, drained writers, transaction and historical-data checks. [Railway procedure](../docs/migrations/railway-check-auth-release.md) is rehearsed locally; execution, volume and schema of the real target remain unverified. Migrations for unrelated legacy modules remain outside this release.
 
 ## Integration Boundaries
 
@@ -79,7 +79,15 @@ Outbox: `VisitaCerrada` written in the same transaction as visit close (ADR-001)
 - Local human: `docker compose` Postgres; `api` `:3001` (Swagger `/docs`); `web` `:3000` proxy `/backend`.
 - Cloud Agents: native Postgres via `.cursor/environment.json` / `install.sh` / `wait-for-db.sh`. Do not invent a third DB path.
 - Production docs in README: Railway (API + optional UI) + Vercel (UI Root Directory `web`).
-- Auth: stub headers. Not SSO.
+- Auth: adapter OpenID Connect/JWT RS256 configurable en AuthenticationPort;
+  issuer/audience/JWKS verificados y mapping de subject a roles/patios server-side.
+  CONFIG conserva mapping de configuración; DATABASE consulta accesos vigentes en
+  `auth.users` por issuer+subject. UserAdministrationModule administra y audita
+  altas/cambios en `auth.user_audit`; bootstrap sólo con directorio vacío y Admin
+  explícito. FacilityDirectoryPort lee catálogo existente, sin escrituras/FKs/joins
+  cruzadas. Migración Auth independiente y manual; ADR-021 / SPEC-AUTH-002.
+  Web usa Authorization Code + PKCE, cookie cifrada y proxy same-origin. Stub
+  legacy sólo para desarrollo; integración con proveedor real pendiente.
 
 ## Important Existing Patterns
 
@@ -106,7 +114,7 @@ Outbox: `VisitaCerrada` written in the same transaction as visit close (ADR-001)
 | ADR number collision | Evidence | `architecture/ADR-009` = docs ADR-011; `architecture/ADR-010` = docs ADR-012; docs ADR-009 = icono; docs ADR-010 = salud. |
 | Two “en ruta” models | Evidence | Patio bitácora vs kernel ops estado. |
 | Tablero viaje spec status | Evidence | [fleet-tablero-viaje-v0.md](../docs/specs/fleet-tablero-viaje-v0.md) **propuesto**; related ADRs accepted. |
-| Stub auth | Evidence | `X-Role` only. |
+| Identity integration | Evidence | OIDC implementado; Auth0 elegido como proveedor temporal con sesión en Next.js. Configuración real y login staging pendientes; [guía](../docs/design/auth0-staging.md). Stub no autoriza producción. |
 | CI schema list vs `docker/init.sql` | Evidence | GitHub Actions verify snippet historically omitted `alertas` while `docker/init.sql` creates it. Not changed in this bootstrap. |
 | TypeORM synchronize | Inference | Convenient for v0; may not be a durable prod migration story. |
 
@@ -142,7 +150,7 @@ New ADRs: add the next number under `docs/adr/` using [ADR-TEMPLATE.md](../docs/
 
 The summary ADR table above ends at 012; the [canonical ADR index](../docs/adr/README.md) also includes 013 (Alert Catalog) and 014 (unit photo). Summary references may lag; consult that index and the accepted decision before implementation. This is a documentation gap, not a change to accepted decisions.
 
-See [testing strategy](../docs/testing/TESTING_STRATEGY.md) for actual gates, destructive E2E setup and skipped-check reporting. Production migration policy remains unknown; do not infer it from synchronize defaults. The proposed trip-board spec status, intentional notify dual-stack and header-based stub authentication remain as documented above. Business KPIs and operational assumptions remain unconfirmed in [PRODUCT](PRODUCT.md).
+See [testing strategy](../docs/testing/TESTING_STRATEGY.md) for actual gates, destructive E2E setup and skipped-check reporting. Production migration policy remains unknown; do not infer it from synchronize defaults. The proposed trip-board spec status and intentional notify dual-stack remain as documented above. Authentication now has an OIDC adapter and web session boundary, with real provider integration still pending; see [staging configuration](../docs/design/auth-web-staging.md). Business KPIs and operational assumptions remain unconfirmed in [PRODUCT](PRODUCT.md).
 
 
 ## Approved target decisions — CHECK / Slice 0

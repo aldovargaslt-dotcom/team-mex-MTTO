@@ -27,6 +27,7 @@ import {
   WorkOrderType,
 } from '../work-order';
 import { CheckInspection } from './check-inspection.entity';
+import { signedCheckSummary } from './signed-check-summary';
 import { VehicleFacility } from './facility.entity';
 import { FacilityCalendarPort } from './facility-calendar.port';
 import {
@@ -360,7 +361,7 @@ export class CanonicalOrdersService {
       where: { id, workOrderType: WorkOrderType.CHECK },
       relations: { unidad: true },
       lock: manager.queryRunner?.isTransactionActive
-        ? { mode: 'pessimistic_write' }
+        ? { mode: 'pessimistic_write', tables: ['visitas'] }
         : undefined,
     });
     if (!visita) throw new NotFoundException('No se encontró el CHECK.');
@@ -664,6 +665,25 @@ export class CanonicalOrdersService {
       normalMax: policy.normalMax,
       criticalMin: policy.criticalMin,
       criticalMax: policy.criticalMax,
+    };
+  }
+
+  async conditionDetail(id: string, actor: TrustedActor) {
+    this.authorize(actor, [Rol.MECANICO]);
+    const detail = await this.detail(id, actor);
+    const condition = await this.db.manager.findOneBy(CheckCondition, {
+      visitaId: id,
+    });
+    return {
+      condition: condition
+        ? {
+            revision: condition.revision,
+            payload: condition.payload,
+            progress: condition.progress,
+            derivedResult: condition.derivedResult,
+          }
+        : null,
+      version: detail.version,
     };
   }
 
@@ -1598,8 +1618,27 @@ export class CanonicalOrdersService {
           })
         : [];
     const expired = new Date() >= check.dayEndInstant;
+    const correctives = visita.workOrderStatus === WorkOrderStatus.COMPLETED
+      ? await manager.find(Visita, {
+          where: {
+            sourceCheckId: id,
+            workOrderType: WorkOrderType.CORRECTIVE,
+            unidad: { id: visita.unidad.id },
+          },
+          order: { id: 'ASC' },
+        })
+      : [];
     return {
       ...this.summary(visita),
+      signedSummary: visita.workOrderStatus === WorkOrderStatus.COMPLETED
+        ? signedCheckSummary(check.signedSnapshot)
+        : null,
+      correctives: correctives.map((item) => ({
+        id: item.id,
+        folio: `MTT-${item.id}`,
+        sourceCheckId: item.sourceCheckId,
+        findingId: item.findingId,
+      })),
       source: check.source,
       facilityId: check.facilityId,
       operationalDate: check.operationalDate,
@@ -1630,6 +1669,10 @@ export class CanonicalOrdersService {
     return {
       id: v.id,
       unidadId: v.unidad.id,
+      unit: {
+        numeroInterno: v.unidad.numeroInterno,
+        placas: v.unidad.placas,
+      },
       folio: `${v.workOrderType === 'CHECK' ? 'CHK' : 'MTT'}-${v.id}`,
       type: v.workOrderType,
       status: v.workOrderStatus,
@@ -1640,6 +1683,8 @@ export class CanonicalOrdersService {
       requiresReinspection: v.requiresReinspection,
       assignedActor: v.assignedUserId,
       startedAt: v.startedAt,
+      sourceCheckId: v.sourceCheckId,
+      findingId: v.findingId,
       createdBy: v.createdBy,
       createdActorName: v.createdActorName,
       attributionLevel: v.attributionLevel,
@@ -1754,11 +1799,16 @@ export class CanonicalOrdersService {
         !actor.roles.some((r) =>
           [Rol.LOGISTICA, Rol.ADMIN_DIRECTIVO].includes(r as Rol),
         )
-      )
+      ) {
         qb.andWhere(
-          '((v.assigned_user_id IS NULL AND v.work_order_status IN (:...eligibleStatuses)) OR v.assigned_user_id=:subject)',
-          { subject: actor.subject, eligibleStatuses: activeStatuses },
+          'v.work_order_status IN (:...activeStatuses) AND ((v.assigned_user_id IS NULL AND v.work_order_status IN (:...eligibleStatuses)) OR v.assigned_user_id=:subject)',
+          {
+            subject: actor.subject,
+            eligibleStatuses: activeStatuses,
+            activeStatuses,
+          },
         );
+      }
     }
     if (query.unidadId)
       qb.andWhere('u.id=:unidadId', { unidadId: query.unidadId });

@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { EntityManager } from 'typeorm';
 import { Visita } from '../visita.entity';
+import { EstadoVisita, TipoVisita } from '../enums';
 import { WorkOrderStatus, WorkOrderType } from '../work-order';
 
 export type PreparedCorrective = {
@@ -22,8 +23,8 @@ export class CorrectiveFromCheckFactory {
   ) {
     return manager.create(Visita, {
       unidad: { id: prepared.unidadId },
-      estado: null,
-      tipo: null,
+      estado: EstadoVisita.BORRADOR,
+      tipo: TipoVisita.CORRECTIVO,
       km: null,
       chofer: null,
       workOrderType: WorkOrderType.CORRECTIVE,

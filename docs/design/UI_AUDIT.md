@@ -57,9 +57,9 @@ Ya existen, pero los agentes los mezclan. Estandarizar **en PRs futuros** cuando
 
 | Tema | Hoy | Convención |
 |------|-----|------------|
-| Header de página | `PageHeader` en listados nuevos; `.page-head` + `<h1>` en hub | Preferir `PageHeader` |
-| Botones | `Button` (CVA) vs `.btn` / `.btn-primary` en hub y algunos vacíos | Preferir `Button`; no añadir `.btn` nuevos |
-| Filtros de lista | `ListFilter` (Andon, Stock, Inbox, Flota) vs `<Card>`+select (Choferes) vs form `.filters` (Unidades) | Chips `.list-filter` para estados enumerados; campos de búsqueda pueden ir **sin** card extra |
+| Header de página | `PageHeader` en listados y hub | `PageHeader`; no añadir `.page-head` |
+| Botones | `Button` (CVA); `.btn` solo en role picker (`home-card`) | Preferir `Button`; no añadir `.btn` nuevos |
+| Filtros de lista | `ListFilter` (Andon, Stock, Inbox, Flota, Choferes) vs form `.filters` (Unidades búsqueda) | Chips `.list-filter` para estados enumerados; campos de búsqueda **sin** card extra |
 | Superficie de tabla | `DataTable` envuelve en `.card` | OK; no envolver otra vez en `Card` |
 | Loading | `<p className="muted">Cargando …</p>` | Mantener una línea; no skeletons de marketing |
 | Notas | `Note` vs `.note` / `.note-warn` | Preferir `Note` |
@@ -83,27 +83,19 @@ No crear variantes CVA nuevas si una de estas cubre el caso.
 
 ## PATTERNS TO REFACTOR LATER
 
-Deuda real. **No** arreglar en un PR de docs o de feature no relacionada.
+Deuda real. **No** arreglar en un PR de docs o de feature no relacionada. Chrome unificado en [ui-unify-chrome-v0](../design-system/ui-unify-chrome-v0.md): hub `PageHeader`+`Button`, un panel Andon, visita cerrada documento, Choferes `ListFilter`.
 
-1. **Doble sistema CSS vs shadcn.** `globals.css` define `.btn`, `.card`, `.field`, `.page-head` a la par de componentes. El hub (`unidades/[id]/page.tsx`) es el mayor consumidor legacy (`Link className="btn btn-primary"`).
+1. **`.btn` del role picker.** `home-card` sigue con `.btn` (patrón 1). No es deuda del hub.
 
-2. **Dos naranjas en el hub.** `AndonHubCard` renderiza `Nueva visita` (Button default) y el panel Mantenimiento puede renderizar otro `btn-primary` “Nueva visita” / “Continuar”. Viola “un naranja por vista”.
+2. **Hardcodes de color** en `badge.tsx` / `Note` (`bg-[#e8f6ee]`, `bg-[#fff4e8]`) duplican tokens `--activa-*` / `--warning-*`.
 
-3. **Detalle de visita cerrado = stack de `Card`.** Cada bloque (Datos, Trabajos, Obs, Fotos, Firmas) es una card. Leer como documento, no como dashboard de tarjetas. Candidato a secciones + `border-b`, no una card por heading.
+3. **`@custom-variant dark` sin tema.** Residuo shadcn. No implementar dark mode.
 
-4. **Choferes: card alrededor de un select.** `Card` + `Field` “Mostrar” donde Andon usaría `ListFilter`.
+4. **Copy residual.** Columna “Familia” en tablas de ítems vs “Categoría” en Existencias; algunos `className` de 44px repetidos encima de `size="compact"` (Andon Enterado).
 
-5. **Hardcodes de color** en `badge.tsx` / `Note` (`bg-[#e8f6ee]`, `bg-[#fff4e8]`) duplican tokens `--activa-*` / `--warning-*`.
+5. **`docs/screenshots/` vacío en git.** Los briefs piden PNG; el flujo existe pero las evidencias no viven en el repo. Convención en [SCREENSHOT_WORKFLOW.md](SCREENSHOT_WORKFLOW.md).
 
-6. **`@custom-variant dark` sin tema.** Residuo shadcn. No implementar dark mode.
-
-7. **Hub: `style={{ marginBottom: 12 }}` e inline en listas.** Salir de inline cuando se toque el hub.
-
-8. **Copy residual.** Columna “Familia” en tablas de ítems vs “Categoría” en Existencias; algunos `className` de 44px repetidos encima de `size="compact"` (Andon Enterado).
-
-9. **`docs/screenshots/` vacío en git.** Los briefs piden PNG; el flujo existe pero las evidencias no viven en el repo. Convención en [SCREENSHOT_WORKFLOW.md](SCREENSHOT_WORKFLOW.md).
-
-10. **Flota ficha:** formulario de movimiento + situación + historial en una columna. Funciona; no es el patrón “hub de dos columnas” de mantenimiento. No unificar layouts entre BCs.
+6. **Flota ficha:** formulario de movimiento + situación + historial en una columna. Funciona; no es el patrón hub MTTO. No unificar layouts entre BCs.
 
 ---
 
@@ -115,7 +107,7 @@ Vistos en código, en briefs, o típicos de UI generada. Catálogo normativo: [U
 |-------------|-------------------|
 | Dashboard de KPIs / gráficas | Vetado en Inicio y Flota |
 | Una card por ítem de lista (desktop) | Anti-generic Must 7; excepción: líneas de pieza en WO mobile |
-| Muchos naranjas | Hub; riesgo en headers con varios `Button` default |
+| Muchos naranjas | Riesgo en headers con varios `Button` default; hub ya un naranja por vista |
 | Sombras suaves, radio 16px, gradientes | Tokens los evitan; no reintroducir |
 | Pastel en verbos | Sustituido por el brief de pasteles; no volver |
 | Filtro con subrayado de `.subnav` | Gramática rota |
@@ -124,7 +116,7 @@ Vistos en código, en briefs, o típicos de UI generada. Catálogo normativo: [U
 | Tipografía &lt;11px para “densidad” | Meta mínima 12; thead 11 uppercase es el piso |
 | Playwright en `web/` | AGENTS.md / `proof-ui`: no. `@playwright/test` aparece solo como transitiva del lockfile |
 
-**No** tomar como sistema: el stack de cards del detalle de visita, el filtro-card de Choferes, ni el CSS `.btn` del hub.
+**No** tomar como sistema: un stack de cards en detalle de visita, un Card+select de filtro, ni `.btn` fuera del role picker.
 
 ---
 

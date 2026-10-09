@@ -806,6 +806,24 @@
     color: var(--muted-foreground);
   }
 
+  .doc-section {
+    padding-bottom: 16px;
+    margin-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .doc-section:last-child {
+    border-bottom: 0;
+    margin-bottom: 0;
+    padding-bottom: 0;
+  }
+
+  .doc-section h2 {
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+
   .hub-facts {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1457,6 +1475,13 @@
     border-radius: 6px;
     border: 1px solid var(--border);
     background: white;
+  }
+
+  .doc-section .signature-img {
+    width: 100%;
+    max-height: 96px;
+    object-fit: contain;
+    object-position: left center;
   }
 
   .photo-item {
@@ -3781,5 +3806,65 @@
   .ordenes-tabs__cola button,
   .ordenes-tabs__filter {
     min-height: 48px;
+  }
+}
+
+@media (max-width: 800px) {
+  .ordenes-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    min-height: 44px;
+    margin: 0 0 4px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: #1c1d26;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .ordenes-desk {
+    border: 0;
+    border-radius: 0;
+    min-height: 0;
+    background: transparent;
+  }
+
+  .ordenes-desk:not(.is-detail) .ordenes-detail {
+    display: none;
+  }
+
+  .ordenes-desk.is-detail .ordenes-list {
+    display: none;
+  }
+
+  .ordenes-list {
+    max-height: none;
+    border-bottom: 0;
+  }
+
+  .ordenes-detail {
+    padding: 0 0 28px;
+  }
+
+  .ordenes-detail__head {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .ordenes-actions {
+    flex-wrap: wrap;
+  }
+
+  .ordenes-actions a,
+  .ordenes-actions button {
+    min-height: 44px;
+    height: 44px;
+  }
+
+  .ordenes-row {
+    min-height: 56px;
   }
 }

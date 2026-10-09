@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, type ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { Boxes, ClipboardList, Home, Menu, Settings, Truck } from 'lucide-react';
@@ -65,10 +65,15 @@ const SUPERVISOR_BOTTOM_NAV = [
 export function AppShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
-  const { role, isLogistica, clearRole, ready } = useRole();
+  const { role, roles, isLogistica, clearRole, ready, development } = useRole();
   const isHome = pathname === '/';
+  const isCheckWorkflow = pathname?.startsWith('/checks/');
   const showChrome = Boolean(!isHome && ready && role);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [logoutError, setLogoutError] = useState('');
+  useEffect(() => {
+    if (ready && !role && !isHome) router.replace('/');
+  }, [ready, role, isHome, router]);
 
   const allItems = NAV_ITEMS.filter((item) => role && item.roles.includes(role));
   const items =
@@ -78,22 +83,34 @@ export function AppShell({ children }: { children: ReactNode }) {
   const menuItems =
     role === 'SUPERVISOR'
       ? allItems.filter((item) => !SUPERVISOR_PRIMARY.has(item.href))
-      : allItems;
+      : role === 'ADMIN_DIRECTIVO'
+        ? [...allItems, { href: '/configuracion/usuarios', label: 'Usuarios' }]
+        : allItems;
   const homeHref = isLogistica ? '/logistica' : role === 'MECANICO' ? '/mi-trabajo' : '/inicio';
 
-  function cambiarRol() {
-    setMenuOpen(false);
-    clearRole();
-    router.push('/');
+  async function cambiarRol() {
+    setLogoutError('');
+    try {
+      await clearRole();
+      setMenuOpen(false);
+      router.push('/');
+    } catch {
+      setLogoutError('No se pudo cerrar sesión. Intenta de nuevo.');
+    }
   }
 
   return (
     <div className="app">
-      <header className="shell-header">
+      {!isCheckWorkflow ? <header className="shell-header">
         <div className="shell-header__bar">
           <Link href={role ? homeHref : '/'} className="shell-header__brand">
             <BrandPlate />
           </Link>
+          {role === 'MECANICO' && pathname === '/mi-trabajo' ? (
+            <span className="flex min-w-0 flex-col leading-tight md:hidden">
+              <span className="truncate text-sm font-semibold text-white">TEAM MEX MTTO</span>
+            </span>
+          ) : null}
           {showChrome ? (
             <nav className="shell-header__nav hidden md:flex" aria-label="Principal">
               {items.map((item) => (
@@ -127,13 +144,18 @@ export function AppShell({ children }: { children: ReactNode }) {
                 <span className="shell-header__role hidden md:inline">
                   {etiquetaRol(role!)}
                 </span>
+                {!development && roles.length > 1 ? (
+                  <Button asChild variant="ghost" className="shell-header__role-switch hidden md:inline-flex">
+                    <Link href="/">Elegir rol</Link>
+                  </Button>
+                ) : null}
                 <Button
                   type="button"
                   variant="ghost"
                   className="shell-header__role-switch hidden md:inline-flex"
                   onClick={cambiarRol}
                 >
-                  Cambiar rol
+                  {development ? 'Cambiar rol' : 'Cerrar sesión'}
                 </Button>
                 <Button
                   type="button"
@@ -154,8 +176,8 @@ export function AppShell({ children }: { children: ReactNode }) {
             ) : null}
           </div>
         </div>
-      </header>
-      {showChrome ? (
+      </header> : null}
+      {showChrome && !isCheckWorkflow ? (
         <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
           <SheetContent
             id="shell-menu"
@@ -194,10 +216,16 @@ export function AppShell({ children }: { children: ReactNode }) {
               })}
             </nav>
             <SheetFooter>
+              {!development && roles.length > 1 ? (
+                <Button asChild variant="secondary">
+                  <Link href="/" onClick={() => setMenuOpen(false)}>Elegir rol</Link>
+                </Button>
+              ) : null}
               <Button type="button" variant="quiet" onClick={cambiarRol}>
-                Cambiar rol
+                {development ? 'Cambiar rol' : 'Cerrar sesión'}
               </Button>
             </SheetFooter>
+            {logoutError ? <p role="alert" className="px-4 text-sm text-destructive">{logoutError}</p> : null}
           </SheetContent>
         </Sheet>
       ) : null}
@@ -244,7 +272,8 @@ export function AppShell({ children }: { children: ReactNode }) {
                 : 'main'
         }
       >
-        {children}
+        {logoutError && !menuOpen ? <p role="alert" className="text-sm text-destructive">{logoutError}</p> : null}
+        {isHome || (ready && role) ? children : <p role="status">Verificando sesión…</p>}
       </main>
     </div>
   );

@@ -142,9 +142,9 @@ function HubContent() {
     return (
       <div className="empty-state">
         <h2>No se encontró la unidad.</h2>
-        <Link className="btn btn-outline" href={returnTo}>
-          Volver a unidades
-        </Link>
+        <Button asChild variant="outline">
+          <Link href={returnTo}>Volver a unidades</Link>
+        </Button>
       </div>
     );
   }
@@ -310,8 +310,8 @@ function HubContent() {
                             </div>
                           </div>
                           <div className="hub-actions" style={{ marginTop: 0 }}>
+                            <Button asChild variant="outline">
                             <Link
-                              className="btn btn-outline"
                               href={withUnidadesReturnTo(
                                 `/unidades/${ficha.id}/visitas/${visita.id}`,
                                 returnTo,
@@ -319,14 +319,15 @@ function HubContent() {
                             >
                               Continuar
                             </Link>
-                            <button
+                            </Button>
+                            <Button
                               type="button"
-                              className="btn btn-danger"
+                              variant="destructive"
                               disabled={busyId === visita.id}
                               onClick={() => void eliminar(visita.id)}
                             >
                               Eliminar
-                            </button>
+                            </Button>
                           </div>
                         </li>
                       ))}

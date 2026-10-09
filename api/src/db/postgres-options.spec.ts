@@ -19,7 +19,8 @@ describe('postgres-options (Railway / Vercel)', () => {
   it('uses DATABASE_URL when present', () => {
     const opts = postgresConnectionOptions(
       env({
-        DATABASE_URL: 'postgresql://postgres:x@postgres.railway.internal:5432/railway',
+        DATABASE_URL:
+          'postgresql://postgres:x@postgres.railway.internal:5432/railway',
       }),
     );
     expect(opts.url).toContain('railway.internal');
@@ -66,8 +67,21 @@ describe('postgres-options (Railway / Vercel)', () => {
 
   it('keeps synchronize default true for demo seed', () => {
     expect(typeormRootOptions(env({})).synchronize).toBe(true);
-    expect(typeormRootOptions(env({ DB_SYNCHRONIZE: 'false' })).synchronize).toBe(
-      false,
-    );
+    expect(
+      typeormRootOptions(env({ DB_SYNCHRONIZE: 'false' })).synchronize,
+    ).toBe(false);
+  });
+  it('disables automatic schema changes in production and rejects unsafe overrides', () => {
+    expect(typeormRootOptions(env({ NODE_ENV: 'production' }))).toMatchObject({
+      synchronize: false,
+      dropSchema: false,
+    });
+    for (const unsafe of [
+      { DB_SYNCHRONIZE: 'true' },
+      { DB_DROP_SCHEMA: 'true' },
+    ])
+      expect(() =>
+        typeormRootOptions(env({ NODE_ENV: 'production', ...unsafe })),
+      ).toThrow(/Production requires/);
   });
 });

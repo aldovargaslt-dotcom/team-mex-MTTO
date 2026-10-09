@@ -46,7 +46,11 @@ export class AuthGuard implements CanActivate {
       context.getHandler(),
       context.getClass(),
     ]);
-    if (trusted || this.config.get('NODE_ENV') === 'production') {
+    if (
+      trusted ||
+      this.config.get('NODE_ENV') === 'production' ||
+      this.config.get('AUTH_MODE') === 'OIDC'
+    ) {
       const actor = validateActor(
         await this.authentication.authenticate(request),
         this.config.get('NODE_ENV'),

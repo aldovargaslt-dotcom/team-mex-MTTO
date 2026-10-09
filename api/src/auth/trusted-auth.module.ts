@@ -7,6 +7,9 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Request } from 'express';
+import { OidcAuthentication } from './oidc-authentication';
+import { IdentityController } from './identity.controller';
+import { ActorDirectoryPort } from './actor-directory.port';
 import {
   AuthenticationPort,
   assertIdentityConfiguration,
@@ -54,11 +57,23 @@ export class AuthenticationConfiguration implements OnModuleInit {
 }
 @Global()
 @Module({
+  controllers: [IdentityController],
   providers: [
     {
       provide: AuthenticationPort,
-      inject: [ConfigService],
-      useFactory: (config: ConfigService): AuthenticationPort => {
+      inject: [ConfigService, { token: ActorDirectoryPort, optional: true }],
+      useFactory: (
+        config: ConfigService,
+        directory?: ActorDirectoryPort,
+      ): AuthenticationPort => {
+        if (config.get('AUTH_MODE') === 'OIDC')
+          return new OidcAuthentication(
+            config,
+            undefined,
+            config.get('AUTH_ACTOR_STORE') === 'DATABASE'
+              ? directory
+              : undefined,
+          );
         if (config.get('AUTH_MODE') !== 'DEVELOPMENT_STUB')
           return new UnconfiguredAuthentication();
         assertIdentityConfiguration(config.get('NODE_ENV'), 'DEVELOPMENT_STUB');

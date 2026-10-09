@@ -4,6 +4,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthGuard } from './auth/auth.guard';
 import { TrustedAuthModule } from './auth/trusted-auth.module';
+import { UserAdministrationModule } from './auth/user-administration.module';
 import { RolesGuard } from './auth/roles.guard';
 import { HealthController } from './health.controller';
 import { ChoferesModule } from './choferes/choferes.module';
@@ -28,6 +29,7 @@ import { UnitOperationModule } from './kernel/unit-operation.module';
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     TrustedAuthModule,
+    UserAdministrationModule,
     UnitOperationModule,
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],

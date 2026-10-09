@@ -1,0 +1,6 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": null,
+  "installCommand": "echo 'ERROR: Vercel Root Directory is the repo root. Settings → General → Root Directory = web. The Nest API deploys on Railway, not Vercel.' && exit 1",
+  "buildCommand": "echo 'ERROR: Vercel Root Directory is the repo root. Settings → General → Root Directory = web.' && exit 1"
+}

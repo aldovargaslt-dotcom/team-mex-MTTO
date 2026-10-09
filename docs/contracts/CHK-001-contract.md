@@ -127,6 +127,7 @@ All mutation requests include expectedVersion except first create; signed comple
 | GET /unidades/:id/checks/active | 200 detail-or-null; role/scope enforced |
 | GET /checks?scope=mine-or-eligible | 200 paginated items + scoped counts; no unsupported free actor filter |
 | POST /checks/:id/assign or /claim or /start | 200 current revision; ASSIGNMENT_CONFLICT, INVALID_STATE, denied policy |
+| GET /checks/:id/condition | 200 saved condition payload/progress/version or null; MECANICO + resource/facility scope |
 | PATCH /checks/:id/condition | 200 condition+derived findings/progress/version; numeric/config/source validation |
 | POST /checks/:id/evidence/uploads | 201 reserved slot/key/upload instructions; PHOTO_LIMIT_EXCEEDED; auth |
 | POST /checks/:id/evidence | 201 verified READY metadata/version; object/config/count failure |
@@ -138,6 +139,18 @@ All mutation requests include expectedVersion except first create; signed comple
 | POST /checks/:id/invalidations | 201 append-only event; source-id retry returns same event; no snapshot edit |
 | POST /unidades/:id/mantenimiento-ordenes | 201 new maintenance canonical type, independent of other maint; idempotency per request; no EXISTING_DRAFT global |
 | GET /mantenimiento-ordenes | 200 paginated canonical maintenance only, including multiple open orders |
+
+Lectura implementada por el incremento acotado [EWO-023](../engineering-work-orders/EWO-023.md):
+los resúmenes de órdenes incluyen `unit: { numeroInterno, placas }` sin VIN/foto,
+y `sourceCheckId`/`findingId` persistidos. `GET /checks/:id` conserva la política
+de lectura existente y, para COMPLETED, agrega `signedSummary` (proyección del
+snapshot inmutable: unidad, condición/política, hallazgos, dictamen y metadatos
+de evidencia) y `correctives` con id/folio/sourceCheckId/findingId de órdenes
+persistidas de la misma unidad. No exporta claves/versiones de almacenamiento;
+el contenido se obtiene por los endpoints privados existentes. `snapshotHash`
+identifica el snapshot completo firmado, no un hash de esta proyección pública.
+Un snapshot ausente se devuelve como null, sin reconstruir contenido firmado
+desde defaults. Esto no habilita MECANICO en mantenimiento ni define su ciclo.
 | GET /logistica/torre-control | 200 composed snapshot or explicit unavailable state; never inferred Lista on failure |
 
 Standard error {code,message,details,currentVersion?}; 401 no trusted authentication, 403 scope/role, 404 resource invisible/absent, 400 malformed input, 422 incomplete physical/evidence/signature/policy configuration, 409 active/version/immutable/state conflict, 503 authoritative source unavailable. Departure blockers return 409 DEPARTURE_BLOCKED with cause list (or 503 source failure). Frontend HttpError must preserve code/details, including winning active CHECK. Existing legacy status contracts stay unchanged.

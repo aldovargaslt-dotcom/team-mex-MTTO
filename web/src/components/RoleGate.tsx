@@ -32,14 +32,15 @@ export function RoleGate({
     );
   }
 
-  const permitted = adminOnly
-    ? isAdmin
-    : allow
-      ? allow.includes(role)
-      : true;
+  const permitted = adminOnly ? isAdmin : allow ? allow.includes(role) : true;
 
   if (!permitted) {
-    const home = role === 'LOGISTICA' ? '/flota' : '/inicio';
+    const home =
+      role === 'LOGISTICA'
+        ? '/flota'
+        : role === 'MECANICO'
+          ? '/mi-trabajo'
+          : '/inicio';
     return (
       <div className="empty-state">
         <h2>
@@ -51,7 +52,11 @@ export function RoleGate({
         </h2>
         <Button asChild variant="secondary">
           <Link href={home}>
-            {role === 'LOGISTICA' ? 'Volver' : 'Volver al inicio'}
+            {role === 'LOGISTICA'
+              ? 'Volver'
+              : role === 'MECANICO'
+                ? 'Volver a Mi trabajo'
+                : 'Volver al inicio'}
           </Link>
         </Button>
       </div>

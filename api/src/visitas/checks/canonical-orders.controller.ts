@@ -88,6 +88,10 @@ export class CanonicalOrdersController {
   conditionConfig(@Param('id', ParseUUIDPipe) id: string, @Actor() actor: TrustedActor) {
     return this.service.conditionConfig(id, actor);
   }
+  @Get('checks/:id/condition')
+  conditionDetail(@Param('id', ParseUUIDPipe) id: string, @Actor() actor: TrustedActor) {
+    return this.service.conditionDetail(id, actor);
+  }
   @Post('checks/:id/evidence/uploads')
   reserveEvidence(@Param('id', ParseUUIDPipe) id: string, @Body() dto: ReserveEvidenceDto, @Actor() actor: TrustedActor) {
     return this.service.reserveEvidence(id, dto, actor);
