@@ -56,15 +56,22 @@ export class AuthGuard implements CanActivate {
         this.config.get('NODE_ENV'),
       );
       request.actor = actor;
-      // Legacy controllers retain CurrentUser; authorization still checks all
-      // trusted roles server-side. Caller headers never choose that identity.
+      // Legacy controllers retain CurrentUser. The selected UI role is only a
+      // preference among roles granted to the verified actor and allowed here.
       const required = this.reflector.getAllAndOverride<Rol[]>('roles', [
         context.getHandler(),
         context.getClass(),
       ]);
-      const role = actor.roles.find(
-        (r) => r !== 'SYSTEM' && (!required || required.includes(r)),
-      ) as Rol | undefined;
+      const preferred = request.header('x-role')?.trim() as Rol | undefined;
+      const role =
+        (preferred &&
+        actor.roles.includes(preferred) &&
+        (!required || required.includes(preferred))
+          ? preferred
+          : undefined) ??
+        (actor.roles.find(
+          (r) => r !== 'SYSTEM' && (!required || required.includes(r)),
+        ) as Rol | undefined);
       request.user = {
         rol: role ?? (actor.roles[0] as Rol),
         userId: actor.subject,
