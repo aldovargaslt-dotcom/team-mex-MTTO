@@ -6,12 +6,12 @@ async function proxy(request: NextRequest, context: { params: Promise<{ path: st
     const legacy = legacyDevelopment();
     const apiUrl = legacy ? (process.env.API_URL || 'http://localhost:3001') : authConfig().apiUrl;
     const headers = new Headers();
-    for (const name of ['content-type', 'accept', 'idempotency-key']) {
+    for (const name of ['content-type', 'accept', 'idempotency-key', 'x-role']) {
       const value = request.headers.get(name);
       if (value) headers.set(name, value);
     }
     if (legacy) {
-      for (const name of ['x-role', 'x-user-id', 'authorization']) {
+      for (const name of ['x-user-id', 'authorization']) {
         const value = request.headers.get(name);
         if (value) headers.set(name, value);
       }

@@ -4,6 +4,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { Test } from '@nestjs/testing';
 import { createLocalJWKSet, exportJWK, generateKeyPair, SignJWT } from 'jose';
 import request from 'supertest';
+import { App } from 'supertest/types';
 import { AuthGuard } from './auth.guard';
 import { RolesGuard } from './roles.guard';
 import { Roles } from './roles.decorator';
@@ -24,11 +25,23 @@ class ProtectedController {
   admin() {
     return {};
   }
+  @Get('both')
+  @Roles(Rol.SUPERVISOR, Rol.ADMIN_DIRECTIVO)
+  both(@Req() req: { user: unknown }) {
+    return req.user;
+  }
+  @Get('supervisor')
+  @Roles(Rol.SUPERVISOR)
+  supervisor(@Req() req: { user: unknown }) {
+    return req.user;
+  }
 }
 
 describe('AUTH-02/07 real HTTP guard boundary', () => {
   let app: INestApplication;
+  let server: App;
   let token: string;
+  let dualRoleToken: string;
   beforeAll(async () => {
     const keys = await generateKeyPair('RS256');
     const config = new ConfigService({
@@ -40,6 +53,11 @@ describe('AUTH-02/07 real HTTP guard boundary', () => {
         mechanic: {
           displayName: 'Mecánico',
           roles: [Rol.MECANICO],
+          facilityScopes: ['mex'],
+        },
+        dual: {
+          displayName: 'Supervisora y administradora',
+          roles: [Rol.ADMIN_DIRECTIVO, Rol.SUPERVISOR],
           facilityScopes: ['mex'],
         },
       }),
@@ -60,6 +78,14 @@ describe('AUTH-02/07 real HTTP guard boundary', () => {
       .setIssuedAt()
       .setExpirationTime('5m')
       .sign(keys.privateKey);
+    dualRoleToken = await new SignJWT({})
+      .setProtectedHeader({ alg: 'RS256', kid: 'test' })
+      .setSubject('dual')
+      .setIssuer('https://identity.test')
+      .setAudience('api')
+      .setIssuedAt()
+      .setExpirationTime('5m')
+      .sign(keys.privateKey);
     const module = await Test.createTestingModule({
       controllers: [IdentityController, ProtectedController],
       providers: [
@@ -71,40 +97,67 @@ describe('AUTH-02/07 real HTTP guard boundary', () => {
     }).compile();
     app = module.createNestApplication();
     await app.init();
+    server = app.getHttpServer() as App;
   });
   afterAll(async () => {
     await app?.close();
   });
   it('returns verified actor with no-store and rejects browser-only identity', async () => {
-    await request(app.getHttpServer())
+    await request(server)
       .get('/auth/me')
       .set('X-Role', 'MECANICO')
       .set('X-User-Id', 'forged')
       .expect(401);
-    const response = await request(app.getHttpServer())
+    const response = await request(server)
       .get('/auth/me')
       .set('Authorization', `Bearer ${token}`)
       .expect(200);
-    expect(response.body.subject).toBe('mechanic');
-    expect(response.body.attributionLevel).toBe('SERVER_VERIFIED');
+    const identity = response.body as {
+      subject: string;
+      attributionLevel: string;
+    };
+    expect(identity.subject).toBe('mechanic');
+    expect(identity.attributionLevel).toBe('SERVER_VERIFIED');
     expect(response.headers['cache-control']).toContain('no-store');
   });
   it('protects legacy endpoints in OIDC mode, respects assigned roles and never trusts spoofed headers', async () => {
-    await request(app.getHttpServer())
+    await request(server)
       .get('/protected/mechanic')
       .set('X-Role', 'MECANICO')
       .expect(401);
-    const response = await request(app.getHttpServer())
+    const response = await request(server)
       .get('/protected/mechanic')
       .set('Authorization', `Bearer ${token}`)
       .set('X-Role', 'ADMIN_DIRECTIVO')
       .set('X-User-Id', 'forged')
       .expect(200);
     expect(response.body).toEqual({ rol: 'MECANICO', userId: 'mechanic' });
-    await request(app.getHttpServer())
+    await request(server)
       .get('/protected/admin')
       .set('Authorization', `Bearer ${token}`)
       .set('X-Role', 'ADMIN_DIRECTIVO')
       .expect(403);
+  });
+  it('uses the selected granted role for dual-role reads without changing endpoint permissions', async () => {
+    const supervisor = await request(server)
+      .get('/protected/both')
+      .set('Authorization', `Bearer ${dualRoleToken}`)
+      .set('X-Role', 'SUPERVISOR')
+      .expect(200);
+    expect(supervisor.body).toEqual({ rol: 'SUPERVISOR', userId: 'dual' });
+
+    const admin = await request(server)
+      .get('/protected/both')
+      .set('Authorization', `Bearer ${dualRoleToken}`)
+      .set('X-Role', 'ADMIN_DIRECTIVO')
+      .expect(200);
+    expect(admin.body).toEqual({ rol: 'ADMIN_DIRECTIVO', userId: 'dual' });
+
+    const supervisorOnly = await request(server)
+      .get('/protected/supervisor')
+      .set('Authorization', `Bearer ${dualRoleToken}`)
+      .set('X-Role', 'ADMIN_DIRECTIVO')
+      .expect(200);
+    expect(supervisorOnly.body).toEqual({ rol: 'SUPERVISOR', userId: 'dual' });
   });
 });
