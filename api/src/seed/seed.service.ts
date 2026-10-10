@@ -26,6 +26,7 @@ import {
   LEGACY_CHOFERES_DEMO,
   LEGACY_TIPOS_DEMO,
   LEGACY_UNIDADES_PLACAS,
+  LEFTOVER_CHOFER_HARD_DELETE,
   TIPOS_DEMO,
   TIPO_CAMIONES_3_Y_MEDIA,
   TIPO_RUTAS,
@@ -107,6 +108,7 @@ export class SeedService implements OnModuleInit {
     }
 
     await this.retireLegacyPlaceholderCatalog();
+    await this.hardDeleteLeftoverChoferCarlosRuiz2();
   }
 
   private async upsertUnidad(item: UnidadDemoSeed): Promise<Unidad> {
@@ -193,6 +195,36 @@ export class SeedService implements OnModuleInit {
       const message = err instanceof Error ? err.message : String(err);
       this.logger.warn(`No se pudo retirar semilla placeholder: ${message}`);
     }
+  }
+
+  /**
+   * API DELETE is INACTIVO-only. Production leftover Carlos Ruiz2 must leave
+   * public.choferes entirely. Nulls visitas.chofer_id first (FK RESTRICT).
+   */
+  private async hardDeleteLeftoverChoferCarlosRuiz2() {
+    const { id, nombre } = LEFTOVER_CHOFER_HARD_DELETE;
+    const rows: { id: string; nombre: string }[] = await this.choferes.query(
+      `SELECT id::text AS id, nombre FROM choferes WHERE id = $1`,
+      [id],
+    );
+    if (!rows.length) return;
+    if (rows[0].nombre !== nombre) {
+      this.logger.warn(
+        `Skip hard-delete chofer ${id}: nombre is ${rows[0].nombre}, expected ${nombre}`,
+      );
+      return;
+    }
+    await this.visitas.query(
+      `UPDATE visitas SET chofer_id = NULL WHERE chofer_id = $1`,
+      [id],
+    );
+    const deleted: { id: string; nombre: string }[] = await this.choferes.query(
+      `DELETE FROM choferes WHERE id = $1 AND nombre = $2 RETURNING id::text AS id, nombre`,
+      [id, nombre],
+    );
+    this.logger.log(
+      `Hard-deleted leftover chofer ${deleted[0]?.nombre ?? nombre} (${id})`,
+    );
   }
 
   private async retireLegacyPlaceholderCatalogUnsafe() {
