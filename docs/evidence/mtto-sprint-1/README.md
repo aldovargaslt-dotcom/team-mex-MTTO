@@ -15,3 +15,7 @@ Canónicos: [99 estados PASS](after-states-cdp.json), [23 complementarios PASS](
 [Primer tramo](own-journey-cdp.json) conserva el fallo del runner al pulsar antes de habilitación; [continuación](own-journey-resume-cdp.json) completó reanudación/cierre/consulta; [readback](persistence-readback.json) confirma relaciones. No equivalen a pruebas humanas.
 
 Roboto final se sirvió con los archivos originales descargados vía proxy, temporalmente en localhost4020; el CSS/archivos temporales no son modificación del producto. El build y las capturas iniciales tenían limitaciones de descarga documentadas en EWO-029.
+
+## Reintentos concurrentes de referencias
+
+`node docs/evidence/mtto-sprint-1/verify-reference-concurrency.mjs` reproduce dos GET de recuperación superpuestos en desktop/móvil, sólo fixtures de lectura. `--before` identifica evidencia del código previo: [antes](reference-concurrency-before.json) 2 FAIL; [después](reference-concurrency-after.json) 2 PASS. Cuatro PNG `revision_referencias_concurrentes_*`.

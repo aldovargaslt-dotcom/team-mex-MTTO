@@ -12,3 +12,7 @@ Se revisaron PNG/recapturas y registros finales (99 PASS de estados, 23 PASS com
 Hallazgos del pase inicial corregidos y recapturados antes de este OK. Fallos anteriores de instrumentación permanecen históricos y resueltos por ejecuciones posteriores. El revisor no editó archivos.
 
 **Límites:** revisión experta del núcleo y evidencia técnica local. H12 sigue como propuesta sin firma accesible implementada; causa pública H11 pendiente. Sin aceptación con usuarios, equivalencia de firmas ni autorización de merge/despliegue. Esta transcripción resume el informe final emitido por el revisor en el chat.
+
+## Pase posterior — corrección de reintentos concurrentes
+
+Subagente `/root/ux_auditor`, sólo lectura, confirmó **OK** tras revisar diff de OtLink, script/JSON y cuatro PNG desktop/móvil. Ambos reintentos terminan con enlaces a visitas/unidades correctas, sin referencia cargando indefinidamente: 2 PASS después frente a 2 FAIL antes. Tabla, jerarquía, filtros, shell y presentación móvil preservados; sin nuevos hallazgos visuales. Lecturas sintéticas, sin diagnóstico público H11, aceptación con usuarios ni autorización de merge/despliegue. H12 pendiente.

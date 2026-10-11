@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { api, HttpError } from '@/lib/api';
 import type { VisitaDetalle } from '@/lib/types';
@@ -15,7 +15,9 @@ export function useOtLabels(visitaIds: Array<string | null | undefined>, opts: {
   const key = JSON.stringify([opts.role, opts.userId, idsKey]);
   const [state, setState] = useState<{ key: string; entries: Record<string, OtState> }>({ key: '', entries: {} });
   const [retry, setRetry] = useState<{ id: string; attempt: number; key: string } | null>(null);
+  const retryRequests = useRef(new Map<string, number>());
   useEffect(() => {
+    const requests = retryRequests.current;
     let cancelled = false;
     const ids = !opts.role || !idsKey ? [] : idsKey.split(',');
     setState((current) => ({ key, entries: {
@@ -29,19 +31,25 @@ export function useOtLabels(visitaIds: Array<string | null | undefined>, opts: {
           : error instanceof HttpError && error.status === 403 ? 'forbidden' : 'error' } as OtState),
       ).then((entry) => { if (!cancelled) setState((current) => ({ key, entries: { ...current.entries, [id]: entry } })); });
     }
-    return () => { cancelled = true; };
+    return () => { cancelled = true; requests.clear(); };
   }, [key, idsKey, opts.role, opts.userId]);
   useEffect(() => {
     if (!retry || retry.key !== key || !opts.role) return;
-    let cancelled = false;
     const id = retry.id;
+    const attempt = retry.attempt;
+    retryRequests.current.set(id, attempt);
     setState((current) => ({ key, entries: { ...current.entries, [id]: { status: 'loading' } } }));
     void api<VisitaDetalle>(`/visitas/${id}`, { role: opts.role, userId: opts.userId }).then(
       (visit) => ({ status: 'available', unidadId: visit.unidadId, numeroInterno: visit.unidadNumeroInterno } as OtState),
       (error: unknown) => ({ status: error instanceof HttpError && error.status === 404 ? 'unavailable'
         : error instanceof HttpError && error.status === 403 ? 'forbidden' : 'error' } as OtState),
-    ).then((entry) => { if (!cancelled) setState((current) => ({ key, entries: { ...current.entries, [id]: entry } })); });
-    return () => { cancelled = true; };
+    ).then((entry) => {
+      // A retry of another ID must not cancel this pending reference.
+      // Identity changes/unmount clear the map; a newer retry supersedes only its ID.
+      if (retryRequests.current.get(id) === attempt) {
+        setState((current) => current.key !== key ? current : ({ key, entries: { ...current.entries, [id]: entry } }));
+      }
+    });
   }, [retry, key, opts.role, opts.userId]);
   return { entries: state.key === key ? state.entries : {},
     retry: (id) => setRetry((current) => ({ key, id, attempt: (current?.attempt ?? 0) + 1 })) };

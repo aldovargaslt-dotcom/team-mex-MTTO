@@ -1,0 +1,55 @@
+{
+  "mechanism": "Read-only synthetic fixtures, role picker and actual UI clicks; overlapping GETs with delayed responses, no public API or DB writes.",
+  "checks": [
+    {
+      "name": "AC09 dos reintentos independientes d1440",
+      "status": "FAIL",
+      "links": [
+        "/unidades/review-u2/visitas/review-v2"
+      ],
+      "body": "Inicio\nÓrdenes\nUnidades\nInventario\nSUPERVISOR\nCambiar rol\nRefacciones\nExistencias\nMovimientos\nConsumo\nPor recibir\nCatálogo\nMovimientos\n\nEntradas, salidas de visita y ajustes. Sin saldos inventados.\n\nBuscar\nTodo\nHoy\n7 d\n30 d\nEste mes\nPersonalizado\nTodos\nEntrada\nSalida\nAjuste\nFECHA\tTIPO\tSKU\tCANT.\tCAMBIO\tVISITA\tNOTA\n11/10/2026, 00:00\tSalida\tPRUEBA\t1 pza\t\t\nCargando referencia…\nID: review-v1\n\t—\n11/10/2026, 00:00\tSalida\tPRUEBA\t1 pza\t\t\nOT · PRUEBA-2\n\t—"
+    },
+    {
+      "name": "AC09 dos reintentos independientes m390",
+      "status": "FAIL",
+      "links": [
+        "/unidades/review-u2/visitas/review-v2"
+      ],
+      "body": "Inicio\nÓrdenes\nUnidades\nInventario\nRefacciones\nExistencias\nMovimientos\nConsumo\nPor recibir\nCatálogo\nMovimientos\n\nEntradas, salidas de visita y ajustes. Sin saldos inventados.\n\nBuscar\nTodo\nHoy\n7 d\n30 d\nEste mes\nPersonalizado\nTodos\nEntrada\nSalida\nAjuste\nFECHA\tTIPO\tSKU\tCANT.\tCAMBIO\tVISITA\tNOTA\n11/10/2026, 00:00\tSalida\tPRUEBA\t1 pza\t\t\nCargando referencia…\nID: review-v1\n\t—\n11/10/2026, 00:00\tSalida\tPRUEBA\t1 pza\t\t\nOT · PRUEBA-2\n\t—"
+    }
+  ],
+  "requests": [
+    {
+      "path": "/backend/visitas/review-v1",
+      "status": 503
+    },
+    {
+      "path": "/backend/visitas/review-v2",
+      "status": 503
+    },
+    {
+      "path": "/backend/visitas/review-v1",
+      "status": 200
+    },
+    {
+      "path": "/backend/visitas/review-v2",
+      "status": 200
+    },
+    {
+      "path": "/backend/visitas/review-v1",
+      "status": 503
+    },
+    {
+      "path": "/backend/visitas/review-v2",
+      "status": 503
+    },
+    {
+      "path": "/backend/visitas/review-v1",
+      "status": 200
+    },
+    {
+      "path": "/backend/visitas/review-v2",
+      "status": 200
+    }
+  ]
+}
