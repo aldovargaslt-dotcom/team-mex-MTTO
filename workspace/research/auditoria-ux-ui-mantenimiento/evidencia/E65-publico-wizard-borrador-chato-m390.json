@@ -1,0 +1,205 @@
+{
+  "origin": "https://team-mex-mtto-eight.vercel.app",
+  "path": "/unidades/22e513d8-1556-457d-bed8-594204033607/visitas/9c962bcb-c1ff-4f17-a3b8-0b16a493bc4e",
+  "title": "Team Mex — Mantenimiento",
+  "text": "2\nInicio\nÓrdenes\nUnidades\nInventario\nCHATO NUEVO\nBORRADOR\n\nCorrectivo · 120,000 km · DON MIGUEL · Último km cerrado: 120,000 km\n\nGuardar y salir\n\nPaso 1 de 7 · Datos\n\nDatos\nChofer\nSeleccione un chofer\nBRYAN\nDON MIGUEL\nDON NOE\nJOEL\nJULIO\nRUBEN\nWERO\nKilometraje\nTipo de visita\nSeleccione\nPreventivo\nCorrectivo\nCancelar\nContinuar",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "overflow": false,
+  "controls": [
+    {
+      "tag": "A",
+      "text": "",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/inicio",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "2",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/notificaciones",
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Abrir menú",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Inicio",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/inicio",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Órdenes",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/ordenes",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Unidades",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/unidades",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Inventario",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/inventario",
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Guardar y salir",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "SELECT",
+      "text": "Seleccione un chofer\nBRYAN\nDON MIGUEL\nDON NOE\nJOEL\nJULIO\nRUBEN\nWERO",
+      "type": null,
+      "name": null,
+      "id": "choferId",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "INPUT",
+      "text": "Mínimo 120000",
+      "type": "number",
+      "name": null,
+      "id": "km",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "SELECT",
+      "text": "Seleccione\nPreventivo\nCorrectivo",
+      "type": null,
+      "name": null,
+      "id": "tipo",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Cancelar",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/unidades/22e513d8-1556-457d-bed8-594204033607",
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Continuar",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    }
+  ],
+  "at": "2026-10-11T06:42:59.893Z",
+  "network": [
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/unidades/22e513d8-1556-457d-bed8-594204033607/visitas/9c962bcb-c1ff-4f17-a3b8-0b16a493bc4e",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/notifications/badge",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/visitas/9c962bcb-c1ff-4f17-a3b8-0b16a493bc4e",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/choferes",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/catalogo/trabajos",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/unidades/22e513d8-1556-457d-bed8-594204033607/hub",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/notifications/badge",
+      "status": 200
+    }
+  ],
+  "requests": [
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/unidades/22e513d8-1556-457d-bed8-594204033607/visitas/9c962bcb-c1ff-4f17-a3b8-0b16a493bc4e",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/notifications/badge",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/visitas/9c962bcb-c1ff-4f17-a3b8-0b16a493bc4e",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/choferes",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/catalogo/trabajos",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/unidades/22e513d8-1556-457d-bed8-594204033607/hub",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/notifications/badge",
+      "method": "GET"
+    }
+  ]
+}

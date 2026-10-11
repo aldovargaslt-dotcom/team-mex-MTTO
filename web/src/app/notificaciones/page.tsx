@@ -1,12 +1,14 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { HeartPulse, Package, Truck, Wrench } from 'lucide-react';
 import { RoleGate } from '@/components/RoleGate';
 import { ListFilter } from '@/components/ListFilter';
 import { Button } from '@/components/ui/button';
 import { FormAlert, PageHeader } from '@/components/ui/field';
+import { ReadStatus } from '@/components/ReadStatus';
+import { useReadResource } from '@/lib/use-read-resource';
 import { api, HttpError } from '@/lib/api';
 import { formatHace } from '@/lib/format';
 import { notifyInboxChanged } from '@/lib/inbox';
@@ -31,31 +33,11 @@ function InboxContent() {
   const router = useRouter();
   const { role, userId } = useRole();
   const [filtro, setFiltro] = useState<'unread' | 'all'>('unread');
-  const [items, setItems] = useState<InboxItem[] | null>(null);
+  const read = useReadResource(role ? JSON.stringify([role, userId, filtro]) : null,
+    () => api<InboxItem[]>(`/notifications${filtro === 'all' ? '?filter=all' : ''}`, { role: role!, userId }));
+  const items = read.data;
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
-
-  async function cargar(next = filtro) {
-    const qs = next === 'all' ? '?filter=all' : '';
-    const data = await api<InboxItem[]>(`/notifications${qs}`, {
-      role: role!,
-      userId,
-    });
-    setItems(data);
-  }
-
-  useEffect(() => {
-    if (!role) return;
-    void cargar().catch((err) => {
-      setItems([]);
-      setError(
-        err instanceof HttpError
-          ? err.message
-          : 'No se pudieron cargar las alertas.',
-      );
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [role, userId, filtro]);
 
   async function abrir(item: InboxItem) {
     setError(null);
@@ -88,7 +70,7 @@ function InboxContent() {
         method: 'POST',
       });
       notifyInboxChanged();
-      await cargar();
+      read.retry();
     } catch (err) {
       setError(
         err instanceof HttpError
@@ -127,9 +109,8 @@ function InboxContent() {
         onChange={setFiltro}
       />
       <FormAlert>{error}</FormAlert>
-      {items == null ? (
-        <p className="muted">Cargando alertas…</p>
-      ) : items.length === 0 ? (
+      <ReadStatus loading={read.loading} error={read.error} loadingText="Cargando alertas…" errorText="No se pudieron cargar las alertas." retry={read.retry} />
+      {items == null ? null : items.length === 0 ? (
         <p className="muted">Sin alertas.</p>
       ) : (
         <ul className="inbox-list">

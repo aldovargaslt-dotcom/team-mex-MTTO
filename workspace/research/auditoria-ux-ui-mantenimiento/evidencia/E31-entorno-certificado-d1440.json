@@ -1,0 +1,86 @@
+{
+  "url": "chrome-error://chromewebdata/",
+  "title": "Privacy error",
+  "text": "Your connection is not private\n\nAttackers might be trying to steal your information from team-mex-mtto-eight.vercel.app (for example, passwords, messages, or credit cards). Learn more about this warning\n\nNET::ERR_CERT_AUTHORITY_INVALID\nTurn on enhanced protection to get Chrome's highest level of security\nReload\nAdvanced",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "overflow": false,
+  "font": "\"Noto Sans\", Arial, sans-serif",
+  "controls": [
+    {
+      "tag": "A",
+      "text": "Learn more about this warning",
+      "href": "#",
+      "ariaLabel": null,
+      "role": null,
+      "width": 577.921875,
+      "height": 44,
+      "color": "rgb(88, 88, 88)",
+      "background": "rgba(0, 0, 0, 0)",
+      "fontSize": "15px"
+    },
+    {
+      "tag": "DIV",
+      "text": "NET::ERR_CERT_AUTHORITY_INVALID",
+      "href": null,
+      "ariaLabel": null,
+      "role": "button",
+      "width": 600,
+      "height": 24,
+      "color": "rgb(95, 99, 104)",
+      "background": "rgba(0, 0, 0, 0)",
+      "fontSize": "12px"
+    },
+    {
+      "tag": "A",
+      "text": "Turn on enhanced protection",
+      "href": "#",
+      "ariaLabel": null,
+      "role": null,
+      "width": 204.84375,
+      "height": 20,
+      "color": "rgb(95, 99, 104)",
+      "background": "rgba(0, 0, 0, 0)",
+      "fontSize": "15px"
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Reload",
+      "href": null,
+      "ariaLabel": null,
+      "role": null,
+      "width": 74.28125,
+      "height": 34,
+      "color": "rgb(255, 255, 255)",
+      "background": "rgb(26, 115, 232)",
+      "fontSize": "13.125px",
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Advanced",
+      "href": null,
+      "ariaLabel": null,
+      "role": null,
+      "width": 94.3125,
+      "height": 36,
+      "color": "rgb(95, 99, 104)",
+      "background": "rgb(255, 255, 255)",
+      "fontSize": "13.125px",
+      "disabled": false
+    }
+  ],
+  "at": "2026-10-11T04:52:38.218Z",
+  "network": [
+    {
+      "url": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEgAAABICAMAAABiM0N1AAABAlBMVEUAAADcRTfcRDfdRET/gIDcRjr/ZmbjVTncRDfcRTfcRDfdRDzgSTncRDjeSDvcRTjbRDfbRDjeRzvcRjfbRjjcRTjcRTjcRTfdRTfcRDjdRTjcRTjbRDjbRTjbRTjbRTfcRjjdRDrcRjfbRTjZQzfcRDjZRDfZRzbWQzXXRDXXQzbXQzbWQjXYSDvWQjbbRDfOQDPSQTTUQjXCPDDNPzPJPjLGPTHVQjXMPzPRQTTWQjXLPzPDPDHYQzbAOzDTQTXHPTLIPjK8Oi++Oy/FPTHEPTHPQDTQQDTUQTXBPDDKPjK/OzC9Oi/////PQDPRQDS3OS66OS7TQTTEPDHXQjbMPjMBhLaWAAAAL3RSTlMA4tgPAhYFCcL98B4x9ie1+s49WICbqXNKZY3pjuqcgVdLZnL2qKg9zmXpjfontV8LANsAAAJrSURBVHhe7ZTnduIwFAY3ARIgBAg9vW1v173ROylby/u/yso2Fx3MNaxs9h/zAHM+Sfa8+M/s2LFjx+3tdjwH+/sHWxHVAerb8KSyANnUFkRXwLiK78llgJHJxRalwSMd11OGOeV4nsM9FO0dxhJdw4LrOJ6jYy46PoohqgEHatE9JViiFNWTPIElTpIRRXcQ4C6aJ3EJAS4TkUQXsMJFFE++CCsU8xFEBSAoiHsaQNIQ7yuQCFe3DiHUhftKIlzdKoRSFe0r8sXDAkSoumkIigYaIOkIfeWi56EESFm8r1w0fFIl4epWgBA9qOMpmirCfeWijtoa9WSx6taAELFBRl/vilS3BJRIbRk9/VFTsLrifUXRuNfXLU0y/7m6p0CKxqN+v6lJU/k3eJxu7Os5LWKDHi1tYstKG1zON1X3DGiRMR80Mx3fdCbc1+bQe3o2SJrYXcV0fFMxL9xXiz0987BBtux65qaCeF8lHCR3FabBTQ3xvk4M1yN5B/Mw2+urew8hTP1BM38Qnu5evK8gMw+7IcfH9E3ZlEBfMSO//Kf35+Cm6ua+rhbSYDeEa9CUyW3qK1HIjj5DBz8dWd0bWCd6Ult/uMPEr+BmbV/JHrVG/a9MsEybV5fsK50R3frmBFXtCtVXmt73H4PhQ4t9k9rkJ55tYXwZrO4rCEUfPHfUEcuaZC/umw97TfaVpslu2tCb2lRWnBlKFtf+huwrjaa6Pxv7RfgW7nubJPtKI/X0puQO4k/Pfe/ovtLY7KbxVwve0/sE3VeaLosIbkEDvt8Hoq/hKGwQYvoq5OMnoq/hLAbgc/FVn33PX7pAfE5QHR6fAAAAAElFTkSuQmCC",
+      "status": 200
+    },
+    {
+      "url": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0iIzY5Njk2OSI+PHBhdGggZD0iTTkgMjFjMCAuNTUuNDUgMSAxIDFoNGMuNTUgMCAxLS40NSAxLTF2LTFIOXYxem0zLTE5QzguMTQgMiA1IDUuMTQgNSA5YzAgMi4zOCAxLjE5IDQuNDcgMyA1Ljc0VjE3YzAgLjU1LjQ1IDEgMSAxaDZjLjU1IDAgMS0uNDUgMS0xdi0yLjI2YzEuODEtMS4yNyAzLTMuMzYgMy01Ljc0IDAtMy44Ni0zLjE0LTctNy03em0yLjg1IDExLjEtLjg1LjZWMTZoLTR2LTIuM2wtLjg1LS42QTQuOTk3IDQuOTk3IDAgMCAxIDcgOWMwLTIuNzYgMi4yNC01IDUtNXM1IDIuMjQgNSA1YzAgMS42My0uOCAzLjE2LTIuMTUgNC4xeiIvPjwvc3ZnPg==",
+      "status": 200
+    }
+  ]
+}

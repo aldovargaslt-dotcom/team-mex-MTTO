@@ -12,7 +12,7 @@ Stack: CSS vars + variantes shadcn (`Button`). Dominio / Inventario apply / Ando
 
 | Token | Fill | Texto | Borde | Uso |
 |-------|------|-------|-------|-----|
-| Primary | `#EA7515` | blanco | — | **un** CTA sólido por vista (Registrar entrada, Nuevo ítem) |
+| Primary | `#EA7515` | navy `#24284D` | — | **un** CTA sólido por vista (Registrar entrada, Nuevo ítem) |
 | `btn-entrada` (opcional) | `#FFF7ED` | `#C2410C` | `#FDBA74` | fila Entrada (tinte naranja suave, no sólido) |
 | `btn-quiet` | `#EEF2F6` | `#334155` | `#CBD5E1` | Marcar todas leídas |
 | `btn-danger-soft` | `#FDE2E1` | `#8B1E1E` | `#F5B5B3` | Inactivar |
@@ -50,3 +50,5 @@ Mobile card-row / no-clip @390 (identidad primero, acciones debajo) es **follow-
 ## Don’t
 
 Dos naranjas sólidos; mint/ámbar/sky en verbos; neón / gradientes; blanco sobre pastel de badge usado como botón; cambiar layout de tablas (card-row) en este PR; tocar BrandPlate/logo o dominio Andon.
+
+Actualización EWO-029 aprobada (2026-10-11): CTA navy sobre naranja, hover `#F28A32`, foco navy con separación blanca. Resuelve contraste sin cambiar jerarquía, variantes ni marca.

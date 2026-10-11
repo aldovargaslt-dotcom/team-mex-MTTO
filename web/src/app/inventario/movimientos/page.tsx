@@ -6,7 +6,7 @@ import { ColumnDef } from '@tanstack/react-table';
 import { ListFilter } from '@/components/ListFilter';
 import { OtLink, useOtLabels } from '@/components/OtLink';
 import { DataTable } from '@/components/ui/data-table';
-import { Field, FormAlert, PageHeader } from '@/components/ui/field';
+import { Field, PageHeader } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import {
   Sheet,
@@ -15,7 +15,9 @@ import {
   SheetHeader,
   SheetTitle,
 } from '@/components/ui/sheet';
-import { api, HttpError } from '@/lib/api';
+import { ReadStatus } from '@/components/ReadStatus';
+import { useReadResource } from '@/lib/use-read-resource';
+import { api } from '@/lib/api';
 import { etiquetaMovimiento, etiquetaUom, formatFecha } from '@/lib/format';
 import { useRole } from '@/lib/role';
 import type { ItemInventario, Movimiento, TipoMovimiento } from '@/lib/types';
@@ -114,9 +116,15 @@ function MovimientosContent() {
   const item = searchParams.get('item');
   const tipo = parseTipo(searchParams.get('tipo'));
   const periodo = inferPeriodo(from, to);
-  const [rows, setRows] = useState<Movimiento[]>([]);
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
+  const read = useReadResource(role ? JSON.stringify([role, userId, item, tipo, from, to]) : null, () => {
+    const params = new URLSearchParams();
+    if (item && UUID_RE.test(item)) params.set('itemId', item);
+    if (tipo) params.set('tipo', tipo);
+    if (from) params.set('from', from);
+    if (to) params.set('to', to);
+    return api<Movimiento[]>(`/inventario/movimientos?${params}`, { role: role!, userId });
+  });
+  const rows = useMemo(() => read.data ?? [], [read.data]);
   const [detalle, setDetalle] = useState<Movimiento | null>(null);
   const [itemLabel, setItemLabel] = useState<string | null>(null);
   const labels = useOtLabels(
@@ -133,37 +141,6 @@ function MovimientosContent() {
     const qs = params.toString();
     router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
   }
-
-  useEffect(() => {
-    if (!role) return;
-    const params = new URLSearchParams();
-    if (item && UUID_RE.test(item)) params.set('itemId', item);
-    if (tipo) params.set('tipo', tipo);
-    if (from) params.set('from', from);
-    if (to) params.set('to', to);
-    const qs = params.toString();
-    setLoading(true);
-    void (async () => {
-      try {
-        setRows(
-          await api<Movimiento[]>(
-            `/inventario/movimientos${qs ? `?${qs}` : ''}`,
-            { role, userId },
-          ),
-        );
-        setError(null);
-      } catch (err) {
-        setRows([]);
-        setError(
-          err instanceof HttpError
-            ? err.message
-            : 'No se pudieron cargar los movimientos.',
-        );
-      } finally {
-        setLoading(false);
-      }
-    })();
-  }, [role, userId, item, tipo, from, to]);
 
   useEffect(() => {
     if (!role || !item || !UUID_RE.test(item)) {
@@ -355,10 +332,8 @@ function MovimientosContent() {
         </div>
       ) : null}
 
-      <FormAlert>{error}</FormAlert>
-      {loading && rows.length === 0 && !error ? (
-        <p className="muted">Cargando movimientos…</p>
-      ) : (
+      <ReadStatus loading={read.loading} error={read.error} loadingText="Cargando movimientos…" errorText="No se pudieron cargar los movimientos." retry={read.retry} />
+      {read.data === null ? null : (
         <DataTable
           columns={columns}
           data={filtered}

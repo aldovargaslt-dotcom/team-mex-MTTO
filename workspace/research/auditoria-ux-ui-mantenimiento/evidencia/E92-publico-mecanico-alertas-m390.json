@@ -1,0 +1,64 @@
+{
+  "origin": "https://team-mex-mtto-eight.vercel.app",
+  "path": "/notificaciones",
+  "title": "Team Mex — Mantenimiento",
+  "text": "2\nEsta vista es para logística y administración.\nVolver a Mi trabajo",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "overflow": false,
+  "controls": [
+    {
+      "tag": "A",
+      "text": "",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/mi-trabajo",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "2",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/notificaciones",
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Abrir menú",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Volver a Mi trabajo",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/mi-trabajo",
+      "disabled": false
+    }
+  ],
+  "at": "2026-10-11T06:50:01.116Z",
+  "network": [
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/notifications/badge",
+      "status": 200
+    }
+  ],
+  "requests": [
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/notifications/badge",
+      "method": "GET"
+    }
+  ]
+}

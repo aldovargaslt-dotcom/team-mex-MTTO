@@ -1,0 +1,182 @@
+{
+  "url": "http://127.0.0.1:3000/ordenes",
+  "title": "Team Mex — Mantenimiento",
+  "text": "Inicio\nÓrdenes\nUnidades\nInventario\nÓrdenes\n+ Nueva orden\n\nNo se pudo conectar con el servicio. Intenta de nuevo.\n\nBorradores\nCerradas\nNo hay órdenes en borrador.\n\nCrea una orden aquí para comenzar la captura.",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "overflow": false,
+  "font": "Roboto, \"Roboto Fallback\", ui-sans-serif, system-ui, sans-serif",
+  "controls": [
+    {
+      "tag": "A",
+      "text": null,
+      "href": "/inicio",
+      "ariaLabel": null,
+      "role": null,
+      "width": 67.046875,
+      "height": 36,
+      "color": "rgb(247, 247, 251)",
+      "background": "rgba(0, 0, 0, 0)",
+      "fontSize": "14px"
+    },
+    {
+      "tag": "A",
+      "text": "Alertas",
+      "href": "/notificaciones",
+      "ariaLabel": "Alertas",
+      "role": null,
+      "width": 44,
+      "height": 44,
+      "color": "rgb(247, 247, 251)",
+      "background": "rgba(0, 0, 0, 0)",
+      "fontSize": "14px"
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Abrir menú",
+      "href": null,
+      "ariaLabel": "Abrir menú",
+      "role": null,
+      "width": 44,
+      "height": 44,
+      "color": "oklab(0.999994 0.0000455677 0.0000200868 / 0.7)",
+      "background": "rgba(0, 0, 0, 0)",
+      "fontSize": "12px",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Inicio",
+      "href": "/inicio",
+      "ariaLabel": null,
+      "role": null,
+      "width": 97.5,
+      "height": 58,
+      "color": "rgb(92, 95, 115)",
+      "background": "rgba(0, 0, 0, 0)",
+      "fontSize": "11px"
+    },
+    {
+      "tag": "A",
+      "text": "Órdenes",
+      "href": "/ordenes",
+      "ariaLabel": null,
+      "role": null,
+      "width": 97.5,
+      "height": 58,
+      "color": "rgb(36, 40, 77)",
+      "background": "rgba(0, 0, 0, 0)",
+      "fontSize": "11px"
+    },
+    {
+      "tag": "A",
+      "text": "Unidades",
+      "href": "/unidades",
+      "ariaLabel": null,
+      "role": null,
+      "width": 97.5,
+      "height": 58,
+      "color": "rgb(92, 95, 115)",
+      "background": "rgba(0, 0, 0, 0)",
+      "fontSize": "11px"
+    },
+    {
+      "tag": "A",
+      "text": "Inventario",
+      "href": "/inventario",
+      "ariaLabel": null,
+      "role": null,
+      "width": 97.5,
+      "height": 58,
+      "color": "rgb(92, 95, 115)",
+      "background": "rgba(0, 0, 0, 0)",
+      "fontSize": "11px"
+    },
+    {
+      "tag": "INPUT",
+      "text": "Buscar órdenes",
+      "href": null,
+      "ariaLabel": "Buscar órdenes",
+      "role": null,
+      "width": 358,
+      "height": 44,
+      "color": "rgb(28, 29, 38)",
+      "background": "rgb(255, 255, 255)",
+      "fontSize": "14px",
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "+ Nueva orden",
+      "href": null,
+      "ariaLabel": null,
+      "role": null,
+      "width": 124.296875,
+      "height": 44,
+      "color": "rgb(255, 255, 255)",
+      "background": "rgb(234, 117, 21)",
+      "fontSize": "14px",
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Borradores",
+      "href": null,
+      "ariaLabel": null,
+      "role": "tab",
+      "width": 155,
+      "height": 48,
+      "color": "rgb(37, 99, 235)",
+      "background": "rgba(0, 0, 0, 0)",
+      "fontSize": "15px",
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Cerradas",
+      "href": null,
+      "ariaLabel": null,
+      "role": "tab",
+      "width": 155,
+      "height": 48,
+      "color": "rgb(92, 99, 120)",
+      "background": "rgba(0, 0, 0, 0)",
+      "fontSize": "15px",
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Filtros",
+      "href": null,
+      "ariaLabel": "Filtros",
+      "role": null,
+      "width": 48,
+      "height": 48,
+      "color": "rgb(92, 99, 120)",
+      "background": "rgba(0, 0, 0, 0)",
+      "fontSize": "14px",
+      "disabled": false
+    }
+  ],
+  "at": "2026-10-11T04:52:54.267Z",
+  "network": [
+    {
+      "url": "http://127.0.0.1:3000/ordenes?_rsc=WkmJZQfShuZ4i0ES",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:3000/backend/notifications/badge",
+      "status": 503
+    },
+    {
+      "url": "http://127.0.0.1:3000/backend/unidades",
+      "status": 503
+    },
+    {
+      "url": "http://127.0.0.1:3000/backend/unidades",
+      "status": 503
+    }
+  ]
+}

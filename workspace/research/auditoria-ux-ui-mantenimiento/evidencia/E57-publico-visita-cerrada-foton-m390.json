@@ -1,0 +1,140 @@
+{
+  "origin": "https://team-mex-mtto-eight.vercel.app",
+  "path": "/unidades/59f71d91-aa7d-443f-bcd6-751dd6bf0d5a/visitas/33349d26-53b6-435f-858a-84dab8c961f7",
+  "title": "Team Mex — Mantenimiento",
+  "text": "2\nInicio\nÓrdenes\nUnidades\nInventario\nFOTON\nCERRADA\n\nPreventivo · 100 km · WERO · 12/06/2026, 16:23\n\nVolver al hub\nDatos\nChofer\nWERO\nKilometraje\n100 km\nTipo\nPreventivo\nTrabajos\nA Afinación / filtros de aceite\nObservaciones\n\nSemilla de mantenimiento\n\nFotos\n\nSin fotos.\n\nPiezas\n\nSin piezas.\n\nFirmas\n\nChofer\n\nJefe de mecánicos / taller",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "overflow": false,
+  "controls": [
+    {
+      "tag": "A",
+      "text": "",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/inicio",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "2",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/notificaciones",
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Abrir menú",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Inicio",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/inicio",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Órdenes",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/ordenes",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Unidades",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/unidades",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Inventario",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/inventario",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Volver al hub",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/unidades/59f71d91-aa7d-443f-bcd6-751dd6bf0d5a",
+      "disabled": false
+    }
+  ],
+  "at": "2026-10-11T06:41:23.932Z",
+  "network": [
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/unidades/59f71d91-aa7d-443f-bcd6-751dd6bf0d5a/visitas/33349d26-53b6-435f-858a-84dab8c961f7",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/_next/static/chunks/27ac42a854a91b5c.js",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/notifications/badge",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/visitas/33349d26-53b6-435f-858a-84dab8c961f7",
+      "status": 200
+    },
+    {
+      "origin": "null",
+      "path": "image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==",
+      "status": 200
+    }
+  ],
+  "requests": [
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/unidades/59f71d91-aa7d-443f-bcd6-751dd6bf0d5a/visitas/33349d26-53b6-435f-858a-84dab8c961f7",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/_next/static/chunks/27ac42a854a91b5c.js",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/notifications/badge",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/visitas/33349d26-53b6-435f-858a-84dab8c961f7",
+      "method": "GET"
+    },
+    {
+      "origin": "null",
+      "path": "image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==",
+      "method": "GET"
+    }
+  ]
+}

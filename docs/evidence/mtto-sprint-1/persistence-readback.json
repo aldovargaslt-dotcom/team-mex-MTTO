@@ -1,0 +1,16 @@
+{
+  "environment": "local dedicated native PostgreSQL",
+  "readOnly": true,
+  "result": {
+    "id": "3b13402d-aeac-4d15-958f-e1bc131a07cd",
+    "estado": "CERRADO",
+    "unidad_id": "9d18b9b9-b334-4143-8ac3-9abaf7f96984",
+    "trabajos": "1",
+    "piezas": "2",
+    "fotos": "1",
+    "firmas": "2",
+    "salidas": "1",
+    "comprobantes": "1"
+  },
+  "status": "PASS"
+}

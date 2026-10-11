@@ -1,0 +1,773 @@
+{
+  "at": "2026-10-11T04:50:46.474Z",
+  "database": "local team_mex_mtto",
+  "mode": "BEGIN READ ONLY / ROLLBACK",
+  "queries": {
+    "tables": "select table_schema,table_name from information_schema.tables where table_schema not in ('information_schema','pg_catalog') order by 1,2",
+    "columns": "select table_schema,table_name,column_name,data_type from information_schema.columns where (table_schema='public' and table_name in ('visitas','unidades','visita_trabajos','visita_piezas','visita_fotos','visita_firmas','outbox_events')) or (table_schema='inventario' and table_name in ('movimientos','pendientes_comprobante','stock')) order by 1,2,ordinal_position",
+    "visits": "select id,unidad_id,estado,km,tipo,observaciones,cerrado_at,created_at,updated_at from public.visitas",
+    "units": "select id,numero_interno,placas,estado,tipo_id from public.unidades order by numero_interno",
+    "works": "select visita_id,categoria,item from public.visita_trabajos",
+    "pieces": "select visita_id,item_id,qty,origen from public.visita_piezas",
+    "photos": "select visita_id,count(*)::int as count from public.visita_fotos group by visita_id",
+    "signatures": "select visita_id,tipo,length(data_url)::int as bytes from public.visita_firmas",
+    "outbox": "select id,type,payload->>'visitaId' as visita_id,payload->>'unidadId' as unidad_id,payload->>'km' as km,payload->'consumos' as consumos,processed_at,created_at from public.outbox_events",
+    "movements": "select tipo,qty,delta,visita_id,item_id,created_at from inventario.movimientos",
+    "pending": "select visita_id,item_id,qty,estado,(ticket_data_url is not null) as has_evidence from inventario.pendientes_comprobante",
+    "stock": "select item_id,qty,min_qty,updated_at from inventario.stock"
+  },
+  "results": {
+    "tables": [
+      {
+        "table_schema": "alert_catalog",
+        "table_name": "tipo"
+      },
+      {
+        "table_schema": "alertas",
+        "table_name": "regla_flota_sin_regreso"
+      },
+      {
+        "table_schema": "alertas",
+        "table_name": "umbral_unidad"
+      },
+      {
+        "table_schema": "andon",
+        "table_name": "avisos"
+      },
+      {
+        "table_schema": "andon",
+        "table_name": "eventos_procesados"
+      },
+      {
+        "table_schema": "andon",
+        "table_name": "ultima_visita_cerrada"
+      },
+      {
+        "table_schema": "andon",
+        "table_name": "umbrales"
+      },
+      {
+        "table_schema": "andon",
+        "table_name": "whatsapp_salidas"
+      },
+      {
+        "table_schema": "flota",
+        "table_name": "movimiento_firmas"
+      },
+      {
+        "table_schema": "flota",
+        "table_name": "movimientos"
+      },
+      {
+        "table_schema": "flota",
+        "table_name": "sitios"
+      },
+      {
+        "table_schema": "flota",
+        "table_name": "unidad_operativa"
+      },
+      {
+        "table_schema": "inventario",
+        "table_name": "compatibilidades"
+      },
+      {
+        "table_schema": "inventario",
+        "table_name": "familias"
+      },
+      {
+        "table_schema": "inventario",
+        "table_name": "item_proveedores"
+      },
+      {
+        "table_schema": "inventario",
+        "table_name": "items"
+      },
+      {
+        "table_schema": "inventario",
+        "table_name": "movimientos"
+      },
+      {
+        "table_schema": "inventario",
+        "table_name": "pendientes_comprobante"
+      },
+      {
+        "table_schema": "inventario",
+        "table_name": "proveedores"
+      },
+      {
+        "table_schema": "inventario",
+        "table_name": "stock"
+      },
+      {
+        "table_schema": "notifications",
+        "table_name": "inbox_item"
+      },
+      {
+        "table_schema": "notifications",
+        "table_name": "inbox_read"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "choferes"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "outbox_events"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "tipos_vehiculo"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "unidades"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "visita_firmas"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "visita_fotos"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "visita_piezas"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "visita_trabajos"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "visitas"
+      },
+      {
+        "table_schema": "salud",
+        "table_name": "health_alert"
+      },
+      {
+        "table_schema": "salud",
+        "table_name": "health_config"
+      },
+      {
+        "table_schema": "salud",
+        "table_name": "health_snapshot"
+      }
+    ],
+    "columns": [
+      {
+        "table_schema": "inventario",
+        "table_name": "movimientos",
+        "column_name": "id",
+        "data_type": "uuid"
+      },
+      {
+        "table_schema": "inventario",
+        "table_name": "movimientos",
+        "column_name": "tipo",
+        "data_type": "USER-DEFINED"
+      },
+      {
+        "table_schema": "inventario",
+        "table_name": "movimientos",
+        "column_name": "qty",
+        "data_type": "integer"
+      },
+      {
+        "table_schema": "inventario",
+        "table_name": "movimientos",
+        "column_name": "delta",
+        "data_type": "integer"
+      },
+      {
+        "table_schema": "inventario",
+        "table_name": "movimientos",
+        "column_name": "visita_id",
+        "data_type": "uuid"
+      },
+      {
+        "table_schema": "inventario",
+        "table_name": "movimientos",
+        "column_name": "nota",
+        "data_type": "text"
+      },
+      {
+        "table_schema": "inventario",
+        "table_name": "movimientos",
+        "column_name": "created_by",
+        "data_type": "character varying"
+      },
+      {
+        "table_schema": "inventario",
+        "table_name": "movimientos",
+        "column_name": "created_at",
+        "data_type": "timestamp without time zone"
+      },
+      {
+        "table_schema": "inventario",
+        "table_name": "movimientos",
+        "column_name": "item_id",
+        "data_type": "uuid"
+      },
+      {
+        "table_schema": "inventario",
+        "table_name": "pendientes_comprobante",
+        "column_name": "id",
+        "data_type": "uuid"
+      },
+      {
+        "table_schema": "inventario",
+        "table_name": "pendientes_comprobante",
+        "column_name": "visita_id",
+        "data_type": "uuid"
+      },
+      {
+        "table_schema": "inventario",
+        "table_name": "pendientes_comprobante",
+        "column_name": "qty",
+        "data_type": "integer"
+      },
+      {
+        "table_schema": "inventario",
+        "table_name": "pendientes_comprobante",
+        "column_name": "estado",
+        "data_type": "USER-DEFINED"
+      },
+      {
+        "table_schema": "inventario",
+        "table_name": "pendientes_comprobante",
+        "column_name": "ticket_data_url",
+        "data_type": "text"
+      },
+      {
+        "table_schema": "inventario",
+        "table_name": "pendientes_comprobante",
+        "column_name": "created_at",
+        "data_type": "timestamp without time zone"
+      },
+      {
+        "table_schema": "inventario",
+        "table_name": "pendientes_comprobante",
+        "column_name": "item_id",
+        "data_type": "uuid"
+      },
+      {
+        "table_schema": "inventario",
+        "table_name": "stock",
+        "column_name": "item_id",
+        "data_type": "uuid"
+      },
+      {
+        "table_schema": "inventario",
+        "table_name": "stock",
+        "column_name": "qty",
+        "data_type": "integer"
+      },
+      {
+        "table_schema": "inventario",
+        "table_name": "stock",
+        "column_name": "min_qty",
+        "data_type": "integer"
+      },
+      {
+        "table_schema": "inventario",
+        "table_name": "stock",
+        "column_name": "updated_at",
+        "data_type": "timestamp without time zone"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "outbox_events",
+        "column_name": "id",
+        "data_type": "uuid"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "outbox_events",
+        "column_name": "type",
+        "data_type": "character varying"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "outbox_events",
+        "column_name": "payload",
+        "data_type": "jsonb"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "outbox_events",
+        "column_name": "processed_at",
+        "data_type": "timestamp with time zone"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "outbox_events",
+        "column_name": "created_at",
+        "data_type": "timestamp without time zone"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "unidades",
+        "column_name": "id",
+        "data_type": "uuid"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "unidades",
+        "column_name": "numero_interno",
+        "data_type": "character varying"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "unidades",
+        "column_name": "placas",
+        "data_type": "character varying"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "unidades",
+        "column_name": "vin",
+        "data_type": "character varying"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "unidades",
+        "column_name": "estado",
+        "data_type": "USER-DEFINED"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "unidades",
+        "column_name": "motivo_inactivacion",
+        "data_type": "character varying"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "unidades",
+        "column_name": "chofer_id",
+        "data_type": "uuid"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "unidades",
+        "column_name": "ambito",
+        "data_type": "character varying"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "unidades",
+        "column_name": "destino",
+        "data_type": "character varying"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "unidades",
+        "column_name": "ops_estado",
+        "data_type": "character varying"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "unidades",
+        "column_name": "salida_at",
+        "data_type": "timestamp with time zone"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "unidades",
+        "column_name": "marca_modelo",
+        "data_type": "character varying"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "unidades",
+        "column_name": "anio",
+        "data_type": "integer"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "unidades",
+        "column_name": "foto_data_url",
+        "data_type": "text"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "unidades",
+        "column_name": "created_at",
+        "data_type": "timestamp without time zone"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "unidades",
+        "column_name": "updated_at",
+        "data_type": "timestamp without time zone"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "unidades",
+        "column_name": "tipo_id",
+        "data_type": "uuid"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "visita_firmas",
+        "column_name": "id",
+        "data_type": "uuid"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "visita_firmas",
+        "column_name": "tipo",
+        "data_type": "USER-DEFINED"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "visita_firmas",
+        "column_name": "data_url",
+        "data_type": "text"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "visita_firmas",
+        "column_name": "created_at",
+        "data_type": "timestamp without time zone"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "visita_firmas",
+        "column_name": "visita_id",
+        "data_type": "uuid"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "visita_fotos",
+        "column_name": "id",
+        "data_type": "uuid"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "visita_fotos",
+        "column_name": "data_url",
+        "data_type": "text"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "visita_fotos",
+        "column_name": "created_at",
+        "data_type": "timestamp without time zone"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "visita_fotos",
+        "column_name": "visita_id",
+        "data_type": "uuid"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "visita_piezas",
+        "column_name": "id",
+        "data_type": "uuid"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "visita_piezas",
+        "column_name": "item_id",
+        "data_type": "uuid"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "visita_piezas",
+        "column_name": "qty",
+        "data_type": "integer"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "visita_piezas",
+        "column_name": "origen",
+        "data_type": "USER-DEFINED"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "visita_piezas",
+        "column_name": "visita_id",
+        "data_type": "uuid"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "visita_trabajos",
+        "column_name": "id",
+        "data_type": "uuid"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "visita_trabajos",
+        "column_name": "categoria",
+        "data_type": "USER-DEFINED"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "visita_trabajos",
+        "column_name": "item",
+        "data_type": "character varying"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "visita_trabajos",
+        "column_name": "visita_id",
+        "data_type": "uuid"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "visitas",
+        "column_name": "id",
+        "data_type": "uuid"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "visitas",
+        "column_name": "estado",
+        "data_type": "USER-DEFINED"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "visitas",
+        "column_name": "km",
+        "data_type": "integer"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "visitas",
+        "column_name": "tipo",
+        "data_type": "USER-DEFINED"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "visitas",
+        "column_name": "observaciones",
+        "data_type": "text"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "visitas",
+        "column_name": "created_by",
+        "data_type": "character varying"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "visitas",
+        "column_name": "cerrado_at",
+        "data_type": "timestamp with time zone"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "visitas",
+        "column_name": "created_at",
+        "data_type": "timestamp without time zone"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "visitas",
+        "column_name": "updated_at",
+        "data_type": "timestamp without time zone"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "visitas",
+        "column_name": "unidad_id",
+        "data_type": "uuid"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "visitas",
+        "column_name": "chofer_id",
+        "data_type": "uuid"
+      }
+    ],
+    "visits": [
+      {
+        "id": "df558b27-2b4b-4598-b412-3e71c113082a",
+        "unidad_id": "bc943ec5-e0f6-49a4-8b79-5e4cd56aaaa5",
+        "estado": "CERRADO",
+        "km": 100,
+        "tipo": "PREDICTIVO",
+        "observaciones": "Semilla de mantenimiento",
+        "cerrado_at": "2026-06-03T14:20:50.761Z",
+        "created_at": "2026-10-01T14:20:50.656Z",
+        "updated_at": "2026-10-01T14:20:50.762Z"
+      }
+    ],
+    "units": [
+      {
+        "id": "6dc86c11-a0aa-475c-a008-8d4f5afba9d3",
+        "numero_interno": "CHATO NUEVO",
+        "placas": "WR2023C",
+        "estado": "ACTIVA",
+        "tipo_id": "a414c1e3-2319-4094-bc07-2d8cc85e5200"
+      },
+      {
+        "id": "fcd93110-3c16-471b-ac2e-75ea49cf4e4d",
+        "numero_interno": "DUCATO 2021",
+        "placas": "VU2626C",
+        "estado": "ACTIVA",
+        "tipo_id": "12c42945-0cc0-4d2a-94cb-8ad0aaaeaefe"
+      },
+      {
+        "id": "bd0788c9-5d63-409c-bc4d-100e69e445f1",
+        "numero_interno": "DUCATO 2023",
+        "placas": "VU2627C",
+        "estado": "ACTIVA",
+        "tipo_id": "12c42945-0cc0-4d2a-94cb-8ad0aaaeaefe"
+      },
+      {
+        "id": "3662acf7-aaab-490f-a00c-73300e9b7b53",
+        "numero_interno": "FORD 2017",
+        "placas": "VU2624C",
+        "estado": "ACTIVA",
+        "tipo_id": "a414c1e3-2319-4094-bc07-2d8cc85e5200"
+      },
+      {
+        "id": "bc943ec5-e0f6-49a4-8b79-5e4cd56aaaa5",
+        "numero_interno": "FOTON",
+        "placas": "VU2625C",
+        "estado": "ACTIVA",
+        "tipo_id": "32268efd-9904-4e0a-8a9f-07565bcf837c"
+      },
+      {
+        "id": "a9db2969-0ce8-48ef-af91-4e01327a0005",
+        "numero_interno": "NISSAN CERRADA",
+        "placas": "VU2630C",
+        "estado": "ACTIVA",
+        "tipo_id": "12c42945-0cc0-4d2a-94cb-8ad0aaaeaefe"
+      },
+      {
+        "id": "0cd44986-9ba2-4b6b-86ee-24143e1a9936",
+        "numero_interno": "NISSAN REDILAS",
+        "placas": "VU2632C",
+        "estado": "ACTIVA",
+        "tipo_id": "32268efd-9904-4e0a-8a9f-07565bcf837c"
+      },
+      {
+        "id": "6988f1c5-5594-48a1-95fc-5e3ab4c62dfc",
+        "numero_interno": "RAM CODISA",
+        "placas": "VU2622C",
+        "estado": "ACTIVA",
+        "tipo_id": "a414c1e3-2319-4094-bc07-2d8cc85e5200"
+      },
+      {
+        "id": "695d8cb6-f120-414e-8695-efed285ff067",
+        "numero_interno": "RAM FORANEO",
+        "placas": "63AL5K",
+        "estado": "ACTIVA",
+        "tipo_id": "a414c1e3-2319-4094-bc07-2d8cc85e5200"
+      },
+      {
+        "id": "97833f8b-a301-4116-8983-b8452c0f3e2b",
+        "numero_interno": "TOYOTA 2017",
+        "placas": "VU2628C",
+        "estado": "ACTIVA",
+        "tipo_id": "12c42945-0cc0-4d2a-94cb-8ad0aaaeaefe"
+      },
+      {
+        "id": "b6bad19a-feb2-4461-8364-92a8513d6cc9",
+        "numero_interno": "TRANSIT 2023",
+        "placas": "WH9236C",
+        "estado": "ACTIVA",
+        "tipo_id": "12c42945-0cc0-4d2a-94cb-8ad0aaaeaefe"
+      },
+      {
+        "id": "ca04a44c-cc9b-45fe-9adc-61f2e7795c38",
+        "numero_interno": "URVAN",
+        "placas": "VU2629C",
+        "estado": "ACTIVA",
+        "tipo_id": "32268efd-9904-4e0a-8a9f-07565bcf837c"
+      },
+      {
+        "id": "a6963042-7780-4aa4-bbf9-ce51d178c23a",
+        "numero_interno": "URVAN 2018",
+        "placas": "VU2634C",
+        "estado": "ACTIVA",
+        "tipo_id": "12c42945-0cc0-4d2a-94cb-8ad0aaaeaefe"
+      }
+    ],
+    "works": [
+      {
+        "visita_id": "df558b27-2b4b-4598-b412-3e71c113082a",
+        "categoria": "A",
+        "item": "Afinación / filtros de aceite"
+      }
+    ],
+    "pieces": [],
+    "photos": [],
+    "signatures": [
+      {
+        "visita_id": "df558b27-2b4b-4598-b412-3e71c113082a",
+        "tipo": "CHOFER",
+        "bytes": 118
+      },
+      {
+        "visita_id": "df558b27-2b4b-4598-b412-3e71c113082a",
+        "tipo": "JEFE",
+        "bytes": 118
+      }
+    ],
+    "outbox": [
+      {
+        "id": "0e02b3fc-3e2e-44b3-9882-318e50f68125",
+        "type": "VisitaCerrada",
+        "visita_id": "df558b27-2b4b-4598-b412-3e71c113082a",
+        "unidad_id": "bc943ec5-e0f6-49a4-8b79-5e4cd56aaaa5",
+        "km": "100",
+        "consumos": [],
+        "processed_at": "2026-10-01T14:20:50.744Z",
+        "created_at": "2026-10-01T14:20:50.689Z"
+      }
+    ],
+    "movements": [
+      {
+        "tipo": "ENTRADA",
+        "qty": 10,
+        "delta": 10,
+        "visita_id": null,
+        "item_id": "92c78772-9c3b-427f-83be-a9cc243568e5",
+        "created_at": "2026-10-01T14:20:50.528Z"
+      },
+      {
+        "tipo": "ENTRADA",
+        "qty": 2,
+        "delta": 2,
+        "visita_id": null,
+        "item_id": "2aee4020-83c7-4b9c-b698-2661f6bab997",
+        "created_at": "2026-10-01T14:20:50.575Z"
+      },
+      {
+        "tipo": "ENTRADA",
+        "qty": 5,
+        "delta": 5,
+        "visita_id": null,
+        "item_id": "94fd57c8-e997-429a-bc9a-94378bb4144f",
+        "created_at": "2026-10-01T14:20:50.619Z"
+      }
+    ],
+    "pending": [],
+    "stock": [
+      {
+        "item_id": "92c78772-9c3b-427f-83be-a9cc243568e5",
+        "qty": 10,
+        "min_qty": null,
+        "updated_at": "2026-10-01T14:20:50.528Z"
+      },
+      {
+        "item_id": "2aee4020-83c7-4b9c-b698-2661f6bab997",
+        "qty": 2,
+        "min_qty": 5,
+        "updated_at": "2026-10-01T14:20:50.586Z"
+      },
+      {
+        "item_id": "94fd57c8-e997-429a-bc9a-94378bb4144f",
+        "qty": 5,
+        "min_qty": null,
+        "updated_at": "2026-10-01T14:20:50.619Z"
+      }
+    ]
+  }
+}

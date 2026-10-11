@@ -1,12 +1,14 @@
 'use client';
 
-import { Suspense, useEffect, useMemo, useState } from 'react';
+import { Suspense, useMemo } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { ColumnDef } from '@tanstack/react-table';
 import { ListFilter } from '@/components/ListFilter';
 import { DataTable } from '@/components/ui/data-table';
-import { FormAlert, PageHeader } from '@/components/ui/field';
-import { api, HttpError } from '@/lib/api';
+import { PageHeader } from '@/components/ui/field';
+import { ReadStatus } from '@/components/ReadStatus';
+import { useReadResource } from '@/lib/use-read-resource';
+import { api } from '@/lib/api';
 import {
   agregarConsumo,
   datesForPeriodoConsumo,
@@ -34,11 +36,13 @@ function ConsumoContent() {
   const searchParams = useSearchParams();
   const periodo = parsePeriodoConsumo(searchParams.get('periodo'));
   const rango = useMemo(() => datesForPeriodoConsumo(periodo), [periodo]);
-  const [movimientos, setMovimientos] = useState<Movimiento[]>([]);
-  const [pendientes, setPendientes] = useState<PendienteComprobante[]>([]);
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
-
+  const params = new URLSearchParams({ from: rango.from, to: rango.to });
+  const movRead = useReadResource(role ? JSON.stringify([role, userId, rango.from, rango.to]) : null,
+    () => api<Movimiento[]>(`/inventario/movimientos?${params}`, { role: role!, userId }));
+  const pendRead = useReadResource(role ? JSON.stringify([role, userId, 'pendientes']) : null,
+    () => api<PendienteComprobante[]>('/inventario/pendientes-comprobante', { role: role!, userId }));
+  const movimientos = movRead.data;
+  const pendientes = pendRead.data;
   function setPeriodo(next: (typeof PERIODOS_CONSUMO)[number]['id']) {
     const params = new URLSearchParams(searchParams.toString());
     if (next === '30D') params.delete('periodo');
@@ -47,43 +51,8 @@ function ConsumoContent() {
     router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
   }
 
-  useEffect(() => {
-    if (!role) return;
-    const params = new URLSearchParams();
-    params.set('from', rango.from);
-    params.set('to', rango.to);
-    setLoading(true);
-    void (async () => {
-      try {
-        const [movs, pend] = await Promise.all([
-          api<Movimiento[]>(`/inventario/movimientos?${params}`, {
-            role,
-            userId,
-          }),
-          api<PendienteComprobante[]>('/inventario/pendientes-comprobante', {
-            role,
-            userId,
-          }),
-        ]);
-        setMovimientos(movs);
-        setPendientes(pend);
-        setError(null);
-      } catch (err) {
-        setMovimientos([]);
-        setPendientes([]);
-        setError(
-          err instanceof HttpError
-            ? err.message
-            : 'No se pudo cargar el consumo.',
-        );
-      } finally {
-        setLoading(false);
-      }
-    })();
-  }, [role, userId, rango.from, rango.to]);
-
   const rows = useMemo(
-    () => agregarConsumo(movimientos, pendientes, rango.from, rango.to),
+    () => agregarConsumo(movimientos ?? [], pendientes ?? [], rango.from, rango.to),
     [movimientos, pendientes, rango.from, rango.to],
   );
   const origen = useMemo(() => totalesOrigen(rows), [rows]);
@@ -101,7 +70,7 @@ function ConsumoContent() {
         header: 'Salida OT',
         cell: ({ row }) => (
           <span className="mono">
-            {row.original.salidaOt} {etiquetaUom('pieza')}
+            {movimientos === null ? 'No disponible' : `${row.original.salidaOt} ${etiquetaUom('pieza')}`}
           </span>
         ),
       },
@@ -110,7 +79,7 @@ function ConsumoContent() {
         header: 'Compra externa',
         cell: ({ row }) => (
           <span className="mono">
-            {row.original.compraExterna} {etiquetaUom('pieza')}
+            {pendientes === null ? 'No disponible' : `${row.original.compraExterna} ${etiquetaUom('pieza')}`}
           </span>
         ),
       },
@@ -119,7 +88,7 @@ function ConsumoContent() {
         header: 'Entrada',
         cell: ({ row }) => (
           <span className="mono text-muted-foreground">
-            {row.original.entrada} {etiquetaUom('pieza')}
+            {movimientos === null ? 'No disponible' : `${row.original.entrada} ${etiquetaUom('pieza')}`}
           </span>
         ),
       },
@@ -128,12 +97,12 @@ function ConsumoContent() {
         header: 'Ajuste',
         cell: ({ row }) => (
           <span className="mono text-muted-foreground">
-            {row.original.ajuste} {etiquetaUom('pieza')}
+            {movimientos === null ? 'No disponible' : `${row.original.ajuste} ${etiquetaUom('pieza')}`}
           </span>
         ),
       },
     ],
-    [],
+    [movimientos, pendientes],
   );
 
   return (
@@ -151,15 +120,12 @@ function ConsumoContent() {
       />
 
       <p className="mb-3 text-xs text-muted-foreground">
-        {origen.desdeStock.toLocaleString('es-MX')} {etiquetaUom('pieza')} desde
-        stock · {origen.compraExterna.toLocaleString('es-MX')}{' '}
-        {etiquetaUom('pieza')} compra externa
+        {movimientos === null ? 'Desde stock: no disponible' : `${origen.desdeStock.toLocaleString('es-MX')} ${etiquetaUom('pieza')} desde stock`} · {' '}
+        {pendientes === null ? 'Compra externa: no disponible' : `${origen.compraExterna.toLocaleString('es-MX')} ${etiquetaUom('pieza')} compra externa`}
       </p>
-
-      <FormAlert>{error}</FormAlert>
-      {loading && rows.length === 0 && !error ? (
-        <p className="muted">Cargando consumo…</p>
-      ) : (
+      <ReadStatus loading={movRead.loading} error={movRead.error} loadingText="Cargando movimientos de consumo…" errorText="Consumo incompleto: falta consultar movimientos." retry={movRead.retry} />
+      <ReadStatus loading={pendRead.loading} error={pendRead.error} loadingText="Cargando compras externas…" errorText="Consumo incompleto: falta consultar compras externas." retry={pendRead.retry} />
+      {movimientos === null && pendientes === null ? null : (
         <DataTable
           columns={columns}
           data={rows}
@@ -170,7 +136,7 @@ function ConsumoContent() {
           }
           empty={
             <>
-              No hay consumo en este periodo.
+              {movimientos === null || pendientes === null ? 'La consulta está incompleta; faltan fuentes por cargar.' : 'No hay consumo en este periodo.'}
               <span className="mt-1 block text-muted-foreground">
                 Las salidas de visita y las compras externas aparecen aquí.
               </span>

@@ -1,0 +1,688 @@
+{
+  "mechanism": "Chromium CDP, respuestas sintéticas interceptadas; sin API/DB ni datos públicos",
+  "results": {
+    "inicio_parcial_d1440": "Inicio\nÓrdenes\nUnidades\nInventario\nSUPERVISOR\nCambiar rol\nBuenos días\n\nQué hay que revisar. Cada fila abre la lista.\n\nREQUIERE ATENCIÓN\n\nNo se pudo cargar mantenimiento vencido.\n\nRefacción de prueba\nExistencias · Agotado; revise la refacción",
+    "inicio_geometria_d1440": [
+      {
+        "text": "No se pudo cargar mantenimiento vencido.",
+        "w": 36,
+        "h": 120
+      },
+      {
+        "text": "Refacción de prueba\nExistencias · Agotado; revise la refacción",
+        "w": 934,
+        "h": 38.140625
+      }
+    ],
+    "consumo_error_d1440": "Inicio\nÓrdenes\nUnidades\nInventario\nSUPERVISOR\nCambiar rol\nRefacciones\nExistencias\nMovimientos\nConsumo\nPor recibir\nCatálogo\nConsumo\n\nTotales del periodo por refacción. El libro de movimientos no cambia.\n\n7 d\n30 d\n90 d\n\n0 pza desde stock · 0 pza compra externa\n\nMovimientos de prueba no disponibles\n\nSKU\tREFACCIÓN\tSALIDA OT\tCOMPRA EXTERNA\tENTRADA\tAJUSTE\nNo hay consumo en este periodo.\nLas salidas de visita y las compras externas aparecen aquí.",
+    "consumo_recuperado_d1440": "Inicio\nÓrdenes\nUnidades\nInventario\nSUPERVISOR\nCambiar rol\nRefacciones\nExistencias\nMovimientos\nConsumo\nPor recibir\nCatálogo\nConsumo\n\nTotales del periodo por refacción. El libro de movimientos no cambia.\n\n7 d\n30 d\n90 d\n\n1 pza desde stock · 4 pza compra externa\n\nSKU\tREFACCIÓN\tSALIDA OT\tCOMPRA EXTERNA\tENTRADA\tAJUSTE\nPRUEBA-01\tRefacción de prueba\t1 pza\t4 pza\t0 pza\t0 pza",
+    "inicio_parcial_d1024": "Inicio\nÓrdenes\nUnidades\nInventario\nSUPERVISOR\nCambiar rol\nBuenos días\n\nQué hay que revisar. Cada fila abre la lista.\n\nREQUIERE ATENCIÓN\n\nNo se pudo cargar mantenimiento vencido.\n\nRefacción de prueba\nExistencias · Agotado; revise la refacción",
+    "inicio_geometria_d1024": [
+      {
+        "text": "No se pudo cargar mantenimiento vencido.",
+        "w": 36,
+        "h": 120
+      },
+      {
+        "text": "Refacción de prueba\nExistencias · Agotado; revise la refacción",
+        "w": 918,
+        "h": 38.140625
+      }
+    ],
+    "consumo_error_d1024": "Inicio\nÓrdenes\nUnidades\nInventario\nSUPERVISOR\nCambiar rol\nRefacciones\nExistencias\nMovimientos\nConsumo\nPor recibir\nCatálogo\nConsumo\n\nTotales del periodo por refacción. El libro de movimientos no cambia.\n\n7 d\n30 d\n90 d\n\n0 pza desde stock · 0 pza compra externa\n\nMovimientos de prueba no disponibles\n\nSKU\tREFACCIÓN\tSALIDA OT\tCOMPRA EXTERNA\tENTRADA\tAJUSTE\nNo hay consumo en este periodo.\nLas salidas de visita y las compras externas aparecen aquí.",
+    "consumo_recuperado_d1024": "Inicio\nÓrdenes\nUnidades\nInventario\nSUPERVISOR\nCambiar rol\nRefacciones\nExistencias\nMovimientos\nConsumo\nPor recibir\nCatálogo\nConsumo\n\nTotales del periodo por refacción. El libro de movimientos no cambia.\n\n7 d\n30 d\n90 d\n\n1 pza desde stock · 4 pza compra externa\n\nSKU\tREFACCIÓN\tSALIDA OT\tCOMPRA EXTERNA\tENTRADA\tAJUSTE\nPRUEBA-01\tRefacción de prueba\t1 pza\t4 pza\t0 pza\t0 pza",
+    "inicio_parcial_m390": "Inicio\nÓrdenes\nUnidades\nInventario\nBuenos días\n\nQué hay que revisar. Cada fila abre la lista.\n\nREQUIERE ATENCIÓN\n\nNo se pudo cargar mantenimiento vencido.\n\nRefacción de prueba\nExistencias · Agotado; revise la refacción",
+    "inicio_geometria_m390": [
+      {
+        "text": "No se pudo cargar mantenimiento vencido.",
+        "w": 36,
+        "h": 120
+      },
+      {
+        "text": "Refacción de prueba\nExistencias · Agotado; revise la refacción",
+        "w": 284,
+        "h": 38.140625
+      }
+    ],
+    "consumo_error_m390": "Inicio\nÓrdenes\nUnidades\nInventario\nRefacciones\nExistencias\nMovimientos\nConsumo\nPor recibir\nCatálogo\nConsumo\n\nTotales del periodo por refacción. El libro de movimientos no cambia.\n\n7 d\n30 d\n90 d\n\n0 pza desde stock · 0 pza compra externa\n\nMovimientos de prueba no disponibles\n\nSKU\tREFACCIÓN\tSALIDA OT\tCOMPRA EXTERNA\tENTRADA\tAJUSTE\nNo hay consumo en este periodo.\nLas salidas de visita y las compras externas aparecen aquí.",
+    "consumo_recuperado_m390": "Inicio\nÓrdenes\nUnidades\nInventario\nRefacciones\nExistencias\nMovimientos\nConsumo\nPor recibir\nCatálogo\nConsumo\n\nTotales del periodo por refacción. El libro de movimientos no cambia.\n\n7 d\n30 d\n90 d\n\n1 pza desde stock · 4 pza compra externa\n\nSKU\tREFACCIÓN\tSALIDA OT\tCOMPRA EXTERNA\tENTRADA\tAJUSTE\nPRUEBA-01\tRefacción de prueba\t1 pza\t4 pza\t0 pza\t0 pza"
+  },
+  "requests": [
+    {
+      "mode": "partial",
+      "path": "/backend/notifications/badge",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "partial",
+      "path": "/backend/andon/avisos",
+      "status": 503,
+      "fixture": true
+    },
+    {
+      "mode": "partial",
+      "path": "/backend/inventario/stock",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "partial",
+      "path": "/backend/inventario/pendientes-comprobante",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "partial",
+      "path": "/backend/notifications",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "partial",
+      "path": "/backend/notifications/badge",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "partial",
+      "path": "/backend/andon/avisos",
+      "status": 503,
+      "fixture": true
+    },
+    {
+      "mode": "partial",
+      "path": "/backend/inventario/stock",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "partial",
+      "path": "/backend/inventario/pendientes-comprobante",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "partial",
+      "path": "/backend/notifications",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "partial",
+      "path": "/backend/notifications/badge",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "partial",
+      "path": "/backend/inventario/familias",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "partial",
+      "path": "/backend/unidades/tipos",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "partial",
+      "path": "/backend/inventario/proveedores",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "partial",
+      "path": "/backend/inventario/familias",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "partial",
+      "path": "/backend/unidades/tipos",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "partial",
+      "path": "/backend/inventario/proveedores",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "partial",
+      "path": "/backend/notifications/badge",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "partial",
+      "path": "/backend/inventario/movimientos",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "partial",
+      "path": "/backend/inventario/pendientes-comprobante",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "partial",
+      "path": "/backend/inventario/movimientos",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "partial",
+      "path": "/backend/inventario/pendientes-comprobante",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "consumo-error",
+      "path": "/backend/notifications/badge",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "consumo-error",
+      "path": "/backend/inventario/movimientos",
+      "status": 503,
+      "fixture": true
+    },
+    {
+      "mode": "consumo-error",
+      "path": "/backend/inventario/pendientes-comprobante",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "consumo-error",
+      "path": "/backend/notifications/badge",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "consumo-error",
+      "path": "/backend/inventario/movimientos",
+      "status": 503,
+      "fixture": true
+    },
+    {
+      "mode": "consumo-error",
+      "path": "/backend/inventario/pendientes-comprobante",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "consumo-ready",
+      "path": "/backend/notifications/badge",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "consumo-ready",
+      "path": "/backend/inventario/movimientos",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "consumo-ready",
+      "path": "/backend/inventario/pendientes-comprobante",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "consumo-ready",
+      "path": "/backend/notifications/badge",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "consumo-ready",
+      "path": "/backend/inventario/movimientos",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "consumo-ready",
+      "path": "/backend/inventario/pendientes-comprobante",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "partial",
+      "path": "/backend/notifications/badge",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "partial",
+      "path": "/backend/andon/avisos",
+      "status": 503,
+      "fixture": true
+    },
+    {
+      "mode": "partial",
+      "path": "/backend/inventario/stock",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "partial",
+      "path": "/backend/inventario/pendientes-comprobante",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "partial",
+      "path": "/backend/notifications",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "partial",
+      "path": "/backend/notifications/badge",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "partial",
+      "path": "/backend/andon/avisos",
+      "status": 503,
+      "fixture": true
+    },
+    {
+      "mode": "partial",
+      "path": "/backend/inventario/stock",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "partial",
+      "path": "/backend/inventario/pendientes-comprobante",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "partial",
+      "path": "/backend/notifications",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "partial",
+      "path": "/backend/inventario/items",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "partial",
+      "path": "/backend/inventario/items",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "partial",
+      "path": "/backend/notifications/badge",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "partial",
+      "path": "/backend/inventario/familias",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "partial",
+      "path": "/backend/unidades/tipos",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "partial",
+      "path": "/backend/inventario/proveedores",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "partial",
+      "path": "/backend/inventario/familias",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "partial",
+      "path": "/backend/unidades/tipos",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "partial",
+      "path": "/backend/inventario/proveedores",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "partial",
+      "path": "/backend/notifications/badge",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "partial",
+      "path": "/backend/inventario/movimientos",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "partial",
+      "path": "/backend/inventario/pendientes-comprobante",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "partial",
+      "path": "/backend/inventario/movimientos",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "partial",
+      "path": "/backend/inventario/pendientes-comprobante",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "consumo-error",
+      "path": "/backend/notifications/badge",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "consumo-error",
+      "path": "/backend/inventario/movimientos",
+      "status": 503,
+      "fixture": true
+    },
+    {
+      "mode": "consumo-error",
+      "path": "/backend/inventario/pendientes-comprobante",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "consumo-error",
+      "path": "/backend/notifications/badge",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "consumo-error",
+      "path": "/backend/inventario/movimientos",
+      "status": 503,
+      "fixture": true
+    },
+    {
+      "mode": "consumo-error",
+      "path": "/backend/inventario/pendientes-comprobante",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "consumo-ready",
+      "path": "/backend/notifications/badge",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "consumo-ready",
+      "path": "/backend/inventario/movimientos",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "consumo-ready",
+      "path": "/backend/inventario/pendientes-comprobante",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "consumo-ready",
+      "path": "/backend/notifications/badge",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "consumo-ready",
+      "path": "/backend/inventario/movimientos",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "consumo-ready",
+      "path": "/backend/inventario/pendientes-comprobante",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "partial",
+      "path": "/backend/notifications/badge",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "partial",
+      "path": "/backend/andon/avisos",
+      "status": 503,
+      "fixture": true
+    },
+    {
+      "mode": "partial",
+      "path": "/backend/inventario/stock",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "partial",
+      "path": "/backend/inventario/pendientes-comprobante",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "partial",
+      "path": "/backend/notifications",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "partial",
+      "path": "/backend/notifications/badge",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "partial",
+      "path": "/backend/andon/avisos",
+      "status": 503,
+      "fixture": true
+    },
+    {
+      "mode": "partial",
+      "path": "/backend/inventario/stock",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "partial",
+      "path": "/backend/inventario/pendientes-comprobante",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "partial",
+      "path": "/backend/notifications",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "partial",
+      "path": "/backend/inventario/items",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "partial",
+      "path": "/backend/inventario/items",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "partial",
+      "path": "/backend/notifications/badge",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "partial",
+      "path": "/backend/inventario/familias",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "partial",
+      "path": "/backend/unidades/tipos",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "partial",
+      "path": "/backend/inventario/proveedores",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "partial",
+      "path": "/backend/inventario/familias",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "partial",
+      "path": "/backend/unidades/tipos",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "partial",
+      "path": "/backend/inventario/proveedores",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "partial",
+      "path": "/backend/notifications/badge",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "partial",
+      "path": "/backend/inventario/movimientos",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "partial",
+      "path": "/backend/inventario/pendientes-comprobante",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "partial",
+      "path": "/backend/inventario/movimientos",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "partial",
+      "path": "/backend/inventario/pendientes-comprobante",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "consumo-error",
+      "path": "/backend/notifications/badge",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "consumo-error",
+      "path": "/backend/inventario/movimientos",
+      "status": 503,
+      "fixture": true
+    },
+    {
+      "mode": "consumo-error",
+      "path": "/backend/inventario/pendientes-comprobante",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "consumo-error",
+      "path": "/backend/notifications/badge",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "consumo-error",
+      "path": "/backend/inventario/movimientos",
+      "status": 503,
+      "fixture": true
+    },
+    {
+      "mode": "consumo-error",
+      "path": "/backend/inventario/pendientes-comprobante",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "consumo-ready",
+      "path": "/backend/notifications/badge",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "consumo-ready",
+      "path": "/backend/inventario/movimientos",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "consumo-ready",
+      "path": "/backend/inventario/pendientes-comprobante",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "consumo-ready",
+      "path": "/backend/notifications/badge",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "consumo-ready",
+      "path": "/backend/inventario/movimientos",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "consumo-ready",
+      "path": "/backend/inventario/pendientes-comprobante",
+      "status": 200,
+      "fixture": true
+    }
+  ]
+}

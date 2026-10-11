@@ -6,6 +6,8 @@ import { ImageDropzone } from '@/components/ImageDropzone';
 import { Button } from '@/components/ui/button';
 import { FormAlert } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
+import { ReadStatus } from '@/components/ReadStatus';
+import { useReadResource } from '@/lib/use-read-resource';
 import { api, HttpError } from '@/lib/api';
 import { etiquetaUom } from '@/lib/format';
 import type { OrigenPieza, SkuCompatible, VisitaDetalle } from '@/lib/types';
@@ -133,7 +135,7 @@ function PiezaPanel({
   onSaved: (visita: VisitaDetalle) => void;
 }) {
   const [q, setQ] = useState('');
-  const [resultados, setResultados] = useState<SkuCompatible[]>([]);
+
   const [elegido, setElegido] = useState<SkuCompatible | null>(null);
   const [qty, setQty] = useState(1);
   const usados = useMemo(
@@ -144,30 +146,19 @@ function PiezaPanel({
   const role = opts.role;
   const userId = opts.userId;
 
-  useEffect(() => {
-    if (!detalle.tipoVehiculoId) return;
-    const handle = window.setTimeout(() => {
-      void (async () => {
-        try {
-          const params = new URLSearchParams({ tipoVehiculoId: detalle.tipoVehiculoId! });
-          if (q.trim()) params.set('q', q.trim());
-          setResultados(
-            await api<SkuCompatible[]>(`/inventario/skus?${params.toString()}`, { role, userId }),
-          );
-          onError(null);
-        } catch (err) {
-          onError(err instanceof HttpError ? err.message : 'No se pudieron buscar las piezas.');
-        }
-      })();
-    }, 200);
-    return () => window.clearTimeout(handle);
-  }, [q, detalle.tipoVehiculoId, role, userId, onError]);
+  const search = useReadResource(detalle.tipoVehiculoId ? JSON.stringify([role, userId, detalle.tipoVehiculoId, q]) : null, () => {
+    const params = new URLSearchParams({ tipoVehiculoId: detalle.tipoVehiculoId! });
+    if (q.trim()) params.set('q', q.trim());
+    return api<SkuCompatible[]>(`/inventario/skus?${params}`, { role, userId });
+  });
+  const resultados = search.data ?? [];
+  const selection = elegido ? search.data?.find((item) => item.id === elegido.id) : null;
 
   async function agregar() {
-    if (!elegido) return;
+    if (!selection || search.loading || search.error) return;
     onBusy(true);
     onError(null);
-    const origen: OrigenPieza = elegido.stock >= qty ? 'DESDE_STOCK' : 'COMPRA_EXTERNA';
+    const origen: OrigenPieza = selection.stock >= qty ? 'DESDE_STOCK' : 'COMPRA_EXTERNA';
     try {
       const next = await api<VisitaDetalle>(`/visitas/${detalle.id}`, {
         ...opts,
@@ -179,7 +170,7 @@ function PiezaPanel({
               qty: pieza.qty,
               origen: pieza.origen,
             })),
-            { itemId: elegido.id, qty, origen },
+            { itemId: selection.id, qty, origen },
           ],
         }),
       });
@@ -202,6 +193,8 @@ function PiezaPanel({
         placeholder="Buscar SKU o nombre"
         aria-label="Buscar pieza"
       />
+      <ReadStatus loading={search.loading} error={search.error} loadingText="Buscando piezas…" errorText="No se pudieron buscar las piezas." retry={search.retry} />
+      {search.data && search.data.length === 0 ? <p className="muted">{q.trim() ? 'Sin coincidencias para esta búsqueda.' : 'No hay piezas compatibles.'}</p> : null}
       <ul className="ordenes-captura__skus">
         {resultados.map((item) => (
           <li key={item.id}>
@@ -235,15 +228,15 @@ function PiezaPanel({
           type="button"
           size="compact"
           className="ordenes-primary"
-          disabled={!elegido || busy}
+          disabled={!selection || busy || search.loading || Boolean(search.error)}
           onClick={() => void agregar()}
         >
           Agregar a la orden
         </Button>
       </div>
-      {elegido ? (
+      {selection ? (
         <p className="ordenes-captura__note">
-          {elegido.stock >= qty
+          {selection.stock >= qty
             ? 'Se toma de stock.'
             : 'No alcanza el stock: queda como compra externa.'}
         </p>

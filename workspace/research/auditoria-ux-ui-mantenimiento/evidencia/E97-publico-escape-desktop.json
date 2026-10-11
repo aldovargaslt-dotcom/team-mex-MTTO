@@ -1,0 +1,12 @@
+{
+  "at": "2026-10-11T06:52:32.647Z",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "escape": {
+    "dialog": false,
+    "focusTag": "BODY",
+    "focusText": "Inicio\nÓrdenes\nUnidades\nInventario\n2\nSUPERVISOR\nElegir rol\nCerrar sesión\nÓrdenes\n+ Nueva orden\nBorra"
+  }
+}

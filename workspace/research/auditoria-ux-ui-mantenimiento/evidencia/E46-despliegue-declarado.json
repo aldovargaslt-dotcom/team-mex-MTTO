@@ -1,0 +1,17 @@
+{
+  "at": "2026-10-11 06:18:43 UTC",
+  "source": "Deployment metadata supplied by the user in this chat; not an independent runtime version check",
+  "branch": "main",
+  "declaredApplicationCommit": "39ce14db9b287ad46074900e8028b1a127cd166c",
+  "primaryUrl": "https://team-mex-mtto-eight.vercel.app/",
+  "branchUrl": "https://team-mex-mtto-git-main-aldovargaslt-dotcoms-projects.vercel.app/",
+  "deploymentUrl": "https://team-mex-mtto-g0g23ma5r-aldovargaslt-dotcoms-projects.vercel.app/",
+  "commitMatchesLocallyEvaluatedSource": true,
+  "authenticatedUiObserved": false,
+  "remaining": [
+    "Usable authenticated access for MECANICO and SUPERVISOR",
+    "Effective domain API and permissions",
+    "Representative cases and permitted test operations",
+    "Real users and expected devices"
+  ]
+}

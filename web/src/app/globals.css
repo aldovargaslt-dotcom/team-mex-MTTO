@@ -5,7 +5,7 @@
 
 :root {
   --cta: #ea7515;
-  --cta-hover: #d4670f;
+  --cta-hover: #f28a32;
   --shell: #24284d;
   --shell-ink: #f7f7fb;
   --surface: #f3f3f3;
@@ -31,7 +31,7 @@
   --popover: #ffffff;
   --popover-foreground: #1c1d26;
   --primary: #ea7515;
-  --primary-foreground: #ffffff;
+  --primary-foreground: #24284d;
   --secondary: #ffffff;
   --secondary-foreground: #24284d;
   --muted-bg: #ececf3;
@@ -1948,7 +1948,7 @@
     padding: 0 4px;
     border-radius: 8px;
     background: var(--cta);
-    color: #fff;
+    color: var(--navy);
     font-size: 10px;
     font-weight: 700;
     line-height: 16px;
@@ -3478,13 +3478,13 @@
 
 .ordenes-primary {
   background: var(--cta);
-  color: #fff;
+  color: var(--navy);
   border-color: var(--cta);
 }
 
 .ordenes-primary:hover {
   background: var(--cta-hover);
-  color: #fff;
+  color: var(--navy);
 }
 
 .ordenes-tipo {
@@ -3868,3 +3868,18 @@
     min-height: 56px;
   }
 }
+
+/* EWO-029: read failures occupy the text region; normal inbox rows stay intact. */
+.inbox-source-state { padding: 8px 10px; border-bottom: 1px solid var(--border); }
+.read-status { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.read-status:has(> [role="status"]:empty):not(:has(button)):not(:has([role="alert"])) { display: none; }
+.read-status > [role="status"]:empty { display: none; }
+.read-status > [role="alert"] { flex: 1 1 180px; margin: 0; }
+.ot-reference { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 4px; }
+.ot-reference-id { overflow-wrap: anywhere; font-size: 12px; }
+.campanita-wrap { display: inline-flex; align-items: center; }
+.campanita-unknown { color: var(--shell-ink); font-weight: 700; }
+/* Navy focus with white separation stays visible on both orange and white. */
+:is(button, input, select, textarea):focus-visible { outline: 2px solid var(--navy); outline-offset: 2px; box-shadow: 0 0 0 2px white; }
+
+[data-slot="button"][aria-disabled="true"] { cursor: wait; opacity: 0.65; }

@@ -1,0 +1,149 @@
+{
+  "url": "http://127.0.0.1:3000/notificaciones",
+  "title": "Team Mex — Mantenimiento",
+  "text": "Esta vista es para logística y administración.\nVolver a Mi trabajo",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "overflow": false,
+  "font": "Roboto, \"Roboto Fallback\", ui-sans-serif, system-ui, sans-serif",
+  "controls": [
+    {
+      "tag": "A",
+      "text": null,
+      "href": "/mi-trabajo",
+      "ariaLabel": null,
+      "role": null,
+      "width": 67.046875,
+      "height": 36,
+      "color": "rgb(247, 247, 251)",
+      "background": "rgba(0, 0, 0, 0)",
+      "fontSize": "14px"
+    },
+    {
+      "tag": "A",
+      "text": "Alertas",
+      "href": "/notificaciones",
+      "ariaLabel": "Alertas",
+      "role": null,
+      "width": 44,
+      "height": 44,
+      "color": "rgb(247, 247, 251)",
+      "background": "rgba(255, 255, 255, 0.1)",
+      "fontSize": "14px"
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Abrir menú",
+      "href": null,
+      "ariaLabel": "Abrir menú",
+      "role": null,
+      "width": 44,
+      "height": 44,
+      "color": "oklab(0.999994 0.0000455677 0.0000200868 / 0.7)",
+      "background": "rgba(0, 0, 0, 0)",
+      "fontSize": "12px",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Volver a Mi trabajo",
+      "href": "/mi-trabajo",
+      "ariaLabel": null,
+      "role": null,
+      "width": 153.046875,
+      "height": 44,
+      "color": "rgb(36, 40, 77)",
+      "background": "rgb(255, 255, 255)",
+      "fontSize": "14px"
+    }
+  ],
+  "at": "2026-10-11T04:56:55.887Z",
+  "network": [
+    {
+      "url": "http://127.0.0.1:3000/?_rsc=mkeYsiQg2Iko0iTE",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:3000/_next/static/chunks/src_app_page_tsx_b4090435._.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:3000/_next/static/chunks/src_app_page_tsx_37b81a13._.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:3000/?_rsc=mkeYsiQg2Iko0iTE",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:3000/_next/static/chunks/src_app_page_tsx_b4090435._.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:3000/_next/static/chunks/src_app_page_tsx_37b81a13._.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:3000/mi-trabajo?_rsc=ZmCQ44b92m4mXe_R",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:3000/_next/static/chunks/src_1779fcb4._.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:3000/_next/static/chunks/src_app_mi-trabajo_page_tsx_37b81a13._.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:3000/_next/static/chunks/src_app_mi-trabajo_page_tsx_37b81a13._.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:3000/_next/static/chunks/src_1779fcb4._.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:3000/backend/notifications/badge",
+      "status": 503
+    },
+    {
+      "url": "http://127.0.0.1:3000/backend/notifications/badge",
+      "status": 503
+    },
+    {
+      "url": "http://127.0.0.1:3000/backend/checks?scope=mine-or-eligible",
+      "status": 503
+    },
+    {
+      "url": "http://127.0.0.1:3000/backend/checks?scope=mine-or-eligible",
+      "status": 503
+    },
+    {
+      "url": "http://127.0.0.1:3000/notificaciones?_rsc=POWFQSARAbK09luE",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:3000/_next/static/chunks/src_app_notificaciones_page_tsx_37b81a13._.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:3000/_next/static/chunks/_d1c034a9._.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:3000/_next/static/chunks/src_app_notificaciones_page_tsx_37b81a13._.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:3000/_next/static/chunks/_d1c034a9._.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:3000/backend/notifications/badge",
+      "status": 503
+    }
+  ]
+}

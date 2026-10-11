@@ -1,0 +1,174 @@
+{
+  "origin": "https://team-mex-mtto-eight.vercel.app",
+  "path": "/inicio",
+  "title": "Team Mex — Mantenimiento",
+  "text": "Inicio\nÓrdenes\nUnidades\nInventario\n2\nSUPERVISOR\nElegir rol\nCerrar sesión\nBuenos días\n\nQué hay que revisar. Cada fila abre la lista.\n\nREQUIERE ATENCIÓN\n\nNo se pudo cargar mantenimiento vencido.\n\nPastillas de freno\nExistencias · 2 pieza disponibles; mínimo 5\nPAST-FR-01 · Pastillas de freno\nInventario · Evidencia pendiente de compra externa\nFIL-ACEITE-01 · Filtro de aceite\nInventario · Evidencia pendiente de compra externa\nSalud de unidad baja — FOTON\nSalud · FOTON tiene una salud de 39%. El límite es 60%. Servicio preventivo vencido (30 días de más) · 1 alerta de mantenimiento vencido",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "overflow": false,
+  "controls": [
+    {
+      "tag": "A",
+      "text": "",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/inicio",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Inicio",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/inicio",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Órdenes",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/ordenes",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Unidades",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/unidades",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Inventario",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/inventario",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "2",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/notificaciones",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Configuración",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": "/configuracion/alertas",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Elegir rol",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/",
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Cerrar sesión",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Abrir menú",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Pastillas de freno\nExistencias · 2 pieza disponibles; mínimo 5",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/inventario/stock",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "PAST-FR-01 · Pastillas de freno\nInventario · Evidencia pendiente de compra externa",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/inventario/pendientes",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "FIL-ACEITE-01 · Filtro de aceite\nInventario · Evidencia pendiente de compra externa",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/inventario/pendientes",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Salud de unidad baja — FOTON\nSalud · FOTON tiene una salud de 39%. El límite es 60%. Servicio preventivo vencido (30 días de más) · 1 alerta de mantenimiento vencido",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/unidades/59f71d91-aa7d-443f-bcd6-751dd6bf0d5a",
+      "disabled": false
+    }
+  ],
+  "at": "2026-10-11T07:04:42.222Z",
+  "network": [
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/configuracion/alertas",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/_next/static/chunks/e20c429dceae73cf.js",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/_next/static/chunks/eede4a0b2c146662.js",
+      "status": 200
+    }
+  ],
+  "requests": [
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/configuracion/alertas",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/_next/static/chunks/e20c429dceae73cf.js",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/_next/static/chunks/eede4a0b2c146662.js",
+      "method": "GET"
+    }
+  ]
+}

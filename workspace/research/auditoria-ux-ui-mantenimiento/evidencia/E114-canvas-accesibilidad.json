@@ -1,0 +1,17 @@
+{
+  "at": "2026-10-11T07:00:00.532Z",
+  "canvases": [
+    {
+      "tabIndex": -1,
+      "role": null,
+      "name": null,
+      "html": "<canvas width=\"640\" height=\"180\" class=\"signature-canvas\"></canvas>"
+    },
+    {
+      "tabIndex": -1,
+      "role": null,
+      "name": null,
+      "html": "<canvas width=\"640\" height=\"180\" class=\"signature-canvas\"></canvas>"
+    }
+  ]
+}

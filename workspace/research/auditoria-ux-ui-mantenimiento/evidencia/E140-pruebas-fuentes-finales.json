@@ -1,0 +1,242 @@
+{
+  "at": "2026-10-11T07:04:08.809Z",
+  "method": "GET con rol seleccionado SUPERVISOR, cuerpos sin fotos/firmas/tickets",
+  "stock": [
+    {
+      "itemId": "023de669-9f64-4182-a8dc-406714b2a79c",
+      "sku": "AUD-UX-20261011-PZA",
+      "nombre": "Prueba auditoría UX/UI",
+      "familia": "Filtros",
+      "activo": true,
+      "uom": "pieza",
+      "qty": 1,
+      "minQty": null,
+      "alerta": null,
+      "updatedAt": "2026-10-11T07:00:07.574Z"
+    },
+    {
+      "itemId": "8c723fb8-f294-443d-b84d-62505c95b281",
+      "sku": "FIL-ACEITE-01",
+      "nombre": "Filtro de aceite",
+      "familia": "Filtros",
+      "activo": true,
+      "uom": "pieza",
+      "qty": 10,
+      "minQty": null,
+      "alerta": null,
+      "updatedAt": "2026-09-11T19:12:37.106Z"
+    },
+    {
+      "itemId": "fa1b4891-2880-4dfc-a0b2-79f42fd4b816",
+      "sku": "FIL-CAB-01",
+      "nombre": "Filtro de cabina",
+      "familia": "Filtros",
+      "activo": true,
+      "uom": "pieza",
+      "qty": 5,
+      "minQty": null,
+      "alerta": null,
+      "updatedAt": "2026-09-11T19:12:37.340Z"
+    },
+    {
+      "itemId": "2fdcd4be-a116-49ad-8901-0866337d725f",
+      "sku": "PAST-FR-01",
+      "nombre": "Pastillas de freno",
+      "familia": "Frenos",
+      "activo": true,
+      "uom": "pieza",
+      "qty": 2,
+      "minQty": 5,
+      "alerta": "BAJO",
+      "updatedAt": "2026-09-11T19:12:37.244Z"
+    }
+  ],
+  "movimientos": [
+    {
+      "id": "ae102729-f567-4353-be43-eaeb89a39ecf",
+      "tipo": "SALIDA_OT",
+      "itemId": "023de669-9f64-4182-a8dc-406714b2a79c",
+      "sku": "AUD-UX-20261011-PZA",
+      "nombre": "Prueba auditoría UX/UI",
+      "qty": 1,
+      "delta": -1,
+      "visitaId": "1ac25340-6cd6-4f0b-864a-fc65571ac3cf",
+      "nota": null,
+      "createdAt": "2026-10-11T07:00:07.574Z",
+      "hasActor": false
+    },
+    {
+      "id": "761d7ed7-4875-444e-9ec9-02e14d00c66a",
+      "tipo": "ENTRADA",
+      "itemId": "023de669-9f64-4182-a8dc-406714b2a79c",
+      "sku": "AUD-UX-20261011-PZA",
+      "nombre": "Prueba auditoría UX/UI",
+      "qty": 2,
+      "delta": 2,
+      "visitaId": null,
+      "nota": "PRUEBA AUDITORÍA UX/UI: entrada sólo para SKU nuevo",
+      "createdAt": "2026-10-11T06:57:30.710Z",
+      "hasActor": true
+    }
+  ],
+  "pendientes": [
+    {
+      "id": "5918832a-eaaa-4288-83aa-3ebc90dd393b",
+      "visitaId": "f2aa2d26-8669-4b0c-83ea-29e73dd2bdf9",
+      "itemId": "023de669-9f64-4182-a8dc-406714b2a79c",
+      "sku": "AUD-UX-20261011-PZA",
+      "qty": 1,
+      "estado": "RECIBIDA",
+      "createdAt": "2026-10-11T07:03:31.098Z",
+      "hasTicket": true
+    },
+    {
+      "id": "055e2fce-758a-418b-a3a4-f8b21a3ad558",
+      "visitaId": "53a02af0-b7a5-4059-9df6-c53bf3aa8add",
+      "itemId": "023de669-9f64-4182-a8dc-406714b2a79c",
+      "sku": "AUD-UX-20261011-PZA",
+      "qty": 3,
+      "estado": "RECIBIDA",
+      "createdAt": "2026-10-11T07:01:33.001Z",
+      "hasTicket": false
+    },
+    {
+      "id": "5d5fa3fc-3a6d-482a-ad72-70b0bd792665",
+      "visitaId": "f1c4ef48-04cf-4f4e-adeb-ae3a7b0bae2f",
+      "itemId": "2fdcd4be-a116-49ad-8901-0866337d725f",
+      "sku": "PAST-FR-01",
+      "qty": 4,
+      "estado": "PENDIENTE",
+      "createdAt": "2026-09-11T21:35:27.864Z",
+      "hasTicket": false
+    },
+    {
+      "id": "6b13d04f-2cbe-4bbf-94cb-faeed0c53415",
+      "visitaId": "106f7dce-f53c-424a-ab9c-6e1676a31164",
+      "itemId": "8c723fb8-f294-443d-b84d-62505c95b281",
+      "sku": "FIL-ACEITE-01",
+      "qty": 11,
+      "estado": "PENDIENTE",
+      "createdAt": "2026-09-11T20:02:12.891Z",
+      "hasTicket": false
+    }
+  ],
+  "visitas": [
+    {
+      "status": 200,
+      "id": "1ac25340-6cd6-4f0b-864a-fc65571ac3cf",
+      "unidadId": "1d815aac-6311-4301-a315-9e05e4628d8d",
+      "estado": "CERRADO",
+      "tipo": "PREDICTIVO",
+      "km": 100,
+      "createdAt": "2026-10-11T06:58:13.222Z",
+      "cerradoAt": "2026-10-11T07:00:07.611Z",
+      "observaciones": "PRUEBA AUDITORÍA UX/UI 2026-10-11. Visita 1: stock. Datos y firmas sintéticos; no acredita trabajo real.",
+      "trabajos": [
+        {
+          "id": "7826a082-68a2-4c7e-9a35-f315f7e40580",
+          "categoria": "A",
+          "item": "Afinación / filtros de aceite"
+        }
+      ],
+      "piezas": [
+        {
+          "id": "33e9abd4-4dc2-48ce-b946-cd4bf50eb64a",
+          "itemId": "023de669-9f64-4182-a8dc-406714b2a79c",
+          "qty": 1,
+          "origen": "DESDE_STOCK"
+        }
+      ],
+      "fotos": [
+        {
+          "id": "9152c336-6482-4a92-8b4e-5da464f93081",
+          "hasData": true
+        }
+      ],
+      "firmas": [
+        {
+          "tipo": "CHOFER",
+          "hasData": true
+        },
+        {
+          "tipo": "JEFE",
+          "hasData": true
+        }
+      ]
+    },
+    {
+      "status": 200,
+      "id": "53a02af0-b7a5-4059-9df6-c53bf3aa8add",
+      "unidadId": "1d815aac-6311-4301-a315-9e05e4628d8d",
+      "estado": "CERRADO",
+      "tipo": "CORRECTIVO",
+      "km": 101,
+      "createdAt": "2026-10-11T07:00:55.779Z",
+      "cerradoAt": "2026-10-11T07:01:33.042Z",
+      "observaciones": "PRUEBA AUDITORÍA UX/UI 2026-10-11. Visita 2: compra externa. Sin trabajo real; trazos sintéticos.",
+      "trabajos": [
+        {
+          "id": "c8bb5108-8d5d-4193-85fe-3a5333e856e2",
+          "categoria": "D",
+          "item": "Calibración y rotación"
+        }
+      ],
+      "piezas": [
+        {
+          "id": "007295e0-921f-44fe-9275-536c44d7a86e",
+          "itemId": "023de669-9f64-4182-a8dc-406714b2a79c",
+          "qty": 3,
+          "origen": "COMPRA_EXTERNA"
+        }
+      ],
+      "fotos": [],
+      "firmas": [
+        {
+          "tipo": "CHOFER",
+          "hasData": true
+        },
+        {
+          "tipo": "JEFE",
+          "hasData": true
+        }
+      ]
+    },
+    {
+      "status": 200,
+      "id": "f2aa2d26-8669-4b0c-83ea-29e73dd2bdf9",
+      "unidadId": "1d815aac-6311-4301-a315-9e05e4628d8d",
+      "estado": "CERRADO",
+      "tipo": "PREDICTIVO",
+      "km": 102,
+      "createdAt": "2026-10-11T07:02:59.089Z",
+      "cerradoAt": "2026-10-11T07:03:31.136Z",
+      "observaciones": "PRUEBA AUDITORÍA UX/UI 2026-10-11. Visita 3: adjuntar ticket antes del cierre de comprobante. Sin reparación real.",
+      "trabajos": [
+        {
+          "id": "719b7151-9d6a-4df5-afe3-f8fd28ed1777",
+          "categoria": "E",
+          "item": "Sistema eléctrico y luces"
+        }
+      ],
+      "piezas": [
+        {
+          "id": "45a8f46d-7723-4a92-b69f-ba5931cf76c6",
+          "itemId": "023de669-9f64-4182-a8dc-406714b2a79c",
+          "qty": 1,
+          "origen": "COMPRA_EXTERNA"
+        }
+      ],
+      "fotos": [],
+      "firmas": [
+        {
+          "tipo": "CHOFER",
+          "hasData": true
+        },
+        {
+          "tipo": "JEFE",
+          "hasData": true
+        }
+      ]
+    }
+  ]
+}

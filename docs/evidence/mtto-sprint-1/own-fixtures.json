@@ -1,0 +1,10 @@
+{
+  "environment": "Local disposable native PostgreSQL team_mex_ux_sprint1; seed catalogs read only. All modified rows newly created PRUEBA-UX-SPRINT1.",
+  "unitId": "9d18b9b9-b334-4143-8ac3-9abaf7f96984",
+  "driverId": "d51d950e-cc7b-4bbd-ad63-0200d413292e",
+  "stockItemId": "35c1841c-3804-48e1-b32f-b9e24583596a",
+  "externalItemId": "ac9e2bf2-8438-40a9-8145-b9fc964bba84",
+  "initialStock": 10,
+  "initialExternalStock": 0,
+  "visitId": "3b13402d-aeac-4d15-958f-e1bc131a07cd"
+}

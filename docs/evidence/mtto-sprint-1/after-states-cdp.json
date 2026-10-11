@@ -1,0 +1,3852 @@
+{
+  "mechanism": "Chromium CDP click-through; synthetic controlled read responses, not API persistence proof",
+  "checks": [
+    {
+      "name": "AC01 Inicio error d1440",
+      "status": "PASS",
+      "detail": "Inicio\nÓrdenes\nUnidades\nInventario\n?\nSUPERVISOR\nCambiar rol\nBuenos días\n\nQué hay que revisar. Cada fila abre la lista.\n\nNo se pudo cargar mantenimiento vencido.\n\nReintentar mantenimiento vencido\n\nNo se pudo cargar existencias.\n\nReintentar existencias\n\nNo se pudo cargar por recibir.\n\nReintentar por recibir\n\nNo se pudo cargar salud de unidad.\n\nReintentar salud de unidad"
+    },
+    {
+      "name": "AC05 ancho error d1440",
+      "status": "PASS",
+      "detail": [
+        1008
+      ]
+    },
+    {
+      "name": "AC02 reintento fuente Inicio d1440",
+      "status": "PASS",
+      "detail": [
+        {
+          "path": "/backend/andon/avisos",
+          "status": 200,
+          "mode": "ready",
+          "fixture": true
+        }
+      ]
+    },
+    {
+      "name": "AC11 foco reintento Inicio d1440",
+      "status": "PASS",
+      "detail": {
+        "tag": "BUTTON",
+        "label": "Reintentar mantenimiento vencido"
+      }
+    },
+    {
+      "name": "AC04 Inicio recovery vacío real d1440",
+      "status": "PASS",
+      "detail": "Inicio\nÓrdenes\nUnidades\nInventario\n?\nSUPERVISOR\nCambiar rol\nBuenos días\n\nQué hay que revisar. Cada fila abre la lista.\n\nConsulta actualizada.\nReintentar salud de unidad\nNada requiere atención\n\nMantenimiento vencido, existencias, por recibir y salud están al día."
+    },
+    {
+      "name": "AC01 ordenes error d1440",
+      "status": "PASS",
+      "detail": "Inicio\nÓrdenes\nUnidades\nInventario\n?\nSUPERVISOR\nCambiar rol\nÓrdenes\n+ Nueva orden\n\nNo se pudieron cargar las órdenes.\n\nReintentar"
+    },
+    {
+      "name": "AC04 ordenes vacío d1440",
+      "status": "PASS",
+      "detail": "Inicio\nÓrdenes\nUnidades\nInventario\n?\nSUPERVISOR\nCambiar rol\nÓrdenes\n+ Nueva orden\nConsulta actualizada.\nReintentar\nBorradores\nCerradas\nNo hay órdenes en borrador.\n\nCrea una orden aquí para comenzar la captura."
+    },
+    {
+      "name": "AC01 unidades error d1440",
+      "status": "PASS",
+      "detail": "Inicio\nÓrdenes\nUnidades\nInventario\n?\nSUPERVISOR\nCambiar rol\nUnidades\n\nBusque y abra la ficha de la unidad.\n\nNo se pudieron cargar las unidades.\n\nReintentar\n\nNo se pudieron cargar los totales de unidades.\n\nReintentar\n\nCatálogo de tipos no disponible; se muestran los tipos de las unidades cargadas.\n\nReintentar\n\nAvisos de mantenimiento no disponibles.\n\nReintentar\n\nUmbrales no disponibles.\n\nReintentar"
+    },
+    {
+      "name": "AC04 unidades vacío d1440",
+      "status": "PASS",
+      "detail": "Inicio\nÓrdenes\nUnidades\nInventario\n?\nSUPERVISOR\nCambiar rol\nConsulta actualizada.\nReintentar\nUnidades\n\nBusque y abra la ficha de la unidad.\n\nFlota de mantenimiento\nAbra una ficha para visitas y alertas.\nTotal de unidades\n0\nActivas\n0\n0% del total\nInactivas\n0\n0% del total\nAlertas\n0\n0% del total\nBuscar unidad\nEstado\nTodos\nActiva\nInactiva\nLimpiar filtros\nBuscar\n\nConsejo: puede buscar por número interno, placas, marca o modelo para encontrar una unidad más rápido.\n\nNo hay unidades\n\nNo hay unidades registradas."
+    },
+    {
+      "name": "AC01 inventario_stock error d1440",
+      "status": "PASS",
+      "detail": "Inicio\nÓrdenes\nUnidades\nInventario\n?\nSUPERVISOR\nCambiar rol\nRefacciones\nExistencias\nMovimientos\nConsumo\nPor recibir\nCatálogo\nExistencias\nConfigurar alertas\nRegistrar entrada\nTodos\nBajo\nAgotado\n\nNo se pudieron cargar las existencias.\n\nReintentar\n\nCatálogos de refacciones no disponibles; las existencias cargadas se conservan.\n\nReintentar"
+    },
+    {
+      "name": "AC04 inventario_stock vacío d1440",
+      "status": "PASS",
+      "detail": "Inicio\nÓrdenes\nUnidades\nInventario\n?\nSUPERVISOR\nCambiar rol\nRefacciones\nExistencias\nMovimientos\nConsumo\nPor recibir\nCatálogo\nExistencias\nConfigurar alertas\nRegistrar entrada\nTodos\nBajo\nAgotado\nConsulta actualizada.\nReintentar\nSKU\tNOMBRE\tCATEGORÍA\tCANT.\tMÍNIMO\tESTADO\nAún no hay existencias."
+    },
+    {
+      "name": "AC01 inventario_consumo error d1440",
+      "status": "PASS",
+      "detail": "Inicio\nÓrdenes\nUnidades\nInventario\n?\nSUPERVISOR\nCambiar rol\nRefacciones\nExistencias\nMovimientos\nConsumo\nPor recibir\nCatálogo\nConsumo\n\nTotales del periodo por refacción. El libro de movimientos no cambia.\n\n7 d\n30 d\n90 d\n\nDesde stock: no disponible · Compra externa: no disponible\n\nConsumo incompleto: falta consultar movimientos.\n\nReintentar\n\nConsumo incompleto: falta consultar compras externas.\n\nReintentar"
+    },
+    {
+      "name": "AC04 inventario_consumo vacío d1440",
+      "status": "PASS",
+      "detail": "Inicio\nÓrdenes\nUnidades\nInventario\n?\nSUPERVISOR\nCambiar rol\nRefacciones\nExistencias\nMovimientos\nConsumo\nPor recibir\nCatálogo\nConsumo\n\nTotales del periodo por refacción. El libro de movimientos no cambia.\n\n7 d\n30 d\n90 d\n\n0 pza desde stock · 0 pza compra externa\n\nConsulta actualizada.\nReintentar\nSKU\tREFACCIÓN\tSALIDA OT\tCOMPRA EXTERNA\tENTRADA\tAJUSTE\nNo hay consumo en este periodo.\nLas salidas de visita y las compras externas aparecen aquí."
+    },
+    {
+      "name": "AC01 inventario_movimientos error d1440",
+      "status": "PASS",
+      "detail": "Inicio\nÓrdenes\nUnidades\nInventario\n?\nSUPERVISOR\nCambiar rol\nRefacciones\nExistencias\nMovimientos\nConsumo\nPor recibir\nCatálogo\nMovimientos\n\nEntradas, salidas de visita y ajustes. Sin saldos inventados.\n\nBuscar\nTodo\nHoy\n7 d\n30 d\nEste mes\nPersonalizado\nTodos\nEntrada\nSalida\nAjuste\n\nNo se pudieron cargar los movimientos.\n\nReintentar"
+    },
+    {
+      "name": "AC04 inventario_movimientos vacío d1440",
+      "status": "PASS",
+      "detail": "Inicio\nÓrdenes\nUnidades\nInventario\n?\nSUPERVISOR\nCambiar rol\nRefacciones\nExistencias\nMovimientos\nConsumo\nPor recibir\nCatálogo\nMovimientos\n\nEntradas, salidas de visita y ajustes. Sin saldos inventados.\n\nBuscar\nTodo\nHoy\n7 d\n30 d\nEste mes\nPersonalizado\nTodos\nEntrada\nSalida\nAjuste\nConsulta actualizada.\nReintentar\nFECHA\tTIPO\tSKU\tCANT.\tCAMBIO\tVISITA\tNOTA\nAún no hay movimientos."
+    },
+    {
+      "name": "AC01 inventario_pendientes error d1440",
+      "status": "PASS",
+      "detail": "Inicio\nÓrdenes\nUnidades\nInventario\n?\nSUPERVISOR\nCambiar rol\nRefacciones\nExistencias\nMovimientos\nConsumo\nPor recibir\nCatálogo\nPor recibir\n\nCompras externas aún sin entrar al almacén. Cerrar el comprobante no cambia existencias.\n\nNo se pudieron cargar las compras por recibir.\n\nReintentar"
+    },
+    {
+      "name": "AC04 inventario_pendientes vacío d1440",
+      "status": "PASS",
+      "detail": "Inicio\nÓrdenes\nUnidades\nInventario\n2\nSUPERVISOR\nCambiar rol\nRefacciones\nExistencias\nMovimientos\nConsumo\nPor recibir\nCatálogo\nPor recibir\n\nCompras externas aún sin entrar al almacén. Cerrar el comprobante no cambia existencias.\n\nConsulta actualizada.\nReintentar\nNada por recibir.\n\nLas compras externas de una visita aparecen aquí hasta marcarlas recibidas."
+    },
+    {
+      "name": "AC01 andon error d1440",
+      "status": "PASS",
+      "detail": "Inicio\nÓrdenes\nUnidades\nInventario\n?\nSUPERVISOR\nCambiar rol\nMantenimiento vencido\n\nAlertas de mantenimiento vencido. Enterado es in-app; solo una visita cerrada resuelve.\n\nPendientes\nEnterados\nResueltos\nReincidentes\n\nNo se pudieron cargar los avisos.\n\nReintentar"
+    },
+    {
+      "name": "AC04 andon vacío d1440",
+      "status": "PASS",
+      "detail": "Inicio\nÓrdenes\nUnidades\nInventario\n?\nSUPERVISOR\nCambiar rol\nMantenimiento vencido\n\nAlertas de mantenimiento vencido. Enterado es in-app; solo una visita cerrada resuelve.\n\nPendientes\nEnterados\nResueltos\nReincidentes\nConsulta actualizada.\nReintentar\nNo hay alertas pendientes.\n\nAparecen cuando una unidad rebase el intervalo de km o de días desde su última visita cerrada."
+    },
+    {
+      "name": "AC01 notificaciones error d1440",
+      "status": "PASS",
+      "detail": "Inicio\nÓrdenes\nUnidades\nInventario\n?\nSUPERVISOR\nCambiar rol\nAlertas\n\nAvisos de mantenimiento, inventario, salud de unidad y flota sin regreso. Tocar una fila la marca leída y abre el destino.\n\nNo leídas\nTodas\n\nNo se pudieron cargar las alertas.\n\nReintentar"
+    },
+    {
+      "name": "AC04 notificaciones vacío d1440",
+      "status": "PASS",
+      "detail": "Inicio\nÓrdenes\nUnidades\nInventario\n?\nSUPERVISOR\nCambiar rol\nAlertas\n\nAvisos de mantenimiento, inventario, salud de unidad y flota sin regreso. Tocar una fila la marca leída y abre el destino.\n\nNo leídas\nTodas\nConsulta actualizada.\nReintentar\n\nSin alertas."
+    },
+    {
+      "name": "AC06 CTA navy d1440",
+      "status": "PASS",
+      "detail": {
+        "color": "rgb(36, 40, 77)",
+        "bg": "rgb(235, 122, 29)",
+        "font": "Roboto, \"Roboto Fallback\", ui-sans-serif, system-ui, sans-serif"
+      }
+    },
+    {
+      "name": "AC11 foco Nueva orden d1440",
+      "status": "PASS",
+      "detail": {
+        "tag": "BUTTON",
+        "label": "+ Nueva orden"
+      }
+    },
+    {
+      "name": "AC07 3→0→3 cola d1440",
+      "status": "PASS",
+      "detail": "?orden=test-v1"
+    },
+    {
+      "name": "AC07 texto y foco d1440",
+      "status": "PASS",
+      "detail": "?orden=test-v1"
+    },
+    {
+      "name": "AC02 órdenes parcial d1440",
+      "status": "PASS",
+      "detail": "Inicio\nÓrdenes\nUnidades\nInventario\n2\nSUPERVISOR\nCambiar rol\nÓrdenes\n+ Nueva orden\n\nConsulta parcial. Falta consultar: PRUEBA-UX-2.\n\nReintentar\nBorradores\nCerradas\nPRUEBA-UX-1\nOT · TEST-V1\nCorrectivo\nPRUEBA-UX-3\nOT · TEST-V3\nCorrectivo\nPRUEBA-UX-1\n\nOT · TEST-V1\n\nComentarios\nContinuar\nCapturar en esta orden\nAgregar pieza · 1\nSubir foto · 0 de 8\nBorrador\nFecha de apertura\n11/10/2026, 00:00\nFecha de cierre\nSin cerrar\nTiempo de cerrado\nSin cerrar\nTipo de mantenimiento\n\nCorrectivo\n\nTrabajos\nA · Prueba\nImágenes\n\nSin imágenes.\n\nComentarios\n\nSin comentarios.\n\nSKU\nSKU\tNOMBRE\tCANTIDAD\tORIGEN\nPRUEBA-01\tRefacción de prueba\t1 PZA\tDesde stock"
+    },
+    {
+      "name": "AC02 órdenes retry unidad d1440",
+      "status": "PASS",
+      "detail": [
+        {
+          "path": "/backend/unidades/test-u2/visitas",
+          "status": 200,
+          "mode": "ready",
+          "fixture": true
+        }
+      ]
+    },
+    {
+      "name": "AC03 relación pendiente d1440",
+      "status": "PASS",
+      "detail": "Inicio\nÓrdenes\nUnidades\nInventario\n2\nSUPERVISOR\nCambiar rol\nPRUEBA-UX-1\nCERRADA\n\nCorrectivo · 100 km · PRUEBA\n\nVolver al hub\nDatos\nChofer\nPRUEBA\nKilometraje\n100 km\nTipo\nCorrectivo\nTrabajos\nA Prueba\nObservaciones\n\nSin observaciones.\n\nFotos\n\nSin fotos.\n\nCargando datos de las piezas…\nPiezas\nSKU no disponible Nombre de refacción no disponible · 1 pza · Desde stock\nFirmas\n\nChofer\n\nSin firma\n\nJefe de mecánicos / taller\n\nSin firma"
+    },
+    {
+      "name": "AC01 consumo parcial conserva externa d1440",
+      "status": "PASS",
+      "detail": "Inicio\nÓrdenes\nUnidades\nInventario\n2\nSUPERVISOR\nCambiar rol\nRefacciones\nExistencias\nMovimientos\nConsumo\nPor recibir\nCatálogo\nConsumo\n\nTotales del periodo por refacción. El libro de movimientos no cambia.\n\n7 d\n30 d\n90 d\n\nDesde stock: no disponible · 4 pza compra externa\n\nConsumo incompleto: falta consultar movimientos.\n\nReintentar\nSKU\tREFACCIÓN\tSALIDA OT\tCOMPRA EXTERNA\tENTRADA\tAJUSTE\nPRUEBA-01\tRefacción de prueba\tNo disponible\t4 pza\tNo disponible\tNo disponible"
+    },
+    {
+      "name": "AC09 sin enlace falso 404 d1440",
+      "status": "PASS",
+      "detail": "Inicio\nÓrdenes\nUnidades\nInventario\n2\nSUPERVISOR\nCambiar rol\nRefacciones\nExistencias\nMovimientos\nConsumo\nPor recibir\nCatálogo\nMovimientos\n\nEntradas, salidas de visita y ajustes. Sin saldos inventados.\n\nBuscar\nTodo\nHoy\n7 d\n30 d\nEste mes\nPersonalizado\nTodos\nEntrada\nSalida\nAjuste\nFECHA\tTIPO\tSKU\tCANT.\tCAMBIO\tVISITA\tNOTA\n11/10/2026, 00:00\tSalida\tPRUEBA-01\t1 pza\t\t\nReferencia de visita no disponible para este acceso.\nID: test-v1\n\t—"
+    },
+    {
+      "name": "AC09 sin enlace falso 403 d1440",
+      "status": "PASS",
+      "detail": "Inicio\nÓrdenes\nUnidades\nInventario\n2\nSUPERVISOR\nCambiar rol\nRefacciones\nExistencias\nMovimientos\nConsumo\nPor recibir\nCatálogo\nMovimientos\n\nEntradas, salidas de visita y ajustes. Sin saldos inventados.\n\nBuscar\nTodo\nHoy\n7 d\n30 d\nEste mes\nPersonalizado\nTodos\nEntrada\nSalida\nAjuste\nFECHA\tTIPO\tSKU\tCANT.\tCAMBIO\tVISITA\tNOTA\n11/10/2026, 00:00\tSalida\tPRUEBA-01\t1 pza\t\t\nNo tienes acceso a esta visita.\nID: test-v1\n\t—"
+    },
+    {
+      "name": "AC09 sin enlace falso 503 d1440",
+      "status": "PASS",
+      "detail": "Inicio\nÓrdenes\nUnidades\nInventario\n2\nSUPERVISOR\nCambiar rol\nRefacciones\nExistencias\nMovimientos\nConsumo\nPor recibir\nCatálogo\nMovimientos\n\nEntradas, salidas de visita y ajustes. Sin saldos inventados.\n\nBuscar\nTodo\nHoy\n7 d\n30 d\nEste mes\nPersonalizado\nTodos\nEntrada\nSalida\nAjuste\nFECHA\tTIPO\tSKU\tCANT.\tCAMBIO\tVISITA\tNOTA\n11/10/2026, 00:00\tSalida\tPRUEBA-01\t1 pza\t\t\nNo se pudo consultar la referencia de visita.\nID: test-v1\nReintentar referencia\n\t—"
+    },
+    {
+      "name": "AC09 referencia recuperación d1440",
+      "status": "PASS",
+      "detail": "Inicio\nÓrdenes\nUnidades\nInventario\n2\nSUPERVISOR\nCambiar rol\nRefacciones\nExistencias\nMovimientos\nConsumo\nPor recibir\nCatálogo\nMovimientos\n\nEntradas, salidas de visita y ajustes. Sin saldos inventados.\n\nBuscar\nTodo\nHoy\n7 d\n30 d\nEste mes\nPersonalizado\nTodos\nEntrada\nSalida\nAjuste\nFECHA\tTIPO\tSKU\tCANT.\tCAMBIO\tVISITA\tNOTA\n11/10/2026, 00:00\tSalida\tPRUEBA-01\t1 pza\t\t\nOT · PRUEBA-UX-1\n\t—"
+    },
+    {
+      "name": "AC01 Inicio error d1024",
+      "status": "PASS",
+      "detail": "Inicio\nÓrdenes\nUnidades\nInventario\n?\nSUPERVISOR\nCambiar rol\nBuenos días\n\nQué hay que revisar. Cada fila abre la lista.\n\nNo se pudo cargar mantenimiento vencido.\n\nReintentar mantenimiento vencido\n\nNo se pudo cargar existencias.\n\nReintentar existencias\n\nNo se pudo cargar por recibir.\n\nReintentar por recibir\n\nNo se pudo cargar salud de unidad.\n\nReintentar salud de unidad"
+    },
+    {
+      "name": "AC05 ancho error d1024",
+      "status": "PASS",
+      "detail": [
+        992
+      ]
+    },
+    {
+      "name": "AC02 reintento fuente Inicio d1024",
+      "status": "PASS",
+      "detail": [
+        {
+          "path": "/backend/andon/avisos",
+          "status": 200,
+          "mode": "ready",
+          "fixture": true
+        }
+      ]
+    },
+    {
+      "name": "AC11 foco reintento Inicio d1024",
+      "status": "PASS",
+      "detail": {
+        "tag": "BUTTON",
+        "label": "Reintentar mantenimiento vencido"
+      }
+    },
+    {
+      "name": "AC04 Inicio recovery vacío real d1024",
+      "status": "PASS",
+      "detail": "Inicio\nÓrdenes\nUnidades\nInventario\n?\nSUPERVISOR\nCambiar rol\nBuenos días\n\nQué hay que revisar. Cada fila abre la lista.\n\nConsulta actualizada.\nReintentar salud de unidad\nNada requiere atención\n\nMantenimiento vencido, existencias, por recibir y salud están al día."
+    },
+    {
+      "name": "AC01 ordenes error d1024",
+      "status": "PASS",
+      "detail": "Inicio\nÓrdenes\nUnidades\nInventario\n?\nSUPERVISOR\nCambiar rol\nÓrdenes\n+ Nueva orden\n\nNo se pudieron cargar las órdenes.\n\nReintentar"
+    },
+    {
+      "name": "AC04 ordenes vacío d1024",
+      "status": "PASS",
+      "detail": "Inicio\nÓrdenes\nUnidades\nInventario\n?\nSUPERVISOR\nCambiar rol\nÓrdenes\n+ Nueva orden\nConsulta actualizada.\nReintentar\nBorradores\nCerradas\nNo hay órdenes en borrador.\n\nCrea una orden aquí para comenzar la captura."
+    },
+    {
+      "name": "AC01 unidades error d1024",
+      "status": "PASS",
+      "detail": "Inicio\nÓrdenes\nUnidades\nInventario\n?\nSUPERVISOR\nCambiar rol\nUnidades\n\nBusque y abra la ficha de la unidad.\n\nNo se pudieron cargar las unidades.\n\nReintentar\n\nNo se pudieron cargar los totales de unidades.\n\nReintentar\n\nCatálogo de tipos no disponible; se muestran los tipos de las unidades cargadas.\n\nReintentar\n\nAvisos de mantenimiento no disponibles.\n\nReintentar\n\nUmbrales no disponibles.\n\nReintentar"
+    },
+    {
+      "name": "AC04 unidades vacío d1024",
+      "status": "PASS",
+      "detail": "Inicio\nÓrdenes\nUnidades\nInventario\n?\nSUPERVISOR\nCambiar rol\nConsulta actualizada.\nReintentar\nUnidades\n\nBusque y abra la ficha de la unidad.\n\nFlota de mantenimiento\nAbra una ficha para visitas y alertas.\nTotal de unidades\n0\nActivas\n0\n0% del total\nInactivas\n0\n0% del total\nAlertas\n0\n0% del total\nBuscar unidad\nEstado\nTodos\nActiva\nInactiva\nLimpiar filtros\nBuscar\n\nConsejo: puede buscar por número interno, placas, marca o modelo para encontrar una unidad más rápido.\n\nNo hay unidades\n\nNo hay unidades registradas."
+    },
+    {
+      "name": "AC01 inventario_stock error d1024",
+      "status": "PASS",
+      "detail": "Inicio\nÓrdenes\nUnidades\nInventario\n?\nSUPERVISOR\nCambiar rol\nRefacciones\nExistencias\nMovimientos\nConsumo\nPor recibir\nCatálogo\nExistencias\nConfigurar alertas\nRegistrar entrada\nTodos\nBajo\nAgotado\n\nNo se pudieron cargar las existencias.\n\nReintentar\n\nCatálogos de refacciones no disponibles; las existencias cargadas se conservan.\n\nReintentar"
+    },
+    {
+      "name": "AC04 inventario_stock vacío d1024",
+      "status": "PASS",
+      "detail": "Inicio\nÓrdenes\nUnidades\nInventario\n?\nSUPERVISOR\nCambiar rol\nRefacciones\nExistencias\nMovimientos\nConsumo\nPor recibir\nCatálogo\nExistencias\nConfigurar alertas\nRegistrar entrada\nTodos\nBajo\nAgotado\nConsulta actualizada.\nReintentar\nSKU\tNOMBRE\tCATEGORÍA\tCANT.\tMÍNIMO\tESTADO\nAún no hay existencias."
+    },
+    {
+      "name": "AC01 inventario_consumo error d1024",
+      "status": "PASS",
+      "detail": "Inicio\nÓrdenes\nUnidades\nInventario\n?\nSUPERVISOR\nCambiar rol\nRefacciones\nExistencias\nMovimientos\nConsumo\nPor recibir\nCatálogo\nConsumo\n\nTotales del periodo por refacción. El libro de movimientos no cambia.\n\n7 d\n30 d\n90 d\n\nDesde stock: no disponible · Compra externa: no disponible\n\nConsumo incompleto: falta consultar movimientos.\n\nReintentar\n\nConsumo incompleto: falta consultar compras externas.\n\nReintentar"
+    },
+    {
+      "name": "AC04 inventario_consumo vacío d1024",
+      "status": "PASS",
+      "detail": "Inicio\nÓrdenes\nUnidades\nInventario\n?\nSUPERVISOR\nCambiar rol\nRefacciones\nExistencias\nMovimientos\nConsumo\nPor recibir\nCatálogo\nConsumo\n\nTotales del periodo por refacción. El libro de movimientos no cambia.\n\n7 d\n30 d\n90 d\n\n0 pza desde stock · 0 pza compra externa\n\nConsulta actualizada.\nReintentar\nSKU\tREFACCIÓN\tSALIDA OT\tCOMPRA EXTERNA\tENTRADA\tAJUSTE\nNo hay consumo en este periodo.\nLas salidas de visita y las compras externas aparecen aquí."
+    },
+    {
+      "name": "AC01 inventario_movimientos error d1024",
+      "status": "PASS",
+      "detail": "Inicio\nÓrdenes\nUnidades\nInventario\n?\nSUPERVISOR\nCambiar rol\nRefacciones\nExistencias\nMovimientos\nConsumo\nPor recibir\nCatálogo\nMovimientos\n\nEntradas, salidas de visita y ajustes. Sin saldos inventados.\n\nBuscar\nTodo\nHoy\n7 d\n30 d\nEste mes\nPersonalizado\nTodos\nEntrada\nSalida\nAjuste\n\nNo se pudieron cargar los movimientos.\n\nReintentar"
+    },
+    {
+      "name": "AC04 inventario_movimientos vacío d1024",
+      "status": "PASS",
+      "detail": "Inicio\nÓrdenes\nUnidades\nInventario\n?\nSUPERVISOR\nCambiar rol\nRefacciones\nExistencias\nMovimientos\nConsumo\nPor recibir\nCatálogo\nMovimientos\n\nEntradas, salidas de visita y ajustes. Sin saldos inventados.\n\nBuscar\nTodo\nHoy\n7 d\n30 d\nEste mes\nPersonalizado\nTodos\nEntrada\nSalida\nAjuste\nConsulta actualizada.\nReintentar\nFECHA\tTIPO\tSKU\tCANT.\tCAMBIO\tVISITA\tNOTA\nAún no hay movimientos."
+    },
+    {
+      "name": "AC01 inventario_pendientes error d1024",
+      "status": "PASS",
+      "detail": "Inicio\nÓrdenes\nUnidades\nInventario\n?\nSUPERVISOR\nCambiar rol\nRefacciones\nExistencias\nMovimientos\nConsumo\nPor recibir\nCatálogo\nPor recibir\n\nCompras externas aún sin entrar al almacén. Cerrar el comprobante no cambia existencias.\n\nNo se pudieron cargar las compras por recibir.\n\nReintentar"
+    },
+    {
+      "name": "AC04 inventario_pendientes vacío d1024",
+      "status": "PASS",
+      "detail": "Inicio\nÓrdenes\nUnidades\nInventario\n2\nSUPERVISOR\nCambiar rol\nRefacciones\nExistencias\nMovimientos\nConsumo\nPor recibir\nCatálogo\nPor recibir\n\nCompras externas aún sin entrar al almacén. Cerrar el comprobante no cambia existencias.\n\nConsulta actualizada.\nReintentar\nNada por recibir.\n\nLas compras externas de una visita aparecen aquí hasta marcarlas recibidas."
+    },
+    {
+      "name": "AC01 andon error d1024",
+      "status": "PASS",
+      "detail": "Inicio\nÓrdenes\nUnidades\nInventario\n?\nSUPERVISOR\nCambiar rol\nMantenimiento vencido\n\nAlertas de mantenimiento vencido. Enterado es in-app; solo una visita cerrada resuelve.\n\nPendientes\nEnterados\nResueltos\nReincidentes\n\nNo se pudieron cargar los avisos.\n\nReintentar"
+    },
+    {
+      "name": "AC04 andon vacío d1024",
+      "status": "PASS",
+      "detail": "Inicio\nÓrdenes\nUnidades\nInventario\n?\nSUPERVISOR\nCambiar rol\nMantenimiento vencido\n\nAlertas de mantenimiento vencido. Enterado es in-app; solo una visita cerrada resuelve.\n\nPendientes\nEnterados\nResueltos\nReincidentes\nConsulta actualizada.\nReintentar\nNo hay alertas pendientes.\n\nAparecen cuando una unidad rebase el intervalo de km o de días desde su última visita cerrada."
+    },
+    {
+      "name": "AC01 notificaciones error d1024",
+      "status": "PASS",
+      "detail": "Inicio\nÓrdenes\nUnidades\nInventario\n?\nSUPERVISOR\nCambiar rol\nAlertas\n\nAvisos de mantenimiento, inventario, salud de unidad y flota sin regreso. Tocar una fila la marca leída y abre el destino.\n\nNo leídas\nTodas\n\nNo se pudieron cargar las alertas.\n\nReintentar"
+    },
+    {
+      "name": "AC04 notificaciones vacío d1024",
+      "status": "PASS",
+      "detail": "Inicio\nÓrdenes\nUnidades\nInventario\n?\nSUPERVISOR\nCambiar rol\nAlertas\n\nAvisos de mantenimiento, inventario, salud de unidad y flota sin regreso. Tocar una fila la marca leída y abre el destino.\n\nNo leídas\nTodas\nConsulta actualizada.\nReintentar\n\nSin alertas."
+    },
+    {
+      "name": "AC06 CTA navy d1024",
+      "status": "PASS",
+      "detail": {
+        "color": "rgb(36, 40, 77)",
+        "bg": "rgb(244, 180, 128)",
+        "font": "Roboto, \"Roboto Fallback\", ui-sans-serif, system-ui, sans-serif"
+      }
+    },
+    {
+      "name": "AC11 foco Nueva orden d1024",
+      "status": "PASS",
+      "detail": {
+        "tag": "BUTTON",
+        "label": "+ Nueva orden"
+      }
+    },
+    {
+      "name": "AC07 3→0→3 cola d1024",
+      "status": "PASS",
+      "detail": "?orden=test-v1"
+    },
+    {
+      "name": "AC07 texto y foco d1024",
+      "status": "PASS",
+      "detail": "?orden=test-v1"
+    },
+    {
+      "name": "AC02 órdenes parcial d1024",
+      "status": "PASS",
+      "detail": "Inicio\nÓrdenes\nUnidades\nInventario\n2\nSUPERVISOR\nCambiar rol\nÓrdenes\n+ Nueva orden\n\nConsulta parcial. Falta consultar: PRUEBA-UX-2.\n\nReintentar\nBorradores\nCerradas\nPRUEBA-UX-1\nOT · TEST-V1\nCorrectivo\nPRUEBA-UX-3\nOT · TEST-V3\nCorrectivo\nPRUEBA-UX-1\n\nOT · TEST-V1\n\nComentarios\nContinuar\nCapturar en esta orden\nAgregar pieza · 1\nSubir foto · 0 de 8\nBorrador\nFecha de apertura\n11/10/2026, 00:00\nFecha de cierre\nSin cerrar\nTiempo de cerrado\nSin cerrar\nTipo de mantenimiento\n\nCorrectivo\n\nTrabajos\nA · Prueba\nImágenes\n\nSin imágenes.\n\nComentarios\n\nSin comentarios.\n\nSKU\nSKU\tNOMBRE\tCANTIDAD\tORIGEN\nPRUEBA-01\tRefacción de prueba\t1 PZA\tDesde stock"
+    },
+    {
+      "name": "AC02 órdenes retry unidad d1024",
+      "status": "PASS",
+      "detail": [
+        {
+          "path": "/backend/unidades/test-u2/visitas",
+          "status": 200,
+          "mode": "ready",
+          "fixture": true
+        }
+      ]
+    },
+    {
+      "name": "AC03 relación pendiente d1024",
+      "status": "PASS",
+      "detail": "Inicio\nÓrdenes\nUnidades\nInventario\n2\nSUPERVISOR\nCambiar rol\nPRUEBA-UX-1\nCERRADA\n\nCorrectivo · 100 km · PRUEBA\n\nVolver al hub\nDatos\nChofer\nPRUEBA\nKilometraje\n100 km\nTipo\nCorrectivo\nTrabajos\nA Prueba\nObservaciones\n\nSin observaciones.\n\nFotos\n\nSin fotos.\n\nCargando datos de las piezas…\nPiezas\nSKU no disponible Nombre de refacción no disponible · 1 pza · Desde stock\nFirmas\n\nChofer\n\nSin firma\n\nJefe de mecánicos / taller\n\nSin firma"
+    },
+    {
+      "name": "AC01 consumo parcial conserva externa d1024",
+      "status": "PASS",
+      "detail": "Inicio\nÓrdenes\nUnidades\nInventario\n2\nSUPERVISOR\nCambiar rol\nRefacciones\nExistencias\nMovimientos\nConsumo\nPor recibir\nCatálogo\nConsumo\n\nTotales del periodo por refacción. El libro de movimientos no cambia.\n\n7 d\n30 d\n90 d\n\nDesde stock: no disponible · 4 pza compra externa\n\nConsumo incompleto: falta consultar movimientos.\n\nReintentar\nSKU\tREFACCIÓN\tSALIDA OT\tCOMPRA EXTERNA\tENTRADA\tAJUSTE\nPRUEBA-01\tRefacción de prueba\tNo disponible\t4 pza\tNo disponible\tNo disponible"
+    },
+    {
+      "name": "AC09 sin enlace falso 404 d1024",
+      "status": "PASS",
+      "detail": "Inicio\nÓrdenes\nUnidades\nInventario\n2\nSUPERVISOR\nCambiar rol\nRefacciones\nExistencias\nMovimientos\nConsumo\nPor recibir\nCatálogo\nMovimientos\n\nEntradas, salidas de visita y ajustes. Sin saldos inventados.\n\nBuscar\nTodo\nHoy\n7 d\n30 d\nEste mes\nPersonalizado\nTodos\nEntrada\nSalida\nAjuste\nFECHA\tTIPO\tSKU\tCANT.\tCAMBIO\tVISITA\tNOTA\n11/10/2026, 00:00\tSalida\tPRUEBA-01\t1 pza\t\t\nReferencia de visita no disponible para este acceso.\nID: test-v1\n\t—"
+    },
+    {
+      "name": "AC09 sin enlace falso 403 d1024",
+      "status": "PASS",
+      "detail": "Inicio\nÓrdenes\nUnidades\nInventario\n2\nSUPERVISOR\nCambiar rol\nRefacciones\nExistencias\nMovimientos\nConsumo\nPor recibir\nCatálogo\nMovimientos\n\nEntradas, salidas de visita y ajustes. Sin saldos inventados.\n\nBuscar\nTodo\nHoy\n7 d\n30 d\nEste mes\nPersonalizado\nTodos\nEntrada\nSalida\nAjuste\nFECHA\tTIPO\tSKU\tCANT.\tCAMBIO\tVISITA\tNOTA\n11/10/2026, 00:00\tSalida\tPRUEBA-01\t1 pza\t\t\nNo tienes acceso a esta visita.\nID: test-v1\n\t—"
+    },
+    {
+      "name": "AC09 sin enlace falso 503 d1024",
+      "status": "PASS",
+      "detail": "Inicio\nÓrdenes\nUnidades\nInventario\n2\nSUPERVISOR\nCambiar rol\nRefacciones\nExistencias\nMovimientos\nConsumo\nPor recibir\nCatálogo\nMovimientos\n\nEntradas, salidas de visita y ajustes. Sin saldos inventados.\n\nBuscar\nTodo\nHoy\n7 d\n30 d\nEste mes\nPersonalizado\nTodos\nEntrada\nSalida\nAjuste\nFECHA\tTIPO\tSKU\tCANT.\tCAMBIO\tVISITA\tNOTA\n11/10/2026, 00:00\tSalida\tPRUEBA-01\t1 pza\t\t\nNo se pudo consultar la referencia de visita.\nID: test-v1\nReintentar referencia\n\t—"
+    },
+    {
+      "name": "AC09 referencia recuperación d1024",
+      "status": "PASS",
+      "detail": "Inicio\nÓrdenes\nUnidades\nInventario\n2\nSUPERVISOR\nCambiar rol\nRefacciones\nExistencias\nMovimientos\nConsumo\nPor recibir\nCatálogo\nMovimientos\n\nEntradas, salidas de visita y ajustes. Sin saldos inventados.\n\nBuscar\nTodo\nHoy\n7 d\n30 d\nEste mes\nPersonalizado\nTodos\nEntrada\nSalida\nAjuste\nFECHA\tTIPO\tSKU\tCANT.\tCAMBIO\tVISITA\tNOTA\n11/10/2026, 00:00\tSalida\tPRUEBA-01\t1 pza\t\t\nOT · PRUEBA-UX-1\n\t—"
+    },
+    {
+      "name": "AC01 Inicio error m390",
+      "status": "PASS",
+      "detail": "?\nInicio\nÓrdenes\nUnidades\nInventario\nBuenos días\n\nQué hay que revisar. Cada fila abre la lista.\n\nNo se pudo cargar mantenimiento vencido.\n\nReintentar mantenimiento vencido\n\nNo se pudo cargar existencias.\n\nReintentar existencias\n\nNo se pudo cargar por recibir.\n\nReintentar por recibir\n\nNo se pudo cargar salud de unidad.\n\nReintentar salud de unidad"
+    },
+    {
+      "name": "AC05 ancho error m390",
+      "status": "PASS",
+      "detail": [
+        358
+      ]
+    },
+    {
+      "name": "AC02 reintento fuente Inicio m390",
+      "status": "PASS",
+      "detail": [
+        {
+          "path": "/backend/andon/avisos",
+          "status": 200,
+          "mode": "ready",
+          "fixture": true
+        }
+      ]
+    },
+    {
+      "name": "AC11 foco reintento Inicio m390",
+      "status": "PASS",
+      "detail": {
+        "tag": "BUTTON",
+        "label": "Reintentar mantenimiento vencido"
+      }
+    },
+    {
+      "name": "AC04 Inicio recovery vacío real m390",
+      "status": "PASS",
+      "detail": "?\nInicio\nÓrdenes\nUnidades\nInventario\nBuenos días\n\nQué hay que revisar. Cada fila abre la lista.\n\nConsulta actualizada.\nReintentar salud de unidad\nNada requiere atención\n\nMantenimiento vencido, existencias, por recibir y salud están al día."
+    },
+    {
+      "name": "AC01 ordenes error m390",
+      "status": "PASS",
+      "detail": "?\nInicio\nÓrdenes\nUnidades\nInventario\nÓrdenes\n+ Nueva orden\n\nNo se pudieron cargar las órdenes.\n\nReintentar"
+    },
+    {
+      "name": "AC04 ordenes vacío m390",
+      "status": "PASS",
+      "detail": "?\nInicio\nÓrdenes\nUnidades\nInventario\nÓrdenes\n+ Nueva orden\nConsulta actualizada.\nReintentar\nBorradores\nCerradas\nNo hay órdenes en borrador.\n\nCrea una orden aquí para comenzar la captura."
+    },
+    {
+      "name": "AC01 unidades error m390",
+      "status": "PASS",
+      "detail": "?\nInicio\nÓrdenes\nUnidades\nInventario\nUnidades\n\nBusque y abra la ficha de la unidad.\n\nNo se pudieron cargar las unidades.\n\nReintentar\n\nNo se pudieron cargar los totales de unidades.\n\nReintentar\n\nCatálogo de tipos no disponible; se muestran los tipos de las unidades cargadas.\n\nReintentar\n\nAvisos de mantenimiento no disponibles.\n\nReintentar\n\nUmbrales no disponibles.\n\nReintentar"
+    },
+    {
+      "name": "AC04 unidades vacío m390",
+      "status": "PASS",
+      "detail": "?\nInicio\nÓrdenes\nUnidades\nInventario\nConsulta actualizada.\nReintentar\nUnidades\n\nBusque y abra la ficha de la unidad.\n\nTotal de unidades\n0\nActivas\n0\n0% del total\nInactivas\n0\n0% del total\nAlertas\n0\n0% del total\nBuscar unidad\nFiltros\n\nConsejo: puede buscar por número interno, placas, marca o modelo para encontrar una unidad más rápido.\n\nNo hay unidades\n\nNo hay unidades registradas."
+    },
+    {
+      "name": "AC01 inventario_stock error m390",
+      "status": "PASS",
+      "detail": "?\nInicio\nÓrdenes\nUnidades\nInventario\nRefacciones\nExistencias\nMovimientos\nConsumo\nPor recibir\nCatálogo\nExistencias\nConfigurar alertas\nRegistrar entrada\nTodos\nBajo\nAgotado\n\nNo se pudieron cargar las existencias.\n\nReintentar\n\nCatálogos de refacciones no disponibles; las existencias cargadas se conservan.\n\nReintentar"
+    },
+    {
+      "name": "AC04 inventario_stock vacío m390",
+      "status": "PASS",
+      "detail": "?\nInicio\nÓrdenes\nUnidades\nInventario\nRefacciones\nExistencias\nMovimientos\nConsumo\nPor recibir\nCatálogo\nExistencias\nConfigurar alertas\nRegistrar entrada\nTodos\nBajo\nAgotado\nConsulta actualizada.\nReintentar\nSKU\tNOMBRE\tCATEGORÍA\tCANT.\tMÍNIMO\tESTADO\nAún no hay existencias."
+    },
+    {
+      "name": "AC01 inventario_consumo error m390",
+      "status": "PASS",
+      "detail": "?\nInicio\nÓrdenes\nUnidades\nInventario\nRefacciones\nExistencias\nMovimientos\nConsumo\nPor recibir\nCatálogo\nConsumo\n\nTotales del periodo por refacción. El libro de movimientos no cambia.\n\n7 d\n30 d\n90 d\n\nDesde stock: no disponible · Compra externa: no disponible\n\nConsumo incompleto: falta consultar movimientos.\n\nReintentar\n\nConsumo incompleto: falta consultar compras externas.\n\nReintentar"
+    },
+    {
+      "name": "AC04 inventario_consumo vacío m390",
+      "status": "PASS",
+      "detail": "?\nInicio\nÓrdenes\nUnidades\nInventario\nRefacciones\nExistencias\nMovimientos\nConsumo\nPor recibir\nCatálogo\nConsumo\n\nTotales del periodo por refacción. El libro de movimientos no cambia.\n\n7 d\n30 d\n90 d\n\n0 pza desde stock · 0 pza compra externa\n\nConsulta actualizada.\nReintentar\nSKU\tREFACCIÓN\tSALIDA OT\tCOMPRA EXTERNA\tENTRADA\tAJUSTE\nNo hay consumo en este periodo.\nLas salidas de visita y las compras externas aparecen aquí."
+    },
+    {
+      "name": "AC01 inventario_movimientos error m390",
+      "status": "PASS",
+      "detail": "?\nInicio\nÓrdenes\nUnidades\nInventario\nRefacciones\nExistencias\nMovimientos\nConsumo\nPor recibir\nCatálogo\nMovimientos\n\nEntradas, salidas de visita y ajustes. Sin saldos inventados.\n\nBuscar\nTodo\nHoy\n7 d\n30 d\nEste mes\nPersonalizado\nTodos\nEntrada\nSalida\nAjuste\n\nNo se pudieron cargar los movimientos.\n\nReintentar"
+    },
+    {
+      "name": "AC04 inventario_movimientos vacío m390",
+      "status": "PASS",
+      "detail": "?\nInicio\nÓrdenes\nUnidades\nInventario\nRefacciones\nExistencias\nMovimientos\nConsumo\nPor recibir\nCatálogo\nMovimientos\n\nEntradas, salidas de visita y ajustes. Sin saldos inventados.\n\nBuscar\nTodo\nHoy\n7 d\n30 d\nEste mes\nPersonalizado\nTodos\nEntrada\nSalida\nAjuste\nConsulta actualizada.\nReintentar\nFECHA\tTIPO\tSKU\tCANT.\tCAMBIO\tVISITA\tNOTA\nAún no hay movimientos."
+    },
+    {
+      "name": "AC01 inventario_pendientes error m390",
+      "status": "PASS",
+      "detail": "?\nInicio\nÓrdenes\nUnidades\nInventario\nRefacciones\nExistencias\nMovimientos\nConsumo\nPor recibir\nCatálogo\nPor recibir\n\nCompras externas aún sin entrar al almacén. Cerrar el comprobante no cambia existencias.\n\nNo se pudieron cargar las compras por recibir.\n\nReintentar"
+    },
+    {
+      "name": "AC04 inventario_pendientes vacío m390",
+      "status": "PASS",
+      "detail": "?\nInicio\nÓrdenes\nUnidades\nInventario\nRefacciones\nExistencias\nMovimientos\nConsumo\nPor recibir\nCatálogo\nPor recibir\n\nCompras externas aún sin entrar al almacén. Cerrar el comprobante no cambia existencias.\n\nConsulta actualizada.\nReintentar\nNada por recibir.\n\nLas compras externas de una visita aparecen aquí hasta marcarlas recibidas."
+    },
+    {
+      "name": "AC01 andon error m390",
+      "status": "PASS",
+      "detail": "?\nInicio\nÓrdenes\nUnidades\nInventario\nMantenimiento vencido\n\nAlertas de mantenimiento vencido. Enterado es in-app; solo una visita cerrada resuelve.\n\nPendientes\nEnterados\nResueltos\nReincidentes\n\nNo se pudieron cargar los avisos.\n\nReintentar"
+    },
+    {
+      "name": "AC04 andon vacío m390",
+      "status": "PASS",
+      "detail": "?\nInicio\nÓrdenes\nUnidades\nInventario\nMantenimiento vencido\n\nAlertas de mantenimiento vencido. Enterado es in-app; solo una visita cerrada resuelve.\n\nPendientes\nEnterados\nResueltos\nReincidentes\nConsulta actualizada.\nReintentar\nNo hay alertas pendientes.\n\nAparecen cuando una unidad rebase el intervalo de km o de días desde su última visita cerrada."
+    },
+    {
+      "name": "AC01 notificaciones error m390",
+      "status": "PASS",
+      "detail": "?\nInicio\nÓrdenes\nUnidades\nInventario\nAlertas\n\nAvisos de mantenimiento, inventario, salud de unidad y flota sin regreso. Tocar una fila la marca leída y abre el destino.\n\nNo leídas\nTodas\n\nNo se pudieron cargar las alertas.\n\nReintentar"
+    },
+    {
+      "name": "AC04 notificaciones vacío m390",
+      "status": "PASS",
+      "detail": "?\nInicio\nÓrdenes\nUnidades\nInventario\nAlertas\n\nAvisos de mantenimiento, inventario, salud de unidad y flota sin regreso. Tocar una fila la marca leída y abre el destino.\n\nNo leídas\nTodas\nConsulta actualizada.\nReintentar\n\nSin alertas."
+    },
+    {
+      "name": "AC06 CTA navy m390",
+      "status": "PASS",
+      "detail": {
+        "color": "rgb(36, 40, 77)",
+        "bg": "rgb(234, 117, 21)",
+        "font": "Roboto, \"Roboto Fallback\", ui-sans-serif, system-ui, sans-serif"
+      }
+    },
+    {
+      "name": "AC11 foco Nueva orden m390",
+      "status": "PASS",
+      "detail": {
+        "tag": "BUTTON",
+        "label": "+ Nueva orden"
+      }
+    },
+    {
+      "name": "AC07 3→0→3 cola m390",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "AC07 texto y foco m390",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "AC02 órdenes parcial m390",
+      "status": "PASS",
+      "detail": "2\nInicio\nÓrdenes\nUnidades\nInventario\nÓrdenes\n+ Nueva orden\n\nConsulta parcial. Falta consultar: PRUEBA-UX-2.\n\nReintentar\nBorradores\nCerradas\nPRUEBA-UX-1\nOT · TEST-V1\nCorrectivo\nPRUEBA-UX-3\nOT · TEST-V3\nCorrectivo"
+    },
+    {
+      "name": "AC02 órdenes retry unidad m390",
+      "status": "PASS",
+      "detail": [
+        {
+          "path": "/backend/unidades/test-u2/visitas",
+          "status": 200,
+          "mode": "ready",
+          "fixture": true
+        }
+      ]
+    },
+    {
+      "name": "AC03 relación pendiente m390",
+      "status": "PASS",
+      "detail": "2\nInicio\nÓrdenes\nUnidades\nInventario\nPRUEBA-UX-1\nCERRADA\n\nCorrectivo · 100 km · PRUEBA\n\nVolver al hub\nDatos\nChofer\nPRUEBA\nKilometraje\n100 km\nTipo\nCorrectivo\nTrabajos\nA Prueba\nObservaciones\n\nSin observaciones.\n\nFotos\n\nSin fotos.\n\nCargando datos de las piezas…\nPiezas\nSKU no disponible Nombre de refacción no disponible · 1 pza · Desde stock\nFirmas\n\nChofer\n\nSin firma\n\nJefe de mecánicos / taller\n\nSin firma"
+    },
+    {
+      "name": "AC01 consumo parcial conserva externa m390",
+      "status": "PASS",
+      "detail": "2\nInicio\nÓrdenes\nUnidades\nInventario\nRefacciones\nExistencias\nMovimientos\nConsumo\nPor recibir\nCatálogo\nConsumo\n\nTotales del periodo por refacción. El libro de movimientos no cambia.\n\n7 d\n30 d\n90 d\n\nDesde stock: no disponible · 4 pza compra externa\n\nConsumo incompleto: falta consultar movimientos.\n\nReintentar\nSKU\tREFACCIÓN\tSALIDA OT\tCOMPRA EXTERNA\tENTRADA\tAJUSTE\nPRUEBA-01\tRefacción de prueba\tNo disponible\t4 pza\tNo disponible\tNo disponible"
+    },
+    {
+      "name": "AC09 sin enlace falso 404 m390",
+      "status": "PASS",
+      "detail": "2\nInicio\nÓrdenes\nUnidades\nInventario\nRefacciones\nExistencias\nMovimientos\nConsumo\nPor recibir\nCatálogo\nMovimientos\n\nEntradas, salidas de visita y ajustes. Sin saldos inventados.\n\nBuscar\nTodo\nHoy\n7 d\n30 d\nEste mes\nPersonalizado\nTodos\nEntrada\nSalida\nAjuste\nFECHA\tTIPO\tSKU\tCANT.\tCAMBIO\tVISITA\tNOTA\n11/10/2026, 00:00\tSalida\tPRUEBA-01\t1 pza\t\t\nReferencia de visita no disponible para este acceso.\nID: test-v1\n\t—"
+    },
+    {
+      "name": "AC09 sin enlace falso 403 m390",
+      "status": "PASS",
+      "detail": "2\nInicio\nÓrdenes\nUnidades\nInventario\nRefacciones\nExistencias\nMovimientos\nConsumo\nPor recibir\nCatálogo\nMovimientos\n\nEntradas, salidas de visita y ajustes. Sin saldos inventados.\n\nBuscar\nTodo\nHoy\n7 d\n30 d\nEste mes\nPersonalizado\nTodos\nEntrada\nSalida\nAjuste\nFECHA\tTIPO\tSKU\tCANT.\tCAMBIO\tVISITA\tNOTA\n11/10/2026, 00:00\tSalida\tPRUEBA-01\t1 pza\t\t\nNo tienes acceso a esta visita.\nID: test-v1\n\t—"
+    },
+    {
+      "name": "AC09 sin enlace falso 503 m390",
+      "status": "PASS",
+      "detail": "2\nInicio\nÓrdenes\nUnidades\nInventario\nRefacciones\nExistencias\nMovimientos\nConsumo\nPor recibir\nCatálogo\nMovimientos\n\nEntradas, salidas de visita y ajustes. Sin saldos inventados.\n\nBuscar\nTodo\nHoy\n7 d\n30 d\nEste mes\nPersonalizado\nTodos\nEntrada\nSalida\nAjuste\nFECHA\tTIPO\tSKU\tCANT.\tCAMBIO\tVISITA\tNOTA\n11/10/2026, 00:00\tSalida\tPRUEBA-01\t1 pza\t\t\nNo se pudo consultar la referencia de visita.\nID: test-v1\nReintentar referencia\n\t—"
+    },
+    {
+      "name": "AC09 referencia recuperación m390",
+      "status": "PASS",
+      "detail": "2\nInicio\nÓrdenes\nUnidades\nInventario\nRefacciones\nExistencias\nMovimientos\nConsumo\nPor recibir\nCatálogo\nMovimientos\n\nEntradas, salidas de visita y ajustes. Sin saldos inventados.\n\nBuscar\nTodo\nHoy\n7 d\n30 d\nEste mes\nPersonalizado\nTodos\nEntrada\nSalida\nAjuste\nFECHA\tTIPO\tSKU\tCANT.\tCAMBIO\tVISITA\tNOTA\n11/10/2026, 00:00\tSalida\tPRUEBA-01\t1 pza\t\t\nOT · PRUEBA-UX-1\n\t—"
+    }
+  ],
+  "texts": {
+    "inicio_error_d1440": "Inicio\nÓrdenes\nUnidades\nInventario\n?\nSUPERVISOR\nCambiar rol\nBuenos días\n\nQué hay que revisar. Cada fila abre la lista.\n\nNo se pudo cargar mantenimiento vencido.\n\nReintentar mantenimiento vencido\n\nNo se pudo cargar existencias.\n\nReintentar existencias\n\nNo se pudo cargar por recibir.\n\nReintentar por recibir\n\nNo se pudo cargar salud de unidad.\n\nReintentar salud de unidad",
+    "inicio_parcial_d1440": "Inicio\nÓrdenes\nUnidades\nInventario\n2\nSUPERVISOR\nCambiar rol\nBuenos días\n\nQué hay que revisar. Cada fila abre la lista.\n\nNo se pudo cargar mantenimiento vencido.\n\nReintentar mantenimiento vencido\nREQUIERE ATENCIÓN\nRefacción de prueba\nExistencias · Agotado; revise la refacción\nPRUEBA-01 · Refacción de prueba\nInventario · Evidencia pendiente de compra externa",
+    "inicio_recuperado_d1440": "Inicio\nÓrdenes\nUnidades\nInventario\n2\nSUPERVISOR\nCambiar rol\nBuenos días\n\nQué hay que revisar. Cada fila abre la lista.\n\nConsulta actualizada.\nReintentar mantenimiento vencido\nREQUIERE ATENCIÓN\nRefacción de prueba\nExistencias · Agotado; revise la refacción\nPRUEBA-01 · Refacción de prueba\nInventario · Evidencia pendiente de compra externa",
+    "inicio_recuperado_vacio_d1440": "Inicio\nÓrdenes\nUnidades\nInventario\n?\nSUPERVISOR\nCambiar rol\nBuenos días\n\nQué hay que revisar. Cada fila abre la lista.\n\nConsulta actualizada.\nReintentar salud de unidad\nNada requiere atención\n\nMantenimiento vencido, existencias, por recibir y salud están al día.",
+    "ordenes_error_d1440": "Inicio\nÓrdenes\nUnidades\nInventario\n?\nSUPERVISOR\nCambiar rol\nÓrdenes\n+ Nueva orden\n\nNo se pudieron cargar las órdenes.\n\nReintentar",
+    "ordenes_vacio_d1440": "Inicio\nÓrdenes\nUnidades\nInventario\n?\nSUPERVISOR\nCambiar rol\nÓrdenes\n+ Nueva orden\nConsulta actualizada.\nReintentar\nBorradores\nCerradas\nNo hay órdenes en borrador.\n\nCrea una orden aquí para comenzar la captura.",
+    "unidades_error_d1440": "Inicio\nÓrdenes\nUnidades\nInventario\n?\nSUPERVISOR\nCambiar rol\nUnidades\n\nBusque y abra la ficha de la unidad.\n\nNo se pudieron cargar las unidades.\n\nReintentar\n\nNo se pudieron cargar los totales de unidades.\n\nReintentar\n\nCatálogo de tipos no disponible; se muestran los tipos de las unidades cargadas.\n\nReintentar\n\nAvisos de mantenimiento no disponibles.\n\nReintentar\n\nUmbrales no disponibles.\n\nReintentar",
+    "unidades_vacio_d1440": "Inicio\nÓrdenes\nUnidades\nInventario\n?\nSUPERVISOR\nCambiar rol\nConsulta actualizada.\nReintentar\nUnidades\n\nBusque y abra la ficha de la unidad.\n\nFlota de mantenimiento\nAbra una ficha para visitas y alertas.\nTotal de unidades\n0\nActivas\n0\n0% del total\nInactivas\n0\n0% del total\nAlertas\n0\n0% del total\nBuscar unidad\nEstado\nTodos\nActiva\nInactiva\nLimpiar filtros\nBuscar\n\nConsejo: puede buscar por número interno, placas, marca o modelo para encontrar una unidad más rápido.\n\nNo hay unidades\n\nNo hay unidades registradas.",
+    "inventario_stock_error_d1440": "Inicio\nÓrdenes\nUnidades\nInventario\n?\nSUPERVISOR\nCambiar rol\nRefacciones\nExistencias\nMovimientos\nConsumo\nPor recibir\nCatálogo\nExistencias\nConfigurar alertas\nRegistrar entrada\nTodos\nBajo\nAgotado\n\nNo se pudieron cargar las existencias.\n\nReintentar\n\nCatálogos de refacciones no disponibles; las existencias cargadas se conservan.\n\nReintentar",
+    "inventario_stock_vacio_d1440": "Inicio\nÓrdenes\nUnidades\nInventario\n?\nSUPERVISOR\nCambiar rol\nRefacciones\nExistencias\nMovimientos\nConsumo\nPor recibir\nCatálogo\nExistencias\nConfigurar alertas\nRegistrar entrada\nTodos\nBajo\nAgotado\nConsulta actualizada.\nReintentar\nSKU\tNOMBRE\tCATEGORÍA\tCANT.\tMÍNIMO\tESTADO\nAún no hay existencias.",
+    "inventario_consumo_error_d1440": "Inicio\nÓrdenes\nUnidades\nInventario\n?\nSUPERVISOR\nCambiar rol\nRefacciones\nExistencias\nMovimientos\nConsumo\nPor recibir\nCatálogo\nConsumo\n\nTotales del periodo por refacción. El libro de movimientos no cambia.\n\n7 d\n30 d\n90 d\n\nDesde stock: no disponible · Compra externa: no disponible\n\nConsumo incompleto: falta consultar movimientos.\n\nReintentar\n\nConsumo incompleto: falta consultar compras externas.\n\nReintentar",
+    "inventario_consumo_vacio_d1440": "Inicio\nÓrdenes\nUnidades\nInventario\n?\nSUPERVISOR\nCambiar rol\nRefacciones\nExistencias\nMovimientos\nConsumo\nPor recibir\nCatálogo\nConsumo\n\nTotales del periodo por refacción. El libro de movimientos no cambia.\n\n7 d\n30 d\n90 d\n\n0 pza desde stock · 0 pza compra externa\n\nConsulta actualizada.\nReintentar\nSKU\tREFACCIÓN\tSALIDA OT\tCOMPRA EXTERNA\tENTRADA\tAJUSTE\nNo hay consumo en este periodo.\nLas salidas de visita y las compras externas aparecen aquí.",
+    "inventario_movimientos_error_d1440": "Inicio\nÓrdenes\nUnidades\nInventario\n?\nSUPERVISOR\nCambiar rol\nRefacciones\nExistencias\nMovimientos\nConsumo\nPor recibir\nCatálogo\nMovimientos\n\nEntradas, salidas de visita y ajustes. Sin saldos inventados.\n\nBuscar\nTodo\nHoy\n7 d\n30 d\nEste mes\nPersonalizado\nTodos\nEntrada\nSalida\nAjuste\n\nNo se pudieron cargar los movimientos.\n\nReintentar",
+    "inventario_movimientos_vacio_d1440": "Inicio\nÓrdenes\nUnidades\nInventario\n?\nSUPERVISOR\nCambiar rol\nRefacciones\nExistencias\nMovimientos\nConsumo\nPor recibir\nCatálogo\nMovimientos\n\nEntradas, salidas de visita y ajustes. Sin saldos inventados.\n\nBuscar\nTodo\nHoy\n7 d\n30 d\nEste mes\nPersonalizado\nTodos\nEntrada\nSalida\nAjuste\nConsulta actualizada.\nReintentar\nFECHA\tTIPO\tSKU\tCANT.\tCAMBIO\tVISITA\tNOTA\nAún no hay movimientos.",
+    "inventario_pendientes_error_d1440": "Inicio\nÓrdenes\nUnidades\nInventario\n?\nSUPERVISOR\nCambiar rol\nRefacciones\nExistencias\nMovimientos\nConsumo\nPor recibir\nCatálogo\nPor recibir\n\nCompras externas aún sin entrar al almacén. Cerrar el comprobante no cambia existencias.\n\nNo se pudieron cargar las compras por recibir.\n\nReintentar",
+    "inventario_pendientes_vacio_d1440": "Inicio\nÓrdenes\nUnidades\nInventario\n2\nSUPERVISOR\nCambiar rol\nRefacciones\nExistencias\nMovimientos\nConsumo\nPor recibir\nCatálogo\nPor recibir\n\nCompras externas aún sin entrar al almacén. Cerrar el comprobante no cambia existencias.\n\nConsulta actualizada.\nReintentar\nNada por recibir.\n\nLas compras externas de una visita aparecen aquí hasta marcarlas recibidas.",
+    "andon_error_d1440": "Inicio\nÓrdenes\nUnidades\nInventario\n?\nSUPERVISOR\nCambiar rol\nMantenimiento vencido\n\nAlertas de mantenimiento vencido. Enterado es in-app; solo una visita cerrada resuelve.\n\nPendientes\nEnterados\nResueltos\nReincidentes\n\nNo se pudieron cargar los avisos.\n\nReintentar",
+    "andon_vacio_d1440": "Inicio\nÓrdenes\nUnidades\nInventario\n?\nSUPERVISOR\nCambiar rol\nMantenimiento vencido\n\nAlertas de mantenimiento vencido. Enterado es in-app; solo una visita cerrada resuelve.\n\nPendientes\nEnterados\nResueltos\nReincidentes\nConsulta actualizada.\nReintentar\nNo hay alertas pendientes.\n\nAparecen cuando una unidad rebase el intervalo de km o de días desde su última visita cerrada.",
+    "notificaciones_error_d1440": "Inicio\nÓrdenes\nUnidades\nInventario\n?\nSUPERVISOR\nCambiar rol\nAlertas\n\nAvisos de mantenimiento, inventario, salud de unidad y flota sin regreso. Tocar una fila la marca leída y abre el destino.\n\nNo leídas\nTodas\n\nNo se pudieron cargar las alertas.\n\nReintentar",
+    "notificaciones_vacio_d1440": "Inicio\nÓrdenes\nUnidades\nInventario\n?\nSUPERVISOR\nCambiar rol\nAlertas\n\nAvisos de mantenimiento, inventario, salud de unidad y flota sin regreso. Tocar una fila la marca leída y abre el destino.\n\nNo leídas\nTodas\nConsulta actualizada.\nReintentar\n\nSin alertas.",
+    "nueva_orden_lista_d1440": "Inicio\nÓrdenes\nUnidades\nInventario\n2\nSUPERVISOR\nCambiar rol\nÓrdenes\n+ Nueva orden\nBorradores\nCerradas\nPRUEBA-UX-1\nOT · TEST-V1\nCorrectivo\nPRUEBA-UX-2\nOT · TEST-V2\nCorrectivo\nPRUEBA-UX-3\nOT · TEST-V3\nCorrectivo\nPRUEBA-UX-1\n\nOT · TEST-V1\n\nComentarios\nContinuar\nCapturar en esta orden\nAgregar pieza · 1\nSubir foto · 0 de 8\nBorrador\nFecha de apertura\n11/10/2026, 00:00\nFecha de cierre\nSin cerrar\nTiempo de cerrado\nSin cerrar\nTipo de mantenimiento\n\nCorrectivo\n\nTrabajos\nA · Prueba\nImágenes\n\nSin imágenes.\n\nComentarios\n\nSin comentarios.\n\nSKU\nSKU\tNOMBRE\tCANTIDAD\tORIGEN\nPRUEBA-01\tRefacción de prueba\t1 PZA\tDesde stock\nNueva orden\n\nSelecciona una unidad activa y captura los datos iniciales.\n\nPRUEBA-UX-1\nPRUEBA-1 · Camión de prueba\nPRUEBA-UX-2\nPRUEBA-2 · Camión de prueba\nPRUEBA-UX-3\nPRUEBA-3 · Camión de prueba\nCancelar\nCrear y continuar\nCerrar",
+    "ordenes_filtro_d1440": "Inicio\nÓrdenes\nUnidades\nInventario\n2\nSUPERVISOR\nCambiar rol\nÓrdenes\n+ Nueva orden\nBorradores\nCerradas\nSin coincidencias con estos filtros.\n\nQuita los filtros para recuperar las órdenes de esta cola.\n\nQuitar filtros",
+    "ordenes_parcial_d1440": "Inicio\nÓrdenes\nUnidades\nInventario\n2\nSUPERVISOR\nCambiar rol\nÓrdenes\n+ Nueva orden\n\nConsulta parcial. Falta consultar: PRUEBA-UX-2.\n\nReintentar\nBorradores\nCerradas\nPRUEBA-UX-1\nOT · TEST-V1\nCorrectivo\nPRUEBA-UX-3\nOT · TEST-V3\nCorrectivo\nPRUEBA-UX-1\n\nOT · TEST-V1\n\nComentarios\nContinuar\nCapturar en esta orden\nAgregar pieza · 1\nSubir foto · 0 de 8\nBorrador\nFecha de apertura\n11/10/2026, 00:00\nFecha de cierre\nSin cerrar\nTiempo de cerrado\nSin cerrar\nTipo de mantenimiento\n\nCorrectivo\n\nTrabajos\nA · Prueba\nImágenes\n\nSin imágenes.\n\nComentarios\n\nSin comentarios.\n\nSKU\nSKU\tNOMBRE\tCANTIDAD\tORIGEN\nPRUEBA-01\tRefacción de prueba\t1 PZA\tDesde stock",
+    "documento_piezas_error_d1440": "Inicio\nÓrdenes\nUnidades\nInventario\n2\nSUPERVISOR\nCambiar rol\nPRUEBA-UX-1\nCERRADA\n\nCorrectivo · 100 km · PRUEBA\n\nVolver al hub\nDatos\nChofer\nPRUEBA\nKilometraje\n100 km\nTipo\nCorrectivo\nTrabajos\nA Prueba\nObservaciones\n\nSin observaciones.\n\nFotos\n\nSin fotos.\n\nNo se pudieron consultar las piezas. Se conservan cantidades y origen.\n\nReintentar piezas\nPiezas\nSKU no disponible Nombre de refacción no disponible · 1 pza · Desde stock\nFirmas\n\nChofer\n\nSin firma\n\nJefe de mecánicos / taller\n\nSin firma",
+    "documento_recuperado_d1440": "Inicio\nÓrdenes\nUnidades\nInventario\n2\nSUPERVISOR\nCambiar rol\nPRUEBA-UX-1\nCERRADA\n\nCorrectivo · 100 km · PRUEBA\n\nVolver al hub\nDatos\nChofer\nPRUEBA\nKilometraje\n100 km\nTipo\nCorrectivo\nTrabajos\nA Prueba\nObservaciones\n\nSin observaciones.\n\nFotos\n\nSin fotos.\n\nConsulta actualizada.\nReintentar piezas\nPiezas\nPRUEBA-01 Refacción de prueba · 1 PZA · Desde stock\nFirmas\n\nChofer\n\nSin firma\n\nJefe de mecánicos / taller\n\nSin firma",
+    "consumo_parcial_d1440": "Inicio\nÓrdenes\nUnidades\nInventario\n2\nSUPERVISOR\nCambiar rol\nRefacciones\nExistencias\nMovimientos\nConsumo\nPor recibir\nCatálogo\nConsumo\n\nTotales del periodo por refacción. El libro de movimientos no cambia.\n\n7 d\n30 d\n90 d\n\nDesde stock: no disponible · 4 pza compra externa\n\nConsumo incompleto: falta consultar movimientos.\n\nReintentar\nSKU\tREFACCIÓN\tSALIDA OT\tCOMPRA EXTERNA\tENTRADA\tAJUSTE\nPRUEBA-01\tRefacción de prueba\tNo disponible\t4 pza\tNo disponible\tNo disponible",
+    "consumo_recuperado_d1440": "Inicio\nÓrdenes\nUnidades\nInventario\n2\nSUPERVISOR\nCambiar rol\nRefacciones\nExistencias\nMovimientos\nConsumo\nPor recibir\nCatálogo\nConsumo\n\nTotales del periodo por refacción. El libro de movimientos no cambia.\n\n7 d\n30 d\n90 d\n\n1 pza desde stock · 4 pza compra externa\n\nConsulta actualizada.\nReintentar\nSKU\tREFACCIÓN\tSALIDA OT\tCOMPRA EXTERNA\tENTRADA\tAJUSTE\nPRUEBA-01\tRefacción de prueba\t1 pza\t4 pza\t0 pza\t0 pza",
+    "referencia_404_d1440": "Inicio\nÓrdenes\nUnidades\nInventario\n2\nSUPERVISOR\nCambiar rol\nRefacciones\nExistencias\nMovimientos\nConsumo\nPor recibir\nCatálogo\nMovimientos\n\nEntradas, salidas de visita y ajustes. Sin saldos inventados.\n\nBuscar\nTodo\nHoy\n7 d\n30 d\nEste mes\nPersonalizado\nTodos\nEntrada\nSalida\nAjuste\nFECHA\tTIPO\tSKU\tCANT.\tCAMBIO\tVISITA\tNOTA\n11/10/2026, 00:00\tSalida\tPRUEBA-01\t1 pza\t\t\nReferencia de visita no disponible para este acceso.\nID: test-v1\n\t—",
+    "referencia_403_d1440": "Inicio\nÓrdenes\nUnidades\nInventario\n2\nSUPERVISOR\nCambiar rol\nRefacciones\nExistencias\nMovimientos\nConsumo\nPor recibir\nCatálogo\nMovimientos\n\nEntradas, salidas de visita y ajustes. Sin saldos inventados.\n\nBuscar\nTodo\nHoy\n7 d\n30 d\nEste mes\nPersonalizado\nTodos\nEntrada\nSalida\nAjuste\nFECHA\tTIPO\tSKU\tCANT.\tCAMBIO\tVISITA\tNOTA\n11/10/2026, 00:00\tSalida\tPRUEBA-01\t1 pza\t\t\nNo tienes acceso a esta visita.\nID: test-v1\n\t—",
+    "referencia_503_d1440": "Inicio\nÓrdenes\nUnidades\nInventario\n2\nSUPERVISOR\nCambiar rol\nRefacciones\nExistencias\nMovimientos\nConsumo\nPor recibir\nCatálogo\nMovimientos\n\nEntradas, salidas de visita y ajustes. Sin saldos inventados.\n\nBuscar\nTodo\nHoy\n7 d\n30 d\nEste mes\nPersonalizado\nTodos\nEntrada\nSalida\nAjuste\nFECHA\tTIPO\tSKU\tCANT.\tCAMBIO\tVISITA\tNOTA\n11/10/2026, 00:00\tSalida\tPRUEBA-01\t1 pza\t\t\nNo se pudo consultar la referencia de visita.\nID: test-v1\nReintentar referencia\n\t—",
+    "inicio_error_d1024": "Inicio\nÓrdenes\nUnidades\nInventario\n?\nSUPERVISOR\nCambiar rol\nBuenos días\n\nQué hay que revisar. Cada fila abre la lista.\n\nNo se pudo cargar mantenimiento vencido.\n\nReintentar mantenimiento vencido\n\nNo se pudo cargar existencias.\n\nReintentar existencias\n\nNo se pudo cargar por recibir.\n\nReintentar por recibir\n\nNo se pudo cargar salud de unidad.\n\nReintentar salud de unidad",
+    "inicio_parcial_d1024": "Inicio\nÓrdenes\nUnidades\nInventario\n2\nSUPERVISOR\nCambiar rol\nBuenos días\n\nQué hay que revisar. Cada fila abre la lista.\n\nNo se pudo cargar mantenimiento vencido.\n\nReintentar mantenimiento vencido\nREQUIERE ATENCIÓN\nRefacción de prueba\nExistencias · Agotado; revise la refacción\nPRUEBA-01 · Refacción de prueba\nInventario · Evidencia pendiente de compra externa",
+    "inicio_recuperado_d1024": "Inicio\nÓrdenes\nUnidades\nInventario\n2\nSUPERVISOR\nCambiar rol\nBuenos días\n\nQué hay que revisar. Cada fila abre la lista.\n\nConsulta actualizada.\nReintentar mantenimiento vencido\nREQUIERE ATENCIÓN\nRefacción de prueba\nExistencias · Agotado; revise la refacción\nPRUEBA-01 · Refacción de prueba\nInventario · Evidencia pendiente de compra externa",
+    "inicio_recuperado_vacio_d1024": "Inicio\nÓrdenes\nUnidades\nInventario\n?\nSUPERVISOR\nCambiar rol\nBuenos días\n\nQué hay que revisar. Cada fila abre la lista.\n\nConsulta actualizada.\nReintentar salud de unidad\nNada requiere atención\n\nMantenimiento vencido, existencias, por recibir y salud están al día.",
+    "ordenes_error_d1024": "Inicio\nÓrdenes\nUnidades\nInventario\n?\nSUPERVISOR\nCambiar rol\nÓrdenes\n+ Nueva orden\n\nNo se pudieron cargar las órdenes.\n\nReintentar",
+    "ordenes_vacio_d1024": "Inicio\nÓrdenes\nUnidades\nInventario\n?\nSUPERVISOR\nCambiar rol\nÓrdenes\n+ Nueva orden\nConsulta actualizada.\nReintentar\nBorradores\nCerradas\nNo hay órdenes en borrador.\n\nCrea una orden aquí para comenzar la captura.",
+    "unidades_error_d1024": "Inicio\nÓrdenes\nUnidades\nInventario\n?\nSUPERVISOR\nCambiar rol\nUnidades\n\nBusque y abra la ficha de la unidad.\n\nNo se pudieron cargar las unidades.\n\nReintentar\n\nNo se pudieron cargar los totales de unidades.\n\nReintentar\n\nCatálogo de tipos no disponible; se muestran los tipos de las unidades cargadas.\n\nReintentar\n\nAvisos de mantenimiento no disponibles.\n\nReintentar\n\nUmbrales no disponibles.\n\nReintentar",
+    "unidades_vacio_d1024": "Inicio\nÓrdenes\nUnidades\nInventario\n?\nSUPERVISOR\nCambiar rol\nConsulta actualizada.\nReintentar\nUnidades\n\nBusque y abra la ficha de la unidad.\n\nFlota de mantenimiento\nAbra una ficha para visitas y alertas.\nTotal de unidades\n0\nActivas\n0\n0% del total\nInactivas\n0\n0% del total\nAlertas\n0\n0% del total\nBuscar unidad\nEstado\nTodos\nActiva\nInactiva\nLimpiar filtros\nBuscar\n\nConsejo: puede buscar por número interno, placas, marca o modelo para encontrar una unidad más rápido.\n\nNo hay unidades\n\nNo hay unidades registradas.",
+    "inventario_stock_error_d1024": "Inicio\nÓrdenes\nUnidades\nInventario\n?\nSUPERVISOR\nCambiar rol\nRefacciones\nExistencias\nMovimientos\nConsumo\nPor recibir\nCatálogo\nExistencias\nConfigurar alertas\nRegistrar entrada\nTodos\nBajo\nAgotado\n\nNo se pudieron cargar las existencias.\n\nReintentar\n\nCatálogos de refacciones no disponibles; las existencias cargadas se conservan.\n\nReintentar",
+    "inventario_stock_vacio_d1024": "Inicio\nÓrdenes\nUnidades\nInventario\n?\nSUPERVISOR\nCambiar rol\nRefacciones\nExistencias\nMovimientos\nConsumo\nPor recibir\nCatálogo\nExistencias\nConfigurar alertas\nRegistrar entrada\nTodos\nBajo\nAgotado\nConsulta actualizada.\nReintentar\nSKU\tNOMBRE\tCATEGORÍA\tCANT.\tMÍNIMO\tESTADO\nAún no hay existencias.",
+    "inventario_consumo_error_d1024": "Inicio\nÓrdenes\nUnidades\nInventario\n?\nSUPERVISOR\nCambiar rol\nRefacciones\nExistencias\nMovimientos\nConsumo\nPor recibir\nCatálogo\nConsumo\n\nTotales del periodo por refacción. El libro de movimientos no cambia.\n\n7 d\n30 d\n90 d\n\nDesde stock: no disponible · Compra externa: no disponible\n\nConsumo incompleto: falta consultar movimientos.\n\nReintentar\n\nConsumo incompleto: falta consultar compras externas.\n\nReintentar",
+    "inventario_consumo_vacio_d1024": "Inicio\nÓrdenes\nUnidades\nInventario\n?\nSUPERVISOR\nCambiar rol\nRefacciones\nExistencias\nMovimientos\nConsumo\nPor recibir\nCatálogo\nConsumo\n\nTotales del periodo por refacción. El libro de movimientos no cambia.\n\n7 d\n30 d\n90 d\n\n0 pza desde stock · 0 pza compra externa\n\nConsulta actualizada.\nReintentar\nSKU\tREFACCIÓN\tSALIDA OT\tCOMPRA EXTERNA\tENTRADA\tAJUSTE\nNo hay consumo en este periodo.\nLas salidas de visita y las compras externas aparecen aquí.",
+    "inventario_movimientos_error_d1024": "Inicio\nÓrdenes\nUnidades\nInventario\n?\nSUPERVISOR\nCambiar rol\nRefacciones\nExistencias\nMovimientos\nConsumo\nPor recibir\nCatálogo\nMovimientos\n\nEntradas, salidas de visita y ajustes. Sin saldos inventados.\n\nBuscar\nTodo\nHoy\n7 d\n30 d\nEste mes\nPersonalizado\nTodos\nEntrada\nSalida\nAjuste\n\nNo se pudieron cargar los movimientos.\n\nReintentar",
+    "inventario_movimientos_vacio_d1024": "Inicio\nÓrdenes\nUnidades\nInventario\n?\nSUPERVISOR\nCambiar rol\nRefacciones\nExistencias\nMovimientos\nConsumo\nPor recibir\nCatálogo\nMovimientos\n\nEntradas, salidas de visita y ajustes. Sin saldos inventados.\n\nBuscar\nTodo\nHoy\n7 d\n30 d\nEste mes\nPersonalizado\nTodos\nEntrada\nSalida\nAjuste\nConsulta actualizada.\nReintentar\nFECHA\tTIPO\tSKU\tCANT.\tCAMBIO\tVISITA\tNOTA\nAún no hay movimientos.",
+    "inventario_pendientes_error_d1024": "Inicio\nÓrdenes\nUnidades\nInventario\n?\nSUPERVISOR\nCambiar rol\nRefacciones\nExistencias\nMovimientos\nConsumo\nPor recibir\nCatálogo\nPor recibir\n\nCompras externas aún sin entrar al almacén. Cerrar el comprobante no cambia existencias.\n\nNo se pudieron cargar las compras por recibir.\n\nReintentar",
+    "inventario_pendientes_vacio_d1024": "Inicio\nÓrdenes\nUnidades\nInventario\n2\nSUPERVISOR\nCambiar rol\nRefacciones\nExistencias\nMovimientos\nConsumo\nPor recibir\nCatálogo\nPor recibir\n\nCompras externas aún sin entrar al almacén. Cerrar el comprobante no cambia existencias.\n\nConsulta actualizada.\nReintentar\nNada por recibir.\n\nLas compras externas de una visita aparecen aquí hasta marcarlas recibidas.",
+    "andon_error_d1024": "Inicio\nÓrdenes\nUnidades\nInventario\n?\nSUPERVISOR\nCambiar rol\nMantenimiento vencido\n\nAlertas de mantenimiento vencido. Enterado es in-app; solo una visita cerrada resuelve.\n\nPendientes\nEnterados\nResueltos\nReincidentes\n\nNo se pudieron cargar los avisos.\n\nReintentar",
+    "andon_vacio_d1024": "Inicio\nÓrdenes\nUnidades\nInventario\n?\nSUPERVISOR\nCambiar rol\nMantenimiento vencido\n\nAlertas de mantenimiento vencido. Enterado es in-app; solo una visita cerrada resuelve.\n\nPendientes\nEnterados\nResueltos\nReincidentes\nConsulta actualizada.\nReintentar\nNo hay alertas pendientes.\n\nAparecen cuando una unidad rebase el intervalo de km o de días desde su última visita cerrada.",
+    "notificaciones_error_d1024": "Inicio\nÓrdenes\nUnidades\nInventario\n?\nSUPERVISOR\nCambiar rol\nAlertas\n\nAvisos de mantenimiento, inventario, salud de unidad y flota sin regreso. Tocar una fila la marca leída y abre el destino.\n\nNo leídas\nTodas\n\nNo se pudieron cargar las alertas.\n\nReintentar",
+    "notificaciones_vacio_d1024": "Inicio\nÓrdenes\nUnidades\nInventario\n?\nSUPERVISOR\nCambiar rol\nAlertas\n\nAvisos de mantenimiento, inventario, salud de unidad y flota sin regreso. Tocar una fila la marca leída y abre el destino.\n\nNo leídas\nTodas\nConsulta actualizada.\nReintentar\n\nSin alertas.",
+    "nueva_orden_lista_d1024": "Inicio\nÓrdenes\nUnidades\nInventario\n2\nSUPERVISOR\nCambiar rol\nÓrdenes\n+ Nueva orden\nBorradores\nCerradas\nPRUEBA-UX-1\nOT · TEST-V1\nCorrectivo\nPRUEBA-UX-2\nOT · TEST-V2\nCorrectivo\nPRUEBA-UX-3\nOT · TEST-V3\nCorrectivo\nPRUEBA-UX-1\n\nOT · TEST-V1\n\nComentarios\nContinuar\nCapturar en esta orden\nAgregar pieza · 1\nSubir foto · 0 de 8\nBorrador\nFecha de apertura\n11/10/2026, 00:00\nFecha de cierre\nSin cerrar\nTiempo de cerrado\nSin cerrar\nTipo de mantenimiento\n\nCorrectivo\n\nTrabajos\nA · Prueba\nImágenes\n\nSin imágenes.\n\nComentarios\n\nSin comentarios.\n\nSKU\nSKU\tNOMBRE\tCANTIDAD\tORIGEN\nPRUEBA-01\tRefacción de prueba\t1 PZA\tDesde stock\nNueva orden\n\nSelecciona una unidad activa y captura los datos iniciales.\n\nPRUEBA-UX-1\nPRUEBA-1 · Camión de prueba\nPRUEBA-UX-2\nPRUEBA-2 · Camión de prueba\nPRUEBA-UX-3\nPRUEBA-3 · Camión de prueba\nCancelar\nCrear y continuar\nCerrar",
+    "ordenes_filtro_d1024": "Inicio\nÓrdenes\nUnidades\nInventario\n2\nSUPERVISOR\nCambiar rol\nÓrdenes\n+ Nueva orden\nBorradores\nCerradas\nSin coincidencias con estos filtros.\n\nQuita los filtros para recuperar las órdenes de esta cola.\n\nQuitar filtros",
+    "ordenes_parcial_d1024": "Inicio\nÓrdenes\nUnidades\nInventario\n2\nSUPERVISOR\nCambiar rol\nÓrdenes\n+ Nueva orden\n\nConsulta parcial. Falta consultar: PRUEBA-UX-2.\n\nReintentar\nBorradores\nCerradas\nPRUEBA-UX-1\nOT · TEST-V1\nCorrectivo\nPRUEBA-UX-3\nOT · TEST-V3\nCorrectivo\nPRUEBA-UX-1\n\nOT · TEST-V1\n\nComentarios\nContinuar\nCapturar en esta orden\nAgregar pieza · 1\nSubir foto · 0 de 8\nBorrador\nFecha de apertura\n11/10/2026, 00:00\nFecha de cierre\nSin cerrar\nTiempo de cerrado\nSin cerrar\nTipo de mantenimiento\n\nCorrectivo\n\nTrabajos\nA · Prueba\nImágenes\n\nSin imágenes.\n\nComentarios\n\nSin comentarios.\n\nSKU\nSKU\tNOMBRE\tCANTIDAD\tORIGEN\nPRUEBA-01\tRefacción de prueba\t1 PZA\tDesde stock",
+    "documento_piezas_error_d1024": "Inicio\nÓrdenes\nUnidades\nInventario\n2\nSUPERVISOR\nCambiar rol\nPRUEBA-UX-1\nCERRADA\n\nCorrectivo · 100 km · PRUEBA\n\nVolver al hub\nDatos\nChofer\nPRUEBA\nKilometraje\n100 km\nTipo\nCorrectivo\nTrabajos\nA Prueba\nObservaciones\n\nSin observaciones.\n\nFotos\n\nSin fotos.\n\nNo se pudieron consultar las piezas. Se conservan cantidades y origen.\n\nReintentar piezas\nPiezas\nSKU no disponible Nombre de refacción no disponible · 1 pza · Desde stock\nFirmas\n\nChofer\n\nSin firma\n\nJefe de mecánicos / taller\n\nSin firma",
+    "documento_recuperado_d1024": "Inicio\nÓrdenes\nUnidades\nInventario\n2\nSUPERVISOR\nCambiar rol\nPRUEBA-UX-1\nCERRADA\n\nCorrectivo · 100 km · PRUEBA\n\nVolver al hub\nDatos\nChofer\nPRUEBA\nKilometraje\n100 km\nTipo\nCorrectivo\nTrabajos\nA Prueba\nObservaciones\n\nSin observaciones.\n\nFotos\n\nSin fotos.\n\nConsulta actualizada.\nReintentar piezas\nPiezas\nPRUEBA-01 Refacción de prueba · 1 PZA · Desde stock\nFirmas\n\nChofer\n\nSin firma\n\nJefe de mecánicos / taller\n\nSin firma",
+    "consumo_parcial_d1024": "Inicio\nÓrdenes\nUnidades\nInventario\n2\nSUPERVISOR\nCambiar rol\nRefacciones\nExistencias\nMovimientos\nConsumo\nPor recibir\nCatálogo\nConsumo\n\nTotales del periodo por refacción. El libro de movimientos no cambia.\n\n7 d\n30 d\n90 d\n\nDesde stock: no disponible · 4 pza compra externa\n\nConsumo incompleto: falta consultar movimientos.\n\nReintentar\nSKU\tREFACCIÓN\tSALIDA OT\tCOMPRA EXTERNA\tENTRADA\tAJUSTE\nPRUEBA-01\tRefacción de prueba\tNo disponible\t4 pza\tNo disponible\tNo disponible",
+    "consumo_recuperado_d1024": "Inicio\nÓrdenes\nUnidades\nInventario\n2\nSUPERVISOR\nCambiar rol\nRefacciones\nExistencias\nMovimientos\nConsumo\nPor recibir\nCatálogo\nConsumo\n\nTotales del periodo por refacción. El libro de movimientos no cambia.\n\n7 d\n30 d\n90 d\n\n1 pza desde stock · 4 pza compra externa\n\nConsulta actualizada.\nReintentar\nSKU\tREFACCIÓN\tSALIDA OT\tCOMPRA EXTERNA\tENTRADA\tAJUSTE\nPRUEBA-01\tRefacción de prueba\t1 pza\t4 pza\t0 pza\t0 pza",
+    "referencia_404_d1024": "Inicio\nÓrdenes\nUnidades\nInventario\n2\nSUPERVISOR\nCambiar rol\nRefacciones\nExistencias\nMovimientos\nConsumo\nPor recibir\nCatálogo\nMovimientos\n\nEntradas, salidas de visita y ajustes. Sin saldos inventados.\n\nBuscar\nTodo\nHoy\n7 d\n30 d\nEste mes\nPersonalizado\nTodos\nEntrada\nSalida\nAjuste\nFECHA\tTIPO\tSKU\tCANT.\tCAMBIO\tVISITA\tNOTA\n11/10/2026, 00:00\tSalida\tPRUEBA-01\t1 pza\t\t\nReferencia de visita no disponible para este acceso.\nID: test-v1\n\t—",
+    "referencia_403_d1024": "Inicio\nÓrdenes\nUnidades\nInventario\n2\nSUPERVISOR\nCambiar rol\nRefacciones\nExistencias\nMovimientos\nConsumo\nPor recibir\nCatálogo\nMovimientos\n\nEntradas, salidas de visita y ajustes. Sin saldos inventados.\n\nBuscar\nTodo\nHoy\n7 d\n30 d\nEste mes\nPersonalizado\nTodos\nEntrada\nSalida\nAjuste\nFECHA\tTIPO\tSKU\tCANT.\tCAMBIO\tVISITA\tNOTA\n11/10/2026, 00:00\tSalida\tPRUEBA-01\t1 pza\t\t\nNo tienes acceso a esta visita.\nID: test-v1\n\t—",
+    "referencia_503_d1024": "Inicio\nÓrdenes\nUnidades\nInventario\n2\nSUPERVISOR\nCambiar rol\nRefacciones\nExistencias\nMovimientos\nConsumo\nPor recibir\nCatálogo\nMovimientos\n\nEntradas, salidas de visita y ajustes. Sin saldos inventados.\n\nBuscar\nTodo\nHoy\n7 d\n30 d\nEste mes\nPersonalizado\nTodos\nEntrada\nSalida\nAjuste\nFECHA\tTIPO\tSKU\tCANT.\tCAMBIO\tVISITA\tNOTA\n11/10/2026, 00:00\tSalida\tPRUEBA-01\t1 pza\t\t\nNo se pudo consultar la referencia de visita.\nID: test-v1\nReintentar referencia\n\t—",
+    "inicio_error_m390": "?\nInicio\nÓrdenes\nUnidades\nInventario\nBuenos días\n\nQué hay que revisar. Cada fila abre la lista.\n\nNo se pudo cargar mantenimiento vencido.\n\nReintentar mantenimiento vencido\n\nNo se pudo cargar existencias.\n\nReintentar existencias\n\nNo se pudo cargar por recibir.\n\nReintentar por recibir\n\nNo se pudo cargar salud de unidad.\n\nReintentar salud de unidad",
+    "inicio_parcial_m390": "2\nInicio\nÓrdenes\nUnidades\nInventario\nBuenos días\n\nQué hay que revisar. Cada fila abre la lista.\n\nNo se pudo cargar mantenimiento vencido.\n\nReintentar mantenimiento vencido\nREQUIERE ATENCIÓN\nRefacción de prueba\nExistencias · Agotado; revise la refacción\nPRUEBA-01 · Refacción de prueba\nInventario · Evidencia pendiente de compra externa",
+    "inicio_recuperado_m390": "2\nInicio\nÓrdenes\nUnidades\nInventario\nBuenos días\n\nQué hay que revisar. Cada fila abre la lista.\n\nConsulta actualizada.\nReintentar mantenimiento vencido\nREQUIERE ATENCIÓN\nRefacción de prueba\nExistencias · Agotado; revise la refacción\nPRUEBA-01 · Refacción de prueba\nInventario · Evidencia pendiente de compra externa",
+    "inicio_recuperado_vacio_m390": "?\nInicio\nÓrdenes\nUnidades\nInventario\nBuenos días\n\nQué hay que revisar. Cada fila abre la lista.\n\nConsulta actualizada.\nReintentar salud de unidad\nNada requiere atención\n\nMantenimiento vencido, existencias, por recibir y salud están al día.",
+    "ordenes_error_m390": "?\nInicio\nÓrdenes\nUnidades\nInventario\nÓrdenes\n+ Nueva orden\n\nNo se pudieron cargar las órdenes.\n\nReintentar",
+    "ordenes_vacio_m390": "?\nInicio\nÓrdenes\nUnidades\nInventario\nÓrdenes\n+ Nueva orden\nConsulta actualizada.\nReintentar\nBorradores\nCerradas\nNo hay órdenes en borrador.\n\nCrea una orden aquí para comenzar la captura.",
+    "unidades_error_m390": "?\nInicio\nÓrdenes\nUnidades\nInventario\nUnidades\n\nBusque y abra la ficha de la unidad.\n\nNo se pudieron cargar las unidades.\n\nReintentar\n\nNo se pudieron cargar los totales de unidades.\n\nReintentar\n\nCatálogo de tipos no disponible; se muestran los tipos de las unidades cargadas.\n\nReintentar\n\nAvisos de mantenimiento no disponibles.\n\nReintentar\n\nUmbrales no disponibles.\n\nReintentar",
+    "unidades_vacio_m390": "?\nInicio\nÓrdenes\nUnidades\nInventario\nConsulta actualizada.\nReintentar\nUnidades\n\nBusque y abra la ficha de la unidad.\n\nTotal de unidades\n0\nActivas\n0\n0% del total\nInactivas\n0\n0% del total\nAlertas\n0\n0% del total\nBuscar unidad\nFiltros\n\nConsejo: puede buscar por número interno, placas, marca o modelo para encontrar una unidad más rápido.\n\nNo hay unidades\n\nNo hay unidades registradas.",
+    "inventario_stock_error_m390": "?\nInicio\nÓrdenes\nUnidades\nInventario\nRefacciones\nExistencias\nMovimientos\nConsumo\nPor recibir\nCatálogo\nExistencias\nConfigurar alertas\nRegistrar entrada\nTodos\nBajo\nAgotado\n\nNo se pudieron cargar las existencias.\n\nReintentar\n\nCatálogos de refacciones no disponibles; las existencias cargadas se conservan.\n\nReintentar",
+    "inventario_stock_vacio_m390": "?\nInicio\nÓrdenes\nUnidades\nInventario\nRefacciones\nExistencias\nMovimientos\nConsumo\nPor recibir\nCatálogo\nExistencias\nConfigurar alertas\nRegistrar entrada\nTodos\nBajo\nAgotado\nConsulta actualizada.\nReintentar\nSKU\tNOMBRE\tCATEGORÍA\tCANT.\tMÍNIMO\tESTADO\nAún no hay existencias.",
+    "inventario_consumo_error_m390": "?\nInicio\nÓrdenes\nUnidades\nInventario\nRefacciones\nExistencias\nMovimientos\nConsumo\nPor recibir\nCatálogo\nConsumo\n\nTotales del periodo por refacción. El libro de movimientos no cambia.\n\n7 d\n30 d\n90 d\n\nDesde stock: no disponible · Compra externa: no disponible\n\nConsumo incompleto: falta consultar movimientos.\n\nReintentar\n\nConsumo incompleto: falta consultar compras externas.\n\nReintentar",
+    "inventario_consumo_vacio_m390": "?\nInicio\nÓrdenes\nUnidades\nInventario\nRefacciones\nExistencias\nMovimientos\nConsumo\nPor recibir\nCatálogo\nConsumo\n\nTotales del periodo por refacción. El libro de movimientos no cambia.\n\n7 d\n30 d\n90 d\n\n0 pza desde stock · 0 pza compra externa\n\nConsulta actualizada.\nReintentar\nSKU\tREFACCIÓN\tSALIDA OT\tCOMPRA EXTERNA\tENTRADA\tAJUSTE\nNo hay consumo en este periodo.\nLas salidas de visita y las compras externas aparecen aquí.",
+    "inventario_movimientos_error_m390": "?\nInicio\nÓrdenes\nUnidades\nInventario\nRefacciones\nExistencias\nMovimientos\nConsumo\nPor recibir\nCatálogo\nMovimientos\n\nEntradas, salidas de visita y ajustes. Sin saldos inventados.\n\nBuscar\nTodo\nHoy\n7 d\n30 d\nEste mes\nPersonalizado\nTodos\nEntrada\nSalida\nAjuste\n\nNo se pudieron cargar los movimientos.\n\nReintentar",
+    "inventario_movimientos_vacio_m390": "?\nInicio\nÓrdenes\nUnidades\nInventario\nRefacciones\nExistencias\nMovimientos\nConsumo\nPor recibir\nCatálogo\nMovimientos\n\nEntradas, salidas de visita y ajustes. Sin saldos inventados.\n\nBuscar\nTodo\nHoy\n7 d\n30 d\nEste mes\nPersonalizado\nTodos\nEntrada\nSalida\nAjuste\nConsulta actualizada.\nReintentar\nFECHA\tTIPO\tSKU\tCANT.\tCAMBIO\tVISITA\tNOTA\nAún no hay movimientos.",
+    "inventario_pendientes_error_m390": "?\nInicio\nÓrdenes\nUnidades\nInventario\nRefacciones\nExistencias\nMovimientos\nConsumo\nPor recibir\nCatálogo\nPor recibir\n\nCompras externas aún sin entrar al almacén. Cerrar el comprobante no cambia existencias.\n\nNo se pudieron cargar las compras por recibir.\n\nReintentar",
+    "inventario_pendientes_vacio_m390": "?\nInicio\nÓrdenes\nUnidades\nInventario\nRefacciones\nExistencias\nMovimientos\nConsumo\nPor recibir\nCatálogo\nPor recibir\n\nCompras externas aún sin entrar al almacén. Cerrar el comprobante no cambia existencias.\n\nConsulta actualizada.\nReintentar\nNada por recibir.\n\nLas compras externas de una visita aparecen aquí hasta marcarlas recibidas.",
+    "andon_error_m390": "?\nInicio\nÓrdenes\nUnidades\nInventario\nMantenimiento vencido\n\nAlertas de mantenimiento vencido. Enterado es in-app; solo una visita cerrada resuelve.\n\nPendientes\nEnterados\nResueltos\nReincidentes\n\nNo se pudieron cargar los avisos.\n\nReintentar",
+    "andon_vacio_m390": "?\nInicio\nÓrdenes\nUnidades\nInventario\nMantenimiento vencido\n\nAlertas de mantenimiento vencido. Enterado es in-app; solo una visita cerrada resuelve.\n\nPendientes\nEnterados\nResueltos\nReincidentes\nConsulta actualizada.\nReintentar\nNo hay alertas pendientes.\n\nAparecen cuando una unidad rebase el intervalo de km o de días desde su última visita cerrada.",
+    "notificaciones_error_m390": "?\nInicio\nÓrdenes\nUnidades\nInventario\nAlertas\n\nAvisos de mantenimiento, inventario, salud de unidad y flota sin regreso. Tocar una fila la marca leída y abre el destino.\n\nNo leídas\nTodas\n\nNo se pudieron cargar las alertas.\n\nReintentar",
+    "notificaciones_vacio_m390": "?\nInicio\nÓrdenes\nUnidades\nInventario\nAlertas\n\nAvisos de mantenimiento, inventario, salud de unidad y flota sin regreso. Tocar una fila la marca leída y abre el destino.\n\nNo leídas\nTodas\nConsulta actualizada.\nReintentar\n\nSin alertas.",
+    "nueva_orden_lista_m390": "2\nInicio\nÓrdenes\nUnidades\nInventario\nÓrdenes\n+ Nueva orden\nBorradores\nCerradas\nPRUEBA-UX-1\nOT · TEST-V1\nCorrectivo\nPRUEBA-UX-2\nOT · TEST-V2\nCorrectivo\nPRUEBA-UX-3\nOT · TEST-V3\nCorrectivo\nNueva orden\n\nSelecciona una unidad activa y captura los datos iniciales.\n\nPRUEBA-UX-1\nPRUEBA-1 · Camión de prueba\nPRUEBA-UX-2\nPRUEBA-2 · Camión de prueba\nPRUEBA-UX-3\nPRUEBA-3 · Camión de prueba\nCancelar\nCrear y continuar\nCerrar",
+    "ordenes_filtro_m390": "2\nInicio\nÓrdenes\nUnidades\nInventario\nÓrdenes\n+ Nueva orden\nBorradores\nCerradas\nSin coincidencias con estos filtros.\n\nQuita los filtros para recuperar las órdenes de esta cola.\n\nQuitar filtros",
+    "ordenes_parcial_m390": "2\nInicio\nÓrdenes\nUnidades\nInventario\nÓrdenes\n+ Nueva orden\n\nConsulta parcial. Falta consultar: PRUEBA-UX-2.\n\nReintentar\nBorradores\nCerradas\nPRUEBA-UX-1\nOT · TEST-V1\nCorrectivo\nPRUEBA-UX-3\nOT · TEST-V3\nCorrectivo",
+    "documento_piezas_error_m390": "2\nInicio\nÓrdenes\nUnidades\nInventario\nPRUEBA-UX-1\nCERRADA\n\nCorrectivo · 100 km · PRUEBA\n\nVolver al hub\nDatos\nChofer\nPRUEBA\nKilometraje\n100 km\nTipo\nCorrectivo\nTrabajos\nA Prueba\nObservaciones\n\nSin observaciones.\n\nFotos\n\nSin fotos.\n\nNo se pudieron consultar las piezas. Se conservan cantidades y origen.\n\nReintentar piezas\nPiezas\nSKU no disponible Nombre de refacción no disponible · 1 pza · Desde stock\nFirmas\n\nChofer\n\nSin firma\n\nJefe de mecánicos / taller\n\nSin firma",
+    "documento_recuperado_m390": "2\nInicio\nÓrdenes\nUnidades\nInventario\nPRUEBA-UX-1\nCERRADA\n\nCorrectivo · 100 km · PRUEBA\n\nVolver al hub\nDatos\nChofer\nPRUEBA\nKilometraje\n100 km\nTipo\nCorrectivo\nTrabajos\nA Prueba\nObservaciones\n\nSin observaciones.\n\nFotos\n\nSin fotos.\n\nConsulta actualizada.\nReintentar piezas\nPiezas\nPRUEBA-01 Refacción de prueba · 1 PZA · Desde stock\nFirmas\n\nChofer\n\nSin firma\n\nJefe de mecánicos / taller\n\nSin firma",
+    "consumo_parcial_m390": "2\nInicio\nÓrdenes\nUnidades\nInventario\nRefacciones\nExistencias\nMovimientos\nConsumo\nPor recibir\nCatálogo\nConsumo\n\nTotales del periodo por refacción. El libro de movimientos no cambia.\n\n7 d\n30 d\n90 d\n\nDesde stock: no disponible · 4 pza compra externa\n\nConsumo incompleto: falta consultar movimientos.\n\nReintentar\nSKU\tREFACCIÓN\tSALIDA OT\tCOMPRA EXTERNA\tENTRADA\tAJUSTE\nPRUEBA-01\tRefacción de prueba\tNo disponible\t4 pza\tNo disponible\tNo disponible",
+    "consumo_recuperado_m390": "2\nInicio\nÓrdenes\nUnidades\nInventario\nRefacciones\nExistencias\nMovimientos\nConsumo\nPor recibir\nCatálogo\nConsumo\n\nTotales del periodo por refacción. El libro de movimientos no cambia.\n\n7 d\n30 d\n90 d\n\n1 pza desde stock · 4 pza compra externa\n\nConsulta actualizada.\nReintentar\nSKU\tREFACCIÓN\tSALIDA OT\tCOMPRA EXTERNA\tENTRADA\tAJUSTE\nPRUEBA-01\tRefacción de prueba\t1 pza\t4 pza\t0 pza\t0 pza",
+    "referencia_404_m390": "2\nInicio\nÓrdenes\nUnidades\nInventario\nRefacciones\nExistencias\nMovimientos\nConsumo\nPor recibir\nCatálogo\nMovimientos\n\nEntradas, salidas de visita y ajustes. Sin saldos inventados.\n\nBuscar\nTodo\nHoy\n7 d\n30 d\nEste mes\nPersonalizado\nTodos\nEntrada\nSalida\nAjuste\nFECHA\tTIPO\tSKU\tCANT.\tCAMBIO\tVISITA\tNOTA\n11/10/2026, 00:00\tSalida\tPRUEBA-01\t1 pza\t\t\nReferencia de visita no disponible para este acceso.\nID: test-v1\n\t—",
+    "referencia_403_m390": "2\nInicio\nÓrdenes\nUnidades\nInventario\nRefacciones\nExistencias\nMovimientos\nConsumo\nPor recibir\nCatálogo\nMovimientos\n\nEntradas, salidas de visita y ajustes. Sin saldos inventados.\n\nBuscar\nTodo\nHoy\n7 d\n30 d\nEste mes\nPersonalizado\nTodos\nEntrada\nSalida\nAjuste\nFECHA\tTIPO\tSKU\tCANT.\tCAMBIO\tVISITA\tNOTA\n11/10/2026, 00:00\tSalida\tPRUEBA-01\t1 pza\t\t\nNo tienes acceso a esta visita.\nID: test-v1\n\t—",
+    "referencia_503_m390": "2\nInicio\nÓrdenes\nUnidades\nInventario\nRefacciones\nExistencias\nMovimientos\nConsumo\nPor recibir\nCatálogo\nMovimientos\n\nEntradas, salidas de visita y ajustes. Sin saldos inventados.\n\nBuscar\nTodo\nHoy\n7 d\n30 d\nEste mes\nPersonalizado\nTodos\nEntrada\nSalida\nAjuste\nFECHA\tTIPO\tSKU\tCANT.\tCAMBIO\tVISITA\tNOTA\n11/10/2026, 00:00\tSalida\tPRUEBA-01\t1 pza\t\t\nNo se pudo consultar la referencia de visita.\nID: test-v1\nReintentar referencia\n\t—"
+  },
+  "requests": [
+    {
+      "path": "/backend/notifications/badge",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/andon/avisos",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/stock",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/pendientes-comprobante",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications/badge",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/andon/avisos",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/stock",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/pendientes-comprobante",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications/badge",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/andon/avisos",
+      "status": 503,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/stock",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/pendientes-comprobante",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications/badge",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/andon/avisos",
+      "status": 503,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/stock",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/pendientes-comprobante",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/andon/avisos",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications/badge",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/andon/avisos",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/stock",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/pendientes-comprobante",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications/badge",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/andon/avisos",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/stock",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/pendientes-comprobante",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/andon/avisos",
+      "status": 200,
+      "mode": "empty",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/stock",
+      "status": 200,
+      "mode": "empty",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/pendientes-comprobante",
+      "status": 200,
+      "mode": "empty",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications",
+      "status": 200,
+      "mode": "empty",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications/badge",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades",
+      "status": 200,
+      "mode": "empty",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications/badge",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades/tipos",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/andon/umbrales",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/andon/avisos",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades/tipos",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/andon/umbrales",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/andon/avisos",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades",
+      "status": 200,
+      "mode": "empty",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades",
+      "status": 200,
+      "mode": "empty",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades/tipos",
+      "status": 200,
+      "mode": "empty",
+      "fixture": true
+    },
+    {
+      "path": "/backend/andon/avisos",
+      "status": 200,
+      "mode": "empty",
+      "fixture": true
+    },
+    {
+      "path": "/backend/andon/umbrales",
+      "status": 200,
+      "mode": "empty",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications/badge",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/items",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/familias",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades/tipos",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/proveedores",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/items",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/familias",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades/tipos",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/proveedores",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications/badge",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/stock",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades/tipos",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/proveedores",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/stock",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades/tipos",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/proveedores",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/stock",
+      "status": 200,
+      "mode": "empty",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades/tipos",
+      "status": 200,
+      "mode": "empty",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/proveedores",
+      "status": 200,
+      "mode": "empty",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications/badge",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/movimientos",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/pendientes-comprobante",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/movimientos",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/pendientes-comprobante",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/movimientos",
+      "status": 200,
+      "mode": "empty",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/pendientes-comprobante",
+      "status": 200,
+      "mode": "empty",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications/badge",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/movimientos",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/movimientos",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/movimientos",
+      "status": 200,
+      "mode": "empty",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications/badge",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/pendientes-comprobante",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/pendientes-comprobante",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/pendientes-comprobante",
+      "status": 200,
+      "mode": "empty",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications/badge",
+      "status": 200,
+      "mode": "empty",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications/badge",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/andon/avisos",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications/badge",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/andon/avisos",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/andon/avisos",
+      "status": 200,
+      "mode": "empty",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications/badge",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications",
+      "status": 200,
+      "mode": "empty",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications/badge",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades/test-u1/visitas",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades/test-u2/visitas",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades/test-u3/visitas",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades/test-u1/visitas",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades/test-u2/visitas",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades/test-u3/visitas",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/visitas/test-v1",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/items",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/choferes",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/visitas/test-v1",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/items",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/visitas/test-v1",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/items",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications/badge",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/visitas/test-v1",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications/badge",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/visitas/test-v1",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades/test-u1/visitas",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades/test-u2/visitas",
+      "status": 503,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades/test-u3/visitas",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades/test-u1/visitas",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades/test-u2/visitas",
+      "status": 503,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades/test-u3/visitas",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/items",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades/test-u2/visitas",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications/badge",
+      "status": 200,
+      "mode": "closed",
+      "fixture": true
+    },
+    {
+      "path": "/backend/visitas/test-v1",
+      "status": 200,
+      "mode": "closed",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications/badge",
+      "status": 200,
+      "mode": "closed",
+      "fixture": true
+    },
+    {
+      "path": "/backend/visitas/test-v1",
+      "status": 200,
+      "mode": "closed",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/items",
+      "status": 503,
+      "mode": "closed",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/items",
+      "status": 503,
+      "mode": "closed",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/items",
+      "status": 200,
+      "mode": "closed",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications/badge",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/items",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/familias",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades/tipos",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/proveedores",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/items",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/familias",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades/tipos",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/proveedores",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications/badge",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/movimientos",
+      "status": 503,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/pendientes-comprobante",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/movimientos",
+      "status": 503,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/pendientes-comprobante",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/movimientos",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications/badge",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/movimientos",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/movimientos",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/visitas/test-v1",
+      "status": 404,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications/badge",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/movimientos",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/pendientes-comprobante",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/movimientos",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/pendientes-comprobante",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications/badge",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/movimientos",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/movimientos",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/visitas/test-v1",
+      "status": 403,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications/badge",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/movimientos",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/pendientes-comprobante",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/movimientos",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/pendientes-comprobante",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications/badge",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/movimientos",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/movimientos",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/visitas/test-v1",
+      "status": 503,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/visitas/test-v1",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications/badge",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/movimientos",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/pendientes-comprobante",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/movimientos",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/pendientes-comprobante",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications/badge",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/andon/avisos",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/stock",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/pendientes-comprobante",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications/badge",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/andon/avisos",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/stock",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/pendientes-comprobante",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications/badge",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/andon/avisos",
+      "status": 503,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/stock",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/pendientes-comprobante",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications/badge",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/andon/avisos",
+      "status": 503,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/stock",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/pendientes-comprobante",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/andon/avisos",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications/badge",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/andon/avisos",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/stock",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/pendientes-comprobante",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications/badge",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/andon/avisos",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/stock",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/pendientes-comprobante",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/andon/avisos",
+      "status": 200,
+      "mode": "empty",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/stock",
+      "status": 200,
+      "mode": "empty",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/pendientes-comprobante",
+      "status": 200,
+      "mode": "empty",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications",
+      "status": 200,
+      "mode": "empty",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications/badge",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades",
+      "status": 200,
+      "mode": "empty",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications/badge",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades/tipos",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/andon/umbrales",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/andon/avisos",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades/tipos",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/andon/umbrales",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/andon/avisos",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades",
+      "status": 200,
+      "mode": "empty",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades",
+      "status": 200,
+      "mode": "empty",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades/tipos",
+      "status": 200,
+      "mode": "empty",
+      "fixture": true
+    },
+    {
+      "path": "/backend/andon/avisos",
+      "status": 200,
+      "mode": "empty",
+      "fixture": true
+    },
+    {
+      "path": "/backend/andon/umbrales",
+      "status": 200,
+      "mode": "empty",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications/badge",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/items",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/familias",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades/tipos",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/proveedores",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/items",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/familias",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades/tipos",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/proveedores",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications/badge",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/stock",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades/tipos",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/proveedores",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/stock",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades/tipos",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/proveedores",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/stock",
+      "status": 200,
+      "mode": "empty",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades/tipos",
+      "status": 200,
+      "mode": "empty",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/proveedores",
+      "status": 200,
+      "mode": "empty",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications/badge",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/movimientos",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/pendientes-comprobante",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/movimientos",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/pendientes-comprobante",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/movimientos",
+      "status": 200,
+      "mode": "empty",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/pendientes-comprobante",
+      "status": 200,
+      "mode": "empty",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications/badge",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/movimientos",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/movimientos",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/movimientos",
+      "status": 200,
+      "mode": "empty",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications/badge",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/pendientes-comprobante",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/pendientes-comprobante",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/pendientes-comprobante",
+      "status": 200,
+      "mode": "empty",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications/badge",
+      "status": 200,
+      "mode": "empty",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications/badge",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/andon/avisos",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications/badge",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/andon/avisos",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/andon/avisos",
+      "status": 200,
+      "mode": "empty",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications/badge",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications",
+      "status": 200,
+      "mode": "empty",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications/badge",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades/test-u1/visitas",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades/test-u2/visitas",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades/test-u3/visitas",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades/test-u1/visitas",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades/test-u2/visitas",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades/test-u3/visitas",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/visitas/test-v1",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/items",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/choferes",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/visitas/test-v1",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/items",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/visitas/test-v1",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/items",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications/badge",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/visitas/test-v1",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications/badge",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/visitas/test-v1",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades/test-u1/visitas",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades/test-u2/visitas",
+      "status": 503,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades/test-u3/visitas",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades/test-u1/visitas",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades/test-u2/visitas",
+      "status": 503,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades/test-u3/visitas",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/items",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades/test-u2/visitas",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications/badge",
+      "status": 200,
+      "mode": "closed",
+      "fixture": true
+    },
+    {
+      "path": "/backend/visitas/test-v1",
+      "status": 200,
+      "mode": "closed",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications/badge",
+      "status": 200,
+      "mode": "closed",
+      "fixture": true
+    },
+    {
+      "path": "/backend/visitas/test-v1",
+      "status": 200,
+      "mode": "closed",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/items",
+      "status": 503,
+      "mode": "closed",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/items",
+      "status": 503,
+      "mode": "closed",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/items",
+      "status": 200,
+      "mode": "closed",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications/badge",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/items",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/familias",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades/tipos",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/proveedores",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/items",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/familias",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades/tipos",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/proveedores",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications/badge",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/movimientos",
+      "status": 503,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/pendientes-comprobante",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/movimientos",
+      "status": 503,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/pendientes-comprobante",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/movimientos",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications/badge",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/movimientos",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/movimientos",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/visitas/test-v1",
+      "status": 404,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications/badge",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/movimientos",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/pendientes-comprobante",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/movimientos",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/pendientes-comprobante",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications/badge",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/movimientos",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/movimientos",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/visitas/test-v1",
+      "status": 403,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications/badge",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/movimientos",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/pendientes-comprobante",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/movimientos",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/pendientes-comprobante",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications/badge",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/movimientos",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/movimientos",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/visitas/test-v1",
+      "status": 503,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/visitas/test-v1",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications/badge",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/movimientos",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/pendientes-comprobante",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/movimientos",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/pendientes-comprobante",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications/badge",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/andon/avisos",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/stock",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/pendientes-comprobante",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications/badge",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/andon/avisos",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/stock",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/pendientes-comprobante",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications/badge",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/andon/avisos",
+      "status": 503,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/stock",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/pendientes-comprobante",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications/badge",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/andon/avisos",
+      "status": 503,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/stock",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/pendientes-comprobante",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/andon/avisos",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications/badge",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/andon/avisos",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/stock",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/pendientes-comprobante",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications/badge",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/andon/avisos",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/stock",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/pendientes-comprobante",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/andon/avisos",
+      "status": 200,
+      "mode": "empty",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/stock",
+      "status": 200,
+      "mode": "empty",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/pendientes-comprobante",
+      "status": 200,
+      "mode": "empty",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications",
+      "status": 200,
+      "mode": "empty",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications/badge",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades",
+      "status": 200,
+      "mode": "empty",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications/badge",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades/tipos",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/andon/umbrales",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/andon/avisos",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades/tipos",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/andon/umbrales",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/andon/avisos",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades",
+      "status": 200,
+      "mode": "empty",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades",
+      "status": 200,
+      "mode": "empty",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades/tipos",
+      "status": 200,
+      "mode": "empty",
+      "fixture": true
+    },
+    {
+      "path": "/backend/andon/avisos",
+      "status": 200,
+      "mode": "empty",
+      "fixture": true
+    },
+    {
+      "path": "/backend/andon/umbrales",
+      "status": 200,
+      "mode": "empty",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications/badge",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/items",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/familias",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades/tipos",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/proveedores",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/items",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/familias",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades/tipos",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/proveedores",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications/badge",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/stock",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades/tipos",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/proveedores",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/stock",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades/tipos",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/proveedores",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/stock",
+      "status": 200,
+      "mode": "empty",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades/tipos",
+      "status": 200,
+      "mode": "empty",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/proveedores",
+      "status": 200,
+      "mode": "empty",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications/badge",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/movimientos",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/pendientes-comprobante",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/movimientos",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/pendientes-comprobante",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/movimientos",
+      "status": 200,
+      "mode": "empty",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/pendientes-comprobante",
+      "status": 200,
+      "mode": "empty",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications/badge",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/movimientos",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/movimientos",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/movimientos",
+      "status": 200,
+      "mode": "empty",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications/badge",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/pendientes-comprobante",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/pendientes-comprobante",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/pendientes-comprobante",
+      "status": 200,
+      "mode": "empty",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications/badge",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/andon/avisos",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications/badge",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/andon/avisos",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/andon/avisos",
+      "status": 200,
+      "mode": "empty",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications/badge",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications",
+      "status": 503,
+      "mode": "error",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications",
+      "status": 200,
+      "mode": "empty",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications/badge",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades/test-u1/visitas",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades/test-u2/visitas",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades/test-u3/visitas",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades/test-u1/visitas",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades/test-u2/visitas",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades/test-u3/visitas",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/choferes",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications/badge",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications/badge",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades/test-u1/visitas",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades/test-u2/visitas",
+      "status": 503,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades/test-u3/visitas",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades/test-u1/visitas",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades/test-u2/visitas",
+      "status": 503,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades/test-u3/visitas",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades/test-u2/visitas",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications/badge",
+      "status": 200,
+      "mode": "closed",
+      "fixture": true
+    },
+    {
+      "path": "/backend/visitas/test-v1",
+      "status": 200,
+      "mode": "closed",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications/badge",
+      "status": 200,
+      "mode": "closed",
+      "fixture": true
+    },
+    {
+      "path": "/backend/visitas/test-v1",
+      "status": 200,
+      "mode": "closed",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/items",
+      "status": 503,
+      "mode": "closed",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/items",
+      "status": 503,
+      "mode": "closed",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/items",
+      "status": 200,
+      "mode": "closed",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications/badge",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/items",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/familias",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades/tipos",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/proveedores",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/items",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/familias",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/unidades/tipos",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/proveedores",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications/badge",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/movimientos",
+      "status": 503,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/pendientes-comprobante",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/movimientos",
+      "status": 503,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/pendientes-comprobante",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/movimientos",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications/badge",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/movimientos",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/movimientos",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/visitas/test-v1",
+      "status": 404,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications/badge",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/movimientos",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/pendientes-comprobante",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/movimientos",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/pendientes-comprobante",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications/badge",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/movimientos",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/movimientos",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/visitas/test-v1",
+      "status": 403,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications/badge",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/movimientos",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/pendientes-comprobante",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/movimientos",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/pendientes-comprobante",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications/badge",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/movimientos",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/movimientos",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/visitas/test-v1",
+      "status": 503,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/visitas/test-v1",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/notifications/badge",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/movimientos",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/pendientes-comprobante",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/movimientos",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    },
+    {
+      "path": "/backend/inventario/pendientes-comprobante",
+      "status": 200,
+      "mode": "ready",
+      "fixture": true
+    }
+  ]
+}

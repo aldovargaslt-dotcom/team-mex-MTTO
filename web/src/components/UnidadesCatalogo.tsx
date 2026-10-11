@@ -74,10 +74,13 @@ function EstadoUnidadMark({ unidad }: { unidad: Unidad }) {
 function CeldaAtencion({
   unidad,
   avisos,
+  disponible,
 }: {
+  disponible: boolean;
   unidad: Unidad;
   avisos: AvisoAndon[];
 }) {
+  if (!disponible) return <p className="muted">Avisos no disponibles</p>;
   const aviso = avisoDeUnidad(avisos, unidad.id);
   const situacion = situacionAtencion(aviso);
   const etiqueta = etiquetaSituacionAtencion(situacion);
@@ -134,6 +137,8 @@ export function UnidadesCatalogo({
   flota,
   tipos,
   avisos,
+  avisosDisponibles = true,
+  flotaDisponible = true,
   q,
   tipoFiltro,
   estadoFiltro,
@@ -154,6 +159,8 @@ export function UnidadesCatalogo({
   flota: Unidad[];
   tipos: TipoVehiculo[];
   avisos: AvisoAndon[];
+  avisosDisponibles?: boolean;
+  flotaDisponible?: boolean;
   q: string;
   tipoFiltro: string;
   estadoFiltro: string;
@@ -282,7 +289,7 @@ export function UnidadesCatalogo({
         id: 'atencion',
         header: 'Alerta',
         cell: ({ row }) => (
-          <CeldaAtencion unidad={row.original} avisos={avisos} />
+          <CeldaAtencion unidad={row.original} avisos={avisos} disponible={avisosDisponibles} />
         ),
       },
       {
@@ -306,7 +313,7 @@ export function UnidadesCatalogo({
         ),
       },
     ],
-    [avisos, onOpenUnidad],
+    [avisos, avisosDisponibles, onOpenUnidad],
   );
 
   const from = ordenadas.length === 0 ? 0 : (pagina - 1) * UNIDADES_PAGE_SIZE + 1;
@@ -347,7 +354,7 @@ export function UnidadesCatalogo({
           </span>
           <span className="unidades-kpi__copy">
             <span className="unidades-kpi__label">Total de unidades</span>
-            <span className="unidades-kpi__value">{kpis.total}</span>
+            <span className="unidades-kpi__value">{flotaDisponible ? kpis.total : 'No disponible'}</span>
           </span>
         </button>
         <button
@@ -366,9 +373,9 @@ export function UnidadesCatalogo({
           </span>
           <span className="unidades-kpi__copy">
             <span className="unidades-kpi__label">Activas</span>
-            <span className="unidades-kpi__value">{kpis.activas}</span>
+            <span className="unidades-kpi__value">{flotaDisponible ? kpis.activas : 'No disponible'}</span>
             <span className="unidades-kpi__meta">
-              {pctDelTotal(kpis.activas, kpis.total)}% del total
+              {flotaDisponible ? `${pctDelTotal(kpis.activas, kpis.total)}% del total` : ''}
             </span>
           </span>
         </button>
@@ -388,14 +395,15 @@ export function UnidadesCatalogo({
           </span>
           <span className="unidades-kpi__copy">
             <span className="unidades-kpi__label">Inactivas</span>
-            <span className="unidades-kpi__value">{kpis.inactivas}</span>
+            <span className="unidades-kpi__value">{flotaDisponible ? kpis.inactivas : 'No disponible'}</span>
             <span className="unidades-kpi__meta">
-              {pctDelTotal(kpis.inactivas, kpis.total)}% del total
+              {flotaDisponible ? `${pctDelTotal(kpis.inactivas, kpis.total)}% del total` : ''}
             </span>
           </span>
         </button>
         <button
           type="button"
+          disabled={!avisosDisponibles}
           className={cn('unidades-kpi', atencionFiltro && 'is-active')}
           aria-pressed={atencionFiltro}
           onClick={() => {
@@ -408,9 +416,9 @@ export function UnidadesCatalogo({
           </span>
           <span className="unidades-kpi__copy">
             <span className="unidades-kpi__label">Alertas</span>
-            <span className="unidades-kpi__value">{kpis.conAviso}</span>
+            <span className="unidades-kpi__value">{flotaDisponible && avisosDisponibles ? kpis.conAviso : 'No disponible'}</span>
             <span className="unidades-kpi__meta">
-              {pctDelTotal(kpis.conAviso, kpis.total)}% del total
+              {flotaDisponible && avisosDisponibles ? `${pctDelTotal(kpis.conAviso, kpis.total)}% del total` : ''}
             </span>
           </span>
         </button>
@@ -521,7 +529,7 @@ export function UnidadesCatalogo({
               className={!tipoFiltro ? 'active' : ''}
               onClick={() => onTipoFiltro('')}
             >
-              Todas ({flota.length})
+              Todas ({flotaDisponible ? flota.length : 'No disponible'})
             </button>
             {tipos.map((tipo) => {
               const n = flota.filter((u) => u.tipo.id === tipo.id).length;
@@ -535,7 +543,7 @@ export function UnidadesCatalogo({
                     onClick={() => onTipoFiltro(activo ? '' : tipo.id)}
                   >
                     <UnidadTipoIcon nombre={tipo.nombre} icono={tipo.icono} />
-                    {tipo.nombre} ({n})
+                    {tipo.nombre} ({flotaDisponible ? n : 'No disponible'})
                   </button>
                   {isAdmin && activo && isMobile ? (
                     <UnidadesTipoMenu
@@ -682,7 +690,7 @@ export function UnidadesCatalogo({
                   <EstadoUnidadMark unidad={unidad} />
                   <span className="unidades-placas">{unidad.placas}</span>
                 </div>
-                <CeldaAtencion unidad={unidad} avisos={avisos} />
+                <CeldaAtencion unidad={unidad} avisos={avisos} disponible={avisosDisponibles} />
                 <Button
                   size="compact"
                   variant="outline"

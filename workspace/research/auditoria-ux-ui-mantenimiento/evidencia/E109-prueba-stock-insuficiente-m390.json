@@ -1,0 +1,160 @@
+{
+  "origin": "https://team-mex-mtto-eight.vercel.app",
+  "path": "/unidades/1d815aac-6311-4301-a315-9e05e4628d8d/visitas/1ac25340-6cd6-4f0b-864a-fc65571ac3cf",
+  "title": "Team Mex — Mantenimiento",
+  "text": "2\nInicio\nÓrdenes\nUnidades\nInventario\nAUD-UX-20261011-A\nBORRADOR\n\nPreventivo · 100 km · WERO · Último km cerrado: Sin registro\n\nGuardar y salir\n\nPaso 5 de 7 · Piezas\n\nPiezas\n\nSKUs compatibles con STOCK. Opcional. Si la cantidad supera el stock, use compra externa o reduzca.\n\nEn esta visita\n\nAUD-UX-20261011-PZA\n\nPrueba auditoría UX/UI\n\nStock 2 pza\n\nQuitar\nCantidad\nOrigen\nDesde stock\nCompra externa\n\nStock insuficiente (hay 2 pza). Use compra externa o reduzca la cantidad.\n\nUsar compra externa\nBuscar SKU\nAUD-UX-20261011-PZA Prueba auditoría UX/UI\nStock 2 pza\nEN LA VISITA\n1 línea supera el stock. Use compra externa o reduzca la cantidad para continuar. No se permiten existencias negativas.\nAtrás\nContinuar",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "overflow": false,
+  "controls": [
+    {
+      "tag": "A",
+      "text": "",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/inicio",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "2",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/notificaciones",
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Abrir menú",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Inicio",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/inicio",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Órdenes",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/ordenes",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Unidades",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/unidades",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Inventario",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/inventario",
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Guardar y salir",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Quitar",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "INPUT",
+      "text": "Cantidad AUD-UX-20261011-PZA",
+      "type": "number",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "SELECT",
+      "text": "Desde stock\nCompra externa",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Usar compra externa",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "INPUT",
+      "text": "SKU, nombre u OEM",
+      "type": null,
+      "name": null,
+      "id": "skuSearch",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "AUD-UX-20261011-PZA Prueba auditoría UX/UI\nStock 2 pza\nEN LA VISITA",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": true
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Atrás",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Continuar",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": true
+    }
+  ],
+  "at": "2026-10-11T06:59:20.375Z",
+  "network": [],
+  "requests": []
+}
