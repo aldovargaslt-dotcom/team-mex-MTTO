@@ -48,6 +48,23 @@ $env:DB_PORT = '5433'
 
 El puerto interno del contenedor y el valor por defecto permanecen en `5432`.
 
+### Windows: Docker local y despliegue automático desde GitHub
+
+Con Docker Desktop (Linux containers), Git y PowerShell 7, desde la raíz:
+
+```powershell
+pwsh -File .\script\deploy-local.ps1
+```
+
+Abrir [http://localhost:3000](http://localhost:3000). Este comando usa los targets
+de desarrollo y `compose.local.yml`; limita los puertos a esta PC y conserva
+Postgres en su volumen. No necesita Node instalado en Windows.
+
+Para actualizar automáticamente después de CI exitoso en `main`, configurar
+el runner de Windows y activar `LOCAL_DEPLOY_ENABLED` según la
+[guía local](docs/deploy-local-windows.md). Los agentes cloud y los PR siguen
+usando GitHub; los tests de PR se ejecutan en runners de GitHub.
+
 ### Stack completo en Docker (red local)
 
 Para abrir la app desde el celular u otra PC de la misma Wi‑Fi/LAN, sin instalar Node:

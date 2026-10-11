@@ -1,0 +1,33 @@
+# Desarrollo en esta PC; combinar siempre con docker-compose.yml.
+# Los targets de producción siguen siendo el default de los Dockerfiles.
+services:
+  api:
+    build:
+      target: development
+    environment:
+      NODE_ENV: development
+      DB_SYNCHRONIZE: 'true'
+      DB_DROP_SCHEMA: 'false'
+      ANDON_NOTIFY_PROVIDER: noop
+      CORS_ORIGIN: http://localhost:3000
+    ports: !override
+      - '127.0.0.1:3001:3001'
+  web:
+    build:
+      target: development
+    environment:
+      NODE_ENV: development
+      API_URL: http://api:3001
+      NEXT_PUBLIC_API_BASE: /backend
+    ports: !override
+      - '127.0.0.1:3000:3000'
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - "require('http').get('http://127.0.0.1:3000/login',(r)=>process.exit(r.statusCode>=200&&r.statusCode<400?0:1)).on('error',()=>process.exit(1))"
+      interval: 10s
+      timeout: 10s
+      retries: 30
+      start_period: 90s

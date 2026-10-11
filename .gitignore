@@ -7,4 +7,5 @@ coverage/
 .env.local
 .DS_Store
 *.tsbuildinfo
+*.dump
 web/next-env.d.ts

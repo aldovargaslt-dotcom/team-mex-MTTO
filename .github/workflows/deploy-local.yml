@@ -1,0 +1,52 @@
+name: Deploy local Windows
+
+on:
+  workflow_run:
+    workflows: [Verify]
+    types: [completed]
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-local-windows
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    # Opt-in; sólo commits de este repo en main cuyo CI de push terminó bien.
+    if: >-
+      vars.LOCAL_DEPLOY_ENABLED == 'true' &&
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'push' &&
+      github.event.workflow_run.head_branch == 'main' &&
+      github.event.workflow_run.head_repository.id == github.repository_id
+    runs-on: [self-hosted, Windows, X64, team-mex-local]
+    timeout-minutes: 45
+    defaults:
+      run:
+        shell: pwsh
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+          persist-credentials: false
+      - name: Deploy verified revision if still current
+        env:
+          VERIFIED_SHA: ${{ github.event.workflow_run.head_sha }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          # Consultar la revisión actual también funciona en repos privados.
+          $headers = @{
+            Authorization = "Bearer $env:GH_TOKEN"
+            Accept = 'application/vnd.github+json'
+            'X-GitHub-Api-Version' = '2022-11-28'
+          }
+          $ref = Invoke-RestMethod -Headers $headers -Uri "$env:GITHUB_API_URL/repos/$env:GITHUB_REPOSITORY/git/ref/heads/main"
+          if ($ref.object.sha -ne $env:VERIFIED_SHA) {
+            Write-Host 'main ya avanzó; se omite esta revisión anterior.'
+            exit 0
+          }
+          ./script/deploy-local.ps1

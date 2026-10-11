@@ -3,6 +3,14 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci
 
+FROM deps AS development
+WORKDIR /app
+COPY . .
+ENV NODE_ENV=development
+ENV HOST=0.0.0.0
+ENV PORT=3001
+CMD ["npm", "run", "start:dev"]
+
 FROM node:20-alpine AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
