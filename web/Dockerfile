@@ -4,6 +4,14 @@ RUN apk add --no-cache libc6-compat
 COPY package.json package-lock.json ./
 RUN npm ci
 
+FROM deps AS development
+WORKDIR /app
+COPY . .
+ENV NODE_ENV=development
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV NEXT_PUBLIC_API_BASE=/backend
+CMD ["npm", "run", "dev", "--", "--hostname", "0.0.0.0"]
+
 FROM node:20-alpine AS builder
 WORKDIR /app
 RUN apk add --no-cache libc6-compat
