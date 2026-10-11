@@ -1,0 +1,50 @@
+{
+  "at": "2026-10-11T06:45:17.730Z",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "tabs": [
+    {
+      "tag": "INPUT",
+      "text": "",
+      "inDialog": true
+    },
+    {
+      "tag": "BUTTON",
+      "text": "CHATO NUEVO\nWR2023C · CAMIONES 3 Y MEDIA",
+      "inDialog": true
+    },
+    {
+      "tag": "BUTTON",
+      "text": "DUCATO 2021\nVU2626C · RUTAS",
+      "inDialog": true
+    },
+    {
+      "tag": "BUTTON",
+      "text": "DUCATO 2023\nVU2627C · RUTAS",
+      "inDialog": true
+    },
+    {
+      "tag": "BUTTON",
+      "text": "FORD 2017\nVU2624C · CAMIONES 3 Y MEDIA",
+      "inDialog": true
+    },
+    {
+      "tag": "BUTTON",
+      "text": "FOTON\nVU2625C · STOCK",
+      "inDialog": true
+    },
+    {
+      "tag": "BUTTON",
+      "text": "NISSAN CERRADA\nVU2630C · RUTAS",
+      "inDialog": true
+    }
+  ],
+  "afterEscape": {
+    "tag": "BUTTON",
+    "text": "NISSAN CERRADA\nVU2630C · RUTAS",
+    "dialogStillPresent": true
+  },
+  "domainWritesPerformed": false
+}

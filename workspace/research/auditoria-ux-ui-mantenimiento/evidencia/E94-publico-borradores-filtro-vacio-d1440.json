@@ -1,0 +1,173 @@
+{
+  "origin": "https://team-mex-mtto-eight.vercel.app",
+  "path": "/ordenes",
+  "title": "Team Mex — Mantenimiento",
+  "text": "Inicio\nÓrdenes\nUnidades\nInventario\n2\nSUPERVISOR\nElegir rol\nCerrar sesión\nÓrdenes\n+ Nueva orden\nBorradores\nCerradas\nNo hay órdenes en borrador.\n\nCrea una orden aquí para comenzar la captura.",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "overflow": false,
+  "controls": [
+    {
+      "tag": "A",
+      "text": "",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/inicio",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Inicio",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/inicio",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Órdenes",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/ordenes",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Unidades",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/unidades",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Inventario",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/inventario",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "2",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/notificaciones",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Configuración",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": "/configuracion/alertas",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Elegir rol",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/",
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Cerrar sesión",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Abrir menú",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "INPUT",
+      "text": "Buscar órdenes",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "+ Nueva orden",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Borradores",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Cerradas",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Filtros",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    }
+  ],
+  "at": "2026-10-11T06:51:25.252Z",
+  "network": [
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/ordenes",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/notifications/badge",
+      "status": 200
+    }
+  ],
+  "requests": [
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/ordenes",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/notifications/badge",
+      "method": "GET"
+    }
+  ]
+}

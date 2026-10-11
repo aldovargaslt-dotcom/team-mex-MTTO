@@ -1,0 +1,77 @@
+{
+  "url": "http://127.0.0.1:3000/mi-trabajo",
+  "title": "Team Mex — Mantenimiento",
+  "text": "Mi trabajo\nMECÁNICO\nCambiar rol\n\nMECÁNICO · MI TURNO\n\nMi bandeja de trabajo\n\nChequeos operativos asignados y disponibles en tu patio.\n\n— ACTIVOS\n\nNo se pudo conectar con el servicio. Intenta de nuevo.\n\nReintentar\nCola de chequeos\n— visibles",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "overflow": false,
+  "font": "Roboto, \"Roboto Fallback\", ui-sans-serif, system-ui, sans-serif",
+  "controls": [
+    {
+      "tag": "A",
+      "text": null,
+      "href": "/mi-trabajo",
+      "ariaLabel": null,
+      "role": null,
+      "width": 67.046875,
+      "height": 36,
+      "color": "rgb(247, 247, 251)",
+      "background": "rgba(0, 0, 0, 0)",
+      "fontSize": "14px"
+    },
+    {
+      "tag": "A",
+      "text": "Mi trabajo",
+      "href": "/mi-trabajo",
+      "ariaLabel": null,
+      "role": null,
+      "width": 82.140625,
+      "height": 36,
+      "color": "rgb(255, 255, 255)",
+      "background": "rgba(0, 0, 0, 0)",
+      "fontSize": "13px"
+    },
+    {
+      "tag": "A",
+      "text": "Alertas",
+      "href": "/notificaciones",
+      "ariaLabel": "Alertas",
+      "role": null,
+      "width": 40,
+      "height": 40,
+      "color": "rgb(247, 247, 251)",
+      "background": "rgba(0, 0, 0, 0)",
+      "fontSize": "14px"
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Cambiar rol",
+      "href": null,
+      "ariaLabel": null,
+      "role": null,
+      "width": 93.90625,
+      "height": 40,
+      "color": "oklab(0.999994 0.0000455677 0.0000200868 / 0.7)",
+      "background": "rgba(0, 0, 0, 0)",
+      "fontSize": "12px",
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Reintentar",
+      "href": null,
+      "ariaLabel": null,
+      "role": null,
+      "width": 99.171875,
+      "height": 40,
+      "color": "rgb(36, 40, 77)",
+      "background": "rgb(255, 255, 255)",
+      "fontSize": "14px",
+      "disabled": false
+    }
+  ],
+  "at": "2026-10-11T04:53:13.518Z",
+  "network": []
+}

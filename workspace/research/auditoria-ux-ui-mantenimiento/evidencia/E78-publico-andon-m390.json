@@ -1,0 +1,124 @@
+{
+  "origin": "https://team-mex-mtto-eight.vercel.app",
+  "path": "/andon",
+  "title": "Team Mex — Mantenimiento",
+  "text": "2\nInicio\nÓrdenes\nUnidades\nInventario\nMantenimiento vencido\n\nAlertas de mantenimiento vencido. Enterado es in-app; solo una visita cerrada resuelve.\n\nPendientes\nEnterados\nResueltos\nReincidentes\nUNIDAD\tTIPO\tESTADO\tÚLTIMO SERVICIO\tCAUSA\tABIERTO\t\nFOTON\tSTOCK\tENTERADO\t\n12/06/2026, 16:23\nOdómetro 100 km\n\t\nMantenimiento atrasado · 30 días vencido\nHan pasado 120 días desde el último servicio.\n\t18/09/2026, 19:16\t",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "overflow": false,
+  "controls": [
+    {
+      "tag": "A",
+      "text": "",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/inicio",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "2",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/notificaciones",
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Abrir menú",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Inicio",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/inicio",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Órdenes",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/ordenes",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Unidades",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/unidades",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Inventario",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/inventario",
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Pendientes",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Enterados",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Resueltos",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Reincidentes",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "FOTON",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/unidades/59f71d91-aa7d-443f-bcd6-751dd6bf0d5a",
+      "disabled": false
+    }
+  ],
+  "at": "2026-10-11T06:46:44.813Z",
+  "network": [],
+  "requests": []
+}

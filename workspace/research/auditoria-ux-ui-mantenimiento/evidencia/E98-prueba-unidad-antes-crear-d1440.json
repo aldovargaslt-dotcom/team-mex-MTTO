@@ -1,0 +1,223 @@
+{
+  "origin": "https://team-mex-mtto-eight.vercel.app",
+  "path": "/unidades/nueva",
+  "title": "Team Mex — Mantenimiento",
+  "text": "Inicio\nÓrdenes\nMovimientos\nUnidades\nMantenimiento vencido\nInventario\nChoferes\nConfiguración\n2\nADMINISTRADOR DIRECTIVO\nElegir rol\nCerrar sesión\nNueva unidad\n\nAlta de unidad en el catálogo de la flota.\n\nFoto de la unidad\n\nSe guarda en la unidad. Sin foto, se usa el icono del tipo.\n\nAgregar foto\nTomar o seleccionar una imagen.\nNúmero interno\nPlacas\nVIN\nTipo\nSeleccione un tipo\nCAMIONES 3 Y MEDIA\nRUTAS\nSTOCK\nEstado\nActiva\nInactiva\nMarca / modelo\nAño\nCrear unidad\nCancelar",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "overflow": false,
+  "controls": [
+    {
+      "tag": "A",
+      "text": "",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/inicio",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Inicio",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/inicio",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Órdenes",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/ordenes",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Movimientos",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/flota",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Unidades",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/unidades",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Mantenimiento vencido",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/andon",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Inventario",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/inventario",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Choferes",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/choferes",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Configuración",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/configuracion/alertas",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "2",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/notificaciones",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Elegir rol",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/",
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Cerrar sesión",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Agregar foto\nTomar o seleccionar una imagen.",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "INPUT",
+      "text": "",
+      "type": "file",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "INPUT",
+      "text": "",
+      "type": null,
+      "name": null,
+      "id": "numeroInterno",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "INPUT",
+      "text": "",
+      "type": null,
+      "name": null,
+      "id": "placas",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "INPUT",
+      "text": "Opcional",
+      "type": null,
+      "name": null,
+      "id": "vin",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "SELECT",
+      "text": "Seleccione un tipo\nCAMIONES 3 Y MEDIA\nRUTAS\nSTOCK",
+      "type": null,
+      "name": null,
+      "id": "tipoId",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "SELECT",
+      "text": "Activa\nInactiva",
+      "type": null,
+      "name": null,
+      "id": "estado",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "INPUT",
+      "text": "Ej. International MV",
+      "type": null,
+      "name": null,
+      "id": "marcaModelo",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "INPUT",
+      "text": "",
+      "type": "number",
+      "name": null,
+      "id": "anio",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Crear unidad",
+      "type": "submit",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Cancelar",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/unidades",
+      "disabled": false
+    }
+  ],
+  "at": "2026-10-11T06:56:49.254Z",
+  "network": [],
+  "requests": []
+}

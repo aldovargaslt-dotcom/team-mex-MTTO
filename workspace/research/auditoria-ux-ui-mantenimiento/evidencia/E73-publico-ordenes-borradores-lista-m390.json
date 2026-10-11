@@ -1,0 +1,151 @@
+{
+  "origin": "https://team-mex-mtto-eight.vercel.app",
+  "path": "/ordenes",
+  "title": "Team Mex — Mantenimiento",
+  "text": "2\nInicio\nÓrdenes\nUnidades\nInventario\nÓrdenes\n+ Nueva orden\nBorradores\nCerradas\nCHATO NUEVO\nOT · 9C962BCB\nCorrectivo\nURVAN\nOT · 2ADA4D7C\nCorrectivo\nFOTON\nOT · 64939437\nCorrectivo",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "overflow": false,
+  "controls": [
+    {
+      "tag": "A",
+      "text": "",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/inicio",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "2",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/notificaciones",
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Abrir menú",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Inicio",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/inicio",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Órdenes",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/ordenes",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Unidades",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/unidades",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Inventario",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/inventario",
+      "disabled": false
+    },
+    {
+      "tag": "INPUT",
+      "text": "Buscar órdenes",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "+ Nueva orden",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Borradores",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Cerradas",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Filtros",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "CHATO NUEVO\nOT · 9C962BCB\nCorrectivo",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "URVAN\nOT · 2ADA4D7C\nCorrectivo",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "FOTON\nOT · 64939437\nCorrectivo",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    }
+  ],
+  "at": "2026-10-11T06:45:15.643Z",
+  "network": [],
+  "requests": []
+}

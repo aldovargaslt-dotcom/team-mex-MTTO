@@ -1,0 +1,18 @@
+{
+  "at": "2026-10-11T07:04:45.402Z",
+  "fonts": {
+    "fonts": [
+      {
+        "familyName": "Roboto",
+        "postScriptName": "Roboto-Regular",
+        "isCustomFont": true,
+        "glyphCount": 11
+      }
+    ]
+  },
+  "styles": {
+    "family": "Roboto, \"Roboto Fallback\", ui-sans-serif, system-ui, sans-serif",
+    "size": "20px",
+    "status": "loaded"
+  }
+}

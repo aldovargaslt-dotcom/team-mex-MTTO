@@ -1,0 +1,204 @@
+{
+  "method": "Consolidación de requests CDP incrementales guardados en capturas; no log exhaustivo del servidor ni prueba de ausencia de actividad de terceros",
+  "allowed": "Sólo creación/modificación de registros nuevos identificados como prueba; sin escrituras dirigidas a registros previos",
+  "requests": [
+    {
+      "capture": "E100-prueba-refaccion-creada-d1440.json",
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/inventario/items",
+      "method": "POST"
+    },
+    {
+      "capture": "E101-prueba-entrada-2-pza-d1440.json",
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/inventario/movimientos/entrada",
+      "method": "POST"
+    },
+    {
+      "capture": "E103-prueba-visita-1-creada-m390.json",
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/unidades/1d815aac-6311-4301-a315-9e05e4628d8d/visitas",
+      "method": "POST"
+    },
+    {
+      "capture": "E104-prueba-visita-1-trabajos-m390.json",
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/visitas/1ac25340-6cd6-4f0b-864a-fc65571ac3cf",
+      "method": "PATCH"
+    },
+    {
+      "capture": "E105-prueba-visita-1-observaciones-m390.json",
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/visitas/1ac25340-6cd6-4f0b-864a-fc65571ac3cf",
+      "method": "PATCH"
+    },
+    {
+      "capture": "E106-prueba-visita-1-fotos-m390.json",
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/visitas/1ac25340-6cd6-4f0b-864a-fc65571ac3cf",
+      "method": "PATCH"
+    },
+    {
+      "capture": "E108-prueba-visita-1-piezas-m390.json",
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/visitas/1ac25340-6cd6-4f0b-864a-fc65571ac3cf",
+      "method": "PATCH"
+    },
+    {
+      "capture": "E110-prueba-borrador-guardado-m390.json",
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/visitas/1ac25340-6cd6-4f0b-864a-fc65571ac3cf",
+      "method": "PATCH"
+    },
+    {
+      "capture": "E111-prueba-borrador-reanudado-m390.json",
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/visitas/1ac25340-6cd6-4f0b-864a-fc65571ac3cf",
+      "method": "PATCH"
+    },
+    {
+      "capture": "E111-prueba-borrador-reanudado-m390.json",
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/visitas/1ac25340-6cd6-4f0b-864a-fc65571ac3cf",
+      "method": "PATCH"
+    },
+    {
+      "capture": "E111-prueba-borrador-reanudado-m390.json",
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/visitas/1ac25340-6cd6-4f0b-864a-fc65571ac3cf",
+      "method": "PATCH"
+    },
+    {
+      "capture": "E111-prueba-borrador-reanudado-m390.json",
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/visitas/1ac25340-6cd6-4f0b-864a-fc65571ac3cf",
+      "method": "PATCH"
+    },
+    {
+      "capture": "E112-prueba-firmas-vacias-m390.json",
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/visitas/1ac25340-6cd6-4f0b-864a-fc65571ac3cf",
+      "method": "PATCH"
+    },
+    {
+      "capture": "E113-prueba-cierre-sin-firmas-m390.json",
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/visitas/1ac25340-6cd6-4f0b-864a-fc65571ac3cf",
+      "method": "PATCH"
+    },
+    {
+      "capture": "E116-prueba-confirmar-lista-m390.json",
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/visitas/1ac25340-6cd6-4f0b-864a-fc65571ac3cf",
+      "method": "PATCH"
+    },
+    {
+      "capture": "E118-prueba-visita-1-cerrada-hub-m390.json",
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/visitas/1ac25340-6cd6-4f0b-864a-fc65571ac3cf",
+      "method": "PATCH"
+    },
+    {
+      "capture": "E118-prueba-visita-1-cerrada-hub-m390.json",
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/visitas/1ac25340-6cd6-4f0b-864a-fc65571ac3cf/cerrar",
+      "method": "POST"
+    },
+    {
+      "capture": "E124-prueba-visita-2-creada-d1440.json",
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/unidades/1d815aac-6311-4301-a315-9e05e4628d8d/visitas",
+      "method": "POST"
+    },
+    {
+      "capture": "E125-prueba-visita-2-stock-insuficiente-d1440.json",
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/visitas/53a02af0-b7a5-4059-9df6-c53bf3aa8add",
+      "method": "PATCH"
+    },
+    {
+      "capture": "E125-prueba-visita-2-stock-insuficiente-d1440.json",
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/visitas/53a02af0-b7a5-4059-9df6-c53bf3aa8add",
+      "method": "PATCH"
+    },
+    {
+      "capture": "E125-prueba-visita-2-stock-insuficiente-d1440.json",
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/visitas/53a02af0-b7a5-4059-9df6-c53bf3aa8add",
+      "method": "PATCH"
+    },
+    {
+      "capture": "E125-prueba-visita-2-stock-insuficiente-d1440.json",
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/visitas/53a02af0-b7a5-4059-9df6-c53bf3aa8add",
+      "method": "PATCH"
+    },
+    {
+      "capture": "E127-prueba-dialogo-cierre-externo-d1440.json",
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/visitas/53a02af0-b7a5-4059-9df6-c53bf3aa8add",
+      "method": "PATCH"
+    },
+    {
+      "capture": "E128-prueba-visita-2-cierre-confirmado-d1440.json",
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/visitas/53a02af0-b7a5-4059-9df6-c53bf3aa8add",
+      "method": "PATCH"
+    },
+    {
+      "capture": "E128-prueba-visita-2-cierre-confirmado-d1440.json",
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/visitas/53a02af0-b7a5-4059-9df6-c53bf3aa8add/cerrar",
+      "method": "POST"
+    },
+    {
+      "capture": "E131-prueba-comprobante-sin-ticket-d1440.json",
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/inventario/pendientes-comprobante/055e2fce-758a-418b-a3a4-f8b21a3ad558/recibir",
+      "method": "POST"
+    },
+    {
+      "capture": "E136-prueba-visita-3-creada-d1440.json",
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/unidades/1d815aac-6311-4301-a315-9e05e4628d8d/visitas",
+      "method": "POST"
+    },
+    {
+      "capture": "E137-prueba-tercer-pendiente-con-origen-d1440.json",
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/visitas/f2aa2d26-8669-4b0c-83ea-29e73dd2bdf9",
+      "method": "PATCH"
+    },
+    {
+      "capture": "E137-prueba-tercer-pendiente-con-origen-d1440.json",
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/visitas/f2aa2d26-8669-4b0c-83ea-29e73dd2bdf9",
+      "method": "PATCH"
+    },
+    {
+      "capture": "E137-prueba-tercer-pendiente-con-origen-d1440.json",
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/visitas/f2aa2d26-8669-4b0c-83ea-29e73dd2bdf9/cerrar",
+      "method": "POST"
+    },
+    {
+      "capture": "E138-prueba-ticket-adjunto-d1440.json",
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/inventario/pendientes-comprobante/5918832a-eaaa-4288-83aa-3ebc90dd393b/ticket",
+      "method": "POST"
+    },
+    {
+      "capture": "E139-prueba-ticket-cerrado-d1440.json",
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/inventario/pendientes-comprobante/5918832a-eaaa-4288-83aa-3ebc90dd393b/recibir",
+      "method": "POST"
+    },
+    {
+      "capture": "E99-prueba-unidad-creada-d1440.json",
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/unidades",
+      "method": "POST"
+    }
+  ]
+}

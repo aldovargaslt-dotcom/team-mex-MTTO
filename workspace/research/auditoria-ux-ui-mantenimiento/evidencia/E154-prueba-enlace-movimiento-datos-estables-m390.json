@@ -1,0 +1,88 @@
+{
+  "origin": "https://team-mex-mtto-eight.vercel.app",
+  "path": "/unidades/1d815aac-6311-4301-a315-9e05e4628d8d/visitas/1ac25340-6cd6-4f0b-864a-fc65571ac3cf",
+  "title": "Team Mex — Mantenimiento",
+  "text": "2\nInicio\nÓrdenes\nUnidades\nInventario\nAUD-UX-20261011-A\nCERRADA\n\nPreventivo · 100 km · WERO · 11/10/2026, 07:00\n\nVolver al hub\nDatos\nChofer\nWERO\nKilometraje\n100 km\nTipo\nPreventivo\nTrabajos\nA Afinación / filtros de aceite\nObservaciones\n\nPRUEBA AUDITORÍA UX/UI 2026-10-11. Visita 1: stock. Datos y firmas sintéticos; no acredita trabajo real.\n\nFotos\nPiezas\nAUD-UX-20261011-PZA Prueba auditoría UX/UI · 1 pza · Desde stock\nFirmas\n\nChofer\n\nJefe de mecánicos / taller",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "overflow": false,
+  "controls": [
+    {
+      "tag": "A",
+      "text": "",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/inicio",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "2",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/notificaciones",
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Abrir menú",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Inicio",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/inicio",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Órdenes",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/ordenes",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Unidades",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/unidades",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Inventario",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/inventario",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Volver al hub",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/unidades/1d815aac-6311-4301-a315-9e05e4628d8d",
+      "disabled": false
+    }
+  ],
+  "at": "2026-10-11T07:06:41.184Z",
+  "network": [],
+  "requests": []
+}

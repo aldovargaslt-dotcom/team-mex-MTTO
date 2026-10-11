@@ -1,0 +1,96 @@
+{
+  "at": "2026-10-11T08:02:01.302493+00:00",
+  "method": "Verificación de entrega documental; no tests de producto ni aceptación UX humana",
+  "checks": {
+    "local_links": {
+      "status": "PASS",
+      "count": 326,
+      "broken": []
+    },
+    "png": {
+      "status": "PASS",
+      "count": 136,
+      "dimensions": {
+        "(1440, 900)": 69,
+        "(390, 844)": 64,
+        "(640, 360)": 1,
+        "(320, 844)": 1,
+        "(1024, 768)": 1
+      },
+      "invalid": [],
+      "unpaired": [],
+      "fixture_is_input_not_screen": true
+    },
+    "json": {
+      "status": "PASS",
+      "count_before_this_regeneration": 152,
+      "invalid": []
+    },
+    "secret_text_scan": {
+      "status": "PASS",
+      "file_hits_only": {
+        "provided_credential_prefix": [],
+        "provided_login_email": [],
+        "jwt": [],
+        "cookie_value": []
+      },
+      "limit": "Escaneo de texto y revisión de capturas de login previas a introducir credenciales; no análisis OCR ni garantía universal"
+    },
+    "product_unchanged": {
+      "status": "PASS",
+      "head": "39ce14db9b287ad46074900e8028b1a127cd166c",
+      "tracked_changes": [],
+      "worktree_status": [
+        "?? workspace/research/auditoria-ux-ui-mantenimiento/"
+      ],
+      "scope": "Sólo documentación/evidencia nueva dentro de directorio de auditoría"
+    },
+    "plan_blob": {
+      "status": "PASS",
+      "blob": "15e944c2f0cc34fc970becd130651818e55dbebd",
+      "source_commit": "7b149ca82a6cb8005797b956ad53ad224563b5fb"
+    },
+    "findings": {
+      "status": "PASS",
+      "ids": [
+        "H01",
+        "H02",
+        "H03",
+        "H04",
+        "H05",
+        "H06",
+        "H07",
+        "H08",
+        "H09",
+        "H10",
+        "H11",
+        "H12",
+        "H13",
+        "H14",
+        "H15"
+      ]
+    },
+    "recorded_mutation_targets": {
+      "status": "PASS",
+      "requests": 33,
+      "outside_allowlist": [],
+      "limit": "Requests CDP guardados incrementalmente, no log exhaustivo de servidor; creación por endpoint genérico cotejada con UI/IDs posteriores"
+    },
+    "temporary_profiles_removed": {
+      "status": "PASS",
+      "remaining": []
+    },
+    "backlog_arithmetic": {
+      "status": "PASS",
+      "B10_B15_days": [
+        3.75,
+        7.5
+      ],
+      "candidate_core_days": [
+        4.25,
+        8.5
+      ],
+      "limit": "Rangos orientativos de confianza baja; paquetes solapados, no sumables; no compromiso ni tiempo humano medido"
+    }
+  }
+}

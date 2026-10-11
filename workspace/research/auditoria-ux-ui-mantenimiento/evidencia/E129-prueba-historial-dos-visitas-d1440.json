@@ -1,0 +1,246 @@
+{
+  "origin": "https://team-mex-mtto-eight.vercel.app",
+  "path": "/unidades/1d815aac-6311-4301-a315-9e05e4628d8d",
+  "title": "Team Mex — Mantenimiento",
+  "text": "Inicio\nÓrdenes\nUnidades\nInventario\n2\nSUPERVISOR\nElegir rol\nCerrar sesión\nVolver a unidades\n\nUnidades › AUD-UX-20261011-A\n\nNueva orden\nAUD-UX-20261011-A\nActiva\n\nPrueba auditoría UX/UI\n\nSTOCK\n\nPLACAS\nUXAUD01\nÚLTIMA ACTUALIZACIÓN\n11/10/2026, 06:56\n100%\nSALUD DE LA UNIDAD\nExcelente\n\nSECCIONES\n\nResumen\nDatos de unidad\nMantenimiento\nHistorial\nHistorial de servicios\nPreventivo y correctivo\nPreventivo · 1 · 50%\nCorrectivo · 1 · 50%\nCadencia entre servicios\n+1 km · 0 días\n11/10/2026, 07:01 · Correctivo\n101 km · WERO\nCalibración y rotación · 3 piezas\nVer orden ›\n11/10/2026, 07:00 · Preventivo\n100 km · WERO\nAfinación / filtros de aceite · 1 pieza\nVer orden ›\nRefacciones\nFECHA CIERRE\tVISITA\tREFACCIÓN\tCANT.\tORIGEN\n11/10/2026, 07:01\tVer visita\tAUD-UX-20261011-PZA · Prueba auditoría UX/UI\t3 pza\tCompra externa\n11/10/2026, 07:00\tVer visita\tAUD-UX-20261011-PZA · Prueba auditoría UX/UI\t1 pza\tDesde stock",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "overflow": false,
+  "controls": [
+    {
+      "tag": "A",
+      "text": "",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/inicio",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Inicio",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/inicio",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Órdenes",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/ordenes",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Unidades",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/unidades",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Inventario",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/inventario",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "2",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/notificaciones",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Configuración",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": "/configuracion/alertas",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Elegir rol",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/",
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Cerrar sesión",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Abrir menú",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Volver a unidades",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/unidades",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Unidades",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/unidades",
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Nueva orden",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "100%\nSALUD DE LA UNIDAD\nExcelente",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Resumen",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/unidades/1d815aac-6311-4301-a315-9e05e4628d8d",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Datos de unidad",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/unidades/1d815aac-6311-4301-a315-9e05e4628d8d",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Mantenimiento",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/unidades/1d815aac-6311-4301-a315-9e05e4628d8d",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Historial",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/unidades/1d815aac-6311-4301-a315-9e05e4628d8d",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "+1 km · 0 días\n11/10/2026, 07:01 · Correctivo\n101 km · WERO\nCalibración y rotación · 3 piezas\nVer orden ›",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/unidades/1d815aac-6311-4301-a315-9e05e4628d8d/visitas/53a02af0-b7a5-4059-9df6-c53bf3aa8add",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "11/10/2026, 07:00 · Preventivo\n100 km · WERO\nAfinación / filtros de aceite · 1 pieza\nVer orden ›",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/unidades/1d815aac-6311-4301-a315-9e05e4628d8d/visitas/1ac25340-6cd6-4f0b-864a-fc65571ac3cf",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Ver visita",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/unidades/1d815aac-6311-4301-a315-9e05e4628d8d/visitas/53a02af0-b7a5-4059-9df6-c53bf3aa8add",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Ver visita",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/unidades/1d815aac-6311-4301-a315-9e05e4628d8d/visitas/1ac25340-6cd6-4f0b-864a-fc65571ac3cf",
+      "disabled": false
+    }
+  ],
+  "at": "2026-10-11T07:01:51.584Z",
+  "network": [
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/unidades/1d815aac-6311-4301-a315-9e05e4628d8d",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/unidades/1d815aac-6311-4301-a315-9e05e4628d8d",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/inventario/items",
+      "status": 200
+    }
+  ],
+  "requests": [
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/unidades/1d815aac-6311-4301-a315-9e05e4628d8d",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/inventario/items",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/unidades/1d815aac-6311-4301-a315-9e05e4628d8d",
+      "method": "GET"
+    }
+  ]
+}

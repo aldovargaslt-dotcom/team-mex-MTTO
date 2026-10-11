@@ -1,0 +1,522 @@
+{
+  "origin": "https://team-mex-mtto-eight.vercel.app",
+  "path": "/unidades",
+  "title": "Team Mex — Mantenimiento",
+  "text": "Inicio\nÓrdenes\nUnidades\nInventario\n2\nSUPERVISOR\nElegir rol\nCerrar sesión\nUnidades\n\nBusque y abra la ficha de la unidad.\n\nFlota de mantenimiento\nAbra una ficha para visitas y alertas.\nTotal de unidades\n13\nActivas\n13\n100% del total\nInactivas\n0\n0% del total\nAlertas\n1\n8% del total\nBuscar unidad\nEstado\nTodos\nActiva\nInactiva\nLimpiar filtros\nBuscar\nTodas (13)\nCAMIONES 3 Y MEDIA (4)\nRUTAS (6)\nSTOCK (3)\nOrdenar por\nInterno (A-Z)\nInterno (Z-A)\nPlacas (A-Z)\nUNIDAD\tTIPO\tPLACAS\tESTADO\tALERTA\t\nACCIONES\n\n\nCHATO NUEVO\n\t\nCAMIONES 3 Y MEDIA\tWR2023C\t\nActiva\n\t\n\nSin alerta\n\n\t\nVer ficha\n\n\nDUCATO 2021\n\t\nRUTAS\tVU2626C\t\nActiva\n\t\n\nSin alerta\n\n\t\nVer ficha\n\n\nDUCATO 2023\n\t\nRUTAS\tVU2627C\t\nActiva\n\t\n\nSin alerta\n\n\t\nVer ficha\n\n\nFORD 2017\n\t\nCAMIONES 3 Y MEDIA\tVU2624C\t\nActiva\n\t\n\nSin alerta\n\n\t\nVer ficha\n\n\nFOTON\n\t\nSTOCK\tVU2625C\t\nActiva\n\t\n\nRequiere inspección\n\n\t\nVer ficha\n\nMostrando 1–5 de 13 unidades\n\n1\n2\n3\n\nConsejo: puede buscar por número interno, placas, marca o modelo para encontrar una unidad más rápido.",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "overflow": false,
+  "controls": [
+    {
+      "tag": "A",
+      "text": "",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/inicio",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Inicio",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/inicio",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Órdenes",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/ordenes",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Unidades",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/unidades",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Inventario",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/inventario",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "2",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/notificaciones",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Configuración",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": "/configuracion/alertas",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Elegir rol",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/",
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Cerrar sesión",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Abrir menú",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Total de unidades\n13",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Activas\n13\n100% del total",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Inactivas\n0\n0% del total",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Alertas\n1\n8% del total",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "INPUT",
+      "text": "Interno, placas, marca o modelo…",
+      "type": null,
+      "name": null,
+      "id": "unidadQ",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "SELECT",
+      "text": "Todos\nActiva\nInactiva",
+      "type": null,
+      "name": null,
+      "id": "unidadEstado",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Limpiar filtros",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": true
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Buscar",
+      "type": "submit",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Todas (13)",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "CAMIONES 3 Y MEDIA (4)",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "RUTAS (6)",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "STOCK (3)",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "SELECT",
+      "text": "Interno (A-Z)\nInterno (Z-A)\nPlacas (A-Z)",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Vista tabla",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Vista tarjetas",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Ver ficha",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Ver ficha",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Ver ficha",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Ver ficha",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Ver ficha",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Página anterior",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": true
+    },
+    {
+      "tag": "BUTTON",
+      "text": "1",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "2",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "3",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Página siguiente",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Cerrar consejo",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    }
+  ],
+  "at": "2026-10-11T06:45:20.273Z",
+  "network": [
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/choferes",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/unidades",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/unidades/22e513d8-1556-457d-bed8-594204033607/visitas",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/ordenes",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/inventario",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/unidades",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/_next/static/chunks/2f34ef02f33081af.js",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/_next/static/chunks/772eca7852c17a74.js",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/inicio",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/ordenes",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/configuracion/alertas",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/notifications/badge",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/andon/umbrales",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/unidades/tipos",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/unidades",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/andon/avisos",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/notifications/badge",
+      "status": 200
+    }
+  ],
+  "requests": [
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/unidades",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/choferes",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/unidades/22e513d8-1556-457d-bed8-594204033607/visitas",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/ordenes",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/inicio",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/ordenes",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/unidades",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/inventario",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/configuracion/alertas",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/_next/static/chunks/2f34ef02f33081af.js",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/_next/static/chunks/772eca7852c17a74.js",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/notifications/badge",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/unidades",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/unidades/tipos",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/andon/umbrales",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/andon/avisos",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/notifications/badge",
+      "method": "GET"
+    }
+  ]
+}

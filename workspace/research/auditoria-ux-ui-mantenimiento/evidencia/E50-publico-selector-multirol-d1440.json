@@ -1,0 +1,55 @@
+{
+  "origin": "https://team-mex-mtto-eight.vercel.app",
+  "path": "/",
+  "title": "Team Mex — Mantenimiento",
+  "text": "TEAM MEX\n\nOperación de unidades\n\nHola, Aldo Vargas. Selecciona un rol para continuar.\n\nEntrar como administrador directivo\nEntrar como supervisor\nEntrar como logística\nEntrar como mecánico",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "overflow": false,
+  "controls": [
+    {
+      "tag": "A",
+      "text": "",
+      "type": null,
+      "name": null,
+      "id": "",
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Entrar como administrador directivo",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Entrar como supervisor",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Entrar como logística",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Entrar como mecánico",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "disabled": false
+    }
+  ],
+  "at": "2026-10-11T06:39:18.814Z",
+  "network": []
+}

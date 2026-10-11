@@ -1,0 +1,253 @@
+{
+  "origin": "https://team-mex-mtto-eight.vercel.app",
+  "path": "/ordenes",
+  "title": "Team Mex — Mantenimiento",
+  "text": "Inicio\nÓrdenes\nUnidades\nInventario\n2\nSUPERVISOR\nElegir rol\nCerrar sesión\nÓrdenes\n+ Nueva orden\nBorradores\nCerradas\nCHATO NUEVO\nOT · 9C962BCB\nCorrectivo\nURVAN\nOT · 2ADA4D7C\nCorrectivo\nFOTON\nOT · 64939437\nCorrectivo\nCHATO NUEVO\n\nOT · 9C962BCB\n\nComentarios\nContinuar\nCapturar en esta orden\nAgregar pieza · 0\nSubir foto · 0 de 8\n\nPieza usada en esta orden\n\nCantidad\nAgregar a la orden\nBorrador\nFecha de apertura\n09/10/2026, 08:30\nFecha de cierre\nSin cerrar\nTiempo de cerrado\nSin cerrar\nTipo de mantenimiento\n\nCorrectivo\n\nTrabajos\nB · Balatas delanteras / traseras\nImágenes\n\nSin imágenes.\n\nComentarios\n\nSin comentarios.\n\nSKU\n\nSin piezas en esta orden.",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "overflow": false,
+  "controls": [
+    {
+      "tag": "A",
+      "text": "",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/inicio",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Inicio",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/inicio",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Órdenes",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/ordenes",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Unidades",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/unidades",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Inventario",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/inventario",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "2",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/notificaciones",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Configuración",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": "/configuracion/alertas",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Elegir rol",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/",
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Cerrar sesión",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Abrir menú",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "INPUT",
+      "text": "Buscar órdenes",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "+ Nueva orden",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Borradores",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Cerradas",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Filtros",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "CHATO NUEVO\nOT · 9C962BCB\nCorrectivo",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "URVAN\nOT · 2ADA4D7C\nCorrectivo",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "FOTON\nOT · 64939437\nCorrectivo",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Comentarios",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "#orden-comentarios",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Continuar",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/unidades/22e513d8-1556-457d-bed8-594204033607/visitas/9c962bcb-c1ff-4f17-a3b8-0b16a493bc4e",
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Agregar pieza · 0",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Subir foto · 0 de 8",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "INPUT",
+      "text": "Buscar pieza",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "INPUT",
+      "text": "",
+      "type": "number",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Agregar a la orden",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": true
+    }
+  ],
+  "at": "2026-10-11T06:40:25.927Z",
+  "network": [
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/inventario/skus",
+      "status": 200
+    }
+  ],
+  "requests": [
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/inventario/skus",
+      "method": "GET"
+    }
+  ]
+}

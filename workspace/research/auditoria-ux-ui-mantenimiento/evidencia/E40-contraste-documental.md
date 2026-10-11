@@ -1,0 +1,14 @@
+# E40 — contraste documental, sin modificar fuentes
+
+Commit observado: `39ce14db9b287ad46074900e8028b1a127cd166c`. Contraste de fuentes locales; no acredita lo desplegado.
+
+| Antecedente | Contraste en el checkout | Conclusión acotada |
+|---|---|---|
+| AGENTS.md/ICM.md/PRODUCT.md, overlays Slice0: MECANICO/TrustedActor/CHECK target/no implementados | `api/src/auth/roles.enum.ts` contiene MECANICO; `trusted-auth.module.ts` ofrece OIDC y DEVELOPMENT_STUB; controlador/servicio canónico CHECK presentes; web selector, `/mi-trabajo`, `/checks/[id]` presentes. E01/E20 comprueban selector/bandeja renderizados | La descripción as-is está desfasada frente al código. CHECK operativo NO confirmado; no cambiar el alcance ni inferir aprobación de ejecución |
+| README.md tabla API: PATCH umbrales Supervisor 403 | `api/src/andon/andon.controller.ts`, updateUmbral: Roles ADMIN_DIRECTIVO/SUPERVISOR | Permiso declarado actual incluye Supervisor; permiso HTTP efectivo/responsabilidad humana pendiente |
+| README/PRODUCT describen Supervisor como wizard mobile | Código actual incluye Órdenes con captura embebida y wizard de visita separado | Auditar ambos accesos cuando haya datos. E03/E06 sólo acreditan cola/form inicial en error; no wizard usable |
+| Documentación histórica de seed: FOTON visita de 100km, cierre retrodatado | E30: una visita 100km, PREDICTIVO, observación Semilla de mantenimiento; cierre junio y creación octubre; firmas placeholder según SeedService | La muestra es sintética y no sustenta duración/historia real |
+| Rol MECANICO existente | Guards de Visitas/Inventario/Andon/Notifications no lo incluyen; CHECK usa autorización distinta, confiable y con patio | Enum/selector no conceden mantenimiento ni inbox. E41 campanita restringida refuerza separar capacidad UI/permisos |
+| Plan solicitado de auditoría, estado inicial | `cat workspace/shaping/plan-auditoria-ux-ui-team-mex.md` falla por inexistencia; `rg --files` no lo encuentra; `git ls-files` para esa ruta vacío | En esta primera sesión no se había leído el plan y se solicitó ubicación. Después el usuario facilitó `7b149ca`: lectura y contraste registrados en E44 y [contraste del plan](../contraste-plan.md). Ausencia inicial conservada, limitación documental ya resuelta |
+
+Fuentes leídas: [AGENTS](../../../../AGENTS.md), [ICM](../../../../ICM.md), [PRODUCT](../../../../context/PRODUCT.md), [README](../../../../README.md), [roles](../../../../api/src/auth/roles.enum.ts), [VisitasController](../../../../api/src/visitas/visitas.controller.ts), [AndonController](../../../../api/src/andon/andon.controller.ts), [CHECK controller](../../../../api/src/visitas/checks/canonical-orders.controller.ts), [CHECK service](../../../../api/src/visitas/checks/canonical-orders.service.ts), [SeedService](../../../../api/src/seed/seed.service.ts).

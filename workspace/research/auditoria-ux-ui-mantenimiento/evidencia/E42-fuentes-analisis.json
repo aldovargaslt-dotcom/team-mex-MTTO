@@ -1,0 +1,253 @@
+{
+  "at": "2026-10-11T05:02:04.585Z",
+  "mode": "BEGIN READ ONLY / ROLLBACK",
+  "queries": {
+    "columns": "select table_schema,table_name,column_name,data_type from information_schema.columns where (table_schema='andon' and table_name in ('avisos','ultima_visita_cerrada')) or (table_schema='salud' and table_name='health_snapshot') or (table_schema='inventario' and table_name='items') order by 1,2,ordinal_position",
+    "items": "select id,sku,nombre,uom from inventario.items",
+    "counts": "select 'andon.avisos' as source,count(*)::int as count from andon.avisos union all select 'salud.health_snapshot',count(*)::int from salud.health_snapshot"
+  },
+  "results": {
+    "columns": [
+      {
+        "table_schema": "andon",
+        "table_name": "avisos",
+        "column_name": "id",
+        "data_type": "uuid"
+      },
+      {
+        "table_schema": "andon",
+        "table_name": "avisos",
+        "column_name": "unidad_id",
+        "data_type": "uuid"
+      },
+      {
+        "table_schema": "andon",
+        "table_name": "avisos",
+        "column_name": "tipo_vehiculo_id",
+        "data_type": "uuid"
+      },
+      {
+        "table_schema": "andon",
+        "table_name": "avisos",
+        "column_name": "estado",
+        "data_type": "USER-DEFINED"
+      },
+      {
+        "table_schema": "andon",
+        "table_name": "avisos",
+        "column_name": "abierta_at",
+        "data_type": "timestamp with time zone"
+      },
+      {
+        "table_schema": "andon",
+        "table_name": "avisos",
+        "column_name": "enterado_at",
+        "data_type": "timestamp with time zone"
+      },
+      {
+        "table_schema": "andon",
+        "table_name": "avisos",
+        "column_name": "enterado_by",
+        "data_type": "character varying"
+      },
+      {
+        "table_schema": "andon",
+        "table_name": "avisos",
+        "column_name": "resuelto_at",
+        "data_type": "timestamp with time zone"
+      },
+      {
+        "table_schema": "andon",
+        "table_name": "avisos",
+        "column_name": "visita_resolutoria_id",
+        "data_type": "uuid"
+      },
+      {
+        "table_schema": "andon",
+        "table_name": "avisos",
+        "column_name": "km_al_abrir",
+        "data_type": "integer"
+      },
+      {
+        "table_schema": "andon",
+        "table_name": "avisos",
+        "column_name": "dias_al_abrir",
+        "data_type": "integer"
+      },
+      {
+        "table_schema": "andon",
+        "table_name": "avisos",
+        "column_name": "umbral_km",
+        "data_type": "integer"
+      },
+      {
+        "table_schema": "andon",
+        "table_name": "avisos",
+        "column_name": "umbral_dias",
+        "data_type": "integer"
+      },
+      {
+        "table_schema": "andon",
+        "table_name": "avisos",
+        "column_name": "created_at",
+        "data_type": "timestamp without time zone"
+      },
+      {
+        "table_schema": "andon",
+        "table_name": "avisos",
+        "column_name": "updated_at",
+        "data_type": "timestamp without time zone"
+      },
+      {
+        "table_schema": "andon",
+        "table_name": "ultima_visita_cerrada",
+        "column_name": "unidad_id",
+        "data_type": "uuid"
+      },
+      {
+        "table_schema": "andon",
+        "table_name": "ultima_visita_cerrada",
+        "column_name": "visita_id",
+        "data_type": "uuid"
+      },
+      {
+        "table_schema": "andon",
+        "table_name": "ultima_visita_cerrada",
+        "column_name": "tipo_vehiculo_id",
+        "data_type": "uuid"
+      },
+      {
+        "table_schema": "andon",
+        "table_name": "ultima_visita_cerrada",
+        "column_name": "km",
+        "data_type": "integer"
+      },
+      {
+        "table_schema": "andon",
+        "table_name": "ultima_visita_cerrada",
+        "column_name": "cerrado_at",
+        "data_type": "timestamp with time zone"
+      },
+      {
+        "table_schema": "inventario",
+        "table_name": "items",
+        "column_name": "id",
+        "data_type": "uuid"
+      },
+      {
+        "table_schema": "inventario",
+        "table_name": "items",
+        "column_name": "sku",
+        "data_type": "character varying"
+      },
+      {
+        "table_schema": "inventario",
+        "table_name": "items",
+        "column_name": "nombre",
+        "data_type": "character varying"
+      },
+      {
+        "table_schema": "inventario",
+        "table_name": "items",
+        "column_name": "oem",
+        "data_type": "character varying"
+      },
+      {
+        "table_schema": "inventario",
+        "table_name": "items",
+        "column_name": "uom",
+        "data_type": "character varying"
+      },
+      {
+        "table_schema": "inventario",
+        "table_name": "items",
+        "column_name": "activo",
+        "data_type": "boolean"
+      },
+      {
+        "table_schema": "inventario",
+        "table_name": "items",
+        "column_name": "created_at",
+        "data_type": "timestamp without time zone"
+      },
+      {
+        "table_schema": "inventario",
+        "table_name": "items",
+        "column_name": "updated_at",
+        "data_type": "timestamp without time zone"
+      },
+      {
+        "table_schema": "inventario",
+        "table_name": "items",
+        "column_name": "familia_id",
+        "data_type": "uuid"
+      },
+      {
+        "table_schema": "salud",
+        "table_name": "health_snapshot",
+        "column_name": "unidad_id",
+        "data_type": "uuid"
+      },
+      {
+        "table_schema": "salud",
+        "table_name": "health_snapshot",
+        "column_name": "score",
+        "data_type": "integer"
+      },
+      {
+        "table_schema": "salud",
+        "table_name": "health_snapshot",
+        "column_name": "raw_score",
+        "data_type": "double precision"
+      },
+      {
+        "table_schema": "salud",
+        "table_name": "health_snapshot",
+        "column_name": "status",
+        "data_type": "character varying"
+      },
+      {
+        "table_schema": "salud",
+        "table_name": "health_snapshot",
+        "column_name": "computed_at",
+        "data_type": "timestamp with time zone"
+      },
+      {
+        "table_schema": "salud",
+        "table_name": "health_snapshot",
+        "column_name": "config_version",
+        "data_type": "integer"
+      }
+    ],
+    "items": [
+      {
+        "id": "92c78772-9c3b-427f-83be-a9cc243568e5",
+        "sku": "FIL-ACEITE-01",
+        "nombre": "Filtro de aceite",
+        "uom": "pieza"
+      },
+      {
+        "id": "2aee4020-83c7-4b9c-b698-2661f6bab997",
+        "sku": "PAST-FR-01",
+        "nombre": "Pastillas de freno",
+        "uom": "pieza"
+      },
+      {
+        "id": "94fd57c8-e997-429a-bc9a-94378bb4144f",
+        "sku": "FIL-CAB-01",
+        "nombre": "Filtro de cabina",
+        "uom": "pieza"
+      }
+    ],
+    "counts": [
+      {
+        "source": "andon.avisos",
+        "count": 1
+      },
+      {
+        "source": "salud.health_snapshot",
+        "count": 1
+      }
+    ]
+  }
+}

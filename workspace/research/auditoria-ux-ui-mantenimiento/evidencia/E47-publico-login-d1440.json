@@ -1,0 +1,31 @@
+{
+  "origin": "https://team-mex-mtto-eight.vercel.app",
+  "path": "/",
+  "title": "Team Mex — Mantenimiento",
+  "text": "TEAM MEX\n\nOperación de unidades\n\nInicia sesión con tu cuenta para continuar.\n\nIniciar sesión",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "overflow": false,
+  "controls": [
+    {
+      "tag": "A",
+      "text": "",
+      "type": null,
+      "name": null,
+      "id": "",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Iniciar sesión",
+      "type": null,
+      "name": null,
+      "id": "",
+      "disabled": false
+    }
+  ],
+  "at": "2026-10-11T06:37:39.783Z",
+  "network": []
+}

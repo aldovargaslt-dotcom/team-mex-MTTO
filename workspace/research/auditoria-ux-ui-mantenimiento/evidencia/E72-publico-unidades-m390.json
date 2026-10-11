@@ -1,0 +1,295 @@
+{
+  "origin": "https://team-mex-mtto-eight.vercel.app",
+  "path": "/unidades",
+  "title": "Team Mex — Mantenimiento",
+  "text": "2\nInicio\nÓrdenes\nUnidades\nInventario\nUnidades\n\nBusque y abra la ficha de la unidad.\n\nTotal de unidades\n13\nActivas\n13\n100% del total\nInactivas\n0\n0% del total\nAlertas\n1\n8% del total\nBuscar unidad\nFiltros\nTodas (13)\nCAMIONES 3 Y MEDIA (4)\nRUTAS (6)\nSTOCK (3)\nOrdenar por\nInterno (A-Z)\nInterno (Z-A)\nPlacas (A-Z)\nCHATO NUEVO\nCAMIONES 3 Y MEDIA\nActiva\nWR2023C\n\nSin alerta\n\nVer ficha\nDUCATO 2021\nRUTAS\nActiva\nVU2626C\n\nSin alerta\n\nVer ficha\nDUCATO 2023\nRUTAS\nActiva\nVU2627C\n\nSin alerta\n\nVer ficha\nFORD 2017\nCAMIONES 3 Y MEDIA\nActiva\nVU2624C\n\nSin alerta\n\nVer ficha\nFOTON\nSTOCK\nActiva\nVU2625C\n\nRequiere inspección\n\nVer ficha\n\nMostrando 1–5 de 13 unidades\n\n1\n2\n3\n\nConsejo: puede buscar por número interno, placas, marca o modelo para encontrar una unidad más rápido.",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "overflow": false,
+  "controls": [
+    {
+      "tag": "A",
+      "text": "",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/inicio",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "2",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/notificaciones",
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Abrir menú",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Inicio",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/inicio",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Órdenes",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/ordenes",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Unidades",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/unidades",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Inventario",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/inventario",
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Total de unidades\n13",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Activas\n13\n100% del total",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Inactivas\n0\n0% del total",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Alertas\n1\n8% del total",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "INPUT",
+      "text": "Interno, placas, marca o modelo…",
+      "type": null,
+      "name": null,
+      "id": "unidadQ",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Filtros",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Todas (13)",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "CAMIONES 3 Y MEDIA (4)",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "RUTAS (6)",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "STOCK (3)",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "SELECT",
+      "text": "Interno (A-Z)\nInterno (Z-A)\nPlacas (A-Z)",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Vista tabla",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Vista tarjetas",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Ver ficha",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Ver ficha",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Ver ficha",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Ver ficha",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Ver ficha",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Página anterior",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": true
+    },
+    {
+      "tag": "BUTTON",
+      "text": "1",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "2",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "3",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Página siguiente",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Cerrar consejo",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    }
+  ],
+  "at": "2026-10-11T06:45:21.202Z",
+  "network": [],
+  "requests": []
+}
