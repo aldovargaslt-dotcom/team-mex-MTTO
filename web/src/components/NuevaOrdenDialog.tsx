@@ -1,6 +1,8 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, type RefObject } from 'react';
+import { ReadStatus } from '@/components/ReadStatus';
+import { useReadResource } from '@/lib/use-read-resource';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -39,6 +41,7 @@ export function NuevaOrdenDialog({
   userId,
   preselectedUnitId,
   onContinue,
+  returnFocusRef,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -46,21 +49,36 @@ export function NuevaOrdenDialog({
   userId?: string;
   preselectedUnitId?: string;
   onContinue: (visita: OrdenContinuation, existing: boolean) => void;
+  returnFocusRef: RefObject<HTMLButtonElement | null>;
 }) {
   const [mobile, setMobile] = useState(false);
-  const [units, setUnits] = useState<Unidad[]>([]);
-  const [drivers, setDrivers] = useState<Chofer[]>([]);
+
   const [unitId, setUnitId] = useState(preselectedUnitId ?? '');
   const [driverId, setDriverId] = useState('');
   const [km, setKm] = useState('');
   const [tipo, setTipo] = useState<TipoVisita>('PREDICTIVO');
   const [q, setQ] = useState('');
-  const [existing, setExisting] = useState<VisitaResumen | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [checking, setChecking] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const opts = useMemo(() => ({ role, userId }), [role, userId]);
+  const unitRead = useReadResource(open ? JSON.stringify([role, userId, 'units']) : null,
+    () => api<Unidad[]>('/unidades?estado=ACTIVA', opts));
+  const driverRead = useReadResource(open ? JSON.stringify([role, userId, 'drivers']) : null,
+    () => api<Chofer[]>('/choferes?estado=ACTIVO', opts));
+  const checkRead = useReadResource(open && unitId ? JSON.stringify([role, userId, unitId]) : null,
+    () => api<VisitaResumen[]>(`/unidades/${unitId}/visitas`, opts));
+  const units = unitRead.data ?? [];
+  const drivers = driverRead.data ?? [];
+  const existing = checkRead.data?.find((v) => v.estado === 'BORRADOR') ?? null;
+  const checking = checkRead.loading;
+  function restoreFocus(event: Event) {
+    if (returnFocusRef.current?.isConnected) {
+      event.preventDefault();
+      returnFocusRef.current.focus();
+    }
+  }
+
+
 
   useEffect(() => {
     const mq = window.matchMedia('(max-width: 767px)');
@@ -70,37 +88,6 @@ export function NuevaOrdenDialog({
     return () => mq.removeEventListener('change', update);
   }, []);
 
-  useEffect(() => {
-    if (!open) return;
-    setLoading(true);
-    setError(null);
-    void Promise.all([
-      api<Unidad[]>('/unidades?estado=ACTIVA', opts),
-      api<Chofer[]>('/choferes?estado=ACTIVO', opts),
-    ])
-      .then(([nextUnits, nextDrivers]) => {
-        setUnits(nextUnits);
-        setDrivers(nextDrivers);
-        setUnitId((current) => current || preselectedUnitId || '');
-      })
-      .catch((err) =>
-        setError(err instanceof HttpError ? err.message : 'No pudimos cargar los datos para crear la orden.'),
-      )
-      .finally(() => setLoading(false));
-  }, [open, opts, preselectedUnitId]);
-
-  useEffect(() => {
-    if (!open || !unitId) {
-      setExisting(null);
-      return;
-    }
-    setChecking(true);
-    void api<VisitaResumen[]>(`/unidades/${unitId}/visitas`, opts)
-      .then((visitas) => setExisting(visitas.find((v) => v.estado === 'BORRADOR') ?? null))
-      .catch((err) => setError(err instanceof HttpError ? err.message : 'No pudimos revisar la unidad.'))
-      .finally(() => setChecking(false));
-  }, [open, opts, unitId]);
-
   const selected = units.find((unit) => unit.id === unitId) ?? null;
   const filtered = units.filter((unit) => {
     const needle = q.trim().toLowerCase();
@@ -109,7 +96,7 @@ export function NuevaOrdenDialog({
   });
 
   async function submit() {
-    if (!unitId || !driverId || km === '') return;
+    if (!unitId || !driverId || km === '' || checkRead.data === null || unitRead.data === null || driverRead.data === null || checking) return;
     setBusy(true);
     setError(null);
     try {
@@ -128,12 +115,13 @@ export function NuevaOrdenDialog({
 
   const content = (
     <div className="nueva-orden-body">
-      {loading ? <p className="muted">Cargando unidades activas…</p> : null}
-      {!preselectedUnitId && !loading ? (
+      <ReadStatus loading={unitRead.loading} error={unitRead.error} loadingText="Cargando unidades activas…" errorText="No se pudieron cargar las unidades." retry={unitRead.retry} />
+      <ReadStatus loading={driverRead.loading} error={driverRead.error} loadingText="Cargando choferes activos…" errorText="No se pudieron cargar los choferes." retry={driverRead.retry} />
+      {!preselectedUnitId && unitRead.data !== null ? (
         <>
           <Input value={q} onChange={(event) => setQ(event.target.value)} placeholder="Buscar número, placas o tipo" aria-label="Buscar unidad activa" />
           <div className="nueva-orden-units" role="listbox" aria-label="Unidades activas">
-            {filtered.length === 0 ? <p className="muted">No hay unidades activas que coincidan.</p> : filtered.map((unit) => (
+            {filtered.length === 0 ? <p className="muted">{q.trim() && units.length > 0 ? 'Sin coincidencias con estos filtros.' : 'No hay unidades activas.'}</p> : filtered.map((unit) => (
               <button key={unit.id} type="button" role="option" aria-selected={unit.id === unitId} className={unit.id === unitId ? 'is-selected' : ''} onClick={() => setUnitId(unit.id)}>
                 <UnidadMarca foto={unit.fotoDataUrl} nombre={unit.tipo.nombre} icono={unit.tipo.icono} />
                 <span><strong>{unit.numeroInterno}</strong><small>{unit.placas} · {unit.tipo.nombre}</small></span>
@@ -148,14 +136,14 @@ export function NuevaOrdenDialog({
           <div><strong>{selected.numeroInterno}</strong><p>{selected.placas} · {selected.tipo.nombre}</p></div>
         </div>
       ) : null}
-      {checking ? <p className="muted">Revisando órdenes abiertas…</p> : null}
+      {unitId ? <ReadStatus key={unitId} loading={checking} error={checkRead.error} loadingText="Revisando órdenes abiertas…" errorText="No se pudieron revisar las órdenes abiertas." retry={checkRead.retry} /> : null}
       {existing ? (
         <div className="nueva-orden-existing" role="status">
           <strong>Esta unidad ya tiene una orden en borrador.</strong>
           <p>Continúa la captura existente; no se creará otra.</p>
           <Button type="button" onClick={() => onContinue({ ...existing, unidadId: unitId }, true)}>Continuar orden</Button>
         </div>
-      ) : selected && !checking ? (
+      ) : selected && checkRead.data !== null && driverRead.data !== null ? (
         <div className="nueva-orden-form">
           <Field label="Chofer" htmlFor="nueva-orden-chofer">
             <select id="nueva-orden-chofer" value={driverId} onChange={(event) => setDriverId(event.target.value)}>
@@ -182,7 +170,7 @@ export function NuevaOrdenDialog({
   const footer = existing ? null : (
     <>
       <Button type="button" variant="secondary" onClick={() => onOpenChange(false)}>Cancelar</Button>
-      <Button type="button" disabled={!selected || !driverId || km === '' || busy || drivers.length === 0} onClick={() => void submit()}>
+      <Button type="button" disabled={!selected || !driverId || km === '' || busy || drivers.length === 0 || checking || checkRead.data === null || unitRead.data === null || driverRead.data === null} onClick={() => void submit()}>
         {busy ? 'Creando…' : 'Crear y continuar'}
       </Button>
     </>
@@ -190,7 +178,7 @@ export function NuevaOrdenDialog({
 
   if (mobile) return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="bottom">
+      <SheetContent side="bottom" onCloseAutoFocus={restoreFocus}>
         <SheetHeader><SheetTitle>Nueva orden</SheetTitle><SheetDescription>Selecciona una unidad activa y captura los datos iniciales.</SheetDescription></SheetHeader>
         {content}<SheetFooter>{footer}</SheetFooter>
       </SheetContent>
@@ -198,7 +186,7 @@ export function NuevaOrdenDialog({
   );
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
+      <DialogContent onCloseAutoFocus={restoreFocus}>
         <DialogHeader><DialogTitle>Nueva orden</DialogTitle><DialogDescription>Selecciona una unidad activa y captura los datos iniciales.</DialogDescription></DialogHeader>
         {content}<DialogFooter>{footer}</DialogFooter>
       </DialogContent>

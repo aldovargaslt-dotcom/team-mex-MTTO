@@ -1,6 +1,6 @@
 # SPEC UX — Mantenimiento sprint 1
 
-**Proposed; auditoría ef46c70 reconciliada; requiere aprobación de SPEC-MTTO-UX-001/EWO-029.**
+**Approved para núcleo SPEC-MTTO-UX-001/EWO-029: usuario «Si, autorizo», chat, 2026-10-11. Firma nueva pendiente y excluida.**
 
 ## Screen purpose / Primary user
 
@@ -55,7 +55,7 @@ Recovery sólo de lectura automático/manual según recurso; escrituras siempre 
 
 ## Contraste y compatibilidad
 
-Medición sRGB inicial: blanco/naranja #EA7515 = 2.977:1; navy/naranja = 4.748:1. Propuesta: texto navy en CTA, hover `#EA7515` (o un naranja más claro validado ≥4.5:1), conservar borde/foco navy visible. Navy sobre hover actual #D4670F = 3.868:1: cambiar sólo texto normal no basta. Usar outline navy y offset para foco si el naranja no alcanza contraste con la superficie. Revisar overrides `.ordenes-primary`, `.btn-primary` y consumidores pertinentes; no migración de tipografía ni kit. Cambio documentado y aprobado prevalece sobre par blanco/naranja anterior del brief.
+Medición sRGB inicial: blanco/naranja #EA7515 = 2.977:1; navy/naranja = 4.748:1. Implementación autorizada: texto navy en CTA, hover `#F28A32` (5.692:1), conservar borde/foco navy visible. Navy sobre hover actual #D4670F = 3.868:1: cambiar sólo texto normal no basta. Usar outline navy y offset para foco si el naranja no alcanza contraste con la superficie. Revisar overrides `.ordenes-primary`, `.btn-primary` y consumidores pertinentes; no migración de tipografía ni kit. Cambio documentado y aprobado prevalece sobre par blanco/naranja anterior del brief.
 
 ## Fuera / Don’t / Proof
 

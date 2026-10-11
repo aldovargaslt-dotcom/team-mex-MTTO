@@ -11,7 +11,8 @@ No añadir otro kit. No inventar decenas de tokens. Si falta un valor, reusa la 
 | Rol | Token | Valor |
 |-----|--------|--------|
 | CTA / subrayado de ubicación | `--cta` `--primary` `--ring` | `#EA7515` |
-| CTA hover | `--cta-hover` | `#D4670F` |
+| CTA hover | `--cta-hover` | `#F28A32` |
+| Texto sobre CTA | `--primary-foreground` | `#24284D` |
 | Shell / navy | `--shell` `--navy` | `#24284D` |
 | Texto sobre shell | `--shell-ink` | `#F7F7FB` |
 | Página | `--background` `--surface` | `#F3F3F3` |
@@ -87,7 +88,7 @@ Piso: no bajar de 12px en cuerpo/meta; 11px solo thead/kicker/badge.
 | `--radius-md` / `--radius` | 6 | card, input, botón, chip filtro, dialog |
 | `--radius-lg` / `xl` | 8 | tope (home-card). **Nunca 16** en cards |
 
-Borde 1px `--border`. Outline de botón terciario: 1.5px navy. Focus: ring 2px `--ring` (naranja).
+Borde 1px `--border`. Outline de botón terciario: 1.5px navy. Foco de botones/campos: outline navy 2px, offset 2px y separación blanca; navegación sobre shell conserva ring naranja. [EWO-029](../engineering-work-orders/EWO-029.md) aprueba el par navy/naranja (4.748:1) y hover claro (5.692:1), conservando la marca.
 
 ---
 

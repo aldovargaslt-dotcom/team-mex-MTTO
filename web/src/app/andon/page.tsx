@@ -1,6 +1,6 @@
 'use client';
 
-import { Suspense, useEffect, useMemo, useState } from 'react';
+import { Suspense, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { ColumnDef } from '@tanstack/react-table';
@@ -10,6 +10,8 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { DataTable } from '@/components/ui/data-table';
 import { FormAlert, PageHeader } from '@/components/ui/field';
+import { ReadStatus } from '@/components/ReadStatus';
+import { useReadResource } from '@/lib/use-read-resource';
 import { api, HttpError } from '@/lib/api';
 import {
   fraseDemora,
@@ -92,7 +94,15 @@ function AndonContent() {
   const vista = parseVistaAndon(searchParams.get('vista'));
   const periodo = parsePeriodo(searchParams.get('periodo'));
   const rango = useMemo(() => datesForPeriodo(periodo), [periodo]);
-  const [avisos, setAvisos] = useState<AvisoAndon[] | null>(null);
+  const estado = estadoDeVista(vista);
+  const read = useReadResource(role ? JSON.stringify([role, userId, vista]) : null,
+    () => api<AvisoAndon[]>(estado ? `/andon/avisos?estado=${estado}` : '/andon/avisos', { role: role!, userId }));
+  const resolvedRead = useReadResource(role && vista === 'reincidentes' ? JSON.stringify([role, userId, 'resueltos']) : null,
+    () => api<AvisoAndon[]>('/andon/avisos?estado=RESUELTO', { role: role!, userId }));
+  const avisos = useMemo(() => vista === 'reincidentes'
+    ? read.data === null && resolvedRead.data === null ? null : [...(read.data ?? []), ...(resolvedRead.data ?? [])]
+    : read.data, [read.data, resolvedRead.data, vista]);
+  const parcial = vista === 'reincidentes' && (read.data === null || resolvedRead.data === null);
   const [error, setError] = useState<string | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
 
@@ -106,36 +116,6 @@ function AndonContent() {
     router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
   }
 
-  async function cargar(nextVista = vista) {
-    if (nextVista === 'reincidentes') {
-      const [pendientes, resueltos] = await Promise.all([
-        api<AvisoAndon[]>('/andon/avisos', { role: role!, userId }),
-        api<AvisoAndon[]>('/andon/avisos?estado=RESUELTO', {
-          role: role!,
-          userId,
-        }),
-      ]);
-      setAvisos([...pendientes, ...resueltos]);
-      return;
-    }
-    const estado = estadoDeVista(nextVista);
-    const path = estado ? `/andon/avisos?estado=${estado}` : '/andon/avisos';
-    setAvisos(await api<AvisoAndon[]>(path, { role: role!, userId }));
-  }
-
-  useEffect(() => {
-    if (!role) return;
-    void cargar().catch((err) => {
-      setAvisos([]);
-      setError(
-        err instanceof HttpError
-          ? err.message
-          : 'No se pudieron cargar las alertas.',
-      );
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [role, userId, vista]);
-
   async function enterado(id: string) {
     setBusyId(id);
     setError(null);
@@ -145,7 +125,7 @@ function AndonContent() {
         userId,
         method: 'POST',
       });
-      await cargar();
+      read.retry();
     } catch (err) {
       setError(
         err instanceof HttpError ? err.message : 'No se pudo marcar enterado.',
@@ -395,9 +375,10 @@ function AndonContent() {
         />
       ) : null}
       <FormAlert>{error}</FormAlert>
-      {avisos == null ? (
-        <p className="muted">Cargando alertas…</p>
-      ) : tablaVacia ? (
+      <ReadStatus loading={read.loading} error={read.error} loadingText="Cargando avisos…" errorText="No se pudieron cargar los avisos." retry={read.retry} />
+      {vista === 'reincidentes' ? <ReadStatus loading={resolvedRead.loading} error={resolvedRead.error} loadingText="Cargando avisos resueltos…" errorText="No se pudieron cargar los avisos resueltos." retry={resolvedRead.retry} /> : null}
+      {parcial && avisos !== null ? <p role="status" className="muted">Consulta parcial: se muestran los avisos disponibles; el ranking no está disponible.</p> : null}
+      {avisos == null ? null : parcial ? (avisos.length ? <DataTable columns={columnsCola} data={avisos} /> : null) : tablaVacia ? (
         <div className="empty-state">
           <h2>{emptyTitle}</h2>
           <p className="muted">{emptyLede}</p>

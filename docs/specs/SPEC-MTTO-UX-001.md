@@ -2,7 +2,7 @@
 
 ## Status
 
-**Proposed — sin aprobación de implementación.** Preparado por petición del usuario el 2026-10-11. Fuente de prioridades: solicitud del chat. Auditoría leída desde `ef46c7078fcbfbcf42c7e80b15be1fa831b4efc6`, rama de origen `codex/auditoria-ux-ui-mantenimiento`; README, informe, hallazgos, backlog, matriz, fichas y encargo revisados. Ninguno aprueba implementación. Rama de preparación `codex/mtto-ux-sprint-1`, basada en ese commit; `web`/`api` idénticos a 39ce14d.
+**Approved — núcleo autorizado por el usuario («Si, autorizo», chat, 2026-10-11); D-FIRMA sigue Proposed y fuera de implementación.** Preparado por petición del usuario el 2026-10-11. Fuente de prioridades: solicitud del chat. Auditoría leída desde `ef46c7078fcbfbcf42c7e80b15be1fa831b4efc6`, rama de origen `codex/auditoria-ux-ui-mantenimiento`; README, informe, hallazgos, backlog, matriz, fichas y encargo revisados. Ninguno aprueba implementación. Rama de preparación `codex/mtto-ux-sprint-1`, basada en ese commit; `web`/`api` idénticos a 39ce14d.
 
 ## Problema y objetivo
 
@@ -10,7 +10,7 @@ Encontrar → reanudar → capturar → revisar → cerrar → reconstruir exige
 
 Base: `39ce14db9b287ad46074900e8028b1a127cd166c`, rama `work`, inicialmente limpia. No hay diferencia de commit con la auditoría declarada; eso no demuestra igualdad con la instancia pública. Evidencia: [EWO-029](../evidence/EWO-029.md).
 
-## Alcance propuesto para aprobación
+## Alcance aprobado del núcleo
 
 1. H01/B10: estados por recurso en Inicio, Órdenes (lista, detalle y piezas), Nueva orden (unidades/choferes), documento cerrado del wizard, Unidades, Existencias, Consumo (movimientos y pendientes), Movimientos, Por recibir, Andon y Alertas/campanita en los roles ya autorizados. Es un inventario explícito de superficies H01; no modificar CHECK ni vistas Logística. Recuperación por recurso, sin vaciar datos válidos de fuentes sanas; datos previos sólo con aviso de desactualización. En capturas actuales, impedir afirmar disponibilidad/ausencia mientras falla el catálogo que la soporta. No cambiar validaciones ni permitir guardar cantidades basándose en stock desconocido.
 2. H02/B11: fila de error de Inicio con estructura propia y ancho de texto suficiente; mantener exactamente el patrón y estructura de filas normales.
@@ -66,7 +66,7 @@ Esto preserva intención de aceptación y dos posiciones obligatorias, pero **ca
 
 [UX](../design-system/ux-mantenimiento-sprint-1.md), [EWO](../engineering-work-orders/EWO-029.md), [Mantenimiento](../../domain/mantenimiento/CONTEXT.md), ADR-001/002/003 y ADR-004 C/O/I. SAP/Fiori inspira estado de objeto, message strip, lista filtrable, mensaje de ausencia contextual y trazabilidad; usar componentes Team Mex equivalentes, sin instalar Fiori/Carbon/Material ni cambiar flujo. Carbon/Material complementan mensajes/foco. Taste no es gate.
 
-Dependencias resueltas: seis documentos leídos; commit de auditoría verificado, código de producto sin diferencias. Evidencia afectada E83/E114/E148/E153 consultada, sin cargar mapas ajenos. No se encontró SPEC/EWO aprobado que cubra este sprint: EWO-028 autoriza consolidación anterior, no estas correcciones. Pendientes: aprobación explícita EWO-029, D-A04/D-FIRMA y acceso autenticado read-only para verificar causa H11. Instancia identificada en informe; sesión anterior eliminada, no reutilizada ni credenciales copiadas. PRD nuevo no requerido: corrección de recorridos existentes; D-FIRMA fuera de implementación de este núcleo.
+Dependencias resueltas: seis documentos leídos; commit de auditoría verificado, código de producto sin diferencias. Evidencia afectada E83/E114/E148/E153 consultada, sin cargar mapas ajenos. No se encontró SPEC/EWO aprobado que cubra este sprint: EWO-028 autoriza consolidación anterior, no estas correcciones. Núcleo SPEC/UX/EWO-029 aprobado en este chat. Pendientes: D-A04/D-FIRMA y acceso autenticado read-only para verificar causa H11. Instancia identificada en informe; sesión anterior eliminada, no reutilizada ni credenciales copiadas. PRD nuevo no requerido: corrección de recorridos existentes; D-FIRMA fuera de implementación de este núcleo.
 
 ## Reconciliación con auditoría
 

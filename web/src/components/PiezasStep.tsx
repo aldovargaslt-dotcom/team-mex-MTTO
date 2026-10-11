@@ -1,7 +1,9 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
-import { api, HttpError } from '@/lib/api';
+import { useMemo, useState } from 'react';
+import { ReadStatus } from '@/components/ReadStatus';
+import { useReadResource } from '@/lib/use-read-resource';
+import { api } from '@/lib/api';
 import { etiquetaOrigenPieza, etiquetaUom } from '@/lib/format';
 import type { ItemInventario, OrigenPieza, SkuCompatible, VisitaPieza } from '@/lib/types';
 import { Badge } from '@/components/ui/badge';
@@ -18,18 +20,18 @@ export type PiezaLinea = {
   nombre: string;
   qty: number;
   origen: OrigenPieza;
-  stock: number;
+  stock: number | null;
   uom?: string;
 };
 
 export function lineasDesdeVisita(piezas: VisitaPieza[]): PiezaLinea[] {
   return piezas.map((p) => ({
     itemId: p.itemId,
-    sku: p.itemId,
-    nombre: 'Refacción',
+    sku: 'SKU no disponible',
+    nombre: 'Nombre de refacción no disponible',
     qty: p.qty,
     origen: p.origen,
-    stock: 0,
+    stock: null,
   }));
 }
 
@@ -47,11 +49,11 @@ export async function hydratePiezasFromInventario(
     const item = byId.get(p.itemId);
     return {
       itemId: p.itemId,
-      sku: item?.sku ?? p.itemId,
-      nombre: item?.nombre ?? 'Refacción',
+      sku: item?.sku ?? 'SKU no disponible',
+      nombre: item?.nombre ?? 'Nombre de refacción no disponible',
       qty: p.qty,
       origen: p.origen,
-      stock: item?.stock ?? 0,
+      stock: item?.stock ?? null,
       uom: item?.uom,
     };
   });
@@ -59,7 +61,7 @@ export async function hydratePiezasFromInventario(
 
 export function piezasInsuficientes(lineas: PiezaLinea[]) {
   return lineas.filter(
-    (linea) => linea.origen === 'DESDE_STOCK' && linea.qty > linea.stock,
+    (linea) => linea.origen === 'DESDE_STOCK' && (linea.stock === null || linea.qty > linea.stock),
   );
 }
 
@@ -79,34 +81,12 @@ export function PiezasStep({
   onChange: (lineas: PiezaLinea[]) => void;
 }) {
   const [q, setQ] = useState('');
-  const [resultados, setResultados] = useState<SkuCompatible[]>([]);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (!tipoVehiculoId) return;
-    const handle = window.setTimeout(() => {
-      void (async () => {
-        try {
-          const params = new URLSearchParams({ tipoVehiculoId });
-          if (q.trim()) params.set('q', q.trim());
-          const data = await api<SkuCompatible[]>(
-            `/inventario/skus?${params.toString()}`,
-            { role, userId },
-          );
-          setResultados(data);
-          setError(null);
-        } catch (err) {
-          setError(
-            err instanceof HttpError
-              ? err.message
-              : 'No se pudieron buscar SKUs compatibles.',
-          );
-        }
-      })();
-    }, 200);
-    return () => window.clearTimeout(handle);
-  }, [q, tipoVehiculoId, role, userId]);
-
+  const search = useReadResource(tipoVehiculoId ? JSON.stringify([role, userId, tipoVehiculoId, q.trim()]) : null, () => {
+    const params = new URLSearchParams({ tipoVehiculoId: tipoVehiculoId! });
+    if (q.trim()) params.set('q', q.trim());
+    return api<SkuCompatible[]>(`/inventario/skus?${params}`, { role, userId });
+  });
+  const resultados = search.data ?? [];
   const usados = useMemo(() => new Set(lineas.map((l) => l.itemId)), [lineas]);
   const alertas = piezasInsuficientes(lineas);
 
@@ -143,7 +123,7 @@ export function PiezasStep({
           <h3 className="text-sm font-semibold text-navy">En esta visita</h3>
           {lineas.map((linea) => {
             const insuficiente =
-              linea.origen === 'DESDE_STOCK' && linea.qty > linea.stock;
+              linea.origen === 'DESDE_STOCK' && (linea.stock === null || linea.qty > linea.stock);
             return (
               <div
                 key={linea.itemId}
@@ -157,7 +137,7 @@ export function PiezasStep({
                     <p className="font-mono font-semibold">{linea.sku}</p>
                     <p className="text-sm">{linea.nombre}</p>
                     <p className="text-xs text-muted-foreground">
-                      Stock {linea.stock} {etiquetaUom(linea.uom)}
+                      {linea.stock === null ? 'Stock no disponible' : `Stock ${linea.stock} ${etiquetaUom(linea.uom)}`}
                     </p>
                   </div>
                   <div className="flex flex-wrap items-center gap-2">
@@ -213,8 +193,8 @@ export function PiezasStep({
                 {insuficiente ? (
                   <div className="grid gap-2">
                     <FormAlert>
-                      Stock insuficiente (hay {linea.stock} {etiquetaUom(linea.uom)}).
-                      Use compra externa o reduzca la cantidad.
+                      {linea.stock === null ? 'No se pudo verificar el stock.' : `Stock insuficiente (hay ${linea.stock} ${etiquetaUom(linea.uom)}).`}
+                      {linea.stock === null ? 'Reintenta la consulta de stock o usa compra externa.' : 'Usa compra externa o reduce la cantidad.'}
                     </FormAlert>
                     <Button
                       type="button"
@@ -247,7 +227,8 @@ export function PiezasStep({
           placeholder="SKU, nombre u OEM"
         />
       </div>
-      {error ? <FormAlert>{error}</FormAlert> : null}
+      <ReadStatus loading={search.loading} error={search.error} loadingText="Buscando piezas compatibles…" errorText="No se pudieron buscar piezas compatibles." retry={search.retry} />
+      {search.data && search.data.length === 0 ? <p className="muted">{q.trim() ? 'Sin coincidencias para esta búsqueda.' : 'No hay piezas compatibles.'}</p> : null}
       <ul className="sku-results">
         {resultados.slice(0, 8).map((item) => {
           const enOt = usados.has(item.id);
@@ -278,9 +259,9 @@ export function PiezasStep({
       {alertas.length ? (
         <Note variant="warn">
           {alertas.length === 1
-            ? '1 línea supera el stock.'
-            : `${alertas.length} líneas superan el stock.`}{' '}
-          Use compra externa o reduzca la cantidad para continuar. No se permiten existencias negativas.
+            ? '1 línea tiene stock no disponible o insuficiente.'
+            : `${alertas.length} líneas tienen stock no disponible o insuficiente.`}{' '}
+          {alertas.some((linea) => linea.stock === null) ? 'Reintenta verificar el stock no disponible o usa compra externa. Las líneas con stock insuficiente deben ajustarse.' : 'Usa compra externa o reduce la cantidad para continuar.'} No se permiten existencias negativas.
         </Note>
       ) : null}
     </Card>

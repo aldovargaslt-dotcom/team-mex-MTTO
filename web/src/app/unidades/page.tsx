@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { FormEvent, Suspense, useEffect, useState } from 'react';
+import { FormEvent, Suspense, useState } from 'react';
 import { RoleGate } from '@/components/RoleGate';
 import { HealthConfigDialog } from '@/components/HealthConfigDialog';
 import { UnidadesAdminMenu } from '@/components/UnidadesAdminMenu';
@@ -17,8 +17,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Field, FormAlert } from '@/components/ui/field';
+import { Field, FormAlert, PageHeader } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
+import { ReadStatus } from '@/components/ReadStatus';
+import { useReadResource } from '@/lib/use-read-resource';
 import { api, HttpError } from '@/lib/api';
 import { resumenAvisoMantenimiento } from '@/lib/format';
 import { glyphTipo, inferGlyphTipo, type TipoGlyph } from '@/lib/unidades-catalogo';
@@ -47,14 +49,28 @@ function UnidadesList() {
   const tipoFiltro = searchParams.get('tipo') ?? '';
   const estadoFiltro = searchParams.get('estado') ?? '';
   const atencionFiltro = searchParams.get('atencion') === '1';
-  const [tipos, setTipos] = useState<TipoVehiculo[]>([]);
-  const [unidades, setUnidades] = useState<Unidad[] | null>(null);
-  const [flota, setFlota] = useState<Unidad[]>([]);
-  const [avisos, setAvisos] = useState<AvisoAndon[]>([]);
-  const [umbrales, setUmbrales] = useState<Record<string, UmbralAndon>>({});
+  const params = new URLSearchParams();
+  if (q.trim()) params.set('q', q.trim());
+  if (tipoFiltro) params.set('tipo', tipoFiltro);
+  if (estadoFiltro) params.set('estado', estadoFiltro);
+  const opts = { role: role!, userId };
+  const list = useReadResource(role ? JSON.stringify([role, userId, params.toString()]) : null,
+    () => api<Unidad[]>(`/unidades?${params}`, opts));
+  const all = useReadResource(role ? JSON.stringify([role, userId, 'all-unidades']) : null,
+    () => api<Unidad[]>('/unidades', opts));
+  const types = useReadResource(role ? JSON.stringify([role, userId, 'tipos']) : null,
+    () => api<TipoVehiculo[]>('/unidades/tipos', opts));
+  const thresholds = useReadResource(role ? JSON.stringify([role, userId, 'umbrales']) : null,
+    () => api<UmbralAndon[]>('/andon/umbrales', opts));
+  const notices = useReadResource(role ? JSON.stringify([role, userId, 'avisos']) : null,
+    () => api<AvisoAndon[]>('/andon/avisos', opts));
+  const unidades = list.data;
+  const flota = all.data ?? [];
+  const tipos = types.data ?? [...new Map((unidades ?? []).map((unit) => [unit.tipo.id, unit.tipo])).values()];
+  const avisos = notices.data ?? [];
+  const umbrales = Object.fromEntries((thresholds.data ?? []).map((u) => [u.tipoVehiculoId, u]));
   const [error, setError] = useState<string | null>(null);
-  const [loadFailed, setLoadFailed] = useState(false);
-  const [loading, setLoading] = useState(true);
+
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editing, setEditing] = useState<TipoVehiculo | null>(null);
   const [nombre, setNombre] = useState('');
@@ -79,52 +95,7 @@ function UnidadesList() {
     router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
   }
 
-  async function cargar() {
-    if (!role) return;
-    if (unidades == null) setLoading(true);
-    setError(null);
-    const params = new URLSearchParams();
-    if (q.trim()) params.set('q', q.trim());
-    if (tipoFiltro) params.set('tipo', tipoFiltro);
-    if (estadoFiltro) params.set('estado', estadoFiltro);
-    const qs = params.toString();
-    const opts = { role, userId };
-    const filteredPath = `/unidades${qs ? `?${qs}` : ''}`;
-    try {
-      const [lista, catalogo, umb, avisosList, flotaList] = await Promise.all([
-        api<Unidad[]>(filteredPath, opts),
-        api<TipoVehiculo[]>('/unidades/tipos', opts),
-        api<UmbralAndon[]>('/andon/umbrales', opts),
-        api<AvisoAndon[]>('/andon/avisos', opts).catch(() => [] as AvisoAndon[]),
-        qs ? api<Unidad[]>('/unidades', opts) : Promise.resolve(null),
-      ]);
-      setUnidades(lista);
-      setFlota(flotaList ?? lista);
-      setAvisos(avisosList);
-      setTipos(catalogo);
-      setUmbrales(Object.fromEntries(umb.map((u) => [u.tipoVehiculoId, u])));
-      setLoadFailed(false);
-    } catch (err) {
-      setUnidades([]);
-      setFlota([]);
-      setAvisos([]);
-      setLoadFailed(true);
-      setError(
-        err instanceof HttpError
-          ? err.message
-          : 'No se pudieron cargar las unidades.',
-      );
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  useEffect(() => {
-    if (!role) return;
-    const handle = window.setTimeout(() => void cargar(), 200);
-    return () => window.clearTimeout(handle);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [role, q, tipoFiltro, estadoFiltro]);
+  function cargar() { list.retry(); all.retry(); types.retry(); thresholds.retry(); notices.retry(); }
 
   function onSearch(event: FormEvent) {
     event.preventDefault();
@@ -266,7 +237,7 @@ function UnidadesList() {
   const buscando = Boolean(
     q.trim() || tipoFiltro || estadoFiltro || atencionFiltro,
   );
-  const adminActions = isAdmin ? (
+  const adminActions = isAdmin && types.data !== null ? (
     tipos.length > 0 ? (
       <>
         <UnidadesAdminMenu
@@ -294,30 +265,26 @@ function UnidadesList() {
       </Button>
     )
   ) : null;
-  const sinTipos = !buscando && tipos.length === 0;
+  const sinTipos = !buscando && types.data !== null && tipos.length === 0 && unidades?.length === 0;
 
   return (
     <>
-      {loadFailed && !dialogOpen && !alertasOpen && !saludOpen ? (
-        <div className="error-state">
-          <h2>No se pudo consultar la flota</h2>
-          <FormAlert>{error}</FormAlert>
-        </div>
-      ) : null}
-
-      {error && !dialogOpen && !alertasOpen && !saludOpen && !loadFailed ? (
-        <FormAlert>{error}</FormAlert>
-      ) : null}
-
-      {loadFailed ? null : loading ? (
-        <p className="muted">Cargando unidades…</p>
-      ) : (
+      {unidades === null || (atencionFiltro && notices.data === null) ? <PageHeader title="Unidades" lede="Busque y abra la ficha de la unidad." /> : null}
+      <ReadStatus loading={list.loading} error={list.error} loadingText="Cargando unidades…" errorText="No se pudieron cargar las unidades." retry={list.retry} />
+      <ReadStatus loading={all.loading} error={all.error} loadingText="Cargando totales de unidades…" errorText="No se pudieron cargar los totales de unidades." retry={all.retry} />
+      <ReadStatus loading={types.loading} error={types.error} loadingText="Cargando tipos…" errorText="Catálogo de tipos no disponible; se muestran los tipos de las unidades cargadas." retry={types.retry} />
+      <ReadStatus loading={notices.loading} error={notices.error} loadingText="Cargando avisos…" errorText="Avisos de mantenimiento no disponibles." retry={notices.retry} />
+      <ReadStatus loading={thresholds.loading} error={thresholds.error} loadingText="Cargando umbrales…" errorText="Umbrales no disponibles." retry={thresholds.retry} />
+      {error && !dialogOpen && !alertasOpen && !saludOpen ? <FormAlert>{error}</FormAlert> : null}
+      {unidades === null || (atencionFiltro && notices.data === null) ? null : (
         <>
           <UnidadesCatalogo
             unidades={unidades ?? []}
             flota={flota}
             tipos={tipos}
             avisos={avisos}
+            avisosDisponibles={notices.data !== null}
+            flotaDisponible={all.data !== null}
             q={q}
             tipoFiltro={tipoFiltro}
             estadoFiltro={estadoFiltro}

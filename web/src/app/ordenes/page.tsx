@@ -2,15 +2,16 @@
 
 import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { Suspense, useEffect, useMemo, useState } from 'react';
+import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import { ChevronLeft, ListFilter, Search } from 'lucide-react';
+import { ReadStatus } from '@/components/ReadStatus';
+import { useReadResource } from '@/lib/use-read-resource';
 import { OrdenCaptura } from '@/components/OrdenCaptura';
 import { NuevaOrdenDialog } from '@/components/NuevaOrdenDialog';
 import { UnidadMarca } from '@/components/UnidadTipoMark';
-import { hydratePiezasFromInventario, type PiezaLinea } from '@/components/PiezasStep';
+import { hydratePiezasFromInventario, lineasDesdeVisita, type PiezaLinea } from '@/components/PiezasStep';
 import { RoleGate } from '@/components/RoleGate';
 import { Button } from '@/components/ui/button';
-import { FormAlert } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import {
   Table,
@@ -20,7 +21,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { api, HttpError } from '@/lib/api';
+import { api } from '@/lib/api';
 import {
   etiquetaOrigenPieza,
   etiquetaTipoVisita,
@@ -84,11 +85,9 @@ function OrdenesContent() {
   const tipo = parseTipo(searchParams.get('tipo'));
   const q = searchParams.get('q') ?? '';
   const ordenId = searchParams.get('orden');
-  const [rows, setRows] = useState<OrdenRow[] | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [detalle, setDetalle] = useState<VisitaDetalle | null>(null);
-  const [detalleError, setDetalleError] = useState<string | null>(null);
-  const [piezas, setPiezas] = useState<PiezaLinea[]>([]);
+  const searchRef = useRef<HTMLInputElement>(null);
+  const nuevaOrdenTriggerRef = useRef<HTMLButtonElement>(null);
+
   const [filtroAbierto, setFiltroAbierto] = useState(false);
   const [mobileMode, setMobileMode] = useState<boolean | null>(null);
   const [nuevaOrdenOpen, setNuevaOrdenOpen] = useState(false);
@@ -111,15 +110,16 @@ function OrdenesContent() {
     router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
   }
 
-  useEffect(() => {
-    if (!role) return;
-    const opts = { role, userId };
-    void (async () => {
-      setError(null);
-      try {
-        const unidades = await api<Unidad[]>('/unidades', opts);
+  const opts = { role: role!, userId };
+  const successful = useRef<{ key: string; units: Unidad[]; rows: Map<string, OrdenRow[]>; failed: string[] } | null>(null);
+  const listKey = role ? JSON.stringify([role, userId, 'ordenes']) : null;
+  const list = useReadResource(listKey, async () => {
+        const cached = successful.current?.key === listKey ? successful.current : null;
+        const unidades = cached && cached.failed.length ? cached.units : await api<Unidad[]>('/unidades', opts);
+        const targets = cached && cached.failed.length ? unidades.filter((unit) => cached.failed.includes(unit.id)) : unidades;
+        const loaded = cached && cached.failed.length ? new Map(cached.rows) : new Map<string, OrdenRow[]>();
         const settled = await Promise.allSettled(
-          unidades.map((unidad) =>
+          targets.map((unidad) =>
             api<VisitaResumen[]>(`/unidades/${unidad.id}/visitas`, opts).then(
               (visitas) =>
                 visitas.map((visita) => ({
@@ -134,36 +134,23 @@ function OrdenesContent() {
             ),
           ),
         );
-        const next = settled.flatMap((item) =>
-          item.status === 'fulfilled' ? item.value : [],
-        );
-        const failed = settled.filter((item) => item.status === 'rejected').length;
-        if (failed === settled.length && unidades.length > 0) {
-          const first = settled[0];
-          setRows([]);
-          setError(
-            first?.status === 'rejected' && first.reason instanceof HttpError
-              ? first.reason.message
-              : 'No se pudieron cargar las órdenes.',
-          );
-          return;
-        }
-        if (failed > 0) {
-          setError('Algunas unidades no pudieron listar sus órdenes.');
-        }
-        next.sort(
-          (a, b) =>
-            new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
-        );
-        setRows(next);
-      } catch (err) {
-        setRows([]);
-        setError(
-          err instanceof HttpError ? err.message : 'No se pudieron cargar las órdenes.',
-        );
-      }
-    })();
-  }, [role, userId]);
+    settled.forEach((result, index) => { if (result.status === 'fulfilled') loaded.set(targets[index].id, result.value); });
+    const failedIds = settled.flatMap((item, index) => item.status === 'rejected' ? [targets[index].id] : []);
+    successful.current = { key: listKey!, units: unidades, rows: loaded, failed: failedIds };
+    const next = [...loaded.values()].flat();
+    const failed = unidades.filter((unit) => failedIds.includes(unit.id)).map((unit) => unit.numeroInterno);
+    if (failed.length === unidades.length && unidades.length > 0) throw new Error('No se pudieron cargar las órdenes.');
+    next.sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
+    return { rows: next, failed };
+  }, true);
+  const rows = list.data?.rows ?? null;
+  const detailRead = useReadResource(role && ordenId ? JSON.stringify([role, userId, ordenId]) : null,
+    () => api<VisitaDetalle>(`/visitas/${ordenId}`, opts));
+  const detalle = detailRead.data;
+  const setDetalle = detailRead.setData;
+  const piezaRead = useReadResource(role && detalle ? JSON.stringify([role, userId, detalle.id, detalle.piezas]) : null,
+    () => hydratePiezasFromInventario(detalle?.piezas ?? [], opts));
+  const piezas = piezaRead.data ?? lineasDesdeVisita(detalle?.piezas ?? []);
 
   const filtered = useMemo(() => {
     if (!rows) return [];
@@ -198,48 +185,16 @@ function OrdenesContent() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rows, filtered, ordenId, mobileMode]);
 
-  useEffect(() => {
-    if (!role || !ordenId) {
-      setDetalle(null);
-      setPiezas([]);
-      setDetalleError(null);
-      return;
-    }
-    const opts = { role, userId };
-    let cancelled = false;
-    setDetalleError(null);
-    void (async () => {
-      try {
-        const next = await api<VisitaDetalle>(`/visitas/${ordenId}`, opts);
-        if (cancelled) return;
-        setDetalle(next);
-        const lineas = await hydratePiezasFromInventario(next.piezas ?? [], opts);
-        if (!cancelled) setPiezas(lineas);
-      } catch (err) {
-        if (cancelled) return;
-        setDetalle(null);
-        setPiezas([]);
-        setDetalleError(
-          err instanceof HttpError ? err.message : 'No se pudo abrir la orden.',
-        );
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, [role, userId, ordenId]);
-
   const borradorSeleccionado =
     !isAdmin && detalle?.estado === 'BORRADOR' && detalle.id === ordenId;
-  const emptyTitle =
-    cola === 'abiertas' ? 'No hay órdenes en borrador.' : 'No hay órdenes cerradas.';
-  const emptyLede = q.trim()
-    ? 'Pruebe otro texto o quite el filtro de tipo.'
-    : cola === 'abiertas'
-      ? 'Crea una orden aquí para comenzar la captura.'
-      : isAdmin
-        ? 'El administrador ve las visitas ya cerradas.'
-        : 'Al cerrar una visita pasa a esta lista.';
+  const colaRows = (rows ?? []).filter((row) => cola === 'abiertas' ? row.estado === 'BORRADOR' : row.estado === 'CERRADO');
+  const filteredEmpty = Boolean(q.trim() || tipo !== 'todos') && colaRows.length > 0;
+  const otherCola = !isAdmin && (rows ?? []).some((row) => cola === 'abiertas' ? row.estado === 'CERRADO' : row.estado === 'BORRADOR');
+  const emptyTitle = filteredEmpty ? 'Sin coincidencias con estos filtros.'
+    : cola === 'abiertas' ? 'No hay órdenes en borrador.' : 'No hay órdenes cerradas.';
+  const emptyLede = filteredEmpty ? 'Quita los filtros para recuperar las órdenes de esta cola.'
+    : otherCola ? 'Hay órdenes disponibles en la otra cola.'
+      : cola === 'abiertas' ? 'Crea una orden aquí para comenzar la captura.' : 'Las órdenes aparecen aquí después de cerrarlas.';
 
   const detalleAbierto = Boolean(ordenId);
   const soloDetalle = mobileMode === true && detalleAbierto;
@@ -265,6 +220,7 @@ function OrdenesContent() {
             aria-hidden
           />
           <Input
+              ref={searchRef}
             value={q}
             onChange={(event) =>
               setParams({ q: event.target.value.trim() ? event.target.value : null })
@@ -279,6 +235,7 @@ function OrdenesContent() {
             variant={borradorSeleccionado ? 'outline' : 'default'}
             className={borradorSeleccionado ? undefined : 'ordenes-primary'}
             type="button"
+            ref={nuevaOrdenTriggerRef}
             onClick={() => setNuevaOrdenOpen(true)}
           >
             + Nueva orden
@@ -286,10 +243,8 @@ function OrdenesContent() {
         )}
       </header>
       )}
-      <FormAlert>{error}</FormAlert>
-      {rows == null ? (
-        <p className="muted">Cargando órdenes…</p>
-      ) : (
+      <ReadStatus loading={list.loading} error={list.error || (list.data?.failed.length ? new Error('Consulta parcial') : null)} loadingText={list.data ? "Actualizando órdenes; se muestran los datos de la consulta anterior…" : "Cargando órdenes…"} errorText={list.data?.failed.length ? `Consulta parcial. Falta consultar: ${list.data.failed.join(', ')}.` : "No se pudieron cargar las órdenes."} retry={list.retry} />
+      {rows == null ? null : (
         <div className={soloDetalle ? 'ordenes-desk has-mobile-detail is-detail' : 'ordenes-desk'}>
           <div className="ordenes-list">
             <div className="ordenes-tabs">
@@ -352,8 +307,10 @@ function OrdenesContent() {
             </div>
             {filtered.length === 0 ? (
               <div className="empty-state">
-                <h2>{emptyTitle}</h2>
-                <p className="muted">{emptyLede}</p>
+                <h2>{list.data?.failed.length ? 'Consulta parcial sin coincidencias cargadas.' : emptyTitle}</h2>
+                <p className="muted">{list.data?.failed.length ? 'La consulta es parcial; recupera las unidades que faltan.' : emptyLede}</p>
+                {q.trim() || tipo !== 'todos' ? <Button type="button" variant="secondary" onClick={() => { setParams({ q: null, tipo: null, orden: null }); searchRef.current?.focus(); }}>Quitar filtros</Button> : null}
+                {otherCola ? <Button type="button" variant="secondary" onClick={() => setParams({ cola: cola === 'abiertas' ? 'cerradas' : null, orden: null })}>Ver {cola === 'abiertas' ? 'cerradas' : 'borradores'}</Button> : null}
               </div>
             ) : (
               <div className="ordenes-list__scroll" role="listbox" aria-label="Órdenes">
@@ -395,31 +352,28 @@ function OrdenesContent() {
             )}
           </div>
           <div className="ordenes-detail">
-            <FormAlert>{detalleError}</FormAlert>
+            {ordenId && filtered.length > 0 ? <ReadStatus key={ordenId} loading={detailRead.loading} error={detailRead.error} loadingText="Cargando la orden…" errorText="No se pudo abrir la orden." retry={detailRead.retry} /> : null}
             {filtered.length === 0 ? null : detalle && detalle.id === ordenId ? (
               <OrdenDetalle
                 detalle={detalle}
                 piezas={piezas}
+                piezaRead={piezaRead}
                 continuar={Boolean(borradorSeleccionado)}
                 marca={rows?.find((row) => row.id === ordenId) ?? null}
                 role={role!}
                 userId={userId}
                 onVisita={(next) => {
                   setDetalle(next);
-                  void hydratePiezasFromInventario(next.piezas ?? [], {
-                    role: role!,
-                    userId,
-                  }).then(setPiezas);
+
                 }}
               />
-            ) : detalleError ? null : (
-              <p className="muted">Cargando la orden…</p>
-            )}
+            ) : null}
           </div>
         </div>
       )}
       {!isAdmin && role ? (
         <NuevaOrdenDialog
+          returnFocusRef={nuevaOrdenTriggerRef}
           open={nuevaOrdenOpen}
           onOpenChange={setNuevaOrdenOpen}
           role={role}
@@ -458,6 +412,7 @@ function MarcaUnidad({
 function OrdenDetalle({
   detalle,
   piezas,
+  piezaRead,
   continuar,
   marca,
   role,
@@ -466,6 +421,7 @@ function OrdenDetalle({
 }: {
   detalle: VisitaDetalle;
   piezas: PiezaLinea[];
+  piezaRead: { loading: boolean; error: unknown; retry: () => void };
   continuar: boolean;
   marca: OrdenRow | null;
   role: string;
@@ -574,6 +530,7 @@ function OrdenDetalle({
       </section>
       <section className="ordenes-section" aria-labelledby="orden-piezas">
         <h2 id="orden-piezas">SKU</h2>
+        <ReadStatus loading={piezaRead.loading && detalle.piezas.length > 0} error={piezaRead.error} loadingText="Cargando datos de las piezas…" errorText="No se pudieron cargar los nombres de las piezas. Se conservan cantidades y origen." retry={piezaRead.retry} retryLabel="Reintentar piezas" />
         {piezas.length === 0 ? (
           <p className="muted">Sin piezas en esta orden.</p>
         ) : (
