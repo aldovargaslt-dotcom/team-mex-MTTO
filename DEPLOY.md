@@ -64,6 +64,11 @@ Confirmar dominio y conexión del servicio efectivo antes de fijar API_URL.
 Railway puede desplegar automáticamente la rama configurada; confirmar Source
 antes de actualizar main. No habilitar migración automática recurrente en startup.
 
+Inicio/Órdenes usa un paso **pre-deploy**, separado de startup: ver
+[release de Inicio y Órdenes](docs/migrations/railway-inicio-ordenes-release.md).
+Aplica sólo dos migraciones aditivas con ledger y lock; CHECK/Auth y sus gates
+no se ejecutan desde este paso.
+
 Si se usa el servicio web de Railway, respetar su PORT inyectado; no fijar el
 dominio a puerto 3000. API_URL y auth origin corresponden al servidor web usado.
 

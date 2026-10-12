@@ -297,6 +297,10 @@ function OrdenesContent() {
       {!isAdmin && detalle?.estado === 'BORRADOR' && !detalle.openedAt ? <Button type="button" variant="secondary" className="mb-3" onClick={async () => {
         try {
           const opened = await api<{ openedAt: string; openedBy: string }>(`/mantenimiento-ordenes/${detalle.id}/abrir`, { role: role!, userId, method: 'POST' });
+          if (successful.current?.key === listKey) {
+            successful.current.rows.forEach((items, key) => successful.current!.rows.set(key,
+              items.map((row) => row.id === detalle.id ? { ...row, ...opened } : row)));
+          }
           setDetalle({ ...detalle, ...opened }); list.setData((current) => current ? { ...current, rows: current.rows.map((row) => row.id === detalle.id ? { ...row, ...opened } : row) } : null);
           setParams({ cola: null, orden: detalle.id });
         } catch (err) { setError(err instanceof HttpError ? err.message : 'No se pudo abrir la orden.'); }
@@ -551,6 +555,9 @@ function OrdenDetalle({
       </section>
       <section className="ordenes-section" aria-labelledby="orden-piezas">
         <h2 id="orden-piezas">SKU</h2>
+        <ReadStatus loading={piezaRead.loading && detalle.piezas.length > 0} error={piezaRead.error}
+          loadingText="Cargando datos de las piezas…" errorText="No se pudieron cargar los nombres de las piezas. Se conservan cantidades y origen."
+          retry={piezaRead.retry} retryLabel="Reintentar piezas" />
         {piezas.length === 0 ? (
           <p className="muted">Sin piezas en esta orden.</p>
         ) : (

@@ -42,7 +42,7 @@ export default function PendientesPage() {
     const target = document.getElementById(`pendiente-${id}`);
     target?.scrollIntoView({ block: 'center' });
     target?.focus({ preventScroll: true });
-  }, [rows]);
+  }, [read.data]);
 
   async function adjuntar(id: string, file: File) {
     setBusyId(id);

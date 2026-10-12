@@ -25,7 +25,7 @@
     "check:migration:inspect": "node dist/db/run-controlled-check-migrations.js inspect",
     "check:migration:apply": "node dist/db/run-controlled-check-migrations.js apply",
     "test:migrations": "jest --config ./test/jest-migrations.json --runInBand",
-    "alerts:migration:up": "ts-node src/db/run-alert-migrations.ts",
+    "alerts:migration:up": "node dist/db/run-alert-migrations.js",
     "orders:migration:up": "node dist/db/run-orders-migrations.js"
   },
   "dependencies": {
