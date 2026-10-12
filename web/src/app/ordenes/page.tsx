@@ -501,7 +501,7 @@ function OrdenDetalle({
       </div>
       <dl className="ordenes-facts">
         <div>
-          <dt>Fecha de apertura</dt>
+          <dt>Fecha de creación</dt>
           <dd>{formatFecha(detalle.createdAt)}</dd>
         </div>
         <div>
