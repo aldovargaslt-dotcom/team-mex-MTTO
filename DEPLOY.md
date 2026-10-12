@@ -62,7 +62,9 @@ El usuario proporcionó `https://team-mex-mtto-production-e7a6.up.railway.app` y
 capturas muestran también `https://team-mex-mtto-production.up.railway.app`.
 Confirmar dominio y conexión del servicio efectivo antes de fijar API_URL.
 Railway puede desplegar automáticamente la rama configurada; confirmar Source
-antes de actualizar main. No habilitar migración automática recurrente en startup.
+antes de actualizar main. No habilitar un migrador general/destructivo en startup.
+El guard acotado de ADR024 comprueba únicamente las dos migraciones aditivas de
+Inicio/Órdenes antes de inicializar Nest; los ledgers evitan volver a aplicarlas.
 
 Inicio/Órdenes usa un paso **pre-deploy**, separado de startup: ver
 [release de Inicio y Órdenes](docs/migrations/railway-inicio-ordenes-release.md).

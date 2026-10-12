@@ -50,3 +50,5 @@ No hace falta ADR para copy, tokens CSS, CI, o plantillas de PR. Cortes **visual
 No reescribir en silencio un ADR aceptado. Ver regla en `.cursor/rules/docs-adr.mdc`.
 
 [ADR023 — Apertura explícita de mantenimiento](023-maintenance-order-opening.md): marca de apertura sin cambiar lifecycle/efectos de CHECK o cierre.
+
+[ADR024 — Guard de schema del release antes de bootstrap](024-ui-release-bootstrap-guard.md).
