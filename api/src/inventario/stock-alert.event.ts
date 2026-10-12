@@ -11,6 +11,7 @@ export type StockAlertEvent = {
   sku: string;
   qty: number;
   minQty: number | null;
+  severity?: 'WARNING' | 'CRITICAL';
   occurredAt: string;
 };
 
@@ -25,6 +26,7 @@ export function buildStockAlert(input: {
   sku: string;
   qty: number;
   minQty: number | null;
+  severity?: 'WARNING' | 'CRITICAL';
   occurredAt: Date | string;
 }): StockAlertEvent {
   return {
@@ -34,6 +36,7 @@ export function buildStockAlert(input: {
     sku: input.sku,
     qty: input.qty,
     minQty: input.minQty,
+    ...(input.severity ? { severity: input.severity } : {}),
     occurredAt: toIso8601(input.occurredAt),
   };
 }

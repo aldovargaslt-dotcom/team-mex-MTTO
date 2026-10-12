@@ -1,5 +1,6 @@
 'use client';
 
+import { AlertTriangle, List, PackageX, type LucideIcon } from 'lucide-react';
 import { FormEvent, Suspense, useEffect, useMemo, useState } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { ColumnDef } from '@tanstack/react-table';
@@ -36,10 +37,10 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 
-const FILTROS: { id: 'TODOS' | AlertaStock; label: string }[] = [
-  { id: 'TODOS', label: 'Todos' },
-  { id: 'BAJO', label: 'Bajo' },
-  { id: 'AGOTADO', label: 'Agotado' },
+const FILTROS: { id: 'TODOS' | AlertaStock; label: string; icon: LucideIcon }[] = [
+  { id: 'TODOS', label: 'Todos', icon: List },
+  { id: 'BAJO', label: 'Bajo', icon: AlertTriangle },
+  { id: 'AGOTADO', label: 'Agotado', icon: PackageX },
 ];
 
 function parseAlerta(raw: string | null): 'TODOS' | AlertaStock {
@@ -109,6 +110,16 @@ function StockContent() {
   useEffect(() => {
     if (read.data) setMinDraft(Object.fromEntries(read.data.map((row) => [row.itemId, row.minQty == null ? '' : String(row.minQty)])));
   }, [read.data]);
+
+  useEffect(() => {
+    const selectedItem = searchParams.get('itemId');
+    if (!selectedItem || !role) return;
+    const controller = new AbortController();
+    void api<ItemInventario>(`/inventario/items/${encodeURIComponent(selectedItem)}`, { role, userId, signal: controller.signal })
+      .then((item) => { if (!controller.signal.aborted) setFicha(item); })
+      .catch((err) => { if (!controller.signal.aborted) setError(err instanceof HttpError ? err.message : 'No se pudo abrir la refacción.'); });
+    return () => controller.abort();
+  }, [searchParams, role, userId]);
 
   function abrirEntrada() {
     setLockItem(false);
@@ -274,7 +285,12 @@ function StockContent() {
         proveedores={proveedores}
         role={role ?? ''}
         userId={userId}
-        onClose={() => setFicha(null)}
+        onClose={() => {
+          setFicha(null);
+          const next = new URLSearchParams(searchParams.toString());
+          next.delete('itemId');
+          router.replace(`${pathname}${next.size ? `?${next}` : ''}`, { scroll: false });
+        }}
         onChanged={(updated) => {
           if (updated) setFicha(updated);
           void cargar();

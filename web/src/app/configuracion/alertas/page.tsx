@@ -22,6 +22,7 @@ import {
   resumenCuandoAvisaCatalogo,
 } from '@/lib/alert-catalog-resumen';
 import { etiquetaMinimo, resumenAvisoMantenimiento } from '@/lib/format';
+import { notifyInboxChanged } from '@/lib/inbox';
 import { useRole } from '@/lib/role';
 import type {
   AlertFamily,
@@ -30,6 +31,7 @@ import type {
   CatalogUmbrales,
   Role,
   ThresholdMode,
+  ThresholdPreview,
 } from '@/lib/types';
 
 const FAMILY_ORDER: AlertFamily[] = ['MTTO', 'FLOTA'];
@@ -437,9 +439,12 @@ function TypeEditorDialog({
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [andonDraft, setAndonDraft] = useState<
-    Record<string, { tKm: string; tDias: string }>
+    Record<string, { tKm: string; tDias: string; criticalOverdueKm: string; criticalOverdueDays: string }>
   >({});
   const [stockDraft, setStockDraft] = useState<Record<string, string>>({});
+  const [criticalStockDraft, setCriticalStockDraft] = useState<Record<string, string>>({});
+  const [preview, setPreview] = useState<{ effect: ThresholdPreview; body: string } | null>(null);
+  useEffect(() => { setPreview(null); setSaved(false); }, [andonDraft, stockDraft, criticalStockDraft]);
   const [localH, setLocalH] = useState('8');
   const [foraneoH, setForaneoH] = useState('24');
   const [alertEnabled, setAlertEnabled] = useState(true);
@@ -461,12 +466,13 @@ function TypeEditorDialog({
             Object.fromEntries(
               data.umbrales.map((row) => [
                 row.tipoVehiculoId,
-                { tKm: String(row.tKm), tDias: String(row.tDias) },
+                { tKm: String(row.tKm), tDias: String(row.tDias), criticalOverdueKm: String(row.criticalOverdueKm), criticalOverdueDays: String(row.criticalOverdueDays) },
               ]),
             ),
           );
         }
         if (data.items) {
+          setCriticalStockDraft(Object.fromEntries(data.items.map((row) => [row.itemId, String(row.criticalQty)])));
           setStockDraft(
             Object.fromEntries(
               data.items.map((row) => [
@@ -509,6 +515,8 @@ function TypeEditorDialog({
             tipoVehiculoId,
             tKm: Number(d.tKm),
             tDias: Number(d.tDias),
+            criticalOverdueKm: Number(d.criticalOverdueKm),
+            criticalOverdueDays: Number(d.criticalOverdueDays),
           })),
         };
       } else if (type.code === 'STOCK_BAJO') {
@@ -516,6 +524,7 @@ function TypeEditorDialog({
           items: Object.entries(stockDraft).map(([itemId, raw]) => ({
             itemId,
             minQty: raw.trim() === '' ? null : Number(raw),
+            criticalQty: Number(criticalStockDraft[itemId]),
           })),
         };
       } else if (type.code === 'SALUD_UMBRAL') {
@@ -530,12 +539,23 @@ function TypeEditorDialog({
         onClose();
         return;
       }
-      await api(`/configuracion/alertas/${type.code}/umbrales`, {
+      const serialized = JSON.stringify(body);
+      if ((type.code === 'MTTO_VENCIDO' || type.code === 'STOCK_BAJO') && preview?.body !== serialized) {
+        const effect = await api<ThresholdPreview>(`/configuracion/alertas/${type.code}/umbrales/preview`, {
+          role, userId, method: 'POST', body: serialized,
+        });
+        setPreview({ effect, body: serialized });
+        return;
+      }
+      const updated = await api<CatalogUmbrales>(`/configuracion/alertas/${type.code}/umbrales`, {
         role,
         userId,
         method: 'PATCH',
         body: JSON.stringify(body),
       });
+      setPayload(updated);
+      setPreview(null);
+      notifyInboxChanged();
       await onChanged();
       setSaved(true);
     } catch (err) {
@@ -624,6 +644,7 @@ function TypeEditorDialog({
                               setAndonDraft((prev) => ({
                                 ...prev,
                                 [row.tipoVehiculoId]: {
+                                  ...prev[row.tipoVehiculoId],
                                   tKm: e.target.value,
                                   tDias: prev[row.tipoVehiculoId]?.tDias ?? '',
                                 },
@@ -644,12 +665,26 @@ function TypeEditorDialog({
                               setAndonDraft((prev) => ({
                                 ...prev,
                                 [row.tipoVehiculoId]: {
+                                  ...prev[row.tipoVehiculoId],
                                   tKm: prev[row.tipoVehiculoId]?.tKm ?? '',
                                   tDias: e.target.value,
                                 },
                               }))
                             }
                           />
+                        </Field>
+                      </div>
+                      <p className="text-[12px] font-medium text-navy">Atención inmediata después del plazo</p>
+                      <div className="grid grid-cols-2 gap-2">
+                        <Field label="Km adicionales" htmlFor={`critical-km-${row.tipoVehiculoId}`}>
+                          <Input id={`critical-km-${row.tipoVehiculoId}`} type="number" min={1} required
+                            value={andonDraft[row.tipoVehiculoId]?.criticalOverdueKm ?? ''}
+                            onChange={(e) => setAndonDraft((prev) => ({ ...prev, [row.tipoVehiculoId]: { ...prev[row.tipoVehiculoId], criticalOverdueKm: e.target.value } }))} />
+                        </Field>
+                        <Field label="Días adicionales" htmlFor={`critical-days-${row.tipoVehiculoId}`}>
+                          <Input id={`critical-days-${row.tipoVehiculoId}`} type="number" min={1} required
+                            value={andonDraft[row.tipoVehiculoId]?.criticalOverdueDays ?? ''}
+                            onChange={(e) => setAndonDraft((prev) => ({ ...prev, [row.tipoVehiculoId]: { ...prev[row.tipoVehiculoId], criticalOverdueDays: e.target.value } }))} />
                         </Field>
                       </div>
                     </div>
@@ -662,25 +697,24 @@ function TypeEditorDialog({
                       Existencias.
                     </p>
                     {payload.items.map((row) => (
-                      <Field
-                        key={row.itemId}
-                        label={`${row.nombre} · ${etiquetaMinimo(row.minQty)}`}
-                        htmlFor={`min-${row.itemId}`}
-                      >
-                        <Input
-                          id={`min-${row.itemId}`}
-                          type="number"
-                          min={0}
-                          placeholder="Sin aviso"
-                          value={stockDraft[row.itemId] ?? ''}
-                          onChange={(e) =>
-                            setStockDraft((prev) => ({
-                              ...prev,
-                              [row.itemId]: e.target.value,
-                            }))
-                          }
-                        />
-                      </Field>
+                      <div key={row.itemId} className="grid gap-2 border-b border-border pb-3 last:border-0">
+                        <p className="text-[13px] font-medium text-navy">{row.nombre}</p>
+                        <p className="text-[12px] text-muted-foreground">{row.qty} piezas disponibles · {etiquetaMinimo(row.minQty)}</p>
+                        <div className="grid grid-cols-2 gap-2">
+                          <Field label="Seguimiento si quedan" htmlFor={`min-${row.itemId}`}>
+                            <Input id={`min-${row.itemId}`} type="number" min={0} placeholder="Sin aviso"
+                              value={stockDraft[row.itemId] ?? ''}
+                              onChange={(e) => setStockDraft((prev) => ({ ...prev, [row.itemId]: e.target.value }))} />
+                          </Field>
+                          <Field label="Crítico si quedan" htmlFor={`critical-${row.itemId}`}>
+                            <Input id={`critical-${row.itemId}`} type="number" min={0}
+                              max={stockDraft[row.itemId] === '' ? undefined : Number(stockDraft[row.itemId])}
+                              disabled={stockDraft[row.itemId] === ''} required
+                              value={criticalStockDraft[row.itemId] ?? '0'}
+                              onChange={(e) => setCriticalStockDraft((prev) => ({ ...prev, [row.itemId]: e.target.value }))} />
+                          </Field>
+                        </div>
+                      </div>
                     ))}
                   </div>
                 ) : null}
@@ -757,6 +791,11 @@ function TypeEditorDialog({
                 ) : null}
               </>
             )}
+            {preview ? <div role="status" className="rounded-md border border-border bg-muted p-3 text-[13px]">
+              <p className="font-medium text-navy">Efecto de estos cambios</p>
+              <p className="mt-1">{preview.effect.opened} alertas nuevas · {preview.effect.closed} dejarán de estar activas · {preview.effect.priorityChanged} cambiarán de prioridad.</p>
+              <p className="mt-1 text-xs text-muted-foreground">Quedarán {preview.effect.after} alertas de este tipo. Los cambios aún no se han guardado.</p>
+            </div> : null}
             <FormAlert>{error}</FormAlert>
             {saved ? (
               <p className="text-[13px] text-muted-foreground">
@@ -787,7 +826,7 @@ function TypeEditorDialog({
                   variant={isAdmin ? 'outline' : 'default'}
                   disabled={saving || loading}
                 >
-                  {saving ? 'Guardando…' : 'Guardar'}
+                  {saving ? 'Procesando…' : preview ? 'Confirmar cambios' : (type.code === 'MTTO_VENCIDO' || type.code === 'STOCK_BAJO') ? 'Revisar cambios' : 'Guardar'}
                 </Button>
               ) : null}
             </div>

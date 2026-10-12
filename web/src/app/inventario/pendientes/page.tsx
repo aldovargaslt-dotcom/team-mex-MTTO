@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ReadStatus } from '@/components/ReadStatus';
 import { useReadResource } from '@/lib/use-read-resource';
 import { api, HttpError } from '@/lib/api';
@@ -35,6 +35,14 @@ export default function PendientesPage() {
     rows.map((row) => row.visitaId),
     { role, userId },
   );
+
+  useEffect(() => {
+    const id = new URLSearchParams(window.location.search).get('pendienteId');
+    if (!id) return;
+    const target = document.getElementById(`pendiente-${id}`);
+    target?.scrollIntoView({ block: 'center' });
+    target?.focus({ preventScroll: true });
+  }, [read.data]);
 
   async function adjuntar(id: string, file: File) {
     setBusyId(id);
@@ -94,7 +102,7 @@ export default function PendientesPage() {
           {rows.map((row) => {
             const abierto = row.estado === 'PENDIENTE';
             return (
-              <div key={row.id} className="queue-row">
+              <div key={row.id} id={`pendiente-${row.id}`} tabIndex={-1} className="queue-row scroll-mt-20 target:bg-[#fff4e8]">
                 <div>
                   <p>
                     <span className="mono">{row.sku}</span> {row.nombre} · {row.qty}{' '}

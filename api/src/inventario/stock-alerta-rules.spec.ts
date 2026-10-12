@@ -131,6 +131,7 @@ describe('stock umbral (S1–S4)', () => {
       });
       expect(emitted).toEqual({
         eventId: 'evt-bajo-1',
+        severity: 'WARNING',
         eventType: STOCK_BAJO,
         itemId: 'item-1',
         sku: 'UMB-01',

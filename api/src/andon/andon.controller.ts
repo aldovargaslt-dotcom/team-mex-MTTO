@@ -40,8 +40,7 @@ export class AndonController {
   @Post('avisos/:id/enterado')
   @Roles(Rol.SUPERVISOR)
   @ApiOperation({
-    summary:
-      'Marcar enterado (supervisor). In-app; no resuelve.',
+    summary: 'Marcar enterado (supervisor). In-app; no resuelve.',
   })
   enterado(
     @Param('id', ParseUUIDPipe) id: string,
@@ -65,6 +64,12 @@ export class AndonController {
     @Param('tipoVehiculoId', ParseUUIDPipe) tipoVehiculoId: string,
     @Body() dto: UpdateUmbralDto,
   ) {
-    return this.service.updateUmbral(tipoVehiculoId, dto.tKm, dto.tDias);
+    return this.service.updateUmbral(
+      tipoVehiculoId,
+      dto.tKm,
+      dto.tDias,
+      dto.criticalOverdueKm,
+      dto.criticalOverdueDays,
+    );
   }
 }

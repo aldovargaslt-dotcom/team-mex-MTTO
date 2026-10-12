@@ -8,6 +8,22 @@ export function diasEntre(fromIso: string, toIso: string): number {
   return Math.floor((to - from) / MS_PER_DAY);
 }
 
+/** Evaluación viva; abrir/visto no determina la prioridad. */
+export function prioridadMantenimiento(input: {
+  kmDesde: number;
+  diasDesde: number;
+  tKm: number;
+  tDias: number;
+  criticalOverdueKm: number;
+  criticalOverdueDays: number;
+}): 'WARNING' | 'CRITICAL' | null {
+  if (input.kmDesde < input.tKm && input.diasDesde < input.tDias) return null;
+  return input.kmDesde >= input.tKm + input.criticalOverdueKm ||
+    input.diasDesde >= input.tDias + input.criticalOverdueDays
+    ? 'CRITICAL'
+    : 'WARNING';
+}
+
 export type EvaluarAperturaInput = {
   lastClosed: LastClosedVisit | null;
   currentKm: number;

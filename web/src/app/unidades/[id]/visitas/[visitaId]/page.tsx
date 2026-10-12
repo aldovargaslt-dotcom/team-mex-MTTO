@@ -121,11 +121,12 @@ function VisitaReadonly({
   return (
     <>
       <PageHeader
+        kicker={visita.estado === 'CERRADO' ? 'Orden cerrada' : 'Orden de mantenimiento'}
         title={
           <span className="inline-flex items-center gap-2">
             {visita.unidadNumeroInterno}
             <Badge variant={visita.estado === 'CERRADO' ? 'success' : 'warning'}>
-              {etiquetaEstadoVisita(visita.estado)}
+              {visita.estado === 'BORRADOR' && visita.openedAt ? 'Abierta' : etiquetaEstadoVisita(visita.estado)}
             </Badge>
           </span>
         }
@@ -426,10 +427,11 @@ function VisitWizard({
   return (
     <div className="wo-wizard">
       <PageHeader
+        kicker={visita.estado === 'CERRADO' ? 'Orden cerrada' : 'Orden de mantenimiento'}
         title={
           <span className="inline-flex items-center gap-2">
             {visita.unidadNumeroInterno}
-            <Badge variant="warning">Borrador</Badge>
+            <Badge variant="warning">{visita.openedAt ? 'Abierta' : 'Borrador'}</Badge>
           </span>
         }
         lede={

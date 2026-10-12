@@ -191,3 +191,18 @@ El owner aprobó el paquete Slice0 y estas políticas; son target aprobado, no c
 | R05 | Defaults de urgencia de retorno configurables: retraso positivo <=2h ATTENTION; >2h CRITICAL. Hard operational blocker, UNFIT o documentación requerida inválida→CRITICAL. CHECK requerido/en progreso o FIT_WITH_OBSERVATION→ATTENTION. Sin causa activa→NORMAL. Thresholds en configuración persistida/versionada, no constantes hard-coded de dominio. |
 
 Los valores numéricos PSI, listado real de vehículos/facilities, hora de invocación del scheduler y credenciales/provider son inputs de configuración de ejecución. No son nuevas OWNER_DECISION_REQUIRED: contratos config/validación/fail-closed definidos. No inventar PSI ni tomar las 2h del mock: las 2h están autorizadas aquí por owner.
+
+## Consulta Supervisor — aprobación2026-10-12
+
+Usuario autoriza Supervisor a consultar revisiones desde Órdenes. GET /checks y
+GET /checks/:id admiten SUPERVISOR dentro de facilityScopes existentes. Writers,
+evidence/firmas y asignación conservan política anterior. Revisión es alias UI
+de CHECK; no altera eventos ni estados.
+
+## Bandeja Mecánico y apertura de mantenimiento —2026-10-11 cliente
+
+MECANICO consulta lista/detalle de mantenimiento dentro de facilityScopes; comparte
+con Supervisor la confirmación Abrir orden, protegida por scope y estado. Lectura
+del historial CHECK para MECANICO sólo permite COMPLETED propio; cola activa
+conserva own/eligible. Apertura guarda fecha/actor y libera slot de preparación,
+sin alterar PENDING, asignación, firma, ejecución o VisitaCerrada. ADC [ADR023](../adr/023-maintenance-order-opening.md).

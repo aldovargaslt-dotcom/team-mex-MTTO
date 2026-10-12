@@ -17,11 +17,22 @@ export class AndonInboxAdapter implements AvisoInboxPort {
         kmAlAbrir: aviso.kmAlAbrir,
         diasAlAbrir: aviso.diasAlAbrir,
         abiertaAt: aviso.abiertaAt,
+        severity: aviso.severity,
       }),
     );
   }
 
   async onResuelto(aviso: Aviso) {
-    await this.notifications.expireDedupe(avisoAbiertoDedupeKey(aviso.unidadId));
+    await this.notifications.expireDedupe(
+      avisoAbiertoDedupeKey(aviso.unidadId),
+    );
+  }
+
+  async refreshPriority(
+    aviso: Aviso,
+    unidad: UnidadVista | null,
+    severity: 'WARNING' | 'CRITICAL',
+  ) {
+    await this.onAbierto({ ...aviso, severity }, unidad);
   }
 }

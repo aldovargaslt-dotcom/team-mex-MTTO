@@ -12,9 +12,12 @@ export type UmbralTipo = {
   tipoVehiculoId: string;
   tKm: number;
   tDias: number;
+  criticalOverdueKm?: number;
+  criticalOverdueDays?: number;
 };
 
 export type Aviso = {
+  severity?: 'WARNING' | 'CRITICAL';
   id: string;
   unidadId: string;
   tipoVehiculoId: string;
@@ -37,6 +40,8 @@ export type UnidadVista = {
   numeroInterno?: string;
   placas?: string;
   tipoNombre?: string;
+  marcaModelo?: string | null;
+  fotoDataUrl?: string | null;
 };
 
 export type WhatsAppMessage = {

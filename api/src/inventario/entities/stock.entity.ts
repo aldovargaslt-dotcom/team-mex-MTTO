@@ -25,6 +25,9 @@ export class Stock {
   @Column({ name: 'min_qty', type: 'int', nullable: true })
   minQty: number | null;
 
+  @Column({ name: 'critical_qty', type: 'int', default: 0 })
+  criticalQty: number;
+
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
 }

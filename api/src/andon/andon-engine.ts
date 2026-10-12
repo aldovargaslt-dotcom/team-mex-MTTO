@@ -1,22 +1,28 @@
 import { randomUUID } from 'crypto';
 import { VisitaCerradaPayload } from '../kernel/events/visita-cerrada';
 import { Rol } from '../auth/roles.enum';
-import { evaluarApertura } from './andon-rules';
+import {
+  diasEntre,
+  evaluarApertura,
+  prioridadMantenimiento,
+} from './andon-rules';
 import { Aviso, StockWriter, VisitaWriter } from './andon-types';
 import {
   DEFAULT_T_DIAS,
+  DEFAULT_CRITICAL_OVERDUE_DAYS,
+  DEFAULT_CRITICAL_OVERDUE_KM,
   DEFAULT_T_KM,
   EstadoAviso,
   WhatsAppKind,
 } from './enums';
+import { SEED_ALERT_CODES } from '../alert-catalog/alert-catalog.types';
+import { AlertTypeActivePort, emitIfActive } from '../alert-catalog/ports';
 import {
-  SEED_ALERT_CODES,
-} from '../alert-catalog/alert-catalog.types';
-import {
-  AlertTypeActivePort,
-  emitIfActive,
-} from '../alert-catalog/ports';
-import { AndonStore, AvisoInboxPort, UnidadCatalog, WhatsAppPort } from './ports';
+  AndonStore,
+  AvisoInboxPort,
+  UnidadCatalog,
+  WhatsAppPort,
+} from './ports';
 
 export class AndonForbiddenError extends Error {
   constructor(message: string) {
@@ -73,6 +79,54 @@ export class AndonEngine {
     const tDias = umbral?.tDias ?? DEFAULT_T_DIAS;
     const nowIso = this.nowIso(input.now);
 
+    // Regla vigente: retirar la condición no equivale a registrar mantenimiento.
+    if (
+      abierto &&
+      lastClosed &&
+      unidad?.activa &&
+      input.currentKm - lastClosed.km < tKm &&
+      diasEntre(lastClosed.cerradoAt, nowIso) < tDias
+    ) {
+      const resolved = {
+        ...abierto,
+        estado: EstadoAviso.RESUELTO,
+        resueltoAt: nowIso,
+        visitaResolutoriaId: null,
+      };
+      await this.deps.store.updateAviso(resolved);
+      await this.deps.inbox?.onResuelto(resolved);
+      return null;
+    }
+
+    const severity = prioridadMantenimiento({
+      kmDesde: lastClosed ? input.currentKm - lastClosed.km : 0,
+      diasDesde: lastClosed ? diasEntre(lastClosed.cerradoAt, nowIso) : 0,
+      tKm,
+      tDias,
+      criticalOverdueKm:
+        umbral?.criticalOverdueKm ?? DEFAULT_CRITICAL_OVERDUE_KM,
+      criticalOverdueDays:
+        umbral?.criticalOverdueDays ?? DEFAULT_CRITICAL_OVERDUE_DAYS,
+    });
+    if (abierto && severity && unidad?.activa) {
+      await emitIfActive(
+        this.deps.alertTypes,
+        SEED_ALERT_CODES.MTTO_VENCIDO,
+        async () => {
+          await this.deps.inbox?.refreshPriority?.(
+            {
+              ...abierto,
+              diasAlAbrir: lastClosed
+                ? diasEntre(lastClosed.cerradoAt, nowIso)
+                : abierto.diasAlAbrir,
+            },
+            unidad,
+            severity,
+          );
+        },
+      );
+    }
+
     const result = evaluarApertura({
       lastClosed,
       currentKm: input.currentKm,
@@ -88,6 +142,7 @@ export class AndonEngine {
     }
 
     const aviso: Aviso = {
+      severity: severity ?? 'WARNING',
       id: this.id(),
       unidadId: input.unidadId,
       tipoVehiculoId: lastClosed.tipoVehiculoId,
@@ -211,9 +266,10 @@ export class AndonEngine {
       if (!last?.visitaId?.trim()) {
         continue;
       }
+      const existing = await this.deps.store.getNoResuelto(unidad.unidadId);
       const aviso = await this.evaluarUnidad({
         unidadId: unidad.unidadId,
-        currentKm: last.km,
+        currentKm: last.km + (existing?.kmAlAbrir ?? 0),
         now,
       });
       if (aviso) {

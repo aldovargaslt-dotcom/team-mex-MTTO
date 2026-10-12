@@ -66,7 +66,7 @@ export class CanonicalOrdersController {
   }
   @Get('checks/:id')
   detail(@Param('id', ParseUUIDPipe) id: string, @Actor() actor: TrustedActor) {
-    return this.service.detail(id, actor);
+    return this.service.readOrderDetail(id, actor);
   }
   @Post('checks/:id/assign')
   assign(@Param('id', ParseUUIDPipe) id: string, @Body() dto: AssignCheckDto, @Actor() actor: TrustedActor) {
@@ -149,6 +149,14 @@ export class CanonicalOrdersController {
     @Actor() actor: TrustedActor,
   ) {
     return this.service.createMaintenance(unidadId, dto, actor);
+  }
+  @Get('mantenimiento-ordenes/:id')
+  maintenanceDetail(@Param('id', ParseUUIDPipe) id: string, @Actor() actor: TrustedActor) {
+    return this.service.maintenanceDetail(id, actor);
+  }
+  @Post('mantenimiento-ordenes/:id/abrir')
+  openMaintenance(@Param('id', ParseUUIDPipe) id: string, @Actor() actor: TrustedActor) {
+    return this.service.openMaintenance(id, actor);
   }
   @Get('mantenimiento-ordenes')
   list(@Query() query: OrdersQuery, @Actor() actor: TrustedActor) {

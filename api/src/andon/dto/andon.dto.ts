@@ -1,8 +1,22 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsInt, Min } from 'class-validator';
+import { IsInt, IsOptional, Min } from 'class-validator';
 import { EstadoAviso } from '../enums';
 
-export class UpdateUmbralDto {
+export class CriticalMarginsDto {
+  @ApiPropertyOptional({ default: 1000 })
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  criticalOverdueKm?: number;
+
+  @ApiPropertyOptional({ default: 30 })
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  criticalOverdueDays?: number;
+}
+
+export class UpdateUmbralDto extends CriticalMarginsDto {
   @ApiProperty({ example: 10000 })
   @IsInt({ message: 't_km debe ser un entero.' })
   @Min(1, { message: 't_km debe ser al menos 1.' })
@@ -14,7 +28,7 @@ export class UpdateUmbralDto {
   tDias: number;
 }
 
-export class UmbralDto {
+export class UmbralDto extends CriticalMarginsDto {
   @ApiProperty()
   tipoVehiculoId: string;
 
@@ -29,6 +43,27 @@ export class UmbralDto {
 }
 
 export class AvisoDto {
+  @ApiProperty({ enum: ['WARNING', 'CRITICAL'] })
+  severity: 'WARNING' | 'CRITICAL';
+
+  @ApiProperty()
+  diasDesde: number;
+
+  @ApiProperty()
+  kmDesde: number;
+
+  @ApiProperty()
+  atrasoDias: number;
+
+  @ApiProperty()
+  atrasoKm: number;
+
+  @ApiPropertyOptional({ nullable: true })
+  marcaModelo: string | null;
+
+  @ApiPropertyOptional({ nullable: true })
+  fotoDataUrl: string | null;
+
   @ApiProperty()
   id: string;
 

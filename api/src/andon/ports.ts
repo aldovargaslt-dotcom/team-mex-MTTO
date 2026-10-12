@@ -40,6 +40,11 @@ export interface NotifyPort {
 export interface AvisoInboxPort {
   onAbierto(aviso: Aviso, unidad: UnidadVista | null): Promise<void>;
   onResuelto(aviso: Aviso): Promise<void>;
+  refreshPriority?(
+    aviso: Aviso,
+    unidad: UnidadVista | null,
+    severity: 'WARNING' | 'CRITICAL',
+  ): Promise<void>;
 }
 
 export const AVISO_INBOX_PORT = Symbol('AvisoInboxPort');

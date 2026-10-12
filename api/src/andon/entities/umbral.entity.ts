@@ -13,6 +13,12 @@ export class UmbralEntity {
   @Column({ name: 't_dias', type: 'int' })
   tDias: number;
 
+  @Column({ name: 'critical_overdue_km', type: 'int', default: 1000 })
+  criticalOverdueKm: number;
+
+  @Column({ name: 'critical_overdue_days', type: 'int', default: 30 })
+  criticalOverdueDays: number;
+
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
 }

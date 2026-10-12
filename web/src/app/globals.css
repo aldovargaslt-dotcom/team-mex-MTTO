@@ -3869,6 +3869,21 @@
   }
 }
 
+/* Order identity precedes vehicle identity in the work queue. */
+.ordenes-row.ordenes-row--document { display: block; padding: 12px; }
+.ordenes-row.ordenes-row--document:focus-visible { outline: 2px solid var(--ring); outline-offset: -2px; }
+.ordenes-list__scroll:has(.ordenes-row--document) { display: grid; gap: 8px; padding: 8px; }
+.ordenes-row--document { border: 1px solid var(--border); border-radius: var(--radius); }
+.ordenes-row.ordenes-row--document.is-selected { background: var(--card); box-shadow: inset 3px 0 0 var(--navy); }
+.ordenes-head > div:first-child { flex-wrap: wrap; }
+.ordenes-head h1 { white-space: normal; }
+.ordenes-tabs__cola { margin: 4px; gap: 4px; }
+.ordenes-tabs__cola button { min-height: 44px; padding: 8px 12px; border-radius: var(--radius); font-size: 14px; }
+.ordenes-tabs__cola button.is-on { color: var(--shell-ink); background: var(--navy); border-bottom-color: transparent; }
+
+.work-queue-header > div { flex-direction: row; align-items: center; }
+.work-queue-header > div > div:first-child { min-width: 0; }
+.work-queue-header > div > div:last-child { flex-shrink: 0; }
 /* EWO-029: read failures occupy the text region; normal inbox rows stay intact. */
 .inbox-source-state { padding: 8px 10px; border-bottom: 1px solid var(--border); }
 .read-status { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }

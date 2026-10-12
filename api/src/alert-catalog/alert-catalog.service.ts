@@ -38,6 +38,12 @@ import {
   CreateAlertTypeDto,
   PatchCatalogUmbralesDto,
 } from './dto/alert-catalog.dto';
+import {
+  ActiveAttention,
+  AttentionResponse,
+  comparePriorities,
+} from './attention.types';
+import { ThresholdChangeEntity } from './entities/threshold-change.entity';
 import { AlertTypeEntity } from './entities/alert-type.entity';
 import { AlertTypeActivePort } from './ports';
 
@@ -165,39 +171,11 @@ export class AlertCatalogService implements OnModuleInit, AlertTypeActivePort {
         }),
       };
     }
-    if (type.code === SEED_ALERT_CODES.MTTO_VENCIDO) {
-      if (!this.andon) {
-        throw new BadRequestException('Andon no está disponible.');
-      }
-      const updates = dto.umbrales ?? [];
-      const saved = [];
-      for (const row of updates) {
-        saved.push(
-          await this.andon.updateUmbral(row.tipoVehiculoId, row.tKm, row.tDias),
-        );
-      }
-      return {
-        code: type.code,
-        mode: type.thresholdMode,
-        umbrales: saved.length ? saved : await this.andon.listUmbrales(),
-      };
-    }
-    if (type.code === SEED_ALERT_CODES.STOCK_BAJO) {
-      if (!this.inventario) {
-        throw new BadRequestException('Inventario no está disponible.');
-      }
-      const items = dto.items ?? [];
-      const saved = [];
-      for (const row of items) {
-        saved.push(
-          await this.inventario.updateItem(row.itemId, { minQty: row.minQty }),
-        );
-      }
-      return {
-        code: type.code,
-        mode: type.thresholdMode,
-        items: saved,
-      };
+    if (
+      type.code === SEED_ALERT_CODES.MTTO_VENCIDO ||
+      type.code === SEED_ALERT_CODES.STOCK_BAJO
+    ) {
+      return this.saveAttentionThresholds(type, dto, user);
     }
     if (type.code === SEED_ALERT_CODES.SALUD_UMBRAL) {
       if (!this.salud) {
@@ -209,8 +187,7 @@ export class AlertCatalogService implements OnModuleInit, AlertTypeActivePort {
           dimensions: current.dimensions,
           alertEnabled: dto.alertEnabled ?? current.alertEnabled,
           alertThreshold: dto.alertThreshold ?? current.alertThreshold,
-          recoveryThreshold:
-            dto.recoveryThreshold ?? current.recoveryThreshold,
+          recoveryThreshold: dto.recoveryThreshold ?? current.recoveryThreshold,
           alertSeverity: dto.alertSeverity ?? current.alertSeverity,
         },
         user,
@@ -229,6 +206,216 @@ export class AlertCatalogService implements OnModuleInit, AlertTypeActivePort {
     throw new BadRequestException(
       'Este tipo no tiene avisos configurables aún.',
     );
+  }
+
+  private requireUnique(ids: string[]) {
+    if (new Set(ids).size !== ids.length)
+      throw new BadRequestException('No repitas la misma unidad o refacción.');
+  }
+
+  async previewUmbrales(
+    code: string,
+    dto: PatchCatalogUmbralesDto,
+    user: CurrentUser,
+  ) {
+    const type = await this.getVisible(code, user.rol);
+    if (!canEditThresholds(type.family, user.rol))
+      throw new ForbiddenException(MSG_SIN_PERMISO_UMBRAL);
+    if (code === SEED_ALERT_CODES.MTTO_VENCIDO && this.andon) {
+      this.requireUnique((dto.umbrales ?? []).map((row) => row.tipoVehiculoId));
+      const before = await this.andon.previewPriorities();
+      const after = await this.andon.previewPriorities(dto.umbrales);
+      return comparePriorities(
+        type.active ? before : new Map(),
+        type.active ? after : new Map(),
+      );
+    }
+    if (code === SEED_ALERT_CODES.STOCK_BAJO && this.inventario) {
+      this.requireUnique((dto.items ?? []).map((row) => row.itemId));
+      const before = await this.inventario.previewPriorities();
+      const after = await this.inventario.previewPriorities(dto.items);
+      return comparePriorities(
+        type.active ? before : new Map(),
+        type.active ? after : new Map(),
+      );
+    }
+    throw new BadRequestException('Este tipo no admite vista previa.');
+  }
+
+  private async saveAttentionThresholds(
+    type: AlertTypeRecord,
+    dto: PatchCatalogUmbralesDto,
+    user: CurrentUser,
+  ) {
+    if (
+      (type.code === SEED_ALERT_CODES.MTTO_VENCIDO && !this.andon) ||
+      (type.code === SEED_ALERT_CODES.STOCK_BAJO && !this.inventario)
+    ) {
+      throw new BadRequestException('No está disponible el módulo de alertas.');
+    }
+    await this.tipos.manager.transaction(async (manager) => {
+      await manager
+        .getRepository(AlertTypeEntity)
+        .findOne({
+          where: { code: type.code },
+          lock: { mode: 'pessimistic_write' },
+        });
+      const before = await this.loadUmbrales(type);
+      const changes: unknown[] = [];
+      if (type.code === SEED_ALERT_CODES.MTTO_VENCIDO) {
+        this.requireUnique(
+          (dto.umbrales ?? []).map((row) => row.tipoVehiculoId),
+        );
+        for (const row of dto.umbrales ?? []) {
+          changes.push(
+            await this.andon!.updateUmbral(
+              row.tipoVehiculoId,
+              row.tKm,
+              row.tDias,
+              row.criticalOverdueKm,
+              row.criticalOverdueDays,
+              manager,
+            ),
+          );
+        }
+      } else {
+        this.requireUnique((dto.items ?? []).map((row) => row.itemId));
+        for (const row of dto.items ?? []) {
+          changes.push(
+            await this.inventario!.updateAlertThreshold(
+              row.itemId,
+              row.minQty,
+              row.criticalQty,
+              manager,
+            ),
+          );
+        }
+      }
+      const repo = manager.getRepository(ThresholdChangeEntity);
+      await repo.save(
+        repo.create({
+          code: type.code,
+          actorId: user.userId,
+          actorRole: user.rol,
+          before,
+          after: { changes },
+        }),
+      );
+    });
+    if (type.code === SEED_ALERT_CODES.MTTO_VENCIDO)
+      await this.andon!.evaluarPendientes();
+    if (type.code === SEED_ALERT_CODES.STOCK_BAJO)
+      await this.inventario!.reconcileAlertThresholds(
+        (dto.items ?? []).map((row) => row.itemId),
+      );
+    return this.loadUmbrales(type);
+  }
+
+  async attention(): Promise<AttentionResponse> {
+    const [maintenanceActive, stockActive] = await Promise.all([
+      this.isActive(SEED_ALERT_CODES.MTTO_VENCIDO),
+      this.isActive(SEED_ALERT_CODES.STOCK_BAJO),
+    ]);
+    const settled = await Promise.allSettled([
+      !maintenanceActive
+        ? Promise.resolve([])
+        : this.andon
+          ? this.andon.listAvisos()
+          : Promise.reject(new Error('Mantenimiento no disponible')),
+      !stockActive
+        ? Promise.resolve([])
+        : this.inventario
+          ? this.inventario.listStock()
+          : Promise.reject(new Error('Inventario no disponible')),
+      this.inventario
+        ? this.inventario.listPendientes()
+        : Promise.reject(new Error('Inventario no disponible')),
+    ]);
+    const items: ActiveAttention[] = [];
+    if (settled[0].status === 'fulfilled') {
+      for (const row of settled[0].value) {
+        const reasons: string[] = [];
+        if (row.diasDesde >= row.umbralDias)
+          reasons.push(
+            row.atrasoDias > 0
+              ? `${row.atrasoDias} ${row.atrasoDias === 1 ? 'día' : 'días'} de atraso`
+              : 'plazo de días alcanzado',
+          );
+        if (row.kmDesde >= row.umbralKm)
+          reasons.push(
+            `${row.atrasoKm.toLocaleString('es-MX')} km sobre el intervalo`,
+          );
+        items.push({
+          id: `maintenance:${row.unidadId}`,
+          kind: 'maintenance',
+          area: 'FLOTA',
+          severity: row.severity,
+          title: [row.marcaModelo, row.numeroInterno ?? row.placas ?? 'Unidad']
+            .filter(Boolean)
+            .join(' · '),
+          detail: `Mantenimiento vencido · ${reasons.join(' · ') || 'Requiere revisión'}`,
+          reference: row.placas,
+          photo: row.fotoDataUrl,
+          href: `/unidades/${row.unidadId}?vista=mantenimiento`,
+          action: 'Atender mantenimiento',
+          createdAt: row.abiertaAt,
+        });
+      }
+    }
+    if (settled[1].status === 'fulfilled') {
+      for (const row of settled[1].value.filter(
+        (item) => item.activo && item.severity !== null,
+      )) {
+        const missing = Math.max(0, (row.minQty ?? 0) - row.qty);
+        items.push({
+          id: `stock:${row.itemId}`,
+          kind: 'stock',
+          area: 'INVENTARIO',
+          severity: row.severity!,
+          title: row.nombre,
+          detail:
+            row.qty === 0
+              ? `Sin existencias · mínimo ${row.minQty} piezas`
+              : missing > 0
+                ? `Stock bajo · faltan ${missing} ${missing === 1 ? 'pieza' : 'piezas'} para el mínimo`
+                : `Stock en el mínimo · ${row.qty} piezas disponibles`,
+          reference: row.sku,
+          photo: null,
+          href: `/inventario/stock?itemId=${row.itemId}`,
+          action: 'Revisar faltante',
+          createdAt: new Date(row.updatedAt).toISOString(),
+        });
+      }
+    }
+    if (settled[2].status === 'fulfilled') {
+      for (const row of settled[2].value.filter(
+        (item) => item.estado === 'PENDIENTE' && !item.ticketDataUrl,
+      )) {
+        items.push({
+          id: `purchase:${row.id}`,
+          kind: 'purchase',
+          area: 'INVENTARIO',
+          severity: 'WARNING',
+          title: row.nombre,
+          detail: 'Comprobante de compra pendiente',
+          reference: row.sku,
+          photo: null,
+          href: `/inventario/pendientes?pendienteId=${row.id}#pendiente-${row.id}`,
+          action: 'Revisar compra',
+          createdAt: new Date(row.createdAt).toISOString(),
+        });
+      }
+    }
+    return {
+      items: [...new Map(items.map((row) => [row.id, row])).values()].sort(
+        (a, b) => a.createdAt.localeCompare(b.createdAt),
+      ),
+      sources: settled.map((source, index) => ({
+        id: ['maintenance', 'stock', 'purchases'][index],
+        name: ['mantenimiento', 'existencias', 'compras pendientes'][index],
+        status: source.status === 'fulfilled' ? 'ok' : 'error',
+      })),
+    };
   }
 
   private async loadUmbrales(type: AlertTypeRecord) {

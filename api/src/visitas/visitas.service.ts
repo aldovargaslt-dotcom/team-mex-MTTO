@@ -579,6 +579,8 @@ export class VisitasService {
       createdAt: visita.createdAt,
       updatedAt: visita.updatedAt,
       cerradoAt: visita.cerradoAt,
+      openedAt: visita.openedAt ?? null,
+      openedBy: visita.openedBy ?? null,
       trabajosCount: visita.trabajos?.length ?? 0,
     };
   }
@@ -606,6 +608,8 @@ export class VisitasService {
       createdAt: visita.createdAt,
       updatedAt: visita.updatedAt,
       cerradoAt: visita.cerradoAt,
+      openedAt: visita.openedAt ?? null,
+      openedBy: visita.openedBy ?? null,
       trabajos: (visita.trabajos ?? [])
         .slice()
         .sort((a, b) =>

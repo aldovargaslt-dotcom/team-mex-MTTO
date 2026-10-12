@@ -3,15 +3,21 @@
 import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
-import { ChevronLeft, ListFilter, Search } from 'lucide-react';
+import { CalendarCheck, ChevronLeft, ChevronRight, History, ClipboardCheck, List, Search, Wrench, type LucideIcon } from 'lucide-react';
 import { ReadStatus } from '@/components/ReadStatus';
 import { useReadResource } from '@/lib/use-read-resource';
+import { OrderIdentity } from '@/components/OrderIdentity';
+import { Badge } from '@/components/ui/badge';
+import { ListFilter } from '@/components/ListFilter';
+import { CheckOrderReadOnly } from '@/components/CheckOrderReadOnly';
+import { CHECK_STATUS_LABEL, type CheckOrderStatus, type CheckOrderSummary, type CheckOrderDetail } from '@/lib/order-types';
 import { OrdenCaptura } from '@/components/OrdenCaptura';
 import { NuevaOrdenDialog } from '@/components/NuevaOrdenDialog';
 import { UnidadMarca } from '@/components/UnidadTipoMark';
 import { hydratePiezasFromInventario, lineasDesdeVisita, type PiezaLinea } from '@/components/PiezasStep';
 import { RoleGate } from '@/components/RoleGate';
 import { Button } from '@/components/ui/button';
+import { FormAlert } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import {
   Table,
@@ -21,7 +27,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { api } from '@/lib/api';
+import { api, HttpError } from '@/lib/api';
 import {
   etiquetaOrigenPieza,
   etiquetaTipoVisita,
@@ -33,10 +39,13 @@ import {
 import { useRole } from '@/lib/role';
 import type { TipoVisita, Unidad, VisitaDetalle, VisitaResumen } from '@/lib/types';
 
-type Cola = 'abiertas' | 'cerradas';
-type TipoFiltro = 'todos' | TipoVisita;
+type Cola = 'abiertas' | 'borradores' | 'cerradas';
+type TipoFiltro = 'todos' | TipoVisita | 'CHECK';
 
-type OrdenRow = VisitaResumen & {
+type OrdenRow = Omit<VisitaResumen, 'tipo' | 'estado'> & {
+  tipo: TipoVisita | 'CHECK' | null;
+  estado: VisitaResumen['estado'] | null;
+  checkStatus?: CheckOrderStatus;
   unidadId: string;
   numeroInterno: string;
   placas: string;
@@ -46,23 +55,24 @@ type OrdenRow = VisitaResumen & {
 };
 
 const COLAS: { id: Cola; label: string }[] = [
-  { id: 'abiertas', label: 'Borradores' },
-  { id: 'cerradas', label: 'Cerradas' },
+  { id: 'abiertas', label: 'Abiertas' },
+  { id: 'borradores', label: 'Borradores' },
 ];
 
-const TIPOS: { id: TipoFiltro; label: string }[] = [
-  { id: 'todos', label: 'Todos' },
-  { id: 'PREDICTIVO', label: 'Preventivo' },
-  { id: 'CORRECTIVO', label: 'Correctivo' },
+const TIPOS: { id: TipoFiltro; label: string; icon: LucideIcon }[] = [
+  { id: 'todos', label: 'Todos', icon: List },
+  { id: 'CORRECTIVO', label: 'Correctivo', icon: Wrench },
+  { id: 'PREDICTIVO', label: 'Preventivo', icon: CalendarCheck },
+  { id: 'CHECK', label: 'Revisión', icon: ClipboardCheck },
 ];
 
 function parseCola(value: string | null, admin: boolean): Cola {
   if (admin) return 'cerradas';
-  return value === 'cerradas' ? 'cerradas' : 'abiertas';
+  return value === 'cerradas' || value === 'borradores' ? value : 'abiertas';
 }
 
 function parseTipo(value: string | null): TipoFiltro {
-  if (value === 'PREDICTIVO' || value === 'CORRECTIVO') return value;
+  if (value === 'PREDICTIVO' || value === 'CORRECTIVO' || value === 'CHECK') return value;
   return 'todos';
 }
 
@@ -87,8 +97,7 @@ function OrdenesContent() {
   const ordenId = searchParams.get('orden');
   const searchRef = useRef<HTMLInputElement>(null);
   const nuevaOrdenTriggerRef = useRef<HTMLButtonElement>(null);
-
-  const [filtroAbierto, setFiltroAbierto] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [mobileMode, setMobileMode] = useState<boolean | null>(null);
   const [nuevaOrdenOpen, setNuevaOrdenOpen] = useState(false);
 
@@ -111,59 +120,88 @@ function OrdenesContent() {
   }
 
   const opts = { role: role!, userId };
-  const successful = useRef<{ key: string; units: Unidad[]; rows: Map<string, OrdenRow[]>; failed: string[] } | null>(null);
+  const successful = useRef<{ key: string; units: Unidad[]; rows: Map<string, OrdenRow[]>; checks: OrdenRow[]; failed: string[] } | null>(null);
   const listKey = role ? JSON.stringify([role, userId, 'ordenes']) : null;
   const list = useReadResource(listKey, async () => {
-        const cached = successful.current?.key === listKey ? successful.current : null;
-        const unidades = cached && cached.failed.length ? cached.units : await api<Unidad[]>('/unidades', opts);
-        const targets = cached && cached.failed.length ? unidades.filter((unit) => cached.failed.includes(unit.id)) : unidades;
-        const loaded = cached && cached.failed.length ? new Map(cached.rows) : new Map<string, OrdenRow[]>();
-        const settled = await Promise.allSettled(
-          targets.map((unidad) =>
-            api<VisitaResumen[]>(`/unidades/${unidad.id}/visitas`, opts).then(
-              (visitas) =>
-                visitas.map((visita) => ({
-                  ...visita,
-                  unidadId: unidad.id,
-                  numeroInterno: unidad.numeroInterno,
-                  placas: unidad.placas,
-                  fotoDataUrl: unidad.fotoDataUrl ?? null,
-                  tipoNombre: unidad.tipo?.nombre ?? '',
-                  tipoIcono: unidad.tipo?.icono ?? null,
-                })),
-            ),
-          ),
-        );
-    settled.forEach((result, index) => { if (result.status === 'fulfilled') loaded.set(targets[index].id, result.value); });
-    const failedIds = settled.flatMap((item, index) => item.status === 'rejected' ? [targets[index].id] : []);
-    successful.current = { key: listKey!, units: unidades, rows: loaded, failed: failedIds };
-    const next = [...loaded.values()].flat();
-    const failed = unidades.filter((unit) => failedIds.includes(unit.id)).map((unit) => unit.numeroInterno);
-    if (failed.length === unidades.length && unidades.length > 0) throw new Error('No se pudieron cargar las órdenes.');
-    next.sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
-    return { rows: next, failed };
+    const cached = successful.current?.key === listKey ? successful.current : null;
+    const retryPartial = Boolean(cached?.failed.length);
+    const units = retryPartial ? cached!.units : await api<Unidad[]>('/unidades', opts);
+    const targets = retryPartial ? units.filter((unit) => cached!.failed.includes(unit.id)) : units;
+    const loaded = retryPartial ? new Map(cached!.rows) : new Map<string, OrdenRow[]>();
+    const shouldReadChecks = !retryPartial || cached!.failed.includes('CHECK');
+    const checksRequest = async (): Promise<OrdenRow[]> => {
+      const items: CheckOrderSummary[] = [];
+      const seen = new Set<string>();
+      let cursor: string | null = null;
+      do {
+        const page: { items: CheckOrderSummary[]; nextCursor: string | null } = await api(`/checks?limit=100${cursor ? `&cursor=${encodeURIComponent(cursor)}` : ''}`, opts);
+        items.push(...page.items); cursor = page.nextCursor;
+        if (cursor && seen.has(cursor)) throw new Error('Cursor repetido');
+        if (cursor) seen.add(cursor);
+      } while (cursor);
+      return items.map((check) => {
+        const unit = units.find((item) => item.id === check.unidadId);
+        return { id: check.id, tipo: 'CHECK', estado: null, checkStatus: check.status,
+          unidadId: check.unidadId, numeroInterno: check.unit.numeroInterno, placas: check.unit.placas,
+          fotoDataUrl: unit?.fotoDataUrl ?? null, tipoNombre: unit?.tipo?.nombre ?? '', tipoIcono: unit?.tipo?.icono ?? null,
+          createdAt: check.createdAt, updatedAt: check.createdAt, cerradoAt: null,
+          km: null, choferId: null, choferNombre: null, createdBy: null, trabajosCount: 0 };
+      });
+    };
+    const [maintenance, checkResult] = await Promise.all([
+      Promise.allSettled(targets.map(async (unit) => {
+        const visits = await api<VisitaResumen[]>(`/unidades/${unit.id}/visitas`, opts);
+        return visits.map((visit) => ({ ...visit, unidadId: unit.id, numeroInterno: unit.numeroInterno, placas: unit.placas,
+          fotoDataUrl: unit.fotoDataUrl ?? null, tipoNombre: unit.tipo?.nombre ?? '', tipoIcono: unit.tipo?.icono ?? null }));
+      })),
+      Promise.allSettled([shouldReadChecks ? checksRequest() : Promise.resolve(cached!.checks)]),
+    ]);
+    maintenance.forEach((result, index) => { if (result.status === 'fulfilled') loaded.set(targets[index].id, result.value); });
+    const failed = maintenance.flatMap((result, index) => result.status === 'rejected' ? [targets[index].id] : []);
+    const checks = checkResult[0].status === 'fulfilled' ? checkResult[0].value : cached?.checks ?? [];
+    if (checkResult[0].status === 'rejected') failed.push('CHECK');
+    successful.current = { key: listKey!, units, rows: loaded, checks, failed };
+    if (failed.length === units.length + 1) throw new Error('No se pudieron cargar las órdenes.');
+    const rows = [...loaded.values()].flat().concat(checks);
+    rows.sort((a, b) => Date.parse(b.updatedAt) - Date.parse(a.updatedAt));
+    return { rows, failed: failed.map((id) => id === 'CHECK' ? 'revisiones' : units.find((unit) => unit.id === id)?.numeroInterno ?? 'mantenimiento') };
   }, true);
   const rows = list.data?.rows ?? null;
-  const detailRead = useReadResource(role && ordenId ? JSON.stringify([role, userId, ordenId]) : null,
-    () => api<VisitaDetalle>(`/visitas/${ordenId}`, opts));
-  const detalle = detailRead.data;
-  const setDetalle = detailRead.setData;
+  const selectedCheck = rows?.find((row) => row.id === ordenId)?.tipo === 'CHECK';
+  const detailRead = useReadResource(role && ordenId && rows ? JSON.stringify([role, userId, ordenId, selectedCheck]) : null,
+    async (): Promise<{ maintenance: VisitaDetalle | null; check: CheckOrderDetail | null }> => selectedCheck
+      ? { maintenance: null, check: await api<CheckOrderDetail>(`/checks/${ordenId}`, opts) }
+      : { maintenance: await api<VisitaDetalle>(`/visitas/${ordenId}`, opts), check: null });
+  const detalle = detailRead.data?.maintenance ?? null;
+  const checkDetail = detailRead.data?.check ?? null;
+  const setDetalle = (maintenance: VisitaDetalle) => detailRead.setData({ maintenance, check: null });
   const piezaRead = useReadResource(role && detalle ? JSON.stringify([role, userId, detalle.id, detalle.piezas]) : null,
     () => hydratePiezasFromInventario(detalle?.piezas ?? [], opts));
   const piezas = piezaRead.data ?? lineasDesdeVisita(detalle?.piezas ?? []);
 
-  const filtered = useMemo(() => {
+  const queueRows = useMemo(() => {
     if (!rows) return [];
     const needle = q.trim().toLowerCase();
     return rows.filter((row) => {
-      if (cola === 'abiertas' && row.estado !== 'BORRADOR') return false;
-      if (cola === 'cerradas' && row.estado !== 'CERRADO') return false;
-      if (tipo !== 'todos' && row.tipo !== tipo) return false;
+      if (row.tipo === 'CHECK') {
+        if (cola === 'borradores') return false;
+        if (cola === 'abiertas' && !['PENDING', 'ASSIGNED', 'IN_PROGRESS'].includes(row.checkStatus ?? '')) return false;
+        if (cola === 'cerradas' && row.checkStatus !== 'COMPLETED') return false;
+      } else {
+        if (cola !== 'cerradas' && row.estado !== 'BORRADOR') return false;
+        if (cola === 'abiertas' && !row.openedAt) return false;
+        if (cola === 'borradores' && row.openedAt) return false;
+        if (cola === 'cerradas' && row.estado !== 'CERRADO') return false;
+      }
       if (!needle) return true;
       const hay = `${row.numeroInterno} ${row.placas} ${row.choferNombre ?? ''}`.toLowerCase();
       return hay.includes(needle);
     });
-  }, [rows, cola, tipo, q]);
+  }, [rows, cola, q]);
+  const filtered = useMemo(() => queueRows.filter((row) => tipo === 'todos' || row.tipo === tipo), [queueRows, tipo]);
+  const typeOptions = TIPOS.map((option) => ({ ...option,
+    label: rows ? `${option.label} (${queueRows.filter((row) => option.id === 'todos' || row.tipo === option.id).length})` : option.label,
+  }));
 
   useEffect(() => {
     if (rows == null || mobileMode === null) return;
@@ -187,14 +225,14 @@ function OrdenesContent() {
 
   const borradorSeleccionado =
     !isAdmin && detalle?.estado === 'BORRADOR' && detalle.id === ordenId;
-  const colaRows = (rows ?? []).filter((row) => cola === 'abiertas' ? row.estado === 'BORRADOR' : row.estado === 'CERRADO');
-  const filteredEmpty = Boolean(q.trim() || tipo !== 'todos') && colaRows.length > 0;
-  const otherCola = !isAdmin && (rows ?? []).some((row) => cola === 'abiertas' ? row.estado === 'CERRADO' : row.estado === 'BORRADOR');
-  const emptyTitle = filteredEmpty ? 'Sin coincidencias con estos filtros.'
-    : cola === 'abiertas' ? 'No hay órdenes en borrador.' : 'No hay órdenes cerradas.';
-  const emptyLede = filteredEmpty ? 'Quita los filtros para recuperar las órdenes de esta cola.'
-    : otherCola ? 'Hay órdenes disponibles en la otra cola.'
-      : cola === 'abiertas' ? 'Crea una orden aquí para comenzar la captura.' : 'Las órdenes aparecen aquí después de cerrarlas.';
+  const emptyTitle = cola === 'borradores' ? 'No hay órdenes en borrador.' : error ? 'Sin resultados disponibles para este filtro.' : tipo === 'CHECK' ? (cola === 'abiertas' ? 'No hay revisiones en curso.' : 'No hay revisiones concluidas.') : (cola === 'abiertas' ? 'No hay órdenes abiertas.' : 'No hay órdenes cerradas.');
+  const emptyLede = tipo === 'CHECK' ? 'Los chequeos se consultan dentro de tu patio autorizado.' : q.trim()
+    ? 'Pruebe otro texto o quite el filtro de tipo.'
+    : cola === 'abiertas'
+      ? 'Crea una orden aquí para comenzar la captura.'
+      : isAdmin
+        ? 'El administrador ve las visitas ya cerradas.'
+        : 'Al cerrar una visita pasa a esta lista.';
 
   const detalleAbierto = Boolean(ordenId);
   const soloDetalle = mobileMode === true && detalleAbierto;
@@ -213,14 +251,20 @@ function OrdenesContent() {
         </Button>
       ) : (
       <header className="ordenes-head">
-        <h1>Órdenes</h1>
+        <div className="flex items-center justify-between gap-2">
+          <h1>{cola === 'abiertas' ? 'Órdenes abiertas' : cola === 'borradores' ? 'Borradores' : 'Historial de cerradas'}</h1>
+          {!isAdmin ? <Button type="button" variant="secondary" aria-pressed={cola === 'cerradas'}
+            onClick={() => setParams({ cola: cola === 'cerradas' ? null : 'cerradas', orden: null })}>
+            <History className="size-4" aria-hidden />{cola === 'cerradas' ? 'Volver a abiertas' : 'Historial'}
+          </Button> : null}
+        </div>
         <div className="ordenes-head__search">
           <Search
             className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground"
             aria-hidden
           />
           <Input
-              ref={searchRef}
+            ref={searchRef}
             value={q}
             onChange={(event) =>
               setParams({ q: event.target.value.trim() ? event.target.value : null })
@@ -243,7 +287,24 @@ function OrdenesContent() {
         )}
       </header>
       )}
-      <ReadStatus loading={list.loading} error={list.error || (list.data?.failed.length ? new Error('Consulta parcial') : null)} loadingText={list.data ? "Actualizando órdenes; se muestran los datos de la consulta anterior…" : "Cargando órdenes…"} errorText={list.data?.failed.length ? `Consulta parcial. Falta consultar: ${list.data.failed.join(', ')}.` : "No se pudieron cargar las órdenes."} retry={list.retry} />
+      {!soloDetalle ? <ListFilter label="Tipo de orden" value={tipo} options={typeOptions}
+        className="mb-3 grid grid-cols-2 sm:flex"
+        onChange={(next) => setParams({ tipo: next === 'todos' ? null : next, orden: null })} /> : null}
+      <FormAlert>{error}</FormAlert>
+      <ReadStatus loading={list.loading} error={list.error || (list.data?.failed.length ? new Error('Consulta parcial') : null)}
+        loadingText={list.data ? 'Actualizando órdenes; se muestran los datos de la consulta anterior…' : 'Cargando órdenes…'}
+        errorText={list.data?.failed.length ? `Consulta parcial. Falta consultar: ${list.data.failed.join(', ')}.` : 'No se pudieron cargar las órdenes.'} retry={list.retry} />
+      {!isAdmin && detalle?.estado === 'BORRADOR' && !detalle.openedAt ? <Button type="button" variant="secondary" className="mb-3" onClick={async () => {
+        try {
+          const opened = await api<{ openedAt: string; openedBy: string }>(`/mantenimiento-ordenes/${detalle.id}/abrir`, { role: role!, userId, method: 'POST' });
+          if (successful.current?.key === listKey) {
+            successful.current.rows.forEach((items, key) => successful.current!.rows.set(key,
+              items.map((row) => row.id === detalle.id ? { ...row, ...opened } : row)));
+          }
+          setDetalle({ ...detalle, ...opened }); list.setData((current) => current ? { ...current, rows: current.rows.map((row) => row.id === detalle.id ? { ...row, ...opened } : row) } : null);
+          setParams({ cola: null, orden: detalle.id });
+        } catch (err) { setError(err instanceof HttpError ? err.message : 'No se pudo abrir la orden.'); }
+      }}>Abrir orden</Button> : null}
       {rows == null ? null : (
         <div className={soloDetalle ? 'ordenes-desk has-mobile-detail is-detail' : 'ordenes-desk'}>
           <div className="ordenes-list">
@@ -269,81 +330,42 @@ function OrdenesContent() {
                   ))}
                 </div>
               )}
-              <button
-                type="button"
-                className={
-                  filtroAbierto || tipo !== 'todos'
-                    ? 'ordenes-tabs__filter is-on'
-                    : 'ordenes-tabs__filter'
-                }
-                aria-label="Filtros"
-                aria-expanded={filtroAbierto}
-                onClick={() => setFiltroAbierto((open) => !open)}
-              >
-                <ListFilter className="size-5" aria-hidden />
-              </button>
-              {filtroAbierto ? (
-                <div className="ordenes-filter-menu" role="group" aria-label="Tipo de mantenimiento">
-                  <p>Tipo de mantenimiento</p>
-                  {TIPOS.map((option) => (
-                    <button
-                      key={option.id}
-                      type="button"
-                      aria-pressed={tipo === option.id}
-                      className={tipo === option.id ? 'is-on' : ''}
-                      onClick={() => {
-                        setParams({
-                          tipo: option.id === 'todos' ? null : option.id,
-                          orden: null,
-                        });
-                        setFiltroAbierto(false);
-                      }}
-                    >
-                      {option.label}
-                    </button>
-                  ))}
-                </div>
-              ) : null}
             </div>
             {filtered.length === 0 ? (
               <div className="empty-state">
                 <h2>{list.data?.failed.length ? 'Consulta parcial sin coincidencias cargadas.' : emptyTitle}</h2>
-                <p className="muted">{list.data?.failed.length ? 'La consulta es parcial; recupera las unidades que faltan.' : emptyLede}</p>
+                <p className="muted">{list.data?.failed.length ? 'Recupera las consultas que faltan.' : emptyLede}</p>
                 {q.trim() || tipo !== 'todos' ? <Button type="button" variant="secondary" onClick={() => { setParams({ q: null, tipo: null, orden: null }); searchRef.current?.focus(); }}>Quitar filtros</Button> : null}
-                {otherCola ? <Button type="button" variant="secondary" onClick={() => setParams({ cola: cola === 'abiertas' ? 'cerradas' : null, orden: null })}>Ver {cola === 'abiertas' ? 'cerradas' : 'borradores'}</Button> : null}
               </div>
             ) : (
               <div className="ordenes-list__scroll" role="listbox" aria-label="Órdenes">
                 {filtered.map((row) => {
                   const selected = row.id === ordenId;
-                  const tipoClass =
-                    row.tipo === 'CORRECTIVO'
-                      ? 'is-correctivo'
-                      : row.tipo === 'PREDICTIVO'
-                        ? 'is-predictivo'
-                        : '';
                   return (
                     <button
                       key={row.id}
                       type="button"
                       role="option"
                       aria-selected={selected}
-                      className={['ordenes-row', selected ? 'is-selected' : '']
+                      className={['ordenes-row ordenes-row--document', selected ? 'is-selected' : '']
                         .filter(Boolean)
                         .join(' ')}
                       onClick={() => setParams({ orden: row.id })}
                     >
-                      <MarcaUnidad
-                        foto={row.fotoDataUrl}
-                        tipoNombre={row.tipoNombre}
-                        tipoIcono={row.tipoIcono}
-                      />
-                      <span className="ordenes-row__copy">
-                        <span className="ordenes-row__title">{row.numeroInterno}</span>
-                        <span className="ordenes-row__sub">{numeroOrden(row.id)}</span>
-                      </span>
-                      <span className={`ordenes-tipo ${tipoClass}`}>
-                        {etiquetaTipoVisita(row.tipo)}
+                      <OrderIdentity id={row.id} check={row.tipo === 'CHECK'} />
+                      <span className="mt-3 flex w-full items-center gap-3">
+                        <UnidadMarca foto={row.fotoDataUrl} nombre={row.tipoNombre} icono={row.tipoIcono} size="lg" className="shrink-0" />
+                        <span className="min-w-0 flex-1">
+                          <span className="block text-sm font-semibold text-navy">{row.numeroInterno}</span>
+                          <span className="mt-1 block text-xs text-muted-foreground">{row.placas}</span>
+                          <span className="mt-2 flex flex-wrap items-center gap-2">
+                            <Badge variant={row.tipo === 'CORRECTIVO' ? 'danger' : row.tipo === 'CHECK' ? 'secondary' : 'info'}>
+                              {row.tipo === 'CHECK' ? 'Revisión' : etiquetaTipoVisita(row.tipo)}
+                            </Badge>
+                            <span className="text-xs text-muted-foreground">{row.tipo === 'CHECK' && row.checkStatus ? CHECK_STATUS_LABEL[row.checkStatus] : cola === 'borradores' ? 'Borrador' : cola === 'abiertas' ? 'Abierta' : 'Cerrada'}</span>
+                          </span>
+                        </span>
+                        <ChevronRight className="size-4 shrink-0 text-muted-foreground" aria-hidden />
                       </span>
                     </button>
                   );
@@ -352,8 +374,11 @@ function OrdenesContent() {
             )}
           </div>
           <div className="ordenes-detail">
-            {ordenId && filtered.length > 0 ? <ReadStatus key={ordenId} loading={detailRead.loading} error={detailRead.error} loadingText="Cargando la orden…" errorText="No se pudo abrir la orden." retry={detailRead.retry} /> : null}
-            {filtered.length === 0 ? null : detalle && detalle.id === ordenId ? (
+            {ordenId && filtered.length > 0 ? <ReadStatus key={ordenId} loading={detailRead.loading} error={detailRead.error}
+              loadingText="Cargando la orden…" errorText="No se pudo abrir la orden." retry={detailRead.retry} /> : null}
+            {filtered.length === 0 ? null : checkDetail && checkDetail.id === ordenId ? (
+              <CheckOrderReadOnly detail={checkDetail} mobile={mobileMode === true} />
+            ) : detalle && detalle.id === ordenId ? (
               <OrdenDetalle
                 detalle={detalle}
                 piezas={piezas}
@@ -471,12 +496,12 @@ function OrdenDetalle({
       />
       <div className="ordenes-status" aria-label="Estado de la orden">
         <span className="is-on">
-          {detalle.estado === 'BORRADOR' ? 'Borrador' : 'Cerrada'}
+          {detalle.estado === 'BORRADOR' ? (detalle.openedAt ? 'Abierta' : 'Borrador') : 'Cerrada'}
         </span>
       </div>
       <dl className="ordenes-facts">
         <div>
-          <dt>Fecha de apertura</dt>
+          <dt>Fecha de creación</dt>
           <dd>{formatFecha(detalle.createdAt)}</dd>
         </div>
         <div>
@@ -530,7 +555,9 @@ function OrdenDetalle({
       </section>
       <section className="ordenes-section" aria-labelledby="orden-piezas">
         <h2 id="orden-piezas">SKU</h2>
-        <ReadStatus loading={piezaRead.loading && detalle.piezas.length > 0} error={piezaRead.error} loadingText="Cargando datos de las piezas…" errorText="No se pudieron cargar los nombres de las piezas. Se conservan cantidades y origen." retry={piezaRead.retry} retryLabel="Reintentar piezas" />
+        <ReadStatus loading={piezaRead.loading && detalle.piezas.length > 0} error={piezaRead.error}
+          loadingText="Cargando datos de las piezas…" errorText="No se pudieron cargar los nombres de las piezas. Se conservan cantidades y origen."
+          retry={piezaRead.retry} retryLabel="Reintentar piezas" />
         {piezas.length === 0 ? (
           <p className="muted">Sin piezas en esta orden.</p>
         ) : (

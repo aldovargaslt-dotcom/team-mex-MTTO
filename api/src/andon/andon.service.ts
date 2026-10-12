@@ -25,7 +25,14 @@ import {
 } from './andon-engine';
 import { Aviso, LastClosedVisit } from './andon-types';
 import { AvisoDto, UmbralDto } from './dto/andon.dto';
-import { DEFAULT_T_DIAS, DEFAULT_T_KM, EstadoAviso } from './enums';
+import {
+  DEFAULT_T_DIAS,
+  DEFAULT_T_KM,
+  DEFAULT_CRITICAL_OVERDUE_DAYS,
+  DEFAULT_CRITICAL_OVERDUE_KM,
+  EstadoAviso,
+} from './enums';
+import { diasEntre, prioridadMantenimiento } from './andon-rules';
 import { NestUnidadCatalog } from './nest-unidad-catalog';
 import {
   AndonAbiertoPort,
@@ -142,20 +149,85 @@ export class AndonService implements OnModuleInit, AndonAbiertoPort {
         tipoNombre: tipo.nombre,
         tKm: umbral?.tKm ?? DEFAULT_T_KM,
         tDias: umbral?.tDias ?? DEFAULT_T_DIAS,
+        criticalOverdueKm:
+          umbral?.criticalOverdueKm ?? DEFAULT_CRITICAL_OVERDUE_KM,
+        criticalOverdueDays:
+          umbral?.criticalOverdueDays ?? DEFAULT_CRITICAL_OVERDUE_DAYS,
       };
     });
   }
 
-  async updateUmbral(tipoVehiculoId: string, tKm: number, tDias: number) {
-    await this.tipos.findOne(tipoVehiculoId);
-    await this.store.setUmbral({ tipoVehiculoId, tKm, tDias });
+  async updateUmbral(
+    tipoVehiculoId: string,
+    tKm: number,
+    tDias: number,
+    criticalOverdueKm?: number,
+    criticalOverdueDays?: number,
+    manager?: EntityManager,
+  ) {
     const tipo = await this.tipos.findOne(tipoVehiculoId);
-    return {
+    const store = manager ? this.store.withManager(manager) : this.store;
+    const existing = await store.getUmbral(tipoVehiculoId);
+    const next = {
       tipoVehiculoId,
-      tipoNombre: tipo.nombre,
       tKm,
       tDias,
+      criticalOverdueKm:
+        criticalOverdueKm ??
+        existing?.criticalOverdueKm ??
+        DEFAULT_CRITICAL_OVERDUE_KM,
+      criticalOverdueDays:
+        criticalOverdueDays ??
+        existing?.criticalOverdueDays ??
+        DEFAULT_CRITICAL_OVERDUE_DAYS,
     };
+    await store.setUmbral(next);
+    if (!manager) await this.engine(store).evaluarTodas();
+    return { ...next, tipoNombre: tipo.nombre };
+  }
+
+  /** Preview sin abrir/resolver avisos ni tocar inbox. */
+  async previewPriorities(
+    overrides: {
+      tipoVehiculoId: string;
+      tKm: number;
+      tDias: number;
+      criticalOverdueKm?: number;
+      criticalOverdueDays?: number;
+    }[] = [],
+  ) {
+    const rows = await this.store.listUmbrales();
+    const settings = new Map(rows.map((row) => [row.tipoVehiculoId, row]));
+    for (const row of overrides) {
+      await this.tipos.findOne(row.tipoVehiculoId);
+      settings.set(row.tipoVehiculoId, {
+        ...settings.get(row.tipoVehiculoId),
+        ...row,
+      });
+    }
+    const units = await this.catalog.list();
+    const priorities = new Map<string, 'WARNING' | 'CRITICAL'>();
+    for (const unit of units.filter((row) => row.activa)) {
+      const last = await this.store.getLastClosed(unit.unidadId);
+      if (!last?.visitaId) continue;
+      const notice = await this.store.getNoResuelto(unit.unidadId);
+      const setting = settings.get(unit.tipoVehiculoId);
+      const severity = prioridadMantenimiento({
+        kmDesde: Math.max(0, notice?.kmAlAbrir ?? 0),
+        diasDesde: Math.max(
+          0,
+          diasEntre(last.cerradoAt, new Date().toISOString()),
+        ),
+        tKm: setting?.tKm ?? DEFAULT_T_KM,
+        tDias: setting?.tDias ?? DEFAULT_T_DIAS,
+        criticalOverdueKm:
+          setting?.criticalOverdueKm ?? DEFAULT_CRITICAL_OVERDUE_KM,
+        criticalOverdueDays:
+          setting?.criticalOverdueDays ?? DEFAULT_CRITICAL_OVERDUE_DAYS,
+      });
+      if (severity) priorities.set(unit.unidadId, severity);
+    }
+    return priorities;
   }
 
   async seedUmbrales() {
@@ -186,11 +258,39 @@ export class AndonService implements OnModuleInit, AndonAbiertoPort {
   }
 
   private async toDto(aviso: Aviso): Promise<AvisoDto> {
-    const [unidad, lastClosed] = await Promise.all([
+    const [unidad, lastClosed, umbral] = await Promise.all([
       this.catalog.get(aviso.unidadId),
       this.store.getLastClosed(aviso.unidadId),
+      this.store.getUmbral(aviso.tipoVehiculoId),
     ]);
+    const diasDesde = Math.max(
+      0,
+      lastClosed
+        ? diasEntre(lastClosed.cerradoAt, new Date().toISOString())
+        : aviso.diasAlAbrir,
+    );
+    const kmDesde = Math.max(0, aviso.kmAlAbrir);
+    const tKm = umbral?.tKm ?? DEFAULT_T_KM;
+    const tDias = umbral?.tDias ?? DEFAULT_T_DIAS;
+    const severity =
+      prioridadMantenimiento({
+        kmDesde,
+        diasDesde,
+        tKm,
+        tDias,
+        criticalOverdueKm:
+          umbral?.criticalOverdueKm ?? DEFAULT_CRITICAL_OVERDUE_KM,
+        criticalOverdueDays:
+          umbral?.criticalOverdueDays ?? DEFAULT_CRITICAL_OVERDUE_DAYS,
+      }) ?? 'WARNING';
     return {
+      severity,
+      diasDesde,
+      kmDesde,
+      atrasoDias: Math.max(0, diasDesde - tDias),
+      atrasoKm: Math.max(0, kmDesde - tKm),
+      marcaModelo: unidad?.marcaModelo ?? null,
+      fotoDataUrl: unidad?.fotoDataUrl ?? null,
       id: aviso.id,
       unidadId: aviso.unidadId,
       numeroInterno: unidad?.numeroInterno ?? null,
@@ -205,8 +305,8 @@ export class AndonService implements OnModuleInit, AndonAbiertoPort {
       visitaResolutoriaId: aviso.visitaResolutoriaId,
       kmAlAbrir: aviso.kmAlAbrir,
       diasAlAbrir: aviso.diasAlAbrir,
-      umbralKm: aviso.umbralKm,
-      umbralDias: aviso.umbralDias,
+      umbralKm: tKm,
+      umbralDias: tDias,
       lastClosedKm: lastClosed?.km ?? null,
       lastClosedAt: lastClosed?.cerradoAt ?? null,
     };

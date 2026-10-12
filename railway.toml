@@ -7,6 +7,7 @@ dockerfilePath = "Dockerfile"
 watchPatterns = ["api/**"]
 
 [deploy]
+preDeployCommand = "node dist/db/run-ui-release-migrations.js"
 startCommand = "node dist/main.js"
 healthcheckPath = "/health"
 healthcheckTimeout = 300

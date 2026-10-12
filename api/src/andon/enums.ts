@@ -14,3 +14,5 @@ export enum WhatsAppKind {
 /** Umbrales por defecto (km / días) si Admin aún no configuró el tipo. */
 export const DEFAULT_T_KM = 10000;
 export const DEFAULT_T_DIAS = 90;
+export const DEFAULT_CRITICAL_OVERDUE_KM = 1000;
+export const DEFAULT_CRITICAL_OVERDUE_DAYS = 30;

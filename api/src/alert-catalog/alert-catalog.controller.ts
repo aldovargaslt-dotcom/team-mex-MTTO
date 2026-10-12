@@ -1,11 +1,4 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Param,
-  Patch,
-  Post,
-} from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CurrentUser } from '../auth/current-user';
 import { CurrentUserParam } from '../auth/current-user.decorator';
@@ -28,6 +21,24 @@ export class AlertCatalogController {
   @ApiOperation({ summary: 'Listar tipos de alerta visibles para el rol.' })
   list(@CurrentUserParam() user: CurrentUser) {
     return this.catalog.list(user.rol);
+  }
+
+  @Get('activas')
+  @Roles(Rol.SUPERVISOR, Rol.ADMIN_DIRECTIVO)
+  @ApiOperation({
+    summary: 'Condiciones activas para Inicio; lectura por módulo.',
+  })
+  attention() {
+    return this.catalog.attention();
+  }
+
+  @Post(':code/umbrales/preview')
+  preview(
+    @Param('code') code: string,
+    @Body() dto: PatchCatalogUmbralesDto,
+    @CurrentUserParam() user: CurrentUser,
+  ) {
+    return this.catalog.previewUmbrales(code, dto, user);
   }
 
   @Post()

@@ -28,6 +28,8 @@ export class NestUnidadCatalog implements UnidadCatalog {
     tipo: { id: string; nombre: string };
     numeroInterno: string;
     placas: string;
+    marcaModelo?: string | null;
+    fotoDataUrl?: string | null;
   }): UnidadVista {
     return {
       unidadId: unidad.id,
@@ -35,6 +37,8 @@ export class NestUnidadCatalog implements UnidadCatalog {
       activa: unidad.estado === EstadoUnidad.ACTIVA,
       numeroInterno: unidad.numeroInterno,
       placas: unidad.placas,
+      marcaModelo: unidad.marcaModelo,
+      fotoDataUrl: unidad.fotoDataUrl,
       tipoNombre: unidad.tipo.nombre,
     };
   }
