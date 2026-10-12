@@ -8,3 +8,5 @@ startCommand = "node dist/main.js"
 healthcheckPath = "/health"
 healthcheckTimeout = 300
 restartPolicyType = "ON_FAILURE"
+
+# Deployment retry requested for the existing API release.
