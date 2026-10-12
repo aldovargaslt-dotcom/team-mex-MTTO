@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { ColumnDef } from '@tanstack/react-table';
 import { HubFichaNav, parseHubVista } from '@/components/HubFichaNav';
 import { HubIdentityHeader } from '@/components/HubIdentityHeader';
@@ -67,6 +67,7 @@ function HubContent() {
   const [error, setError] = useState<string | null>(null);
   const [notFound, setNotFound] = useState(false);
   const [nuevaOrdenOpen, setNuevaOrdenOpen] = useState(false);
+  const nuevaOrdenTriggerRef = useRef<HTMLButtonElement>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
 
   async function cargar() {
@@ -190,6 +191,7 @@ function HubContent() {
       ) : hub.puedeCrearVisita ? (
         <Button
           type="button"
+          ref={nuevaOrdenTriggerRef}
           onClick={() => setNuevaOrdenOpen(true)}
         >
           Nueva orden
@@ -398,6 +400,7 @@ function HubContent() {
       </Sheet>
       {!isAdmin && role ? (
         <NuevaOrdenDialog
+          returnFocusRef={nuevaOrdenTriggerRef}
           open={nuevaOrdenOpen}
           onOpenChange={setNuevaOrdenOpen}
           role={role}

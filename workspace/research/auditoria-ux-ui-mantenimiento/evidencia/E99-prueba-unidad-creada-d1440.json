@@ -1,0 +1,374 @@
+{
+  "origin": "https://team-mex-mtto-eight.vercel.app",
+  "path": "/unidades/1d815aac-6311-4301-a315-9e05e4628d8d",
+  "title": "Team Mex — Mantenimiento",
+  "text": "Inicio\nÓrdenes\nMovimientos\nUnidades\nMantenimiento vencido\nInventario\nChoferes\nConfiguración\n2\nADMINISTRADOR DIRECTIVO\nElegir rol\nCerrar sesión\nVolver a unidades\n\nUnidades › AUD-UX-20261011-A\n\nEditar datos\nCambiar foto\nAUD-UX-20261011-A\nActiva\n\nPrueba auditoría UX/UI\n\nSTOCK\n\nPLACAS\nUXAUD01\nÚLTIMA ACTUALIZACIÓN\n11/10/2026, 06:56\nSALUD DE LA UNIDAD\nNo disponible\nNo hay información suficiente para calcular la salud.\n\nSECCIONES\n\nResumen\nDatos de unidad\nMantenimiento\nHistorial\nPróximo mantenimiento\n\nServicio preventivo\n\nSin mantenimiento programado\n\nIntervalo: 10,000 km o 90 días\n\nÚltimo servicio\n—\nÚltimas alertas\n\nSin alertas activas\n\nLa unidad no requiere atención actualmente.\n\nEstado y operación\n\nESTADO\n\nActiva\n\nÚLTIMO KILOMETRAJE\n\nSin registro\n\nSin visita cerrada\n\nInformación técnica\nMarca / modelo\nPrueba auditoría UX/UI\nAño\nSin año registrado\nTipo\nSTOCK\nActividad reciente\nVer historial\n\nAún no hay actividad registrada.",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "overflow": false,
+  "controls": [
+    {
+      "tag": "A",
+      "text": "",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/inicio",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Inicio",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/inicio",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Órdenes",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/ordenes",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Movimientos",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/flota",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Unidades",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/unidades",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Mantenimiento vencido",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/andon",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Inventario",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/inventario",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Choferes",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/choferes",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Configuración",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/configuracion/alertas",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "2",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/notificaciones",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Elegir rol",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/",
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Cerrar sesión",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Volver a unidades",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/unidades",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Unidades",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/unidades",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Editar datos",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/unidades/1d815aac-6311-4301-a315-9e05e4628d8d/editar",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Cambiar foto",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/unidades/1d815aac-6311-4301-a315-9e05e4628d8d/editar#foto-unidad",
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "SALUD DE LA UNIDAD\nNo disponible\nNo hay información suficiente para calcular la salud.",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Resumen",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/unidades/1d815aac-6311-4301-a315-9e05e4628d8d",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Datos de unidad",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/unidades/1d815aac-6311-4301-a315-9e05e4628d8d",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Mantenimiento",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/unidades/1d815aac-6311-4301-a315-9e05e4628d8d",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Historial",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/unidades/1d815aac-6311-4301-a315-9e05e4628d8d",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Ver mantenimiento",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/unidades/1d815aac-6311-4301-a315-9e05e4628d8d",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Ver alertas",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/andon",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Ver historial",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/unidades/1d815aac-6311-4301-a315-9e05e4628d8d",
+      "disabled": false
+    }
+  ],
+  "at": "2026-10-11T06:56:51.816Z",
+  "network": [
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/unidades",
+      "status": 201
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/unidades/1d815aac-6311-4301-a315-9e05e4628d8d",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/_next/static/chunks/02a39e552afe9259.js",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/_next/static/chunks/97829d6ff2bb9535.js",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/_next/static/chunks/4d9796789a433f2b.js",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/unidades/1d815aac-6311-4301-a315-9e05e4628d8d/health",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/unidades/1d815aac-6311-4301-a315-9e05e4628d8d",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/notifications/badge",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/unidades/1d815aac-6311-4301-a315-9e05e4628d8d/hub",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/unidades/1d815aac-6311-4301-a315-9e05e4628d8d/editar",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/unidades/1d815aac-6311-4301-a315-9e05e4628d8d",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/andon/umbrales",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/notifications/badge",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/andon/avisos",
+      "status": 200
+    }
+  ],
+  "requests": [
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/unidades",
+      "method": "POST"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/unidades/1d815aac-6311-4301-a315-9e05e4628d8d",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/_next/static/chunks/02a39e552afe9259.js",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/_next/static/chunks/97829d6ff2bb9535.js",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/_next/static/chunks/4d9796789a433f2b.js",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/notifications/badge",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/unidades/1d815aac-6311-4301-a315-9e05e4628d8d/hub",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/unidades/1d815aac-6311-4301-a315-9e05e4628d8d/health",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/unidades/1d815aac-6311-4301-a315-9e05e4628d8d",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/andon/avisos",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/andon/umbrales",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/unidades/1d815aac-6311-4301-a315-9e05e4628d8d/editar",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/unidades/1d815aac-6311-4301-a315-9e05e4628d8d",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/notifications/badge",
+      "method": "GET"
+    }
+  ]
+}

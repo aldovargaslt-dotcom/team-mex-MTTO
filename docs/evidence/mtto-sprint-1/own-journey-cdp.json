@@ -1,0 +1,72 @@
+{
+  "mechanism": "Actual UI and local API/native PostgreSQL; only own newly created PRUEBA fixtures. Canvas strokes and evidence are synthetic; no human UX acceptance.",
+  "visitId": "3b13402d-aeac-4d15-958f-e1bc131a07cd",
+  "checks": [
+    {
+      "name": "AC10 UI stock insuficiente bloquea",
+      "status": "PASS",
+      "detail": "BORRADOR"
+    },
+    {
+      "name": "AC10 insuficiente no consume",
+      "status": "PASS",
+      "detail": [
+        {
+          "id": "d62217af-86f6-4654-82f4-01efca8cb69a",
+          "tipo": "ENTRADA",
+          "itemId": "35c1841c-3804-48e1-b32f-b9e24583596a",
+          "sku": "PRUEBA-UX-SPRINT1-STOCK",
+          "nombre": "PRUEBA-UX-SPRINT1 stock",
+          "qty": 10,
+          "delta": 10,
+          "visitaId": null,
+          "nota": "PRUEBA-UX-SPRINT1",
+          "createdBy": "stub-ux-sprint1-fixtures",
+          "createdAt": "2026-10-11T09:57:20.232Z"
+        }
+      ]
+    },
+    {
+      "name": "AC10 guardado fallido conserva captura",
+      "status": "PASS",
+      "detail": {
+        "failedWrites": 1
+      }
+    },
+    {
+      "name": "AC10 persistencia borrador",
+      "status": "PASS",
+      "detail": {
+        "id": "3b13402d-aeac-4d15-958f-e1bc131a07cd",
+        "unidadId": "9d18b9b9-b334-4143-8ac3-9abaf7f96984",
+        "piezas": [
+          {
+            "itemId": "35c1841c-3804-48e1-b32f-b9e24583596a",
+            "qty": 2,
+            "origen": "DESDE_STOCK"
+          },
+          {
+            "itemId": "ac9e2bf2-8438-40a9-8145-b9fc964bba84",
+            "qty": 4,
+            "origen": "COMPRA_EXTERNA"
+          }
+        ],
+        "trabajos": 1,
+        "fotos": 1
+      }
+    },
+    {
+      "name": "journey runner",
+      "status": "FAIL",
+      "detail": "Timeout: document.body.innerText.includes(\"Trabajos A–E\")"
+    }
+  ],
+  "shots": [
+    "recorrido_nueva_orden_d1440.png",
+    "recorrido_evidencia_d1440.png",
+    "recorrido_stock_insuficiente_d1440.png",
+    "recorrido_piezas_listas_d1440.png",
+    "recorrido_guardado_error_d1440.png",
+    "recorrido_reanudado_m390.png"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "url": "https://team-mex-mtto-eight.vercel.app/api/auth/session",
+  "method": "GET",
+  "body": {
+    "mode": "OIDC",
+    "authenticated": false,
+    "actor": null
+  },
+  "note": "Unauthenticated read only. Production commit unknown. curl TLS verified with environment CA; Chromium certificate trust failed (E31/E32)."
+}

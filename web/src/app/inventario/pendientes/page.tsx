@@ -1,6 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { ReadStatus } from '@/components/ReadStatus';
+import { useReadResource } from '@/lib/use-read-resource';
 import { api, HttpError } from '@/lib/api';
 import { etiquetaEstadoPendiente, etiquetaUom, formatFecha } from '@/lib/format';
 import { useRole } from '@/lib/role';
@@ -22,7 +24,10 @@ function readFile(file: File): Promise<string> {
 
 export default function PendientesPage() {
   const { role, userId } = useRole();
-  const [rows, setRows] = useState<PendienteComprobante[]>([]);
+  const read = useReadResource(role ? JSON.stringify([role, userId, 'pendientes']) : null,
+    () => api<PendienteComprobante[]>('/inventario/pendientes-comprobante', { role: role!, userId }));
+  const rows = read.data ?? [];
+  const setRows = read.setData;
   const [error, setError] = useState<string | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
   const [ticketFor, setTicketFor] = useState<string | null>(null);
@@ -32,27 +37,6 @@ export default function PendientesPage() {
   );
 
   useEffect(() => {
-    if (!role) return;
-    void (async () => {
-      try {
-        setRows(
-          await api<PendienteComprobante[]>('/inventario/pendientes-comprobante', {
-            role,
-            userId,
-          }),
-        );
-      } catch (err) {
-        setError(
-          err instanceof HttpError
-            ? err.message
-            : 'No se pudieron cargar los pendientes.',
-        );
-      }
-    })();
-  }, [role, userId]);
-
-  useEffect(() => {
-    if (!rows.length) return;
     const id = new URLSearchParams(window.location.search).get('pendienteId');
     if (!id) return;
     const target = document.getElementById(`pendiente-${id}`);
@@ -74,7 +58,7 @@ export default function PendientesPage() {
           body: JSON.stringify({ dataUrl }),
         },
       );
-      setRows((current) => current.map((row) => (row.id === id ? updated : row)));
+      setRows((current) => (current ?? []).map((row) => (row.id === id ? updated : row)));
       setTicketFor(null);
     } catch (err) {
       setError(
@@ -93,7 +77,7 @@ export default function PendientesPage() {
         `/inventario/pendientes-comprobante/${id}/recibir`,
         { role: role!, userId, method: 'POST' },
       );
-      setRows((current) => current.map((row) => (row.id === id ? updated : row)));
+      setRows((current) => (current ?? []).map((row) => (row.id === id ? updated : row)));
     } catch (err) {
       setError(
         err instanceof HttpError
@@ -112,7 +96,8 @@ export default function PendientesPage() {
         lede="Compras externas aún sin entrar al almacén. Cerrar el comprobante no cambia existencias."
       />
       <FormAlert>{error}</FormAlert>
-      {rows.length > 0 ? (
+      <ReadStatus loading={read.loading} error={read.error} loadingText="Cargando compras por recibir…" errorText="No se pudieron cargar las compras por recibir." retry={read.retry} />
+      {read.data === null ? null : rows.length > 0 ? (
         <div className="card overflow-hidden">
           {rows.map((row) => {
             const abierto = row.estado === 'PENDIENTE';
@@ -155,6 +140,7 @@ export default function PendientesPage() {
                       <Button
                         type="button"
                         size="compact"
+                        variant="secondary"
                         disabled={busyId === row.id}
                         onClick={() =>
                           setTicketFor(ticketFor === row.id ? null : row.id)

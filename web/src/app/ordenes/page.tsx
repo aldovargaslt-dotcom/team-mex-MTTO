@@ -2,8 +2,10 @@
 
 import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { Suspense, useEffect, useMemo, useState } from 'react';
+import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import { CalendarCheck, ChevronLeft, ChevronRight, History, ClipboardCheck, List, Search, Wrench, type LucideIcon } from 'lucide-react';
+import { ReadStatus } from '@/components/ReadStatus';
+import { useReadResource } from '@/lib/use-read-resource';
 import { OrderIdentity } from '@/components/OrderIdentity';
 import { Badge } from '@/components/ui/badge';
 import { ListFilter } from '@/components/ListFilter';
@@ -12,7 +14,7 @@ import { CHECK_STATUS_LABEL, type CheckOrderStatus, type CheckOrderSummary, type
 import { OrdenCaptura } from '@/components/OrdenCaptura';
 import { NuevaOrdenDialog } from '@/components/NuevaOrdenDialog';
 import { UnidadMarca } from '@/components/UnidadTipoMark';
-import { hydratePiezasFromInventario, type PiezaLinea } from '@/components/PiezasStep';
+import { hydratePiezasFromInventario, lineasDesdeVisita, type PiezaLinea } from '@/components/PiezasStep';
 import { RoleGate } from '@/components/RoleGate';
 import { Button } from '@/components/ui/button';
 import { FormAlert } from '@/components/ui/field';
@@ -93,12 +95,9 @@ function OrdenesContent() {
   const tipo = parseTipo(searchParams.get('tipo'));
   const q = searchParams.get('q') ?? '';
   const ordenId = searchParams.get('orden');
-  const [rows, setRows] = useState<OrdenRow[] | null>(null);
+  const searchRef = useRef<HTMLInputElement>(null);
+  const nuevaOrdenTriggerRef = useRef<HTMLButtonElement>(null);
   const [error, setError] = useState<string | null>(null);
-  const [checkDetail, setCheckDetail] = useState<CheckOrderDetail | null>(null);
-  const [detalle, setDetalle] = useState<VisitaDetalle | null>(null);
-  const [detalleError, setDetalleError] = useState<string | null>(null);
-  const [piezas, setPiezas] = useState<PiezaLinea[]>([]);
   const [mobileMode, setMobileMode] = useState<boolean | null>(null);
   const [nuevaOrdenOpen, setNuevaOrdenOpen] = useState(false);
 
@@ -120,82 +119,65 @@ function OrdenesContent() {
     router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
   }
 
-  useEffect(() => {
-    if (!role) return;
-    const opts = { role, userId };
-    void (async () => {
-      setError(null);
-      try {
-        const unidades = await api<Unidad[]>('/unidades', opts);
-        const checksRequest = (async () => {
-          const items: CheckOrderSummary[] = [];
-          let cursor: string | null = null;
-          const seen = new Set<string>();
-          do {
-            const page: { items: CheckOrderSummary[]; nextCursor: string | null } = await api(`/checks?limit=100${cursor ? `&cursor=${encodeURIComponent(cursor)}` : ''}`, opts);
-            items.push(...page.items);
-            cursor = page.nextCursor;
-            if (cursor && seen.has(cursor)) throw new Error('Cursor repetido');
-            if (cursor) seen.add(cursor);
-          } while (cursor);
-          return items.map((check): OrdenRow => {
-            const unit = unidades.find((item) => item.id === check.unidadId);
-            return { id: check.id, tipo: 'CHECK', estado: null, checkStatus: check.status,
-              unidadId: check.unidadId, numeroInterno: check.unit.numeroInterno, placas: check.unit.placas,
-              fotoDataUrl: unit?.fotoDataUrl ?? null, tipoNombre: unit?.tipo?.nombre ?? '', tipoIcono: unit?.tipo?.icono ?? null,
-              createdAt: check.createdAt, updatedAt: check.createdAt, cerradoAt: null,
-              km: null, choferId: null, choferNombre: null, createdBy: null, trabajosCount: 0 };
-          });
-        })();
-        const checksSettled = Promise.allSettled([checksRequest]);
-        const settled = await Promise.allSettled(
-          unidades.map((unidad) =>
-            api<VisitaResumen[]>(`/unidades/${unidad.id}/visitas`, opts).then(
-              (visitas) =>
-                visitas.map((visita) => ({
-                  ...visita,
-                  unidadId: unidad.id,
-                  numeroInterno: unidad.numeroInterno,
-                  placas: unidad.placas,
-                  fotoDataUrl: unidad.fotoDataUrl ?? null,
-                  tipoNombre: unidad.tipo?.nombre ?? '',
-                  tipoIcono: unidad.tipo?.icono ?? null,
-                })),
-            ),
-          ),
-        );
-        const checkResult = (await checksSettled)[0];
-        const next: OrdenRow[] = settled.flatMap((item) =>
-          item.status === 'fulfilled' ? item.value : [],
-        );
-        const failed = settled.filter((item) => item.status === 'rejected').length;
-        if (failed === settled.length && unidades.length > 0 && checkResult.status === 'rejected') {
-          const first = settled[0];
-          setRows([]);
-          setError(
-            first?.status === 'rejected' && first.reason instanceof HttpError
-              ? first.reason.message
-              : 'No se pudieron cargar las órdenes.',
-          );
-          return;
-        }
-        if (checkResult.status === 'fulfilled') next.push(...checkResult.value);
-        if (failed > 0 || checkResult.status === 'rejected') {
-          setError([failed > 0 ? 'Algunas unidades no pudieron listar sus órdenes de mantenimiento.' : '', checkResult.status === 'rejected' ? 'No se pudieron cargar las revisiones. Se muestran las órdenes disponibles.' : ''].filter(Boolean).join(' '));
-        }
-        next.sort(
-          (a, b) =>
-            new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
-        );
-        setRows(next);
-      } catch (err) {
-        setRows([]);
-        setError(
-          err instanceof HttpError ? err.message : 'No se pudieron cargar las órdenes.',
-        );
-      }
-    })();
-  }, [role, userId]);
+  const opts = { role: role!, userId };
+  const successful = useRef<{ key: string; units: Unidad[]; rows: Map<string, OrdenRow[]>; checks: OrdenRow[]; failed: string[] } | null>(null);
+  const listKey = role ? JSON.stringify([role, userId, 'ordenes']) : null;
+  const list = useReadResource(listKey, async () => {
+    const cached = successful.current?.key === listKey ? successful.current : null;
+    const retryPartial = Boolean(cached?.failed.length);
+    const units = retryPartial ? cached!.units : await api<Unidad[]>('/unidades', opts);
+    const targets = retryPartial ? units.filter((unit) => cached!.failed.includes(unit.id)) : units;
+    const loaded = retryPartial ? new Map(cached!.rows) : new Map<string, OrdenRow[]>();
+    const shouldReadChecks = !retryPartial || cached!.failed.includes('CHECK');
+    const checksRequest = async (): Promise<OrdenRow[]> => {
+      const items: CheckOrderSummary[] = [];
+      const seen = new Set<string>();
+      let cursor: string | null = null;
+      do {
+        const page: { items: CheckOrderSummary[]; nextCursor: string | null } = await api(`/checks?limit=100${cursor ? `&cursor=${encodeURIComponent(cursor)}` : ''}`, opts);
+        items.push(...page.items); cursor = page.nextCursor;
+        if (cursor && seen.has(cursor)) throw new Error('Cursor repetido');
+        if (cursor) seen.add(cursor);
+      } while (cursor);
+      return items.map((check) => {
+        const unit = units.find((item) => item.id === check.unidadId);
+        return { id: check.id, tipo: 'CHECK', estado: null, checkStatus: check.status,
+          unidadId: check.unidadId, numeroInterno: check.unit.numeroInterno, placas: check.unit.placas,
+          fotoDataUrl: unit?.fotoDataUrl ?? null, tipoNombre: unit?.tipo?.nombre ?? '', tipoIcono: unit?.tipo?.icono ?? null,
+          createdAt: check.createdAt, updatedAt: check.createdAt, cerradoAt: null,
+          km: null, choferId: null, choferNombre: null, createdBy: null, trabajosCount: 0 };
+      });
+    };
+    const [maintenance, checkResult] = await Promise.all([
+      Promise.allSettled(targets.map(async (unit) => {
+        const visits = await api<VisitaResumen[]>(`/unidades/${unit.id}/visitas`, opts);
+        return visits.map((visit) => ({ ...visit, unidadId: unit.id, numeroInterno: unit.numeroInterno, placas: unit.placas,
+          fotoDataUrl: unit.fotoDataUrl ?? null, tipoNombre: unit.tipo?.nombre ?? '', tipoIcono: unit.tipo?.icono ?? null }));
+      })),
+      Promise.allSettled([shouldReadChecks ? checksRequest() : Promise.resolve(cached!.checks)]),
+    ]);
+    maintenance.forEach((result, index) => { if (result.status === 'fulfilled') loaded.set(targets[index].id, result.value); });
+    const failed = maintenance.flatMap((result, index) => result.status === 'rejected' ? [targets[index].id] : []);
+    const checks = checkResult[0].status === 'fulfilled' ? checkResult[0].value : cached?.checks ?? [];
+    if (checkResult[0].status === 'rejected') failed.push('CHECK');
+    successful.current = { key: listKey!, units, rows: loaded, checks, failed };
+    if (failed.length === units.length + 1) throw new Error('No se pudieron cargar las órdenes.');
+    const rows = [...loaded.values()].flat().concat(checks);
+    rows.sort((a, b) => Date.parse(b.updatedAt) - Date.parse(a.updatedAt));
+    return { rows, failed: failed.map((id) => id === 'CHECK' ? 'revisiones' : units.find((unit) => unit.id === id)?.numeroInterno ?? 'mantenimiento') };
+  }, true);
+  const rows = list.data?.rows ?? null;
+  const selectedCheck = rows?.find((row) => row.id === ordenId)?.tipo === 'CHECK';
+  const detailRead = useReadResource(role && ordenId && rows ? JSON.stringify([role, userId, ordenId, selectedCheck]) : null,
+    async (): Promise<{ maintenance: VisitaDetalle | null; check: CheckOrderDetail | null }> => selectedCheck
+      ? { maintenance: null, check: await api<CheckOrderDetail>(`/checks/${ordenId}`, opts) }
+      : { maintenance: await api<VisitaDetalle>(`/visitas/${ordenId}`, opts), check: null });
+  const detalle = detailRead.data?.maintenance ?? null;
+  const checkDetail = detailRead.data?.check ?? null;
+  const setDetalle = (maintenance: VisitaDetalle) => detailRead.setData({ maintenance, check: null });
+  const piezaRead = useReadResource(role && detalle ? JSON.stringify([role, userId, detalle.id, detalle.piezas]) : null,
+    () => hydratePiezasFromInventario(detalle?.piezas ?? [], opts));
+  const piezas = piezaRead.data ?? lineasDesdeVisita(detalle?.piezas ?? []);
 
   const queueRows = useMemo(() => {
     if (!rows) return [];
@@ -241,46 +223,6 @@ function OrdenesContent() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rows, filtered, ordenId, mobileMode]);
 
-  useEffect(() => {
-    if (!role || !ordenId) {
-      setDetalle(null);
-      setCheckDetail(null);
-      setPiezas([]);
-      setDetalleError(null);
-      return;
-    }
-    const opts = { role, userId };
-    let cancelled = false;
-    setDetalleError(null);
-    setCheckDetail(null);
-    setDetalle(null);
-    void (async () => {
-      try {
-        const selected = rows?.find((row) => row.id === ordenId);
-        if (selected?.tipo === 'CHECK') {
-          const check = await api<CheckOrderDetail>(`/checks/${ordenId}`, opts);
-          if (!cancelled) { setCheckDetail(check); setPiezas([]); }
-          return;
-        }
-        const next = await api<VisitaDetalle>(`/visitas/${ordenId}`, opts);
-        if (cancelled) return;
-        setDetalle(next);
-        const lineas = await hydratePiezasFromInventario(next.piezas ?? [], opts);
-        if (!cancelled) setPiezas(lineas);
-      } catch (err) {
-        if (cancelled) return;
-        setDetalle(null);
-        setPiezas([]);
-        setDetalleError(
-          err instanceof HttpError ? err.message : 'No se pudo abrir la orden.',
-        );
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, [role, userId, ordenId, rows]);
-
   const borradorSeleccionado =
     !isAdmin && detalle?.estado === 'BORRADOR' && detalle.id === ordenId;
   const emptyTitle = cola === 'borradores' ? 'No hay órdenes en borrador.' : error ? 'Sin resultados disponibles para este filtro.' : tipo === 'CHECK' ? (cola === 'abiertas' ? 'No hay revisiones en curso.' : 'No hay revisiones concluidas.') : (cola === 'abiertas' ? 'No hay órdenes abiertas.' : 'No hay órdenes cerradas.');
@@ -322,6 +264,7 @@ function OrdenesContent() {
             aria-hidden
           />
           <Input
+            ref={searchRef}
             value={q}
             onChange={(event) =>
               setParams({ q: event.target.value.trim() ? event.target.value : null })
@@ -336,6 +279,7 @@ function OrdenesContent() {
             variant={borradorSeleccionado ? 'outline' : 'default'}
             className={borradorSeleccionado ? undefined : 'ordenes-primary'}
             type="button"
+            ref={nuevaOrdenTriggerRef}
             onClick={() => setNuevaOrdenOpen(true)}
           >
             + Nueva orden
@@ -347,16 +291,17 @@ function OrdenesContent() {
         className="mb-3 grid grid-cols-2 sm:flex"
         onChange={(next) => setParams({ tipo: next === 'todos' ? null : next, orden: null })} /> : null}
       <FormAlert>{error}</FormAlert>
+      <ReadStatus loading={list.loading} error={list.error || (list.data?.failed.length ? new Error('Consulta parcial') : null)}
+        loadingText={list.data ? 'Actualizando órdenes; se muestran los datos de la consulta anterior…' : 'Cargando órdenes…'}
+        errorText={list.data?.failed.length ? `Consulta parcial. Falta consultar: ${list.data.failed.join(', ')}.` : 'No se pudieron cargar las órdenes.'} retry={list.retry} />
       {!isAdmin && detalle?.estado === 'BORRADOR' && !detalle.openedAt ? <Button type="button" variant="secondary" className="mb-3" onClick={async () => {
         try {
           const opened = await api<{ openedAt: string; openedBy: string }>(`/mantenimiento-ordenes/${detalle.id}/abrir`, { role: role!, userId, method: 'POST' });
-          setDetalle({ ...detalle, ...opened }); setRows((current) => current?.map((row) => row.id === detalle.id ? { ...row, ...opened } : row) ?? null);
+          setDetalle({ ...detalle, ...opened }); list.setData((current) => current ? { ...current, rows: current.rows.map((row) => row.id === detalle.id ? { ...row, ...opened } : row) } : null);
           setParams({ cola: null, orden: detalle.id });
         } catch (err) { setError(err instanceof HttpError ? err.message : 'No se pudo abrir la orden.'); }
       }}>Abrir orden</Button> : null}
-      {rows == null ? (
-        <p className="muted">Cargando órdenes…</p>
-      ) : (
+      {rows == null ? null : (
         <div className={soloDetalle ? 'ordenes-desk has-mobile-detail is-detail' : 'ordenes-desk'}>
           <div className="ordenes-list">
             <div className="ordenes-tabs">
@@ -384,8 +329,9 @@ function OrdenesContent() {
             </div>
             {filtered.length === 0 ? (
               <div className="empty-state">
-                <h2>{emptyTitle}</h2>
-                <p className="muted">{emptyLede}</p>
+                <h2>{list.data?.failed.length ? 'Consulta parcial sin coincidencias cargadas.' : emptyTitle}</h2>
+                <p className="muted">{list.data?.failed.length ? 'Recupera las consultas que faltan.' : emptyLede}</p>
+                {q.trim() || tipo !== 'todos' ? <Button type="button" variant="secondary" onClick={() => { setParams({ q: null, tipo: null, orden: null }); searchRef.current?.focus(); }}>Quitar filtros</Button> : null}
               </div>
             ) : (
               <div className="ordenes-list__scroll" role="listbox" aria-label="Órdenes">
@@ -424,33 +370,31 @@ function OrdenesContent() {
             )}
           </div>
           <div className="ordenes-detail">
-            <FormAlert>{detalleError}</FormAlert>
+            {ordenId && filtered.length > 0 ? <ReadStatus key={ordenId} loading={detailRead.loading} error={detailRead.error}
+              loadingText="Cargando la orden…" errorText="No se pudo abrir la orden." retry={detailRead.retry} /> : null}
             {filtered.length === 0 ? null : checkDetail && checkDetail.id === ordenId ? (
               <CheckOrderReadOnly detail={checkDetail} mobile={mobileMode === true} />
             ) : detalle && detalle.id === ordenId ? (
               <OrdenDetalle
                 detalle={detalle}
                 piezas={piezas}
+                piezaRead={piezaRead}
                 continuar={Boolean(borradorSeleccionado)}
                 marca={rows?.find((row) => row.id === ordenId) ?? null}
                 role={role!}
                 userId={userId}
                 onVisita={(next) => {
                   setDetalle(next);
-                  void hydratePiezasFromInventario(next.piezas ?? [], {
-                    role: role!,
-                    userId,
-                  }).then(setPiezas);
+
                 }}
               />
-            ) : detalleError ? null : (
-              <p className="muted">Cargando la orden…</p>
-            )}
+            ) : null}
           </div>
         </div>
       )}
       {!isAdmin && role ? (
         <NuevaOrdenDialog
+          returnFocusRef={nuevaOrdenTriggerRef}
           open={nuevaOrdenOpen}
           onOpenChange={setNuevaOrdenOpen}
           role={role}
@@ -489,6 +433,7 @@ function MarcaUnidad({
 function OrdenDetalle({
   detalle,
   piezas,
+  piezaRead,
   continuar,
   marca,
   role,
@@ -497,6 +442,7 @@ function OrdenDetalle({
 }: {
   detalle: VisitaDetalle;
   piezas: PiezaLinea[];
+  piezaRead: { loading: boolean; error: unknown; retry: () => void };
   continuar: boolean;
   marca: OrdenRow | null;
   role: string;

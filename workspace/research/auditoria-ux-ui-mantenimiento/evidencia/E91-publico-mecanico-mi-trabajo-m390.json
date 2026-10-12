@@ -1,0 +1,43 @@
+{
+  "origin": "https://team-mex-mtto-eight.vercel.app",
+  "path": "/mi-trabajo",
+  "title": "Team Mex — Mantenimiento",
+  "text": "TEAM MEX MTTO\n2\n\nMECÁNICO · MI TURNO\n\nMi bandeja de trabajo\n\nChequeos operativos asignados y disponibles en tu patio.\n\n0 ACTIVOS\nCola de chequeos\n0 visibles\n\nNo hay chequeos elegibles o asignados en este momento.",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "overflow": false,
+  "controls": [
+    {
+      "tag": "A",
+      "text": "",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/mi-trabajo",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "2",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/notificaciones",
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Abrir menú",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    }
+  ],
+  "at": "2026-10-11T06:49:27.186Z",
+  "network": [],
+  "requests": []
+}

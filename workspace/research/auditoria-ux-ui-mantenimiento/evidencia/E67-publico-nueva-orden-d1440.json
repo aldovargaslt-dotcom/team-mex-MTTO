@@ -1,0 +1,659 @@
+{
+  "origin": "https://team-mex-mtto-eight.vercel.app",
+  "path": "/ordenes",
+  "title": "Team Mex — Mantenimiento",
+  "text": "Inicio\nÓrdenes\nUnidades\nInventario\n2\nSUPERVISOR\nElegir rol\nCerrar sesión\nÓrdenes\n+ Nueva orden\nBorradores\nCerradas\nCHATO NUEVO\nOT · 9C962BCB\nCorrectivo\nURVAN\nOT · 2ADA4D7C\nCorrectivo\nFOTON\nOT · 64939437\nCorrectivo\nCHATO NUEVO\n\nOT · 9C962BCB\n\nComentarios\nContinuar\nCapturar en esta orden\nAgregar pieza · 0\nSubir foto · 0 de 8\nBorrador\nFecha de apertura\n09/10/2026, 08:30\nFecha de cierre\nSin cerrar\nTiempo de cerrado\nSin cerrar\nTipo de mantenimiento\n\nCorrectivo\n\nTrabajos\nB · Balatas delanteras / traseras\nImágenes\n\nSin imágenes.\n\nComentarios\n\nSin comentarios.\n\nSKU\n\nSin piezas en esta orden.\n\nNueva orden\n\nSelecciona una unidad activa y captura los datos iniciales.\n\nCHATO NUEVO\nWR2023C · CAMIONES 3 Y MEDIA\nDUCATO 2021\nVU2626C · RUTAS\nDUCATO 2023\nVU2627C · RUTAS\nFORD 2017\nVU2624C · CAMIONES 3 Y MEDIA\nFOTON\nVU2625C · STOCK\nNISSAN CERRADA\nVU2630C · RUTAS\nNISSAN REDILAS\nVU2632C · STOCK\nRAM CODISA\nVU2622C · CAMIONES 3 Y MEDIA\nRAM FORANEO\n63AL5K · CAMIONES 3 Y MEDIA\nTOYOTA 2017\nVU2628C · RUTAS\nTRANSIT 2023\nWH9236C · RUTAS\nURVAN\nVU2629C · STOCK\nURVAN 2018\nVU2634C · RUTAS\nCancelar\nCrear y continuar\nCerrar",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "overflow": false,
+  "controls": [
+    {
+      "tag": "A",
+      "text": "",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/inicio",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Inicio",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/inicio",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Órdenes",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/ordenes",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Unidades",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/unidades",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Inventario",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/inventario",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "2",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/notificaciones",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Configuración",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": "/configuracion/alertas",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Elegir rol",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/",
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Cerrar sesión",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Abrir menú",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "INPUT",
+      "text": "Buscar órdenes",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "+ Nueva orden",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Borradores",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Cerradas",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Filtros",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "CHATO NUEVO\nOT · 9C962BCB\nCorrectivo",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "URVAN\nOT · 2ADA4D7C\nCorrectivo",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "FOTON\nOT · 64939437\nCorrectivo",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Comentarios",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "#orden-comentarios",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Continuar",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/unidades/22e513d8-1556-457d-bed8-594204033607/visitas/9c962bcb-c1ff-4f17-a3b8-0b16a493bc4e",
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Agregar pieza · 0",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Subir foto · 0 de 8",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "INPUT",
+      "text": "Buscar unidad activa",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "CHATO NUEVO\nWR2023C · CAMIONES 3 Y MEDIA",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "DUCATO 2021\nVU2626C · RUTAS",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "DUCATO 2023\nVU2627C · RUTAS",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "FORD 2017\nVU2624C · CAMIONES 3 Y MEDIA",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "FOTON\nVU2625C · STOCK",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "NISSAN CERRADA\nVU2630C · RUTAS",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "NISSAN REDILAS\nVU2632C · STOCK",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "RAM CODISA\nVU2622C · CAMIONES 3 Y MEDIA",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "RAM FORANEO\n63AL5K · CAMIONES 3 Y MEDIA",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "TOYOTA 2017\nVU2628C · RUTAS",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "TRANSIT 2023\nWH9236C · RUTAS",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "URVAN\nVU2629C · STOCK",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "URVAN 2018\nVU2634C · RUTAS",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Cancelar",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Crear y continuar",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": true
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Cerrar",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    }
+  ],
+  "at": "2026-10-11T06:43:53.410Z",
+  "network": [
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/unidades/22e513d8-1556-457d-bed8-594204033607",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/notifications/badge",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/unidades/22e513d8-1556-457d-bed8-594204033607",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/unidades/22e513d8-1556-457d-bed8-594204033607/health",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/unidades/22e513d8-1556-457d-bed8-594204033607/hub",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/unidades/22e513d8-1556-457d-bed8-594204033607/visitas/9c962bcb-c1ff-4f17-a3b8-0b16a493bc4e",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/unidades/22e513d8-1556-457d-bed8-594204033607",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/andon/umbrales",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/andon/avisos",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/ordenes",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/notifications/badge",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/unidades",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/unidades/ef6bb2ae-89ba-4e47-80c3-f96842e72c7f/visitas",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/unidades/e8d13d6b-4f27-4f90-8d23-db614b700578/visitas",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/unidades/22e513d8-1556-457d-bed8-594204033607/visitas",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/unidades/90ad80a3-0868-4a8c-9d62-53f8c3771ff4/visitas",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/unidades/59f71d91-aa7d-443f-bcd6-751dd6bf0d5a/visitas",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/unidades/f23cea1a-e44a-457e-ba69-b6d44724fe6a/visitas",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/unidades/8cea2e3d-0114-465a-83b2-5a3acffd374d/visitas",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/unidades/e2b5374b-791f-444f-955d-b6d47a1430f5/visitas",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/unidades/b944fd81-a2a8-4c20-a2d5-a58fb7b6b7e6/visitas",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/unidades/cc08a756-8670-4c95-adae-6fe125884e9c/visitas",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/unidades/fbdca6c1-ebc8-4986-82c9-cd9a6446f412/visitas",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/unidades/d0ef8b1e-37d3-41fe-845e-cd022e1af2b2/visitas",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/unidades/78a447df-4ac6-4236-9e88-5374f0c2a715/visitas",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/ordenes",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/visitas/9c962bcb-c1ff-4f17-a3b8-0b16a493bc4e",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/choferes",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/unidades",
+      "status": 200
+    }
+  ],
+  "requests": [
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/unidades/22e513d8-1556-457d-bed8-594204033607",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/notifications/badge",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/unidades/22e513d8-1556-457d-bed8-594204033607/hub",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/unidades/22e513d8-1556-457d-bed8-594204033607/health",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/unidades/22e513d8-1556-457d-bed8-594204033607",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/andon/avisos",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/andon/umbrales",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/unidades/22e513d8-1556-457d-bed8-594204033607/visitas/9c962bcb-c1ff-4f17-a3b8-0b16a493bc4e",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/unidades/22e513d8-1556-457d-bed8-594204033607",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/ordenes",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/notifications/badge",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/unidades",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/unidades/22e513d8-1556-457d-bed8-594204033607/visitas",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/unidades/e8d13d6b-4f27-4f90-8d23-db614b700578/visitas",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/unidades/90ad80a3-0868-4a8c-9d62-53f8c3771ff4/visitas",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/unidades/8cea2e3d-0114-465a-83b2-5a3acffd374d/visitas",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/unidades/59f71d91-aa7d-443f-bcd6-751dd6bf0d5a/visitas",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/unidades/b944fd81-a2a8-4c20-a2d5-a58fb7b6b7e6/visitas",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/unidades/e2b5374b-791f-444f-955d-b6d47a1430f5/visitas",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/unidades/f23cea1a-e44a-457e-ba69-b6d44724fe6a/visitas",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/unidades/cc08a756-8670-4c95-adae-6fe125884e9c/visitas",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/unidades/ef6bb2ae-89ba-4e47-80c3-f96842e72c7f/visitas",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/unidades/fbdca6c1-ebc8-4986-82c9-cd9a6446f412/visitas",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/unidades/d0ef8b1e-37d3-41fe-845e-cd022e1af2b2/visitas",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/unidades/78a447df-4ac6-4236-9e88-5374f0c2a715/visitas",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/ordenes",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/visitas/9c962bcb-c1ff-4f17-a3b8-0b16a493bc4e",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/unidades",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/choferes",
+      "method": "GET"
+    }
+  ]
+}

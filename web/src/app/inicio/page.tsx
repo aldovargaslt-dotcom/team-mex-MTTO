@@ -4,11 +4,13 @@ import { Suspense, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ArrowRight, AlertTriangle, List, Package, ReceiptText, Settings, Wrench } from 'lucide-react';
+import { ReadStatus } from '@/components/ReadStatus';
+import { useReadResource } from '@/lib/use-read-resource';
 import { RoleGate } from '@/components/RoleGate';
 import { ListFilter } from '@/components/ListFilter';
 import { Button } from '@/components/ui/button';
-import { FormAlert, PageHeader } from '@/components/ui/field';
-import { api, HttpError } from '@/lib/api';
+import { PageHeader } from '@/components/ui/field';
+import { api } from '@/lib/api';
 import { saludoAhora } from '@/lib/format';
 import { INBOX_CHANGED } from '@/lib/inbox';
 import { useRole } from '@/lib/role';
@@ -37,24 +39,11 @@ function InicioContent() {
   const rawArea = params.get('area');
   const area: Area = rawArea === 'FLOTA' ? 'MANTENIMIENTO' : rawArea === 'MANTENIMIENTO' || rawArea === 'INVENTARIO' || rawArea === 'COMPRAS' ? rawArea : 'TODOS';
   const [saludo, setSaludo] = useState('Hola');
-  const [data, setData] = useState<AttentionResponse | null>(null);
-  const [error, setError] = useState<string | null>(null);
   const [reload, setReload] = useState(0);
-
+  const read = useReadResource(role ? JSON.stringify([role, userId, reload, 'active-alerts']) : null,
+    () => api<AttentionResponse>('/configuracion/alertas/activas', { role: role!, userId }), true);
+  const data = read.data;
   useEffect(() => { setSaludo(saludoAhora()); }, []);
-
-  useEffect(() => {
-    if (!role) return;
-    const controller = new AbortController();
-    setData(null);
-    setError(null);
-    void api<AttentionResponse>('/configuracion/alertas/activas', { role, userId, signal: controller.signal })
-      .then((result) => { if (!controller.signal.aborted) setData(result); })
-      .catch((err) => {
-        if (!controller.signal.aborted) setError(err instanceof HttpError ? err.message : 'No se pudieron cargar las alertas.');
-      });
-    return () => controller.abort();
-  }, [role, userId, reload]);
 
   useEffect(() => {
     const refresh = () => setReload((value) => value + 1);
@@ -92,14 +81,14 @@ function InicioContent() {
         </Button>
       </>}
         lede={<>{name ? `${saludo}, ${name}. ` : `${saludo}. `}{data && !allFailed ? <><strong>{rows.length} {rows.length === 1 ? 'alerta activa' : 'alertas activas'}</strong>{failed.length ? ` ${rows.length === 1 ? 'disponible' : 'disponibles'}. Hay fuentes sin cargar.` : ' que requieren tu atención.'}</> : 'Identifica qué atender primero.'}</>} />
-      <FormAlert>{error}</FormAlert>
-      {error || failed.length ? (
+      <ReadStatus loading={read.loading} error={read.error} loadingText={data ? 'Actualizando alertas…' : 'Cargando alertas…'}
+        errorText="No se pudieron cargar las alertas." retry={read.retry} />
+      {failed.length ? (
         <div className="mb-4 flex flex-wrap items-center gap-2">
           {failed.length ? <p role="alert" className="text-[13px] text-destructive">No se pudo cargar {failed.map((source) => source.name).join(', ')}. Los conteos incluyen sólo las fuentes disponibles.</p> : null}
-          <Button variant="outline" onClick={() => setReload((value) => value + 1)}>Reintentar</Button>
+          <Button variant="outline" onClick={read.retry}>Reintentar</Button>
         </div>
       ) : null}
-      {!data && !error ? <p role="status" className="muted">Cargando alertas…</p> : null}
       {data && !allFailed ? (
         <>
           <ListFilter label="Filtrar alertas por área" value={area} options={options} className="mb-5 grid grid-cols-2 sm:flex" onChange={(next) => {

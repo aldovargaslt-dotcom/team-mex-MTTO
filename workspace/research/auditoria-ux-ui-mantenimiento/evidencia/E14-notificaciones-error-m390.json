@@ -1,0 +1,126 @@
+{
+  "url": "http://127.0.0.1:3000/notificaciones",
+  "title": "Team Mex — Mantenimiento",
+  "text": "Inicio\nÓrdenes\nUnidades\nInventario\nAlertas\n\nAvisos de mantenimiento, inventario, salud de unidad y flota sin regreso. Tocar una fila la marca leída y abre el destino.\n\nNo leídas\nTodas\n\nNo se pudo conectar con el servicio. Intenta de nuevo.\n\nSin alertas.",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "overflow": false,
+  "font": "Roboto, \"Roboto Fallback\", ui-sans-serif, system-ui, sans-serif",
+  "controls": [
+    {
+      "tag": "A",
+      "text": null,
+      "href": "/inicio",
+      "ariaLabel": null,
+      "role": null,
+      "width": 67.046875,
+      "height": 36,
+      "color": "rgb(247, 247, 251)",
+      "background": "rgba(0, 0, 0, 0)",
+      "fontSize": "14px"
+    },
+    {
+      "tag": "A",
+      "text": "Alertas",
+      "href": "/notificaciones",
+      "ariaLabel": "Alertas",
+      "role": null,
+      "width": 44,
+      "height": 44,
+      "color": "rgb(247, 247, 251)",
+      "background": "rgba(0, 0, 0, 0)",
+      "fontSize": "14px"
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Abrir menú",
+      "href": null,
+      "ariaLabel": "Abrir menú",
+      "role": null,
+      "width": 44,
+      "height": 44,
+      "color": "oklab(0.999994 0.0000455677 0.0000200868 / 0.7)",
+      "background": "rgba(0, 0, 0, 0)",
+      "fontSize": "12px",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Inicio",
+      "href": "/inicio",
+      "ariaLabel": null,
+      "role": null,
+      "width": 97.5,
+      "height": 58,
+      "color": "rgb(92, 95, 115)",
+      "background": "rgba(0, 0, 0, 0)",
+      "fontSize": "11px"
+    },
+    {
+      "tag": "A",
+      "text": "Órdenes",
+      "href": "/ordenes",
+      "ariaLabel": null,
+      "role": null,
+      "width": 97.5,
+      "height": 58,
+      "color": "rgb(92, 95, 115)",
+      "background": "rgba(0, 0, 0, 0)",
+      "fontSize": "11px"
+    },
+    {
+      "tag": "A",
+      "text": "Unidades",
+      "href": "/unidades",
+      "ariaLabel": null,
+      "role": null,
+      "width": 97.5,
+      "height": 58,
+      "color": "rgb(92, 95, 115)",
+      "background": "rgba(0, 0, 0, 0)",
+      "fontSize": "11px"
+    },
+    {
+      "tag": "A",
+      "text": "Inventario",
+      "href": "/inventario",
+      "ariaLabel": null,
+      "role": null,
+      "width": 97.5,
+      "height": 58,
+      "color": "rgb(92, 95, 115)",
+      "background": "rgba(0, 0, 0, 0)",
+      "fontSize": "11px"
+    },
+    {
+      "tag": "BUTTON",
+      "text": "No leídas",
+      "href": null,
+      "ariaLabel": null,
+      "role": null,
+      "width": 82.6875,
+      "height": 44,
+      "color": "rgb(36, 40, 77)",
+      "background": "rgb(238, 242, 246)",
+      "fontSize": "13px",
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Todas",
+      "href": null,
+      "ariaLabel": null,
+      "role": null,
+      "width": 61.703125,
+      "height": 44,
+      "color": "rgb(28, 29, 38)",
+      "background": "rgb(255, 255, 255)",
+      "fontSize": "13px",
+      "disabled": false
+    }
+  ],
+  "at": "2026-10-11T04:52:50.430Z",
+  "network": []
+}

@@ -1,0 +1,398 @@
+{
+  "mechanism": "Chromium CDP, respuestas sintéticas interceptadas; sin API/DB ni datos públicos",
+  "results": {
+    "inicio_error_d1440": "Inicio\nÓrdenes\nUnidades\nInventario\nSUPERVISOR\nCambiar rol\nBuenos días\n\nQué hay que revisar. Cada fila abre la lista.\n\nFuente de prueba no disponible\n\nREQUIERE ATENCIÓN\n\nNo se pudo cargar mantenimiento vencido.\n\nNo se pudo cargar existencias.\n\nNo se pudo cargar por recibir.\n\nNo se pudo cargar salud de unidad.",
+    "inicio_parcial_d1440": "Inicio\nÓrdenes\nUnidades\nInventario\nSUPERVISOR\nCambiar rol\nBuenos días\n\nQué hay que revisar. Cada fila abre la lista.\n\nREQUIERE ATENCIÓN\n\nNo se pudo cargar mantenimiento vencido.\n\nRefacción de prueba\nExistencias · Agotado; revise la refacción",
+    "ordenes_error_d1440": "Inicio\nÓrdenes\nUnidades\nInventario\nSUPERVISOR\nCambiar rol\nÓrdenes\n+ Nueva orden\n\nFuente de prueba no disponible\n\nBorradores\nCerradas\nNo hay órdenes en borrador.\n\nCrea una orden aquí para comenzar la captura.",
+    "piezas_cargando_d1440": "Inicio\nÓrdenes\nUnidades\nInventario\nSUPERVISOR\nCambiar rol\nÓrdenes\n+ Nueva orden\nBorradores\nCerradas\nPRUEBA-UX-001\nOT · TEST-V1\nCorrectivo\nPRUEBA-UX-001\n\nOT · TEST-V1\n\nComentarios\nVer detalle\nPiezas y fotos\n\nLas piezas y las fotos de la orden se capturan mientras está abierta.\n\nCerrada\nFecha de apertura\n11/10/2026, 00:00\nFecha de cierre\n11/10/2026, 00:00\nTiempo de cerrado\nMenos de 1 min\nTipo de mantenimiento\n\nCorrectivo\n\nTrabajos\nA · Prueba\nImágenes\n\nSin imágenes.\n\nComentarios\n\nSin comentarios.\n\nSKU\n\nSin piezas en esta orden.",
+    "filtro_d1440": "Inicio\nÓrdenes\nUnidades\nInventario\nSUPERVISOR\nCambiar rol\nÓrdenes\n+ Nueva orden\nBorradores\nCerradas\nNo hay órdenes cerradas.\n\nPruebe otro texto o quite el filtro de tipo.",
+    "geometria_d1440": [
+      {
+        "text": "+ Nueva orden",
+        "rect": {
+          "w": 124.296875,
+          "h": 40
+        },
+        "color": "rgb(255, 255, 255)",
+        "background": "rgb(234, 117, 21)"
+      }
+    ],
+    "inicio_error_m390": "Inicio\nÓrdenes\nUnidades\nInventario\nBuenos días\n\nQué hay que revisar. Cada fila abre la lista.\n\nFuente de prueba no disponible\n\nREQUIERE ATENCIÓN\n\nNo se pudo cargar mantenimiento vencido.\n\nNo se pudo cargar existencias.\n\nNo se pudo cargar por recibir.\n\nNo se pudo cargar salud de unidad.",
+    "inicio_parcial_m390": "Inicio\nÓrdenes\nUnidades\nInventario\nBuenos días\n\nQué hay que revisar. Cada fila abre la lista.\n\nREQUIERE ATENCIÓN\n\nNo se pudo cargar mantenimiento vencido.\n\nRefacción de prueba\nExistencias · Agotado; revise la refacción",
+    "ordenes_error_m390": "Inicio\nÓrdenes\nUnidades\nInventario\nÓrdenes\n+ Nueva orden\n\nFuente de prueba no disponible\n\nBorradores\nCerradas\nNo hay órdenes en borrador.\n\nCrea una orden aquí para comenzar la captura.",
+    "filtro_m390": "Inicio\nÓrdenes\nUnidades\nInventario\nÓrdenes\n+ Nueva orden\nBorradores\nCerradas\nNo hay órdenes cerradas.\n\nPruebe otro texto o quite el filtro de tipo.",
+    "geometria_m390": [
+      {
+        "text": "+ Nueva orden",
+        "rect": {
+          "w": 124.296875,
+          "h": 44
+        },
+        "color": "rgb(255, 255, 255)",
+        "background": "rgb(234, 117, 21)"
+      }
+    ]
+  },
+  "requests": [
+    {
+      "mode": "error",
+      "path": "/backend/notifications/badge",
+      "status": 503,
+      "fixture": true
+    },
+    {
+      "mode": "error",
+      "path": "/backend/andon/avisos",
+      "status": 503,
+      "fixture": true
+    },
+    {
+      "mode": "error",
+      "path": "/backend/inventario/stock",
+      "status": 503,
+      "fixture": true
+    },
+    {
+      "mode": "error",
+      "path": "/backend/inventario/pendientes-comprobante",
+      "status": 503,
+      "fixture": true
+    },
+    {
+      "mode": "error",
+      "path": "/backend/notifications",
+      "status": 503,
+      "fixture": true
+    },
+    {
+      "mode": "error",
+      "path": "/backend/notifications/badge",
+      "status": 503,
+      "fixture": true
+    },
+    {
+      "mode": "error",
+      "path": "/backend/andon/avisos",
+      "status": 503,
+      "fixture": true
+    },
+    {
+      "mode": "error",
+      "path": "/backend/inventario/stock",
+      "status": 503,
+      "fixture": true
+    },
+    {
+      "mode": "error",
+      "path": "/backend/inventario/pendientes-comprobante",
+      "status": 503,
+      "fixture": true
+    },
+    {
+      "mode": "error",
+      "path": "/backend/notifications",
+      "status": 503,
+      "fixture": true
+    },
+    {
+      "mode": "partial",
+      "path": "/backend/notifications/badge",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "partial",
+      "path": "/backend/andon/avisos",
+      "status": 503,
+      "fixture": true
+    },
+    {
+      "mode": "partial",
+      "path": "/backend/inventario/stock",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "partial",
+      "path": "/backend/inventario/pendientes-comprobante",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "partial",
+      "path": "/backend/notifications",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "partial",
+      "path": "/backend/notifications/badge",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "partial",
+      "path": "/backend/andon/avisos",
+      "status": 503,
+      "fixture": true
+    },
+    {
+      "mode": "partial",
+      "path": "/backend/inventario/stock",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "partial",
+      "path": "/backend/inventario/pendientes-comprobante",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "partial",
+      "path": "/backend/notifications",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "error",
+      "path": "/backend/notifications/badge",
+      "status": 503,
+      "fixture": true
+    },
+    {
+      "mode": "error",
+      "path": "/backend/unidades",
+      "status": 503,
+      "fixture": true
+    },
+    {
+      "mode": "error",
+      "path": "/backend/unidades",
+      "status": 503,
+      "fixture": true
+    },
+    {
+      "mode": "partial",
+      "path": "/backend/notifications/badge",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "partial",
+      "path": "/backend/unidades",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "partial",
+      "path": "/backend/notifications/badge",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "partial",
+      "path": "/backend/unidades",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "partial",
+      "path": "/backend/unidades/test-u1/visitas",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "partial",
+      "path": "/backend/unidades/test-u1/visitas",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "partial",
+      "path": "/backend/visitas/test-v1",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "partial",
+      "path": "/backend/inventario/items",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "error",
+      "path": "/backend/notifications/badge",
+      "status": 503,
+      "fixture": true
+    },
+    {
+      "mode": "error",
+      "path": "/backend/andon/avisos",
+      "status": 503,
+      "fixture": true
+    },
+    {
+      "mode": "error",
+      "path": "/backend/inventario/stock",
+      "status": 503,
+      "fixture": true
+    },
+    {
+      "mode": "error",
+      "path": "/backend/inventario/pendientes-comprobante",
+      "status": 503,
+      "fixture": true
+    },
+    {
+      "mode": "error",
+      "path": "/backend/notifications",
+      "status": 503,
+      "fixture": true
+    },
+    {
+      "mode": "error",
+      "path": "/backend/notifications/badge",
+      "status": 503,
+      "fixture": true
+    },
+    {
+      "mode": "error",
+      "path": "/backend/andon/avisos",
+      "status": 503,
+      "fixture": true
+    },
+    {
+      "mode": "error",
+      "path": "/backend/inventario/stock",
+      "status": 503,
+      "fixture": true
+    },
+    {
+      "mode": "error",
+      "path": "/backend/inventario/pendientes-comprobante",
+      "status": 503,
+      "fixture": true
+    },
+    {
+      "mode": "error",
+      "path": "/backend/notifications",
+      "status": 503,
+      "fixture": true
+    },
+    {
+      "mode": "partial",
+      "path": "/backend/notifications/badge",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "partial",
+      "path": "/backend/andon/avisos",
+      "status": 503,
+      "fixture": true
+    },
+    {
+      "mode": "partial",
+      "path": "/backend/inventario/stock",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "partial",
+      "path": "/backend/inventario/pendientes-comprobante",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "partial",
+      "path": "/backend/notifications",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "partial",
+      "path": "/backend/notifications/badge",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "partial",
+      "path": "/backend/andon/avisos",
+      "status": 503,
+      "fixture": true
+    },
+    {
+      "mode": "partial",
+      "path": "/backend/inventario/stock",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "partial",
+      "path": "/backend/inventario/pendientes-comprobante",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "partial",
+      "path": "/backend/notifications",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "error",
+      "path": "/backend/notifications/badge",
+      "status": 503,
+      "fixture": true
+    },
+    {
+      "mode": "error",
+      "path": "/backend/unidades",
+      "status": 503,
+      "fixture": true
+    },
+    {
+      "mode": "error",
+      "path": "/backend/unidades",
+      "status": 503,
+      "fixture": true
+    },
+    {
+      "mode": "partial",
+      "path": "/backend/notifications/badge",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "partial",
+      "path": "/backend/unidades",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "partial",
+      "path": "/backend/notifications/badge",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "partial",
+      "path": "/backend/unidades",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "partial",
+      "path": "/backend/unidades/test-u1/visitas",
+      "status": 200,
+      "fixture": true
+    },
+    {
+      "mode": "partial",
+      "path": "/backend/unidades/test-u1/visitas",
+      "status": 200,
+      "fixture": true
+    }
+  ]
+}

@@ -9,9 +9,12 @@ import {
   PiezasReadonly,
   PiezasStep,
   hydratePiezasFromInventario,
+  lineasDesdeVisita,
   piezasInsuficientes,
   type PiezaLinea,
 } from '@/components/PiezasStep';
+import { ReadStatus } from '@/components/ReadStatus';
+import { useReadResource } from '@/lib/use-read-resource';
 import { api, HttpError } from '@/lib/api';
 import { ImageDropzone } from '@/components/ImageDropzone';
 import { VisitStepper } from '@/components/VisitStepper';
@@ -76,57 +79,17 @@ function VisitaContent() {
   const returnTo = safeUnidadesReturnTo(searchParams.get('returnTo'));
   const hubHref = withUnidadesReturnTo(`/unidades/${params.id}`, returnTo);
   const { role, userId, isAdmin } = useRole();
-  const [visita, setVisita] = useState<VisitaDetalle | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [notFound, setNotFound] = useState(false);
-
-  useEffect(() => {
-    if (!role || !params.visitaId) return;
-    void (async () => {
-      try {
-        setVisita(
-          await api<VisitaDetalle>(`/visitas/${params.visitaId}`, {
-            role,
-            userId,
-          }),
-        );
-      } catch (err) {
-        if (err instanceof HttpError && err.status === 404) {
-          setNotFound(true);
-        } else {
-          setError(
-            err instanceof HttpError
-              ? err.message
-              : 'No se pudo cargar la visita.',
-          );
-        }
-      }
-    })();
-  }, [params.visitaId, role, userId]);
-
-  if (notFound) {
-    return (
-      <div className="empty-state">
-        <h2>No se encontró la visita.</h2>
-<Button asChild variant="outline">
-          <Link href={hubHref}>Volver al hub</Link>
-        </Button>
-      </div>
-    );
-  }
-
-  if (error && !visita) {
-    return (
-      <div className="error-state">
-        <h2>No se pudo abrir la visita</h2>
-        <p>{error}</p>
-      </div>
-    );
-  }
-
-  if (!visita) {
-    return <p className="muted">Cargando visita…</p>;
-  }
+  const read = useReadResource(role ? JSON.stringify([role, userId, params.visitaId]) : null,
+    () => api<VisitaDetalle>(`/visitas/${params.visitaId}`, { role: role!, userId }));
+  const visita = read.data;
+  const setVisita = read.setData;
+  const unavailable = read.error instanceof HttpError && read.error.status === 404;
+  if (!visita) return <>
+    <ReadStatus loading={read.loading} error={read.error} loadingText="Cargando visita…"
+      errorText={unavailable ? 'La visita no está disponible para este acceso.' : 'No se pudo abrir la visita.'} retry={read.retry} />
+    {unavailable ? <p className="muted">ID: {params.visitaId}</p> : null}
+    <Button asChild variant="outline"><Link href={hubHref}>Volver al hub</Link></Button>
+  </>;
 
   if (visita.estado === 'CERRADO' || isAdmin) {
     return <VisitaReadonly visita={visita} hubHref={hubHref} />;
@@ -134,6 +97,7 @@ function VisitaContent() {
 
   return (
     <VisitWizard
+      key={JSON.stringify([role, userId, visita.id])}
       unidadId={params.id}
       visita={visita}
       onChange={setVisita}
@@ -150,14 +114,9 @@ function VisitaReadonly({
   hubHref: string;
 }) {
   const { role, userId } = useRole();
-  const [piezas, setPiezas] = useState<PiezaLinea[]>([]);
-
-  useEffect(() => {
-    if (!role) return;
-    void hydratePiezasFromInventario(visita.piezas ?? [], { role, userId })
-      .then(setPiezas)
-      .catch(() => setPiezas([]));
-  }, [role, userId, visita.piezas]);
+  const piezaRead = useReadResource(role ? JSON.stringify([role, userId, visita.id, visita.piezas]) : null,
+    () => hydratePiezasFromInventario(visita.piezas ?? [], { role: role!, userId }));
+  const piezas = piezaRead.data ?? lineasDesdeVisita(visita.piezas ?? []);
 
   return (
     <>
@@ -234,6 +193,9 @@ function VisitaReadonly({
           )}
         </section>
 
+        <ReadStatus loading={piezaRead.loading && visita.piezas.length > 0} error={piezaRead.error}
+          loadingText="Cargando datos de las piezas…" errorText="No se pudieron consultar las piezas. Se conservan cantidades y origen."
+          retry={piezaRead.retry} retryLabel="Reintentar piezas" />
         <PiezasReadonly piezas={piezas} />
 
         <section className="doc-section">
@@ -276,9 +238,22 @@ function VisitWizard({
   const { role, userId } = useRole();
   const router = useRouter();
   const [step, setStep] = useState<StepId>('datos');
-  const [choferes, setChoferes] = useState<Chofer[]>([]);
-  const [choferesListos, setChoferesListos] = useState(false);
-  const [catalogo, setCatalogo] = useState<CatalogoCategoria[]>([]);
+  const opts = { role: role!, userId };
+  const actorKey = role ? JSON.stringify([role, userId, unidadId, visita.id]) : null;
+  const driversRead = useReadResource(actorKey, () => api<Chofer[]>('/choferes?estado=ACTIVO', opts));
+  const catalogRead = useReadResource(actorKey, () => api<CatalogoCategoria[]>('/catalogo/trabajos', opts));
+  const hubRead = useReadResource(actorKey, () => api<{ fichaCorta: { ultimoKm: number | null } }>(`/unidades/${unidadId}/hub`, opts));
+  const piecesRead = useReadResource(actorKey ? JSON.stringify([actorKey, visita.piezas]) : null,
+    () => hydratePiezasFromInventario(visita.piezas ?? [], opts));
+  const stockRead = useReadResource(actorKey && step === 'piezas' && visita.tipoVehiculoId
+    ? JSON.stringify([actorKey, 'stock', visita.tipoVehiculoId]) : null,
+    () => api<SkuCompatible[]>(`/inventario/skus?tipoVehiculoId=${visita.tipoVehiculoId}`, opts));
+  const choferes = driversRead.data ?? [];
+  const choferesListos = driversRead.data !== null;
+  const catalogo = catalogRead.data ?? [];
+  const ultimoKm = hubRead.data?.fichaCorta.ultimoKm ?? null;
+  const relacionesListas = [driversRead, catalogRead, hubRead, piecesRead].every((source) => !source.loading && !source.error && source.data !== null);
+
   const [choferId, setChoferId] = useState(visita.chofer?.id ?? '');
   const [km, setKm] = useState(visita.km != null ? String(visita.km) : '');
   const [tipo, setTipo] = useState<TipoVisita | ''>(visita.tipo ?? '');
@@ -295,71 +270,23 @@ function VisitWizard({
   const [firmaJefe, setFirmaJefe] = useState(
     visita.firmas.find((f) => f.tipo === 'JEFE')?.dataUrl ?? '',
   );
-  const [piezas, setPiezas] = useState<PiezaLinea[]>([]);
+  const [piezas, setPiezas] = useState<PiezaLinea[]>(() => lineasDesdeVisita(visita.piezas ?? []));
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
-  const [ultimoKm, setUltimoKm] = useState<number | null>(null);
-
   useEffect(() => {
-    void (async () => {
-      try {
-        const [lista, cats, hub] = await Promise.all([
-          api<Chofer[]>('/choferes?estado=ACTIVO', { role: role!, userId }),
-          api<CatalogoCategoria[]>('/catalogo/trabajos', { role: role!, userId }),
-          api<{ fichaCorta: { ultimoKm: number | null } }>(
-            `/unidades/${unidadId}/hub`,
-            { role: role!, userId },
-          ),
-        ]);
-        setChoferes(lista);
-        setChoferesListos(true);
-        setCatalogo(cats);
-        setUltimoKm(hub.fichaCorta.ultimoKm);
-        setPiezas(
-          await hydratePiezasFromInventario(visita.piezas ?? [], {
-            role: role!,
-            userId,
-          }),
-        );
-      } catch (err) {
-        setError(
-          err instanceof HttpError
-            ? err.message
-            : 'No se pudieron cargar los catálogos.',
-        );
-      }
-    })();
-  }, [role, userId, unidadId, visita.piezas]);
-
+    if (!piecesRead.data) return;
+    const metadata = new Map(piecesRead.data.map((line) => [line.itemId, line]));
+    setPiezas((current) => current.map((line) => {
+      const match = metadata.get(line.itemId);
+      return match ? { ...match, qty: line.qty, origen: line.origen } : line;
+    }));
+  }, [piecesRead.data]);
   useEffect(() => {
-    if (!choferesListos) return;
-    if (choferId && !choferes.some((c) => c.id === choferId)) {
-      setChoferId('');
-    }
-  }, [choferes, choferesListos, choferId]);
-
-  useEffect(() => {
-    if (step !== 'piezas' || !visita.tipoVehiculoId || !role) return;
-    void (async () => {
-      try {
-        const data = await api<SkuCompatible[]>(
-          `/inventario/skus?tipoVehiculoId=${visita.tipoVehiculoId}`,
-          { role, userId },
-        );
-        const stockById = new Map(data.map((item) => [item.id, item.stock]));
-        setPiezas((current) =>
-          current.map((linea) =>
-            stockById.has(linea.itemId)
-              ? { ...linea, stock: stockById.get(linea.itemId)! }
-              : linea,
-          ),
-        );
-      } catch {
-        /* el paso Piezas muestra su propio error de búsqueda */
-      }
-    })();
-  }, [step, visita.tipoVehiculoId, role, userId]);
+    if (!stockRead.data) return;
+    const stock = new Map(stockRead.data.map((item) => [item.id, item.stock]));
+    setPiezas((current) => current.map((line) => ({ ...line, stock: stock.get(line.itemId) ?? null })));
+  }, [stockRead.data]);
 
   const sinChoferesActivos = choferesListos && choferes.length === 0;
   const stepIndex = STEPS.findIndex((s) => s.id === step);
@@ -374,9 +301,13 @@ function VisitWizard({
   );
 
   async function persist(extra?: Record<string, unknown>) {
+    if (!relacionesListas || (step === 'piezas' && (stockRead.loading || stockRead.error))) {
+      setError('Completa la carga de los datos antes de guardar. Se conservan los cambios de este borrador.');
+      return null;
+    }
     if (piezasInsuficientes(piezas).length) {
       setError(
-        'Hay piezas que superan el stock. Use compra externa o reduzca la cantidad.',
+        'Verifica el stock no disponible. Para piezas con stock insuficiente, usa compra externa o reduce la cantidad.',
       );
       return null;
     }
@@ -430,7 +361,7 @@ function VisitWizard({
     }
     if (step === 'piezas' && piezasInsuficientes(piezas).length) {
       setError(
-        'Hay piezas que superan el stock. Use compra externa o reduzca la cantidad.',
+        'Verifica el stock no disponible. Para piezas con stock insuficiente, usa compra externa o reduce la cantidad.',
       );
       return;
     }
@@ -487,7 +418,7 @@ function VisitWizard({
   if (!firmaChofer || !firmaJefe) faltantes.push('Firmas de chofer y jefe de mecánicos / taller');
   const bloqueoStock = piezasInsuficientes(piezas);
   if (bloqueoStock.length) {
-    faltantes.push('Piezas con stock insuficiente (compra externa o reduzca la cantidad)');
+    faltantes.push('Piezas con stock no disponible o insuficiente (verifique stock; para faltantes use compra externa o reduzca la cantidad)');
   }
 
   const choferNombre =
@@ -515,7 +446,7 @@ function VisitWizard({
             Último km cerrado:{' '}
             {ultimoKm != null
               ? `${ultimoKm.toLocaleString('es-MX')} km`
-              : 'Sin registro'}
+              : hubRead.data ? 'Sin registro' : hubRead.loading ? 'Cargando…' : 'No disponible'}
           </>
         }
         actions={
@@ -523,7 +454,7 @@ function VisitWizard({
             type="button"
             variant="outline"
             size="compact"
-            disabled={saving}
+            disabled={saving || !relacionesListas}
             onClick={() =>
               void persist().then((saved) => {
                 if (saved) router.push(hubHref);
@@ -536,6 +467,11 @@ function VisitWizard({
       />
 
       {error ? <FormAlert>{error}</FormAlert> : null}
+      <ReadStatus loading={driversRead.loading} error={driversRead.error} loadingText="Cargando choferes…" errorText="No se pudieron cargar los choferes." retry={driversRead.retry} retryLabel="Reintentar choferes" />
+      <ReadStatus loading={catalogRead.loading} error={catalogRead.error} loadingText="Cargando trabajos…" errorText="No se pudo cargar el catálogo de trabajos." retry={catalogRead.retry} retryLabel="Reintentar trabajos" />
+      <ReadStatus loading={hubRead.loading} error={hubRead.error} loadingText="Cargando kilometraje anterior…" errorText="No se pudo consultar el kilometraje anterior." retry={hubRead.retry} retryLabel="Reintentar kilometraje" />
+      <ReadStatus loading={piecesRead.loading && visita.piezas.length > 0} error={piecesRead.error} loadingText="Cargando piezas guardadas…" errorText="No se pudieron cargar los datos de las piezas guardadas. Se conservan cantidades y origen." retry={piecesRead.retry} retryLabel="Reintentar piezas guardadas" />
+      {step === 'piezas' ? <ReadStatus loading={stockRead.loading} error={stockRead.error} loadingText="Actualizando stock de las piezas…" errorText="No se pudo actualizar el stock de las piezas." retry={stockRead.retry} retryLabel="Reintentar stock" /> : null}
 
       <VisitStepper
         steps={STEPS}
@@ -561,7 +497,7 @@ function VisitWizard({
                 id="choferId"
                 value={choferId}
                 onChange={(e) => setChoferId(e.target.value)}
-                disabled={sinChoferesActivos}
+                disabled={!choferesListos || sinChoferesActivos}
               >
                 <option value="">Seleccione un chofer</option>
                 {choferes.map((c) => (
@@ -760,9 +696,9 @@ function VisitWizard({
           <Button
             type="button"
             disabled={
-              saving ||
+              saving || !relacionesListas ||
               (step === 'datos' && sinChoferesActivos) ||
-              (step === 'piezas' && bloqueoStock.length > 0)
+              (step === 'piezas' && (stockRead.loading || Boolean(stockRead.error) || bloqueoStock.length > 0))
             }
             onClick={() => void continuar()}
           >
@@ -771,7 +707,7 @@ function VisitWizard({
         ) : (
           <Button
             type="button"
-            disabled={saving || faltantes.length > 0}
+            disabled={saving || !relacionesListas || faltantes.length > 0}
             onClick={() => setConfirmOpen(true)}
           >
             {saving ? 'Cerrando…' : 'Cerrar visita'}
@@ -793,7 +729,7 @@ function VisitWizard({
               piezas.map((linea) => (
                 <li key={linea.itemId}>
                   {linea.origen === 'DESDE_STOCK'
-                    ? `${linea.sku} · ${linea.qty} ${etiquetaUom(linea.uom)} desde stock · quedarán ${linea.stock - linea.qty}`
+                    ? `${linea.sku} · ${linea.qty} ${etiquetaUom(linea.uom)} desde stock · quedarán ${linea.stock !== null ? linea.stock - linea.qty : 'no disponible'}`
                     : `${linea.sku} · ${linea.qty} ${etiquetaUom(linea.uom)} compra externa · no mueve existencias; abre por recibir`}
                 </li>
               ))

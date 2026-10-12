@@ -1,0 +1,9 @@
+{
+  "at": "2026-10-11 UTC",
+  "source": "Computed DOM E15 white rgb(255,255,255) / orange rgb(234,117,21); WCAG relative luminance sRGB",
+  "foreground": "#FFFFFF",
+  "background": "#EA7515",
+  "ratio": 2.9771062518816596,
+  "normalTextMinimum": 4.5,
+  "note": "CTA 14px normal/medium; fails normal text contrast. Static calculation, not full accessibility certification."
+}

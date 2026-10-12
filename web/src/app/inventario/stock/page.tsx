@@ -4,6 +4,8 @@ import { AlertTriangle, List, PackageX, type LucideIcon } from 'lucide-react';
 import { FormEvent, Suspense, useEffect, useMemo, useState } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { ColumnDef } from '@tanstack/react-table';
+import { ReadStatus } from '@/components/ReadStatus';
+import { useReadResource } from '@/lib/use-read-resource';
 import { api, HttpError } from '@/lib/api';
 import { etiquetaMinimo, etiquetaUom, magnitudExistencia } from '@/lib/format';
 import { notifyInboxChanged } from '@/lib/inbox';
@@ -86,9 +88,15 @@ function StockContent() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const filtro = parseAlerta(searchParams.get('alerta'));
-  const [rows, setRows] = useState<StockRow[]>([]);
-  const [tipos, setTipos] = useState<TipoVehiculo[]>([]);
-  const [proveedores, setProveedores] = useState<Proveedor[]>([]);
+  const read = useReadResource(role ? JSON.stringify([role, userId, 'stock']) : null,
+    () => api<StockRow[]>('/inventario/stock', { role: role!, userId }));
+  const rows = useMemo(() => read.data ?? [], [read.data]);
+  const tipoRead = useReadResource(role ? JSON.stringify([role, userId, 'tipos']) : null,
+    () => api<TipoVehiculo[]>('/unidades/tipos', { role: role!, userId }));
+  const provRead = useReadResource(role ? JSON.stringify([role, userId, 'proveedores']) : null,
+    () => api<Proveedor[]>('/inventario/proveedores', { role: role!, userId }));
+  const tipos = tipoRead.data ?? [];
+  const proveedores = (provRead.data ?? []).filter((p) => p.activo);
   const [error, setError] = useState<string | null>(null);
   const [minDraft, setMinDraft] = useState<Record<string, string>>({});
   const [ficha, setFicha] = useState<ItemInventario | null>(null);
@@ -98,33 +106,10 @@ function StockContent() {
   const [alertasOpen, setAlertasOpen] = useState(false);
   const [savingAlertas, setSavingAlertas] = useState(false);
 
-  async function cargar() {
-    const [data, tps, provs] = await Promise.all([
-      api<StockRow[]>('/inventario/stock', { role: role!, userId }),
-      api<TipoVehiculo[]>('/unidades/tipos', { role: role!, userId }),
-      api<Proveedor[]>('/inventario/proveedores', { role: role!, userId }),
-    ]);
-    setRows(data);
-    setTipos(tps);
-    setProveedores(provs.filter((p) => p.activo));
-    setMinDraft(
-      Object.fromEntries(
-        data.map((row) => [row.itemId, row.minQty == null ? '' : String(row.minQty)]),
-      ),
-    );
-  }
-
+  function cargar() { read.retry(); }
   useEffect(() => {
-    if (!role) return;
-    void cargar().catch((err) => {
-      setError(
-        err instanceof HttpError
-          ? err.message
-          : 'No se pudieron cargar las existencias.',
-      );
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [role]);
+    if (read.data) setMinDraft(Object.fromEntries(read.data.map((row) => [row.itemId, row.minQty == null ? '' : String(row.minQty)])));
+  }, [read.data]);
 
   useEffect(() => {
     const selectedItem = searchParams.get('itemId');
@@ -256,14 +241,14 @@ function StockContent() {
                 setError(null);
                 setAlertasOpen(true);
               }}
-              disabled={rows.length === 0}
+              disabled={read.data === null || rows.length === 0 || tipoRead.data === null || provRead.data === null}
             >
               Configurar alertas
             </Button>
             <Button
               type="button"
               onClick={abrirEntrada}
-              disabled={rows.length === 0}
+              disabled={read.data === null || rows.length === 0 || tipoRead.data === null || provRead.data === null}
             >
               Registrar entrada
             </Button>
@@ -283,7 +268,9 @@ function StockContent() {
         }}
       />
       <FormAlert>{error}</FormAlert>
-      {rows.length > 0 || !error ? (
+      <ReadStatus loading={read.loading} error={read.error} loadingText="Cargando existencias…" errorText="No se pudieron cargar las existencias." retry={read.retry} />
+      <ReadStatus loading={tipoRead.loading || provRead.loading} error={tipoRead.error || provRead.error} loadingText="Cargando catálogos de refacciones…" errorText="Catálogos de refacciones no disponibles; las existencias cargadas se conservan." retry={() => { if (tipoRead.error) tipoRead.retry(); if (provRead.error) provRead.retry(); }} />
+      {read.data !== null ? (
         <DataTable
           columns={columns}
           data={filtered}

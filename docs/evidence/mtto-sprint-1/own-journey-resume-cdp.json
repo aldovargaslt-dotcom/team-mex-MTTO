@@ -1,0 +1,87 @@
+{
+  "mechanism": "Actual UI and local API/native PostgreSQL; only own newly created PRUEBA fixtures. Canvas strokes and evidence are synthetic; no human UX acceptance.",
+  "visitId": "3b13402d-aeac-4d15-958f-e1bc131a07cd",
+  "checks": [
+    {
+      "name": "AC10 reanudación notas",
+      "status": "PASS",
+      "detail": true
+    },
+    {
+      "name": "AC11 wizard móvil 44px",
+      "status": "PASS",
+      "detail": [
+        {
+          "text": "Atrás",
+          "h": 44,
+          "w": 63.296875
+        },
+        {
+          "text": "Cerrar visita",
+          "h": 44,
+          "w": 286.703125
+        }
+      ]
+    },
+    {
+      "name": "AC10 cierre relaciones",
+      "status": "PASS",
+      "detail": {
+        "id": "3b13402d-aeac-4d15-958f-e1bc131a07cd",
+        "estado": "CERRADO",
+        "unidadId": "9d18b9b9-b334-4143-8ac3-9abaf7f96984",
+        "trabajos": 1,
+        "piezas": 2,
+        "fotos": 1,
+        "firmas": [
+          "CHOFER",
+          "JEFE"
+        ]
+      }
+    },
+    {
+      "name": "AC10 salida stock 10−2=8",
+      "status": "PASS",
+      "detail": {
+        "qty": 8
+      }
+    },
+    {
+      "name": "AC10 externa pendiente sin entrada",
+      "status": "PASS",
+      "detail": {
+        "pendingId": "9644627d-516e-4827-819e-daf361d6cf48",
+        "qty": 4
+      }
+    },
+    {
+      "name": "AC10 comprobante no agrega stock",
+      "status": "PASS",
+      "detail": {
+        "qty": 0
+      }
+    },
+    {
+      "name": "AC10 RECIBIDA no entrada",
+      "status": "PASS",
+      "detail": {
+        "estado": "RECIBIDA"
+      }
+    },
+    {
+      "name": "AC10 consulta posterior",
+      "status": "PASS",
+      "detail": true
+    }
+  ],
+  "shots": [
+    "recorrido_reanudado_m390.png",
+    "recorrido_piezas_reanudadas_m390.png",
+    "recorrido_firmas_actuales_m390.png",
+    "recorrido_confirmar_m390.png",
+    "recorrido_confirmacion_cierre_m390.png",
+    "recorrido_ticket_m390.png",
+    "recorrido_consulta_posterior_m390.png",
+    "recorrido_consulta_posterior_d1440.png"
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "at": "2026-10-11T06:52:27.992Z",
+  "session": {
+    "mode": "OIDC",
+    "authenticated": true,
+    "roles": [
+      "ADMIN_DIRECTIVO",
+      "SUPERVISOR",
+      "LOGISTICA",
+      "MECANICO"
+    ],
+    "facilityCount": 1,
+    "authMode": "TRUSTED",
+    "attributionLevel": "SERVER_VERIFIED"
+  },
+  "source": "/backend/inventario/pendientes-comprobante",
+  "status": 200,
+  "rows": [
+    {
+      "id": "5d5fa3fc-3a6d-482a-ad72-70b0bd792665",
+      "visitaId": "f1c4ef48-04cf-4f4e-adeb-ae3a7b0bae2f",
+      "itemId": "2fdcd4be-a116-49ad-8901-0866337d725f",
+      "sku": "PAST-FR-01",
+      "qty": 4,
+      "estado": "PENDIENTE",
+      "createdAt": "2026-09-11T21:35:27.864Z",
+      "ticketPresent": false
+    },
+    {
+      "id": "6b13d04f-2cbe-4bbf-94cb-faeed0c53415",
+      "visitaId": "106f7dce-f53c-424a-ab9c-6e1676a31164",
+      "itemId": "8c723fb8-f294-443d-b84d-62505c95b281",
+      "sku": "FIL-ACEITE-01",
+      "qty": 11,
+      "estado": "PENDIENTE",
+      "createdAt": "2026-09-11T20:02:12.891Z",
+      "ticketPresent": false
+    }
+  ],
+  "domainWritesPerformed": false
+}

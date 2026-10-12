@@ -1,0 +1,35 @@
+{
+  "at": "2026-10-11T07:05:30.000Z",
+  "styles": [
+    {
+      "label": "Adjuntar ticket",
+      "color": "rgb(255, 255, 255)",
+      "background": "rgb(234, 117, 21)",
+      "font": "13px",
+      "weight": "500",
+      "width": 109.21875,
+      "height": 44
+    },
+    {
+      "label": "Adjuntar ticket",
+      "color": "rgb(255, 255, 255)",
+      "background": "rgb(234, 117, 21)",
+      "font": "13px",
+      "weight": "500",
+      "width": 109.21875,
+      "height": 44
+    }
+  ],
+  "motion": {
+    "reduce": true,
+    "animation": "enter",
+    "duration": "0.3s",
+    "transition": "0.3s"
+  },
+  "escape": {
+    "dialog": false,
+    "activeTag": "BODY",
+    "activeText": "2\nInicio\nÓrdenes\nUnidades\nInve"
+  },
+  "methods": "Computed CSS; CDP keyboard Escape real; no lector ni WCAG completa"
+}

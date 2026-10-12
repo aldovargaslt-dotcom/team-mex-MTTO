@@ -1,0 +1,191 @@
+{
+  "origin": "https://team-mex-mtto-eight.vercel.app",
+  "path": "/unidades/22e513d8-1556-457d-bed8-594204033607",
+  "title": "Team Mex — Mantenimiento",
+  "text": "2\nInicio\nÓrdenes\nUnidades\nInventario\nVolver a unidades\n\nUnidades › CHATO NUEVO\n\nContinuar orden\nCHATO NUEVO\nActiva\n\nCAMIONES 3 Y MEDIA\n\nPLACAS\nWR2023C\nÚLTIMA ACTUALIZACIÓN\n26/09/2026, 20:00\n98%\nSALUD DE LA UNIDAD\nExcelente\n\nSECCIONES\n\nResumen\nDatos de unidad\nMantenimiento\nHistorial\nMantenimiento\nVisitas abiertas\nCorrectivo\n120,000 km · DON MIGUEL · 10/10/2026, 16:26\nContinuar\nEliminar",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "overflow": false,
+  "controls": [
+    {
+      "tag": "A",
+      "text": "",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/inicio",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "2",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/notificaciones",
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Abrir menú",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Inicio",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/inicio",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Órdenes",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/ordenes",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Unidades",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/unidades",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Inventario",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/inventario",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Volver a unidades",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/unidades",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Unidades",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/unidades",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Continuar orden",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/unidades/22e513d8-1556-457d-bed8-594204033607/visitas/9c962bcb-c1ff-4f17-a3b8-0b16a493bc4e",
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "98%\nSALUD DE LA UNIDAD\nExcelente",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Resumen",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/unidades/22e513d8-1556-457d-bed8-594204033607",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Datos de unidad",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/unidades/22e513d8-1556-457d-bed8-594204033607",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Mantenimiento",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/unidades/22e513d8-1556-457d-bed8-594204033607",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Historial",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/unidades/22e513d8-1556-457d-bed8-594204033607",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Continuar",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/unidades/22e513d8-1556-457d-bed8-594204033607/visitas/9c962bcb-c1ff-4f17-a3b8-0b16a493bc4e",
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Eliminar",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    }
+  ],
+  "at": "2026-10-11T06:42:54.809Z",
+  "network": [
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/unidades/22e513d8-1556-457d-bed8-594204033607",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/unidades/22e513d8-1556-457d-bed8-594204033607",
+      "status": 200
+    }
+  ],
+  "requests": [
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/unidades/22e513d8-1556-457d-bed8-594204033607",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/unidades/22e513d8-1556-457d-bed8-594204033607",
+      "method": "GET"
+    }
+  ]
+}

@@ -1,0 +1,356 @@
+{
+  "origin": "https://team-mex-mtto-eight.vercel.app",
+  "path": "/inventario",
+  "title": "Team Mex — Mantenimiento",
+  "text": "Inicio\nÓrdenes\nMovimientos\nUnidades\nMantenimiento vencido\nInventario\nChoferes\nConfiguración\n2\nADMINISTRADOR DIRECTIVO\nElegir rol\nCerrar sesión\nRefacciones\nExistencias\nMovimientos\nConsumo\nPor recibir\nCatálogo\nRefacciones\nNueva refacción\nBuscar\nSKU\tNOMBRE\tCATEGORÍA\tSTOCK\tESTADO\t\nAUD-UX-20261011-PZA\t\nPrueba auditoría UX/UI\n\tFiltros\t\n0 pza\n—\n\tACTIVO\t\nInactivar\n\nFIL-ACEITE-01\t\nFiltro de aceite\nOEM OEM-FIL-01\n\tFiltros\t\n10 pza\n—\n\tACTIVO\t\nInactivar\n\nFIL-CAB-01\t\nFiltro de cabina\n\tFiltros\t\n5 pza\n—\n\tACTIVO\t\nInactivar\n\nPAST-FR-01\t\nPastillas de freno\nOEM OEM-PAST-01\n\tFrenos\t\n2 pza\nBAJO\n\tACTIVO\t\nInactivar\nPrueba auditoría UX/UIAUD-UX-20261011-PZA · Filtros0 pza—\nACTIVOInactivar\nFiltro de aceiteFIL-ACEITE-01 · Filtros10 pza—\nACTIVOInactivar\nFiltro de cabinaFIL-CAB-01 · Filtros5 pza—\nACTIVOInactivar\nPastillas de frenoPAST-FR-01 · Frenos2 pzaBAJO\nACTIVOInactivar",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "overflow": false,
+  "controls": [
+    {
+      "tag": "A",
+      "text": "",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/inicio",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Inicio",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/inicio",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Órdenes",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/ordenes",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Movimientos",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/flota",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Unidades",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/unidades",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Mantenimiento vencido",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/andon",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Inventario",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/inventario",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Choferes",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/choferes",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Configuración",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/configuracion/alertas",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "2",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/notificaciones",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Elegir rol",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/",
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Cerrar sesión",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Refacciones",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/inventario",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Existencias",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/inventario/stock",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Movimientos",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/inventario/movimientos",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Consumo",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/inventario/consumo",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Por recibir",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/inventario/pendientes",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Catálogo",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/inventario/familias",
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Nueva refacción",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "INPUT",
+      "text": "Nombre, código o categoría",
+      "type": null,
+      "name": null,
+      "id": "itemSearch",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Inactivar",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Inactivar",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Inactivar",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Inactivar",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Prueba auditoría UX/UIAUD-UX-20261011-PZA · Filtros0 pza—",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Inactivar",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Filtro de aceiteFIL-ACEITE-01 · Filtros10 pza—",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Inactivar",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Filtro de cabinaFIL-CAB-01 · Filtros5 pza—",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Inactivar",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Pastillas de frenoPAST-FR-01 · Frenos2 pzaBAJO",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Inactivar",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    }
+  ],
+  "at": "2026-10-11T06:57:12.104Z",
+  "network": [
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/inventario/items",
+      "status": 201
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/unidades/tipos",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/inventario/familias",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/inventario/proveedores",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/inventario/items",
+      "status": 200
+    }
+  ],
+  "requests": [
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/inventario/items",
+      "method": "POST"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/inventario/items",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/inventario/familias",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/unidades/tipos",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/inventario/proveedores",
+      "method": "GET"
+    }
+  ]
+}

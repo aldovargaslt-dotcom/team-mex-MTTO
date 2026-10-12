@@ -1,0 +1,277 @@
+{
+  "origin": "https://team-mex-mtto-eight.vercel.app",
+  "path": "/ordenes",
+  "title": "Team Mex — Mantenimiento",
+  "text": "2\nInicio\nÓrdenes\nUnidades\nInventario\nÓrdenes\nCHATO NUEVO\n\nOT · 9C962BCB\n\nComentarios\nContinuar\nCapturar en esta orden\nAgregar pieza · 0\nSubir foto · 0 de 8\nBorrador\nFecha de apertura\n09/10/2026, 08:30\nFecha de cierre\nSin cerrar\nTiempo de cerrado\nSin cerrar\nTipo de mantenimiento\n\nCorrectivo\n\nTrabajos\nB · Balatas delanteras / traseras\nImágenes\n\nSin imágenes.\n\nComentarios\n\nSin comentarios.\n\nSKU\n\nSin piezas en esta orden.\n\nNueva orden\n\nSelecciona una unidad activa y captura los datos iniciales.\n\nCHATO NUEVO\nWR2023C · CAMIONES 3 Y MEDIA\nDUCATO 2021\nVU2626C · RUTAS\nDUCATO 2023\nVU2627C · RUTAS\nFORD 2017\nVU2624C · CAMIONES 3 Y MEDIA\nFOTON\nVU2625C · STOCK\nNISSAN CERRADA\nVU2630C · RUTAS\nNISSAN REDILAS\nVU2632C · STOCK\nRAM CODISA\nVU2622C · CAMIONES 3 Y MEDIA\nRAM FORANEO\n63AL5K · CAMIONES 3 Y MEDIA\nTOYOTA 2017\nVU2628C · RUTAS\nTRANSIT 2023\nWH9236C · RUTAS\nURVAN\nVU2629C · STOCK\nURVAN 2018\nVU2634C · RUTAS\nCancelar\nCrear y continuar\nCerrar",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "overflow": false,
+  "controls": [
+    {
+      "tag": "A",
+      "text": "",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/inicio",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "2",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/notificaciones",
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Abrir menú",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Inicio",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/inicio",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Órdenes",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/ordenes",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Unidades",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/unidades",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Inventario",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/inventario",
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Órdenes",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Comentarios",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "#orden-comentarios",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Continuar",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/unidades/22e513d8-1556-457d-bed8-594204033607/visitas/9c962bcb-c1ff-4f17-a3b8-0b16a493bc4e",
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Agregar pieza · 0",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Subir foto · 0 de 8",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "INPUT",
+      "text": "Buscar unidad activa",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "CHATO NUEVO\nWR2023C · CAMIONES 3 Y MEDIA",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "DUCATO 2021\nVU2626C · RUTAS",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "DUCATO 2023\nVU2627C · RUTAS",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "FORD 2017\nVU2624C · CAMIONES 3 Y MEDIA",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "FOTON\nVU2625C · STOCK",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "NISSAN CERRADA\nVU2630C · RUTAS",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "NISSAN REDILAS\nVU2632C · STOCK",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "RAM CODISA\nVU2622C · CAMIONES 3 Y MEDIA",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "RAM FORANEO\n63AL5K · CAMIONES 3 Y MEDIA",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "TOYOTA 2017\nVU2628C · RUTAS",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "TRANSIT 2023\nWH9236C · RUTAS",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "URVAN\nVU2629C · STOCK",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "URVAN 2018\nVU2634C · RUTAS",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Cancelar",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Crear y continuar",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": true
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Cerrar",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    }
+  ],
+  "at": "2026-10-11T06:43:54.312Z",
+  "network": [],
+  "requests": []
+}

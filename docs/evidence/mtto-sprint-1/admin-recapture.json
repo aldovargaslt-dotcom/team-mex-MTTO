@@ -1,0 +1,9 @@
+{
+  "status": "PASS",
+  "headerTop": 0,
+  "headerHeight": 56,
+  "role": "ADMIN_DIRECTIVO",
+  "url": "/ordenes",
+  "body": "?\nÓrdenes\nPRUEBA-UX-1\nOT · TEST-V1\nCorrectivo\nPRUEBA-UX-2\nOT · TEST-V2\nCorrectivo\nPRUEBA-UX-3\nOT · TEST-V3\nCorrectivo",
+  "reason": "Explicitly restore top scroll and wait for rendered shell before capture."
+}

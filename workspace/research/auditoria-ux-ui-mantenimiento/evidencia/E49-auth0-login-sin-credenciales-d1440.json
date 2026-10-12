@@ -1,0 +1,79 @@
+{
+  "origin": "https://dev-u65j6nt6tw8w5fc4.us.auth0.com",
+  "path": "/u/login",
+  "title": "Log in | Team Mex MTTO (Test Application)",
+  "text": "Welcome\n\nLog in to dev-u65j6nt6tw8w5fc4 to continue to Team Mex MTTO (Test Application).\n\nEmail address *\nPassword *\n\nReset password\n\nContinue\n\nDon't have an account? Sign up\n\nOR\nContinue with Google",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "overflow": false,
+  "controls": [
+    {
+      "tag": "INPUT",
+      "text": "",
+      "type": "text",
+      "name": "username",
+      "id": "username",
+      "disabled": false
+    },
+    {
+      "tag": "INPUT",
+      "text": "",
+      "type": "password",
+      "name": "password",
+      "id": "password",
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Show password",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Reset password",
+      "type": null,
+      "name": null,
+      "id": "",
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Continue",
+      "type": "submit",
+      "name": "action",
+      "id": "",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Sign up",
+      "type": null,
+      "name": null,
+      "id": "",
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Continue with Google",
+      "type": "submit",
+      "name": null,
+      "id": "",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Link to the Auth0 website",
+      "type": null,
+      "name": null,
+      "id": "",
+      "disabled": false
+    }
+  ],
+  "at": "2026-10-11T06:38:16.146Z",
+  "network": []
+}

@@ -1,0 +1,61 @@
+{
+  "at": "2026-10-11T04:55:52.806Z",
+  "reducedMotion": {
+    "matches": true,
+    "dialogs": [
+      {
+        "slot": "sheet-overlay",
+        "animation": "0.15s",
+        "transition": "0s"
+      },
+      {
+        "slot": "sheet-content",
+        "animation": "0.3s",
+        "transition": "0.3s"
+      }
+    ]
+  },
+  "focusCycle": [
+    {
+      "tag": "BUTTON",
+      "text": "Cerrar",
+      "label": null,
+      "inDialog": true
+    },
+    {
+      "tag": "INPUT",
+      "text": "",
+      "label": "Buscar unidad activa",
+      "inDialog": true
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Cancelar",
+      "label": null,
+      "inDialog": true
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Cerrar",
+      "label": null,
+      "inDialog": true
+    },
+    {
+      "tag": "INPUT",
+      "text": "",
+      "label": "Buscar unidad activa",
+      "inDialog": true
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Cancelar",
+      "label": null,
+      "inDialog": true
+    }
+  ],
+  "afterEscape": {
+    "tag": "BODY",
+    "text": "BODY",
+    "hasDialog": false
+  }
+}

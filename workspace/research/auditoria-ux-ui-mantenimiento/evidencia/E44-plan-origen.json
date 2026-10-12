@@ -1,0 +1,14 @@
+{
+  "at": "2026-10-11 05:34:47 UTC",
+  "repository": "aldovargaslt-dotcom/team-mex-MTTO",
+  "requestedBranch": "codex/plan-auditoria-ux-ui",
+  "requestedRef": "7b149ca",
+  "resolvedCommit": "7b149ca82a6cb8005797b956ad53ad224563b5fb",
+  "blobSha": "15e944c2f0cc34fc970becd130651818e55dbebd",
+  "sourceUrl": "https://github.com/aldovargaslt-dotcom/team-mex-MTTO/blob/7b149ca/workspace/shaping/plan-auditoria-ux-ui-team-mex.md",
+  "sourcePath": "workspace/shaping/plan-auditoria-ux-ui-team-mex.md",
+  "snapshot": "E44-plan-7b149ca.txt",
+  "method": "GitHub connector fetch_file with pinned ref; fetch_commit for full SHA",
+  "applicationEvaluatedCommit": "39ce14db9b287ad46074900e8028b1a127cd166c",
+  "note": "Source snapshot only; no checkout switch or canonical plan edit. This is documentary evidence, not runtime evidence."
+}

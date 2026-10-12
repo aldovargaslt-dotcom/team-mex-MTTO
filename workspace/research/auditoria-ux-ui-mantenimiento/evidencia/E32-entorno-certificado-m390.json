@@ -1,0 +1,77 @@
+{
+  "url": "chrome-error://chromewebdata/",
+  "title": "Privacy error",
+  "text": "Your connection is not private\n\nAttackers might be trying to steal your information from team-mex-mtto-eight.vercel.app (for example, passwords, messages, or credit cards). Learn more about this warning\n\nNET::ERR_CERT_AUTHORITY_INVALID\nTurn on enhanced protection to get Chrome's highest level of security\nReload\nAdvanced",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "overflow": false,
+  "font": "\"Noto Sans\", Arial, sans-serif",
+  "controls": [
+    {
+      "tag": "A",
+      "text": "Learn more about this warning",
+      "href": "#",
+      "ariaLabel": null,
+      "role": null,
+      "width": 207.515625,
+      "height": 19,
+      "color": "rgb(88, 88, 88)",
+      "background": "rgba(0, 0, 0, 0)",
+      "fontSize": "14.25px"
+    },
+    {
+      "tag": "DIV",
+      "text": "NET::ERR_CERT_AUTHORITY_INVALID",
+      "href": null,
+      "ariaLabel": null,
+      "role": "button",
+      "width": 342,
+      "height": 24,
+      "color": "rgb(95, 99, 104)",
+      "background": "rgba(0, 0, 0, 0)",
+      "fontSize": "12px"
+    },
+    {
+      "tag": "A",
+      "text": "Turn on enhanced protection",
+      "href": "#",
+      "ariaLabel": null,
+      "role": null,
+      "width": 204.84375,
+      "height": 20,
+      "color": "rgb(95, 99, 104)",
+      "background": "rgba(0, 0, 0, 0)",
+      "fontSize": "15px"
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Reload",
+      "href": null,
+      "ariaLabel": null,
+      "role": null,
+      "width": 342,
+      "height": 51,
+      "color": "rgb(255, 255, 255)",
+      "background": "rgb(26, 115, 232)",
+      "fontSize": "13.995px",
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Advanced",
+      "href": null,
+      "ariaLabel": null,
+      "role": null,
+      "width": 342,
+      "height": 48,
+      "color": "rgb(95, 99, 104)",
+      "background": "rgb(255, 255, 255)",
+      "fontSize": "13.995px",
+      "disabled": false
+    }
+  ],
+  "at": "2026-10-11T04:52:39.268Z",
+  "network": []
+}

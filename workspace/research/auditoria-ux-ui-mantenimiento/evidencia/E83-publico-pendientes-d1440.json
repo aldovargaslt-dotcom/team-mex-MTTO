@@ -1,0 +1,248 @@
+{
+  "origin": "https://team-mex-mtto-eight.vercel.app",
+  "path": "/inventario/pendientes",
+  "title": "Team Mex — Mantenimiento",
+  "text": "Inicio\nÓrdenes\nUnidades\nInventario\n2\nSUPERVISOR\nElegir rol\nCerrar sesión\nRefacciones\nExistencias\nMovimientos\nConsumo\nPor recibir\nCatálogo\nPor recibir\n\nCompras externas aún sin entrar al almacén. Cerrar el comprobante no cambia existencias.\n\nPAST-FR-01 Pastillas de freno · 4 pza\n\n11/09/2026, 21:35 · OT · f1c4ef48\n\nPENDIENTE\nAdjuntar ticket\nCerrar comprobante\n\nFIL-ACEITE-01 Filtro de aceite · 11 pza\n\n11/09/2026, 20:02 · OT · 106f7dce\n\nPENDIENTE\nAdjuntar ticket\nCerrar comprobante",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "overflow": false,
+  "controls": [
+    {
+      "tag": "A",
+      "text": "",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/inicio",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Inicio",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/inicio",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Órdenes",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/ordenes",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Unidades",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/unidades",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Inventario",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/inventario",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "2",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/notificaciones",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Configuración",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": "/configuracion/alertas",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Elegir rol",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/",
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Cerrar sesión",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Abrir menú",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Refacciones",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/inventario",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Existencias",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/inventario/stock",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Movimientos",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/inventario/movimientos",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Consumo",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/inventario/consumo",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Por recibir",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/inventario/pendientes",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Catálogo",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/inventario/familias",
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Adjuntar ticket",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Cerrar comprobante",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Adjuntar ticket",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Cerrar comprobante",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    }
+  ],
+  "at": "2026-10-11T06:47:55.290Z",
+  "network": [
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/_next/static/chunks/26795e44f7b94201.js",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/notifications/badge",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/inventario/pendientes-comprobante",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/visitas/106f7dce-f53c-424a-ab9c-6e1676a31164",
+      "status": 404
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/visitas/f1c4ef48-04cf-4f4e-adeb-ae3a7b0bae2f",
+      "status": 404
+    }
+  ],
+  "requests": [
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/_next/static/chunks/26795e44f7b94201.js",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/notifications/badge",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/inventario/pendientes-comprobante",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/visitas/106f7dce-f53c-424a-ab9c-6e1676a31164",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/visitas/f1c4ef48-04cf-4f4e-adeb-ae3a7b0bae2f",
+      "method": "GET"
+    }
+  ]
+}

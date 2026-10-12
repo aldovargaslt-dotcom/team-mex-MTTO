@@ -1,0 +1,974 @@
+{
+  "origin": "https://team-mex-mtto-eight.vercel.app",
+  "path": "/inventario/pendientes",
+  "title": "Team Mex — Mantenimiento",
+  "text": "Inicio\nÓrdenes\nUnidades\nInventario\n2\nSUPERVISOR\nElegir rol\nCerrar sesión\nRefacciones\nExistencias\nMovimientos\nConsumo\nPor recibir\nCatálogo\nPor recibir\n\nCompras externas aún sin entrar al almacén. Cerrar el comprobante no cambia existencias.\n\nAUD-UX-20261011-PZA Prueba auditoría UX/UI · 1 pza\n\n11/10/2026, 07:03 · OT · AUD-UX-20261011-A\n\nPENDIENTE\nAdjuntar ticket\nCerrar comprobante\n\nAUD-UX-20261011-PZA Prueba auditoría UX/UI · 3 pza\n\n11/10/2026, 07:01 · OT · AUD-UX-20261011-A\n\nRECIBIDA\n\nPAST-FR-01 Pastillas de freno · 4 pza\n\n11/09/2026, 21:35 · OT · f1c4ef48\n\nPENDIENTE\nAdjuntar ticket\nCerrar comprobante\n\nFIL-ACEITE-01 Filtro de aceite · 11 pza\n\n11/09/2026, 20:02 · OT · 106f7dce\n\nPENDIENTE\nAdjuntar ticket\nCerrar comprobante",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "overflow": false,
+  "controls": [
+    {
+      "tag": "A",
+      "text": "",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/inicio",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Inicio",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/inicio",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Órdenes",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/ordenes",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Unidades",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/unidades",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Inventario",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/inventario",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "2",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/notificaciones",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Configuración",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": "/configuracion/alertas",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Elegir rol",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/",
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Cerrar sesión",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Abrir menú",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Refacciones",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/inventario",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Existencias",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/inventario/stock",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Movimientos",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/inventario/movimientos",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Consumo",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/inventario/consumo",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Por recibir",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/inventario/pendientes",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "Catálogo",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/inventario/familias",
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "OT · AUD-UX-20261011-A",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/unidades/1d815aac-6311-4301-a315-9e05e4628d8d/visitas/f2aa2d26-8669-4b0c-83ea-29e73dd2bdf9",
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Adjuntar ticket",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Cerrar comprobante",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "A",
+      "text": "OT · AUD-UX-20261011-A",
+      "type": null,
+      "name": null,
+      "id": "",
+      "href": "/unidades/1d815aac-6311-4301-a315-9e05e4628d8d/visitas/53a02af0-b7a5-4059-9df6-c53bf3aa8add",
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Adjuntar ticket",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Cerrar comprobante",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Adjuntar ticket",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Cerrar comprobante",
+      "type": "button",
+      "name": null,
+      "id": "",
+      "href": null,
+      "disabled": false
+    }
+  ],
+  "at": "2026-10-11T07:03:36.152Z",
+  "network": [
+    {
+      "origin": "null",
+      "path": "image/png;base64,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",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/visitas/f2aa2d26-8669-4b0c-83ea-29e73dd2bdf9",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/catalogo/trabajos",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/choferes",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/unidades/1d815aac-6311-4301-a315-9e05e4628d8d/hub",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/inventario/items",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/visitas/f2aa2d26-8669-4b0c-83ea-29e73dd2bdf9",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/choferes",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/unidades/1d815aac-6311-4301-a315-9e05e4628d8d/hub",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/catalogo/trabajos",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/visitas/f2aa2d26-8669-4b0c-83ea-29e73dd2bdf9/cerrar",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/inventario/items",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/unidades/1d815aac-6311-4301-a315-9e05e4628d8d",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/unidades/1d815aac-6311-4301-a315-9e05e4628d8d",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/inventario/items",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/unidades/1d815aac-6311-4301-a315-9e05e4628d8d/hub",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/unidades/1d815aac-6311-4301-a315-9e05e4628d8d",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/unidades/1d815aac-6311-4301-a315-9e05e4628d8d/health",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/notifications/badge",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/unidades/1d815aac-6311-4301-a315-9e05e4628d8d/visitas/f2aa2d26-8669-4b0c-83ea-29e73dd2bdf9",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/andon/umbrales",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/andon/avisos",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/inventario/pendientes",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/_next/static/media/ce62453a442c7f35-s.p.124b2306.woff2",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/_next/static/chunks/c2639d5558ea2d21.css",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/_next/static/chunks/ea908fb2e21eb735.css",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/_next/static/chunks/0ba6d36014de87d4.js",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/_next/static/chunks/20b80a35a82d5583.js",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/_next/static/chunks/208cffb5bc45bf61.js",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/_next/static/chunks/79a1b00cd89abc40.js",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/_next/static/chunks/6d1f6871f5680d07.js",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/_next/static/chunks/turbopack-a1779c907f3a6be5.js",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/_next/static/chunks/a339411a3949645e.js",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/_next/static/chunks/366e317972f8cf37.js",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/_next/static/chunks/3e0afbdfb2841f41.js",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/_next/static/chunks/f74a6859e1c4d5e3.js",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/_next/static/chunks/d75db27fdfed048c.js",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/_next/static/chunks/18414c530067a788.js",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/_next/static/chunks/26795e44f7b94201.js",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/brand/logo-team-mex-shell-white.png",
+      "status": 304
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/_next/static/chunks/6e53b3852ec8ee87.js",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/api/auth/session",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/inicio",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/_next/static/chunks/7603b3a56736d34a.js",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/unidades",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/notificaciones",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/ordenes",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/_next/static/chunks/2f34ef02f33081af.js",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/_next/static/chunks/4d9796789a433f2b.js",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/_next/static/chunks/772eca7852c17a74.js",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/_next/static/chunks/5098f7528cbaa48f.js",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/_next/static/chunks/b04d2904181215ac.js",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/inventario",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/_next/static/chunks/5fcb31c803854fa0.js",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/inventario/stock",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/_next/static/chunks/580556cdb7efb52b.js",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/inventario/familias",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/_next/static/chunks/8c6e4c9b55684eb5.js",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/inventario/movimientos",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/_next/static/chunks/6c54e1f9b2ad08c3.js",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/inventario/consumo",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/_next/static/chunks/ee36a210a30de7dc.js",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/configuracion/alertas",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/_next/static/chunks/e20c429dceae73cf.js",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/_next/static/chunks/eede4a0b2c146662.js",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/inventario/pendientes-comprobante",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/notifications/badge",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/visitas/53a02af0-b7a5-4059-9df6-c53bf3aa8add",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/visitas/f2aa2d26-8669-4b0c-83ea-29e73dd2bdf9",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/visitas/106f7dce-f53c-424a-ab9c-6e1676a31164",
+      "status": 404
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/visitas/f1c4ef48-04cf-4f4e-adeb-ae3a7b0bae2f",
+      "status": 404
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/unidades/1d815aac-6311-4301-a315-9e05e4628d8d/visitas/53a02af0-b7a5-4059-9df6-c53bf3aa8add",
+      "status": 200
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/unidades/1d815aac-6311-4301-a315-9e05e4628d8d/visitas/f2aa2d26-8669-4b0c-83ea-29e73dd2bdf9",
+      "status": 200
+    }
+  ],
+  "requests": [
+    {
+      "origin": "null",
+      "path": "image/png;base64,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",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/visitas/f2aa2d26-8669-4b0c-83ea-29e73dd2bdf9",
+      "method": "PATCH"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/choferes",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/catalogo/trabajos",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/unidades/1d815aac-6311-4301-a315-9e05e4628d8d/hub",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/inventario/items",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/visitas/f2aa2d26-8669-4b0c-83ea-29e73dd2bdf9",
+      "method": "PATCH"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/visitas/f2aa2d26-8669-4b0c-83ea-29e73dd2bdf9/cerrar",
+      "method": "POST"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/choferes",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/catalogo/trabajos",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/unidades/1d815aac-6311-4301-a315-9e05e4628d8d/hub",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/inventario/items",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/unidades/1d815aac-6311-4301-a315-9e05e4628d8d",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/inventario/items",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/unidades/1d815aac-6311-4301-a315-9e05e4628d8d",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/notifications/badge",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/unidades/1d815aac-6311-4301-a315-9e05e4628d8d/hub",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/unidades/1d815aac-6311-4301-a315-9e05e4628d8d/health",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/unidades/1d815aac-6311-4301-a315-9e05e4628d8d",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/andon/avisos",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/andon/umbrales",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/unidades/1d815aac-6311-4301-a315-9e05e4628d8d/visitas/f2aa2d26-8669-4b0c-83ea-29e73dd2bdf9",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/inventario/pendientes",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/_next/static/media/ce62453a442c7f35-s.p.124b2306.woff2",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/brand/logo-team-mex-shell-white.png",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/_next/static/chunks/c2639d5558ea2d21.css",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/_next/static/chunks/ea908fb2e21eb735.css",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/_next/static/chunks/0ba6d36014de87d4.js",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/_next/static/chunks/20b80a35a82d5583.js",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/_next/static/chunks/208cffb5bc45bf61.js",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/_next/static/chunks/79a1b00cd89abc40.js",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/_next/static/chunks/6d1f6871f5680d07.js",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/_next/static/chunks/turbopack-a1779c907f3a6be5.js",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/_next/static/chunks/a339411a3949645e.js",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/_next/static/chunks/366e317972f8cf37.js",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/_next/static/chunks/3e0afbdfb2841f41.js",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/_next/static/chunks/f74a6859e1c4d5e3.js",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/_next/static/chunks/d75db27fdfed048c.js",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/_next/static/chunks/18414c530067a788.js",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/_next/static/chunks/26795e44f7b94201.js",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/api/auth/session",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/_next/static/chunks/6e53b3852ec8ee87.js",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/notifications/badge",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/inventario/pendientes-comprobante",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/inicio",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/ordenes",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/unidades",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/inventario",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/notificaciones",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/_next/static/chunks/7603b3a56736d34a.js",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/configuracion/alertas",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/_next/static/chunks/2f34ef02f33081af.js",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/_next/static/chunks/4d9796789a433f2b.js",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/_next/static/chunks/772eca7852c17a74.js",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/inventario/stock",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/_next/static/chunks/5098f7528cbaa48f.js",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/inventario/movimientos",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/_next/static/chunks/b04d2904181215ac.js",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/inventario/consumo",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/_next/static/chunks/5fcb31c803854fa0.js",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/inventario/familias",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/_next/static/chunks/580556cdb7efb52b.js",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/_next/static/chunks/8c6e4c9b55684eb5.js",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/_next/static/chunks/6c54e1f9b2ad08c3.js",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/_next/static/chunks/ee36a210a30de7dc.js",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/_next/static/chunks/e20c429dceae73cf.js",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/_next/static/chunks/eede4a0b2c146662.js",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/visitas/106f7dce-f53c-424a-ab9c-6e1676a31164",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/visitas/53a02af0-b7a5-4059-9df6-c53bf3aa8add",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/visitas/f1c4ef48-04cf-4f4e-adeb-ae3a7b0bae2f",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/backend/visitas/f2aa2d26-8669-4b0c-83ea-29e73dd2bdf9",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/unidades/1d815aac-6311-4301-a315-9e05e4628d8d/visitas/f2aa2d26-8669-4b0c-83ea-29e73dd2bdf9",
+      "method": "GET"
+    },
+    {
+      "origin": "https://team-mex-mtto-eight.vercel.app",
+      "path": "/unidades/1d815aac-6311-4301-a315-9e05e4628d8d/visitas/53a02af0-b7a5-4059-9df6-c53bf3aa8add",
+      "method": "GET"
+    }
+  ]
+}
