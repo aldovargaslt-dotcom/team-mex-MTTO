@@ -13,7 +13,8 @@ no se migra en cada arranque/reinicio. No cambia la configuración de Vercel/web
 
 El paso usa la misma conexión configurada que la API, compara el nombre efectivo
 de base contra el nombre de esa conexión, exige DB_SYNCHRONIZE=false y
-DB_DROP_SCHEMA=false, y bloquea migraciones concurrentes con advisory lock.
+DB_DROP_SCHEMA=false efectivos (si faltan las variables usa false, como la API
+productiva; un true explícito sigue rechazado), y bloquea migraciones concurrentes con advisory lock.
 No imprime credenciales ni migra CHECK/Auth ni ejecuta seed. Usa los ledgers de
 las dos migraciones manuales existentes; redeploys posteriores no las repiten.
 Cada migración corre transaccionalmente. Si la segunda falla después de la primera,
@@ -30,7 +31,8 @@ evidencias y estados. No abre automáticamente órdenes históricas.
 - Servicio API conectado al repo/main y que lea railway.toml de raíz o api según
   su Root Directory. No usar el config web para el servicio API.
 - DATABASE_URL (o DB_* explícitos) del servicio existente y flags synchronize/drop
-  en false. No copiar conexiones/secretos al repo/chat ni habilitar synchronize.
+  en false. No copiar conexiones/secretos al repo/chat ni habilitar synchronize. Ausencia
+  de esos flags usa los defaults seguros false del runner/API; true se rechaza.
 - Schemas/capacidades CHECK/Auth previamente provisionados según su procedimiento.
   Este release no intenta suplir sus gates ni cargar usuarios/patios de prueba.
 - Verificar Railway muestra y ejecuta el preDeployCommand de este commit; si una
