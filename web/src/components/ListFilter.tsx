@@ -1,10 +1,12 @@
 'use client';
 
+import type { LucideIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 type Option<T extends string> = {
   id: T;
   label: string;
+  icon?: LucideIcon;
 };
 
 export function ListFilter<T extends string>({
@@ -28,14 +30,16 @@ export function ListFilter<T extends string>({
     >
       {options.map((option) => {
         const selected = option.id === value;
+        const Icon = option.icon;
         return (
           <button
             key={option.id}
             type="button"
             aria-pressed={selected}
-            className={selected ? 'active' : ''}
+            className={cn('inline-flex items-center justify-center gap-1.5', selected && 'active')}
             onClick={() => onChange(option.id)}
           >
+            {Icon ? <Icon className="size-4 shrink-0" aria-hidden /> : null}
             {option.label}
           </button>
         );

@@ -11,6 +11,7 @@ import type { UnidadHealth } from '@/lib/types';
 
 export function HubIdentityHeader({
   numeroInterno,
+  pageLabel,
   estado,
   motivoInactivacion,
   marcaModelo,
@@ -29,6 +30,7 @@ export function HubIdentityHeader({
   backHref = '/unidades',
 }: {
   numeroInterno: string;
+  pageLabel?: string;
   estado: 'ACTIVA' | 'INACTIVA';
   motivoInactivacion?: string | null;
   marcaModelo: string | null;
@@ -78,6 +80,7 @@ export function HubIdentityHeader({
             />
           </div>
           <div className="min-w-0">
+            {pageLabel ? <p className="mb-1 text-xs font-medium text-muted-foreground">{pageLabel}</p> : null}
             <h1 className="hub-identity__title">
               {numeroInterno} <StatusBadge estado={estado} />
             </h1>

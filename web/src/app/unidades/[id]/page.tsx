@@ -201,6 +201,7 @@ function HubContent() {
   return (
     <>
       <HubIdentityHeader
+        pageLabel={`Ficha de unidad · ${{ resumen: 'Resumen', tecnica: 'Datos de unidad', mantenimiento: 'Mantenimiento', historial: 'Historial' }[vista]}`}
         numeroInterno={ficha.numeroInterno}
         estado={ficha.estado}
         motivoInactivacion={ficha.motivoInactivacion}

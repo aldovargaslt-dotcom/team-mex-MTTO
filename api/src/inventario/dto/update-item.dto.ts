@@ -3,6 +3,8 @@ import {
   IsArray,
   IsBoolean,
   IsOptional,
+  IsInt,
+  Min,
   IsUUID,
   MaxLength,
 } from 'class-validator';
@@ -43,6 +45,12 @@ export class UpdateItemDto {
   @IsArray()
   @IsUUID('4', { each: true, message: 'El tipo de vehículo no es válido.' })
   tipoVehiculoIds?: string[];
+
+  @ApiPropertyOptional({ default: 0 })
+  @IsOptional()
+  @IsInt()
+  @Min(0)
+  criticalQty?: number;
 
   @OptionalMinQty()
   minQty?: number | null;

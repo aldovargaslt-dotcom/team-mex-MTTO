@@ -4,7 +4,7 @@
 
 ## Purpose
 
-Open at most one unresolved aviso per unit when km or days since last **closed** visit exceed type thresholds. Enterado is in-app. Resolve on `VisitaCerrada`.
+Open at most one unresolved aviso per unit when km or days since last **closed** visit exceed type thresholds. Enterado is in-app. Resolve on `VisitaCerrada`, or when revised thresholds remove the condition (ADR-022), without writing a visit. Critical priority uses configurable additional km/days beyond the interval.
 
 ## Authoritative docs
 
@@ -12,6 +12,8 @@ Open at most one unresolved aviso per unit when km or days since last **closed**
 - [ADR-005](../../docs/adr/005-andon-no-stock-alerts.md)
 - [docs/andon-evolution-notify.md](../../docs/andon-evolution-notify.md)
 - [architecture/andon-whatsapp-ops-checklist-v0.md](../../architecture/andon-whatsapp-ops-checklist-v0.md) — may disagree with code about Evolution; **do not “fix” dual-stack** in an unrelated cut
+
+- [ADR-022](../../docs/adr/022-alert-attention-priority.md) — live priority / configuration adjustment closure
 
 ## Language (subset)
 

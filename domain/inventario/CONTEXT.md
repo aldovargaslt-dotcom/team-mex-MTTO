@@ -14,6 +14,8 @@ Parts catalog and stock. Applies visit consumos. Emits stock-threshold events to
 - [ADR-004](../../docs/adr/ADR-004-tdd-test-bar-andon-v0.md) I/S
 - UI: [ux-operacional-cortes-v0.md](../../docs/design-system/ux-operacional-cortes-v0.md)
 
+- [ADR-022](../../docs/adr/022-alert-attention-priority.md) — configurable critical quantity within minimum; opt-in unchanged
+
 ## Language (subset)
 
 Familia, ítem, SKU, proveedor, stock, `min_qty`, Bajo, Agotado, `SALIDA_OT`, pendiente de comprobante, `StockBajo`, `StockReabastecido`.

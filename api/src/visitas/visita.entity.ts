@@ -55,6 +55,12 @@ export class Visita {
   legacyCompatDraft: boolean;
   @Column({ name: 'migration_backfilled', default: false })
   migrationBackfilled: boolean;
+  @Column({ name: 'opened_at', type: 'timestamptz', nullable: true })
+  openedAt: Date | null;
+  @Column({ name: 'opened_by', type: 'varchar', length: 128, nullable: true })
+  openedBy: string | null;
+  @Column({ name: 'opened_actor_name', type: 'varchar', length: 160, nullable: true })
+  openedActorName: string | null;
   @Column({ name: 'assigned_user_id', type: 'varchar', nullable: true })
   assignedUserId: string | null;
   @Column({ name: 'assigned_at', type: 'timestamptz', nullable: true })

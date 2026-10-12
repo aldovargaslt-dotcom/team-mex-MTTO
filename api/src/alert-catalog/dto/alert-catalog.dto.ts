@@ -59,6 +59,20 @@ export class PatchAlertTypeDto {
 }
 
 export class AndonUmbralInputDto {
+  @ApiPropertyOptional({ default: 1000 })
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
+  criticalOverdueKm?: number;
+
+  @ApiPropertyOptional({ default: 30 })
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
+  criticalOverdueDays?: number;
+
   @ApiProperty({ format: 'uuid' })
   @IsUUID()
   tipoVehiculoId: string;
@@ -77,6 +91,13 @@ export class AndonUmbralInputDto {
 }
 
 export class StockMinInputDto {
+  @ApiPropertyOptional({ default: 0 })
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(0)
+  criticalQty?: number;
+
   @ApiProperty({ format: 'uuid' })
   @IsUUID()
   itemId: string;

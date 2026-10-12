@@ -3,6 +3,7 @@ import { Severity, SourceEvent, SourceModule, SubjectType } from './enums';
 import { InboxItem, IngestCommand, StockBajoInput } from './inbox-types';
 
 export type AvisoAbiertoInput = {
+  severity?: 'WARNING' | 'CRITICAL';
   avisoId: string;
   unidadId: string;
   numeroInterno?: string | null;
@@ -57,7 +58,8 @@ export function avisoAbiertoCommand(input: AvisoAbiertoInput): IngestCommand {
     sourceRef: input.avisoId,
     subjectType: SubjectType.UNIDAD,
     subjectRef: input.unidadId,
-    severity: Severity.WARNING,
+    severity:
+      input.severity === 'CRITICAL' ? Severity.CRITICAL : Severity.WARNING,
     title: `Mantenimiento vencido — ${numero}`,
     body: `${numero} superó el umbral (${input.kmAlAbrir.toLocaleString('es-MX')} km / ${input.diasAlAbrir} d desde el último cierre). Revisar la alerta en el hub.`,
     dedupeKey: avisoAbiertoDedupeKey(input.unidadId),
@@ -81,7 +83,14 @@ export function stockBajoCommand(input: StockBajoInput): IngestCommand {
     sourceRef: input.eventId ?? input.itemId,
     subjectType: SubjectType.ITEM,
     subjectRef: input.itemId,
-    severity: agotado ? Severity.CRITICAL : Severity.WARNING,
+    severity:
+      input.severity === 'CRITICAL'
+        ? Severity.CRITICAL
+        : input.severity === 'WARNING'
+          ? Severity.WARNING
+          : agotado
+            ? Severity.CRITICAL
+            : Severity.WARNING,
     title: agotado
       ? `Stock agotado — ${input.sku}`
       : `Stock bajo — ${input.sku}`,
@@ -145,8 +154,7 @@ export type FlotaSinRegresoInput = {
 export function flotaSinRegresoCommand(
   input: FlotaSinRegresoInput,
 ): IngestCommand {
-  const who =
-    input.numeroInterno?.trim() || input.placas?.trim() || 'Unidad';
+  const who = input.numeroInterno?.trim() || input.placas?.trim() || 'Unidad';
   const horas = Math.max(1, Math.round(input.elapsedHoras));
   const umbral = input.thresholdHoras;
   const ambito = input.ambito === 'FORANEO' ? 'foránea' : 'local';

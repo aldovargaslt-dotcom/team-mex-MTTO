@@ -51,6 +51,15 @@ export default function PendientesPage() {
     })();
   }, [role, userId]);
 
+  useEffect(() => {
+    if (!rows.length) return;
+    const id = new URLSearchParams(window.location.search).get('pendienteId');
+    if (!id) return;
+    const target = document.getElementById(`pendiente-${id}`);
+    target?.scrollIntoView({ block: 'center' });
+    target?.focus({ preventScroll: true });
+  }, [rows]);
+
   async function adjuntar(id: string, file: File) {
     setBusyId(id);
     setError(null);
@@ -108,7 +117,7 @@ export default function PendientesPage() {
           {rows.map((row) => {
             const abierto = row.estado === 'PENDIENTE';
             return (
-              <div key={row.id} className="queue-row">
+              <div key={row.id} id={`pendiente-${row.id}`} tabIndex={-1} className="queue-row scroll-mt-20 target:bg-[#fff4e8]">
                 <div>
                   <p>
                     <span className="mono">{row.sku}</span> {row.nombre} · {row.qty}{' '}

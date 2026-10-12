@@ -31,6 +31,10 @@ Do not add speculative EWOs. An EWO is created when there is approved work to ex
 | [EWO-011](EWO-011.md) | Contrato e invariante de borrador único | Closed |
 | [EWO-012](EWO-012.md) | Creación contextual y captura en Órdenes | Verification |
 | [EWO-013](EWO-013.md) | Expediente e historial de unidad | Verification |
+| [EWO-034](EWO-034.md) | Alertas operacionales de Inicio y umbrales configurables | Verification |
+| [EWO-035](EWO-035.md) | Ubicación y navegación visual de mantenimiento | Verification |
+| [EWO-036](EWO-036.md) | Tipos Correctivo/Preventivo/Revisión y consulta Supervisor | Verification |
+| [EWO-037](EWO-037.md) | Abiertas primero, borradores e historial para Mecánico | Verification |
 | [EWO-014](EWO-014.md) | Feedback de incompletitud y estados de carga | Proposed |
 
 

@@ -40,6 +40,7 @@ export type InboxListItem = InboxItem & {
 };
 
 export type StockBajoInput = {
+  severity?: 'WARNING' | 'CRITICAL';
   eventId?: string;
   itemId: string;
   sku: string;

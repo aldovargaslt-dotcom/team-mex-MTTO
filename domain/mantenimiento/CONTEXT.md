@@ -41,3 +41,10 @@ Owner 2026-10-01: [ADR016](../../docs/adr/016-visita-check-evolution.md), [contr
 
 
 Approved owner update2026-10-01: R01–R05 adoptadas en [Slice0 package](../../docs/engineering-work-orders/CHK-001-slice-0-review.md). Mapping facility por vehículo; MexicoCity día local; daily ACTIVA+Flota EN_PATIO/sinCHECKactivo; hard blockers aceite/refrigerante crítico/fuga severa/llanta severa-ponchadura/PSIcriticalconfig; claim/assign/invalidation en authorizedfacility; physical source Flota enum4 y divergence explícita; retorno overdue<=2hAttention/>2hCritical configurables. Sin decisiones owner pendientes ni código implementado; EWO015 Ready técnico, ejecución retenida.
+
+## Lenguaje visible de tipos de OT
+
+Revisión es CHECK operativo de la unidad; Preventivo y Correctivo son mantenimiento.
+Una revisión concluida conserva dictamen/aptitud como concepto distinto; no
+representa mantenimiento realizado. A–E son trabajos, no tipos de inspección.
+[Glosario](../../context/GLOSSARY.md), [filtro aprobado2026-10-12](../../docs/design/ux-orders-type-filter-v1.md).

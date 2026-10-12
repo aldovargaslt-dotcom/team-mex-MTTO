@@ -58,7 +58,11 @@ import {
   AlertTypeActivePort,
 } from '../alert-catalog/ports';
 import { publicarAlertaStock } from './stock-alert-emit';
-import { estadoAlertaStock } from './stock-alerta-rules';
+import {
+  estadoAlertaStock,
+  esStockBajo,
+  severidadAlertaStock,
+} from './stock-alerta-rules';
 import { mensajeStockInsuficiente, stockTrasMovimiento } from './stock-rules';
 
 type StockCrossing = {
@@ -67,6 +71,8 @@ type StockCrossing = {
   nextQty: number;
   prevMin: number | null;
   nextMin: number | null;
+  prevCritical?: number;
+  nextCritical?: number;
 };
 
 @Injectable()
@@ -246,6 +252,12 @@ export class InventarioService implements OnModuleInit {
     const item = await this.requireItemEntity(id);
     const stockRow = await this.stock.findOne({ where: { itemId: id } });
     const prevMin = stockRow?.minQty ?? null;
+    const prevCritical = stockRow?.criticalQty ?? 0;
+    const nextMin = dto.minQty !== undefined ? dto.minQty : prevMin;
+    const nextCritical =
+      dto.criticalQty ??
+      (nextMin == null ? prevCritical : Math.min(prevCritical, nextMin));
+    this.validateAlertThresholds(nextMin, nextCritical);
     if (dto.sku !== undefined) {
       item.sku = requireTrimmed(dto.sku, 'El SKU no puede estar vacío.');
     }
@@ -268,17 +280,20 @@ export class InventarioService implements OnModuleInit {
     if (dto.tipoVehiculoIds) {
       await this.replaceCompatibilidad(id, dto.tipoVehiculoIds);
     }
-    if (dto.minQty !== undefined) {
+    if (dto.minQty !== undefined || dto.criticalQty !== undefined) {
       const stock =
         stockRow ?? this.stock.create({ itemId: id, qty: 0, minQty: null });
-      stock.minQty = dto.minQty;
+      stock.minQty = nextMin;
+      stock.criticalQty = nextCritical;
       await this.stock.save(stock);
       await this.emitCruceUmbral({
         item,
         prevQty: stock.qty,
         nextQty: stock.qty,
         prevMin,
-        nextMin: dto.minQty,
+        nextMin,
+        prevCritical,
+        nextCritical,
       });
     }
     return this.findItem(id);
@@ -387,8 +402,102 @@ export class InventarioService implements OnModuleInit {
       qty: row.qty,
       minQty: row.minQty ?? null,
       alerta: estadoAlertaStock(row.qty, row.minQty ?? null),
+      criticalQty: row.criticalQty ?? 0,
+      severity: esStockBajo(row.qty, row.minQty)
+        ? severidadAlertaStock(row.qty, row.criticalQty)
+        : null,
       updatedAt: row.updatedAt,
     }));
+  }
+
+  validateAlertThresholds(minQty: number | null, criticalQty: number) {
+    if (
+      (minQty !== null && (!Number.isInteger(minQty) || minQty < 0)) ||
+      !Number.isInteger(criticalQty) ||
+      criticalQty < 0 ||
+      (minQty !== null && criticalQty > minQty)
+    ) {
+      throw new BadRequestException(
+        'El límite crítico debe ser un entero entre 0 y el mínimo.',
+      );
+    }
+  }
+
+  async updateAlertThreshold(
+    itemId: string,
+    minQty: number | null,
+    criticalQty: number | undefined,
+    manager: EntityManager,
+  ) {
+    const repo = manager.getRepository(Stock);
+    const stock = await repo.findOne({
+      where: { itemId },
+      lock: { mode: 'pessimistic_write' },
+    });
+    if (!stock) throw new NotFoundException('No se encontró la refacción.');
+    const nextCritical =
+      criticalQty ??
+      (minQty == null
+        ? stock.criticalQty
+        : Math.min(stock.criticalQty, minQty));
+    this.validateAlertThresholds(minQty, nextCritical);
+    stock.minQty = minQty;
+    stock.criticalQty = nextCritical;
+    await repo.save(stock);
+    return { itemId, minQty: stock.minQty, criticalQty: stock.criticalQty };
+  }
+
+  async previewPriorities(
+    overrides: {
+      itemId: string;
+      minQty: number | null;
+      criticalQty?: number;
+    }[] = [],
+  ) {
+    const rows = await this.listStock();
+    const changes = new Map(overrides.map((row) => [row.itemId, row]));
+    for (const row of overrides) {
+      const existing = rows.find((item) => item.itemId === row.itemId);
+      if (!existing)
+        throw new NotFoundException('No se encontró la refacción.');
+      this.validateAlertThresholds(
+        row.minQty,
+        row.criticalQty ??
+          (row.minQty == null
+            ? existing.criticalQty
+            : Math.min(existing.criticalQty, row.minQty)),
+      );
+    }
+    const priorities = new Map<string, 'WARNING' | 'CRITICAL'>();
+    for (const row of rows.filter((item) => item.activo)) {
+      const change = changes.get(row.itemId);
+      const minimum = change ? change.minQty : row.minQty;
+      const critical =
+        change?.criticalQty ??
+        (minimum == null
+          ? row.criticalQty
+          : Math.min(row.criticalQty, minimum));
+      if (esStockBajo(row.qty, minimum))
+        priorities.set(row.itemId, severidadAlertaStock(row.qty, critical));
+    }
+    return priorities;
+  }
+
+  /** Después de confirmar configuración; emisión sigue por puerto del dueño. */
+  async reconcileAlertThresholds(itemIds: string[]) {
+    const rows = await this.stock.find({ relations: { item: true } });
+    for (const stock of rows.filter((row) => itemIds.includes(row.itemId))) {
+      const under = esStockBajo(stock.qty, stock.minQty);
+      await this.emitCruceUmbral({
+        item: stock.item,
+        prevQty: stock.qty,
+        nextQty: stock.qty,
+        prevMin: under ? null : stock.qty,
+        nextMin: stock.minQty,
+        prevCritical: stock.criticalQty,
+        nextCritical: stock.criticalQty,
+      });
+    }
   }
 
   async listMovimientos(query: FiltrarMovimientosDto = {}) {
@@ -645,6 +754,8 @@ export class InventarioService implements OnModuleInit {
       nextQty: stock.qty,
       prevMin: min,
       nextMin: min,
+      prevCritical: stock.criticalQty,
+      nextCritical: stock.criticalQty,
     };
   }
 
@@ -660,6 +771,8 @@ export class InventarioService implements OnModuleInit {
         nextQty: crossing.nextQty,
         prevMin: crossing.prevMin,
         nextMin: crossing.nextMin,
+        prevCritical: crossing.prevCritical,
+        nextCritical: crossing.nextCritical,
       },
       this.alertTypes,
     );
@@ -749,6 +862,7 @@ export class InventarioService implements OnModuleInit {
       activo: item.activo,
       stock: item.stock?.qty ?? 0,
       minQty: item.stock?.minQty ?? null,
+      criticalQty: item.stock?.criticalQty ?? 0,
       alerta: estadoAlertaStock(
         item.stock?.qty ?? 0,
         item.stock?.minQty ?? null,

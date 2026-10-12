@@ -1,15 +1,12 @@
 import { SEED_ALERT_CODES } from '../alert-catalog/alert-catalog.types';
-import {
-  AlertTypeActivePort,
-  emitIfActive,
-} from '../alert-catalog/ports';
+import { AlertTypeActivePort, emitIfActive } from '../alert-catalog/ports';
 import { StockAlertPort } from './ports';
 import {
   STOCK_BAJO,
   StockAlertEvent,
   buildStockAlert,
 } from './stock-alert.event';
-import { eventoCruceUmbral } from './stock-alerta-rules';
+import { eventoCruceUmbral, severidadAlertaStock } from './stock-alerta-rules';
 
 export async function publicarAlertaStock(
   port: StockAlertPort | null | undefined,
@@ -22,6 +19,8 @@ export async function publicarAlertaStock(
     nextQty: number;
     prevMin: number | null | undefined;
     nextMin: number | null;
+    prevCritical?: number;
+    nextCritical?: number;
   },
   alertTypes?: AlertTypeActivePort | null,
 ): Promise<StockAlertEvent | null> {
@@ -30,6 +29,8 @@ export async function publicarAlertaStock(
     nextQty: input.nextQty,
     prevMin: input.prevMin,
     nextMin: input.nextMin,
+    prevCritical: input.prevCritical,
+    nextCritical: input.nextCritical,
   });
   if (!eventType || !port) {
     return null;
@@ -41,6 +42,7 @@ export async function publicarAlertaStock(
     sku: input.sku,
     qty: input.nextQty,
     minQty: input.nextMin,
+    severity: severidadAlertaStock(input.nextQty, input.nextCritical),
     occurredAt: input.occurredAt,
   });
   if (eventType === STOCK_BAJO) {

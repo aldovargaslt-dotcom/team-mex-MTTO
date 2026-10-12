@@ -28,7 +28,7 @@ describe('Notifications v0 (e2e)', () => {
     await app.close();
   });
 
-  it('N3: aviso Andon ABIERTO de FOTON aparece en inbox WARNING + hub deeplink', async () => {
+  it('N3: aviso Andon ABIERTO de FOTON con 30 días de atraso aparece CRITICAL + hub deeplink', async () => {
     const badge = await request(server)
       .get('/notifications/badge')
       .set(SUPERVISOR)
@@ -48,9 +48,11 @@ describe('Notifications v0 (e2e)', () => {
         deeplinkPath: string;
         readAt: string | null;
       }[]
-    ).find((row) => row.sourceModule === 'ANDON' && row.title.includes('FOTON'));
+    ).find(
+      (row) => row.sourceModule === 'ANDON' && row.title.includes('FOTON'),
+    );
     expect(item).toBeTruthy();
-    expect(item!.severity).toBe('WARNING');
+    expect(item!.severity).toBe('CRITICAL');
     expect(item!.sourceModule).toBe('ANDON');
     expect(item!.subjectType).toBe('UNIDAD');
     expect(item!.deeplinkPath).toMatch(/^\/unidades\//);

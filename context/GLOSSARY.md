@@ -30,9 +30,12 @@ Terms found in code, UI, database, tests, or documentation. **Do not invent busi
 | Bajo / Agotado | Stock badges: `qty <= min_qty` and `qty = 0` | Inventario / UI | Not Andon |
 | `StockBajo` / `StockReabastecido` | Inbox events from Inventario via `StockAlertPort` | Inventario → Notifications | Must not write `andon.*` |
 | Andon | Overdue **maintenance** notice (km/days since last closed visit) | Andon | Schema `andon`. **Not** stock alerts (ADR-005). **Not** salud threshold. **Not** flota sin regreso |
-| Aviso (`ABIERTO` / `ENTERADO` / `RESUELTO`) | Andon notice lifecycle | Andon | Enterado is in-app; does not resolve. Resolve via `VisitaCerrada` |
+| Aviso (`ABIERTO` / `ENTERADO` / `RESUELTO`) | Andon notice lifecycle | Andon | Enterado is in-app; does not resolve. Resolve via `VisitaCerrada`; también al dejar de cumplirse la regla vigente (ADR-022), sin mantenimiento ficticio |
 | `NotifyPort` | Outbound Andon notify seam | Andon | Default provider `noop` |
 | Dual-stack notify | Two factories: `andon-notifier.factory.ts` vs `andon/notify/` | Andon | Known conflict; do not unify |
+| Alerta activa (Inicio) | Problema cuya condición fuente aún se cumple; consultar no lo cierra | Andon / Inventario / UI | Una por problema, sin estado En atención. El mismo artículo puede tener stock bajo y comprobante pendiente independientes. SPEC-ALERT-ATTENTION-001 |
+| Seguimiento / Atención inmediata | Dos prioridades configurables de las condiciones activas | Andon / Inventario | Crítico depende del límite del dueño, no de haber leído el aviso |
+| Flota (filtro de Inicio) | Alertas de mantenimiento de unidades | UI mantenimiento | No es la navegación Flota/Logística ni concede permisos de viajes |
 | Campanita | Shell bell → `/notificaciones` inbox | Notifications | |
 | Inbox / `inbox_item` | Notification row with `dedupe_key` | Notifications | Schema `notifications` |
 | Flota | Yard bitácora: sitios, `SALIDA`/`ENTRADA`, firmas, `unidad_operativa` | Flota | Schema `flota`. Not GPS |
@@ -80,3 +83,21 @@ Terms found in code, UI, database, tests, or documentation. **Do not invent busi
 
 
 Approved owner update2026-10-01: R01–R05 adoptadas en [Slice0 package](../docs/engineering-work-orders/CHK-001-slice-0-review.md). Mapping facility por vehículo; MexicoCity día local; daily ACTIVA+Flota EN_PATIO/sinCHECKactivo; hard blockers aceite/refrigerante crítico/fuga severa/llanta severa-ponchadura/PSIcriticalconfig; claim/assign/invalidation en authorizedfacility; physical source Flota enum4 y divergence explícita; retorno overdue<=2hAttention/>2hCritical configurables. Sin decisiones owner pendientes ni código implementado; EWO015 Ready técnico, ejecución retenida.
+
+## Tipos visibles de OT — aclaración2026-10-12
+
+**Revisión** es el nombre visible del **CHECK operativo** (checklist/ABC(S) de la
+unidad para la operación del chofer). **Preventivo** corresponde a PREVENTIVE
+(legacy PREDICTIVO) y **Correctivo** a CORRECTIVE (legacy CORRECTIVO).
+Una revisión concluida no representa mantenimiento realizado; su resultado de
+aptitud es distinto de su estado. Los trabajos A–E de mantenimiento no convierten
+una orden preventiva/correctiva en CHECK. Referencias: SPEC-CHK-001 §2.1,
+contrato CHK-001 y ADR016; etiqueta Revisión solicitada por usuario en esta sesión.
+
+## Apertura de mantenimiento — decisión2026-10-11 cliente
+
+**Borrador** prepara una OT de mantenimiento; **Abierta** confirma que está lista
+para trabajar mediante Abrir orden. No significa asignada, iniciada ni realizada.
+**Cerrada** registra mantenimiento concluido. CHECK activo es revisión abierta,
+con lifecycle/dictamen propios, sin paso de borrador de mantenimiento.
+[ADR023](../docs/adr/023-maintenance-order-opening.md).

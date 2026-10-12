@@ -1,5 +1,6 @@
 'use client';
 
+import { AlertTriangle, CheckCheck, CircleCheck, History } from 'lucide-react';
 import { Suspense, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
@@ -376,7 +377,7 @@ function AndonContent() {
       <ListFilter
         label="Filtro de alertas"
         value={vista}
-        options={VISTAS_ANDON}
+        options={VISTAS_ANDON.map((option) => ({ ...option, icon: { pendientes: AlertTriangle, enterados: CheckCheck, resueltos: CircleCheck, reincidentes: History }[option.id] }))}
         onChange={(next) =>
           setParams({
             vista: next === 'pendientes' ? null : next,

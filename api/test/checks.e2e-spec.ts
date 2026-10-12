@@ -53,6 +53,7 @@ const actors: Record<string, TrustedActor> = {
   supervisor,
   foreign: { ...logistics, facilityScopes: ['elsewhere'] },
   empty: { ...logistics, roles: [] },
+  supervisorForeign: { ...supervisor, facilityScopes: ['elsewhere'] },
 };
 const legacy = { 'X-Role': 'SUPERVISOR', 'X-User-Id': 'legacy-1' };
 
@@ -133,6 +134,72 @@ describe('EWO-015 canonical CHECK / maintenance APIs', () => {
       .post(`/unidades/${v}/checks`)
       .set('Authorization', `Bearer ${token}`)
       .send(body);
+
+  it('EWO-036 Supervisor consults CHECK orders in scope without execution or technical access', async () => {
+    const check = (await create(vehicle).expect(201)).body;
+    await db.query(
+      "UPDATE visitas SET assigned_user_id='another-mechanic',work_order_status='ASSIGNED' WHERE id=$1",
+      [check.id],
+    );
+    await request(app.getHttpServer())
+      .get('/checks')
+      .query({ unidadId: vehicle })
+      .set('Authorization', 'Bearer supervisor')
+      .expect(200)
+      .expect((r) => {
+        expect(r.body.items.map((item: { id: string }) => item.id)).toEqual([
+          check.id,
+        ]);
+        expect(r.body.counts.active).toBe(1);
+      });
+    await request(app.getHttpServer())
+      .get(`/checks/${check.id}`)
+      .set('Authorization', 'Bearer supervisor')
+      .expect(200)
+      .expect((r) =>
+        expect(r.body).toMatchObject({
+          id: check.id,
+          type: 'CHECK',
+          status: 'ASSIGNED',
+        }),
+      );
+    await request(app.getHttpServer())
+      .get('/checks')
+      .set('Authorization', 'Bearer supervisorForeign')
+      .expect(200)
+      .expect((r) => expect(r.body.items).toEqual([]));
+    await request(app.getHttpServer())
+      .get(`/checks/${check.id}`)
+      .set('Authorization', 'Bearer supervisorForeign')
+      .expect(403);
+    for (const action of ['claim', 'start', 'assign', 'review']) {
+      await request(app.getHttpServer())
+        .post(`/checks/${check.id}/${action}`)
+        .set('Authorization', 'Bearer supervisor')
+        .send(action === 'assign' ? { assignedActorId: mechanic.subject } : {})
+        .expect(403);
+    }
+    for (const resource of [
+      'condition',
+      'condition-config',
+      'findings',
+      'evidence',
+      'signature/content',
+    ]) {
+      await request(app.getHttpServer())
+        .get(`/checks/${check.id}/${resource}`)
+        .set('Authorization', 'Bearer supervisor')
+        .expect(403);
+    }
+    await create(vehicle, 'supervisor').expect(403);
+    const legacyRows = await request(app.getHttpServer())
+      .get(`/unidades/${vehicle}/visitas`)
+      .set(legacy)
+      .expect(200);
+    expect(
+      legacyRows.body.some((item: { id: string }) => item.id === check.id),
+    ).toBe(false);
+  });
 
   it('EWO-023 signed detail rehydrates correctives while keeping mechanic/facility scope', async () => {
     const check = (await create(vehicle).expect(201)).body;
@@ -215,7 +282,8 @@ describe('EWO-015 canonical CHECK / maintenance APIs', () => {
     await request(app.getHttpServer())
       .get('/mantenimiento-ordenes')
       .set('Authorization', 'Bearer mechanic')
-      .expect(403);
+      .expect(200)
+      .expect((r) => expect(r.body.items.some((item: { id: string }) => item.id === corrective.id)).toBe(true));
     const queue = (
       await request(app.getHttpServer())
         .get('/checks?scope=mine-or-eligible')
@@ -234,7 +302,9 @@ describe('EWO-015 canonical CHECK / maintenance APIs', () => {
       .expect(404);
   });
 
-  it('EWO-023 queue returns only minimal unit identity under its existing scope', async () => {
+  it('EWO-023 queue returns scoped unit identity and registered photo under its existing scope', async () => {
+    const photo = checkTestImage(16, 16).dataUrl;
+    await db.query('UPDATE unidades SET foto_data_url=$1 WHERE id=$2', [photo, vehicle]);
     await create(vehicle).expect(201);
     const queue = (
       await request(app.getHttpServer())
@@ -245,9 +315,11 @@ describe('EWO-015 canonical CHECK / maintenance APIs', () => {
     ).body;
     expect(queue.items).toHaveLength(1);
     expect(Object.keys(queue.items[0].unit).sort()).toEqual([
+      'fotoDataUrl',
       'numeroInterno',
       'placas',
     ]);
+    expect(queue.items[0].unit.fotoDataUrl).toBe(photo);
     expect(queue.counts).toEqual({ total: 1, active: 1 });
   });
 
@@ -734,7 +806,9 @@ describe('EWO-015 canonical CHECK / maintenance APIs', () => {
     expect(createdEvents).toHaveLength(1);
     expect(createdEvents[0].type).toBe('CHECK_CREATED');
     expect(
-      afterCreate.outbox.filter((event: { id: string }) => existingIds.has(event.id)),
+      afterCreate.outbox.filter((event: { id: string }) =>
+        existingIds.has(event.id),
+      ),
     ).toEqual(before.outbox);
     await request(app.getHttpServer())
       .get(`/checks/${check.id}`)

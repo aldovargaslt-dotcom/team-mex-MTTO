@@ -31,6 +31,7 @@ El archivo 004 se llama `ADR-004-…` (histórico). No renombrar en un overlay d
 | 019 | [019-vehicle-insurance-policy.md](019-vehicle-insurance-policy.md) | Documentos mínimos POLIZA_SEGURO y policy de salida. |
 | 020 | [020-check-storage-migrations-scheduler.md](020-check-storage-migrations-scheduler.md) | S3 privado, migrations TypeORM y daily command/scheduler. |
 | 021 | [021-user-access-directory.md](021-user-access-directory.md) | Directorio Auth persistente, bootstrap y administración de accesos OIDC. |
+| 022 | [022-alert-attention-priority.md](022-alert-attention-priority.md) | Inicio por condiciones activas, prioridad configurable por dueño y guardados auditados. |
 
 ADR-016–020 registran decisiones de owner aprobadas el 2026-10-01; contratos técnicos detallados del [paquete Slice 0](../engineering-work-orders/CHK-001-slice-0-review.md) fueron aprobados por owner junto a R01–R05; addenda explícitos preservan cuerpos anteriores. No son evidencia de implementación. ADR-015 permanece como histórico con supersession parcial enlazada.
 
@@ -47,3 +48,5 @@ Nuevo ADR (o el existente pasa a *superseded*) cuando cambie:
 No hace falta ADR para copy, tokens CSS, CI, o plantillas de PR. Cortes **visual only**: brief en `docs/design-system/*` (Must/Don’t) + spec UX en [docs/design/](../design/) si cambia jerarquía; “ninguno — visual only” en el PR.
 
 No reescribir en silencio un ADR aceptado. Ver regla en `.cursor/rules/docs-adr.mdc`.
+
+[ADR023 — Apertura explícita de mantenimiento](023-maintenance-order-opening.md): marca de apertura sin cambiar lifecycle/efectos de CHECK o cierre.

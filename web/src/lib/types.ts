@@ -174,6 +174,8 @@ export type AlertasSinRegresoConfig = {
 };
 
 export type VisitaResumen = {
+  openedAt?: string | null;
+  openedBy?: string | null;
   id: string;
   estado: EstadoVisita;
   tipo: TipoVisita | null;
@@ -190,6 +192,8 @@ export type VisitaResumen = {
 };
 
 export type VisitaDetalle = {
+  openedAt?: string | null;
+  openedBy?: string | null;
   id: string;
   unidadId: string;
   unidadNumeroInterno: string;
@@ -262,6 +266,8 @@ export type SkuCompatible = {
 };
 
 export type StockRow = {
+  criticalQty: number;
+  severity: 'WARNING' | 'CRITICAL' | null;
   itemId: string;
   sku: string;
   nombre: string;
@@ -348,6 +354,8 @@ export type AvisoAndon = {
 };
 
 export type UmbralAndon = {
+  criticalOverdueKm: number;
+  criticalOverdueDays: number;
   tipoVehiculoId: string;
   tipoNombre: string;
   tKm: number;
@@ -521,3 +529,14 @@ export type HealthConfig = {
   createdAt: string;
   createdBy: string | null;
 };
+
+export type ActiveAttention = {
+  id: string; area: 'FLOTA' | 'INVENTARIO'; kind: 'maintenance' | 'stock' | 'purchase';
+  severity: 'WARNING' | 'CRITICAL'; title: string; detail: string;
+  reference: string | null; photo: string | null; href: string; action: string; createdAt: string;
+};
+export type AttentionResponse = {
+  items: ActiveAttention[];
+  sources: { id: string; name: string; status: 'ok' | 'error' }[];
+};
+export type ThresholdPreview = { before: number; after: number; opened: number; closed: number; priorityChanged: number };

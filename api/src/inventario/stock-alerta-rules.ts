@@ -22,8 +22,11 @@ export function esStockBajo(
   return minQty != null && qty <= minQty;
 }
 
-export function severidadAlertaStock(qty: number): 'WARNING' | 'CRITICAL' {
-  return qty === 0 ? 'CRITICAL' : 'WARNING';
+export function severidadAlertaStock(
+  qty: number,
+  criticalQty = 0,
+): 'WARNING' | 'CRITICAL' {
+  return qty <= criticalQty ? 'CRITICAL' : 'WARNING';
 }
 
 /**
@@ -35,6 +38,8 @@ export function eventoCruceUmbral(input: {
   nextQty: number;
   prevMin: number | null | undefined;
   nextMin: number | null | undefined;
+  prevCritical?: number;
+  nextCritical?: number;
 }): EventoUmbralStock | null {
   const prev = esStockBajo(input.prevQty, input.prevMin);
   const next = esStockBajo(input.nextQty, input.nextMin);
@@ -47,7 +52,8 @@ export function eventoCruceUmbral(input: {
   if (
     prev &&
     next &&
-    severidadAlertaStock(input.prevQty) !== severidadAlertaStock(input.nextQty)
+    severidadAlertaStock(input.prevQty, input.prevCritical) !==
+      severidadAlertaStock(input.nextQty, input.nextCritical)
   ) {
     return 'StockBajo';
   }

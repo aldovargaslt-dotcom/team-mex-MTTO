@@ -7,9 +7,10 @@ import { SaludModule } from '../salud/salud.module';
 import { AlertCatalogController } from './alert-catalog.controller';
 import { AlertCatalogService } from './alert-catalog.service';
 import { AlertTypeEntity } from './entities/alert-type.entity';
+import { ThresholdChangeEntity } from './entities/threshold-change.entity';
 import { ALERT_TYPE_ACTIVE_PORT } from './ports';
 
-export const ALERT_CATALOG_ENTITIES = [AlertTypeEntity];
+export const ALERT_CATALOG_ENTITIES = [AlertTypeEntity, ThresholdChangeEntity];
 
 @Global()
 @Module({

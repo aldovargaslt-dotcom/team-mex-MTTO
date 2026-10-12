@@ -119,7 +119,13 @@ export class TypeOrmAndonStore implements AndonStore {
   async getUmbral(tipoVehiculoId: string): Promise<UmbralTipo | null> {
     const row = await this.umbrales().findOne({ where: { tipoVehiculoId } });
     return row
-      ? { tipoVehiculoId: row.tipoVehiculoId, tKm: row.tKm, tDias: row.tDias }
+      ? {
+          tipoVehiculoId: row.tipoVehiculoId,
+          tKm: row.tKm,
+          tDias: row.tDias,
+          criticalOverdueKm: row.criticalOverdueKm,
+          criticalOverdueDays: row.criticalOverdueDays,
+        }
       : null;
   }
 
@@ -132,6 +138,10 @@ export class TypeOrmAndonStore implements AndonStore {
       existing ?? repo.create({ tipoVehiculoId: umbral.tipoVehiculoId });
     entity.tKm = umbral.tKm;
     entity.tDias = umbral.tDias;
+    entity.criticalOverdueKm =
+      umbral.criticalOverdueKm ?? existing?.criticalOverdueKm ?? 1000;
+    entity.criticalOverdueDays =
+      umbral.criticalOverdueDays ?? existing?.criticalOverdueDays ?? 30;
     await repo.save(entity);
   }
 
@@ -143,6 +153,8 @@ export class TypeOrmAndonStore implements AndonStore {
       tipoVehiculoId: row.tipoVehiculoId,
       tKm: row.tKm,
       tDias: row.tDias,
+      criticalOverdueKm: row.criticalOverdueKm,
+      criticalOverdueDays: row.criticalOverdueDays,
     }));
   }
 

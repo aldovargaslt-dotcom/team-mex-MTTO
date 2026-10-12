@@ -101,6 +101,7 @@ export class CreateMaintenanceDto {
   idempotencyKey?: string;
 }
 export class OrdersQuery {
+  @IsOptional() @IsIn(['abiertas', 'borradores', 'cerradas']) cola?: 'abiertas' | 'borradores' | 'cerradas';
   @IsOptional() @IsUUID('4') unidadId?: string;
   @IsOptional() @IsUUID('4') cursor?: string;
   @IsOptional() @Type(() => Number) @IsInt() @Min(1) @Max(100) limit?: number;

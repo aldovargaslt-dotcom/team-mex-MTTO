@@ -1576,12 +1576,18 @@ export class CanonicalOrdersService {
       await this.storage.removeUnreferencedTemporary(deleted.item.objectKey);
     return { id: evidenceId, version: deleted.version };
   }
+  async readOrderDetail(id: string, actor: TrustedActor) {
+    return this.detail(id, actor, this.db.manager, true);
+  }
+
   async detail(
     id: string,
     actor: TrustedActor,
     manager: EntityManager = this.db.manager,
+    allowSupervisorRead = false,
   ) {
     this.authorize(actor, [
+      ...(allowSupervisorRead ? [Rol.SUPERVISOR] : []),
       Rol.MECANICO,
       Rol.LOGISTICA,
       Rol.ADMIN_DIRECTIVO,
@@ -1601,7 +1607,12 @@ export class CanonicalOrdersService {
     if (
       actor.roles.includes(Rol.MECANICO) &&
       !actor.roles.some((r) =>
-        [Rol.LOGISTICA, Rol.ADMIN_DIRECTIVO, 'SYSTEM'].includes(r),
+        [
+          Rol.LOGISTICA,
+          Rol.ADMIN_DIRECTIVO,
+          'SYSTEM',
+          ...(allowSupervisorRead ? [Rol.SUPERVISOR] : []),
+        ].includes(r),
       ) &&
       visita.assignedUserId !== actor.subject &&
       !(
@@ -1618,21 +1629,23 @@ export class CanonicalOrdersService {
           })
         : [];
     const expired = new Date() >= check.dayEndInstant;
-    const correctives = visita.workOrderStatus === WorkOrderStatus.COMPLETED
-      ? await manager.find(Visita, {
-          where: {
-            sourceCheckId: id,
-            workOrderType: WorkOrderType.CORRECTIVE,
-            unidad: { id: visita.unidad.id },
-          },
-          order: { id: 'ASC' },
-        })
-      : [];
+    const correctives =
+      visita.workOrderStatus === WorkOrderStatus.COMPLETED
+        ? await manager.find(Visita, {
+            where: {
+              sourceCheckId: id,
+              workOrderType: WorkOrderType.CORRECTIVE,
+              unidad: { id: visita.unidad.id },
+            },
+            order: { id: 'ASC' },
+          })
+        : [];
     return {
       ...this.summary(visita),
-      signedSummary: visita.workOrderStatus === WorkOrderStatus.COMPLETED
-        ? signedCheckSummary(check.signedSnapshot)
-        : null,
+      signedSummary:
+        visita.workOrderStatus === WorkOrderStatus.COMPLETED
+          ? signedCheckSummary(check.signedSnapshot)
+          : null,
       correctives: correctives.map((item) => ({
         id: item.id,
         folio: `MTT-${item.id}`,
@@ -1672,12 +1685,16 @@ export class CanonicalOrdersService {
       unit: {
         numeroInterno: v.unidad.numeroInterno,
         placas: v.unidad.placas,
+        fotoDataUrl: v.unidad.fotoDataUrl ?? null,
       },
       folio: `${v.workOrderType === 'CHECK' ? 'CHK' : 'MTT'}-${v.id}`,
       type: v.workOrderType,
       status: v.workOrderStatus,
       version: v.version,
       legacyCompatDraft: v.legacyCompatDraft,
+      openedAt: v.openedAt ?? null,
+      openedBy: v.openedBy ?? null,
+      openedActorName: v.openedActorName ?? null,
       blocksOperation: v.blocksOperation,
       blockReason: v.blockReason,
       requiresReinspection: v.requiresReinspection,
@@ -1772,12 +1789,43 @@ export class CanonicalOrdersService {
       throw error;
     }
   }
+  async maintenanceDetail(id: string, actor: TrustedActor) {
+    this.authorize(actor, [Rol.MECANICO, Rol.SUPERVISOR, Rol.ADMIN_DIRECTIVO]);
+    const visit = await this.db.manager.findOne(Visita, {
+      where: { id, workOrderType: In(maintenanceTypes) },
+      relations: { trabajos: true, fotos: true, firmas: true, piezas: true },
+    });
+    if (!visit) throw new NotFoundException('No se encontró la orden.');
+    await this.facility(this.db.manager, visit.unidad.id, actor);
+    return { ...this.legacy.toDetalle(visit), ...this.summary(visit) };
+  }
+
+  async openMaintenance(id: string, actor: TrustedActor) {
+    this.authorize(actor, [Rol.MECANICO, Rol.SUPERVISOR]);
+    return this.db.transaction(async (manager) => {
+      const initial = await manager.findOneBy(Visita, { id, workOrderType: In(maintenanceTypes) });
+      if (!initial) throw new NotFoundException('No se encontró la orden de mantenimiento.');
+      await this.unitOperations.lock(manager, initial.unidad.id);
+      await this.facility(manager, initial.unidad.id, actor);
+      const visit = await manager.getRepository(Visita).createQueryBuilder('v')
+        .leftJoinAndSelect('v.unidad', 'u').where('v.id=:id', { id })
+        .setLock('pessimistic_write', undefined, ['v']).getOneOrFail();
+      if (!activeStatuses.includes(visit.workOrderStatus)) throw new ConflictException('La orden ya no está activa.');
+      if (!visit.openedAt) {
+        visit.openedAt = new Date(); visit.openedBy = actor.subject; visit.openedActorName = actor.displayName;
+        visit.legacyCompatDraft = false;
+        await manager.save(visit);
+      }
+      return this.summary(visit);
+    });
+  }
+
   async list(actor: TrustedActor, query: OrdersQuery, checks: boolean) {
     this.authorize(
       actor,
       checks
-        ? [Rol.MECANICO, Rol.LOGISTICA, Rol.ADMIN_DIRECTIVO]
-        : [Rol.SUPERVISOR, Rol.ADMIN_DIRECTIVO],
+        ? [Rol.MECANICO, Rol.LOGISTICA, Rol.SUPERVISOR, Rol.ADMIN_DIRECTIVO]
+        : [Rol.MECANICO, Rol.SUPERVISOR, Rol.ADMIN_DIRECTIVO],
     );
     const qb = this.db
       .getRepository(Visita)
@@ -1797,17 +1845,16 @@ export class CanonicalOrdersService {
       if (
         actor.roles.includes(Rol.MECANICO) &&
         !actor.roles.some((r) =>
-          [Rol.LOGISTICA, Rol.ADMIN_DIRECTIVO].includes(r as Rol),
+          [Rol.LOGISTICA, Rol.SUPERVISOR, Rol.ADMIN_DIRECTIVO].includes(
+            r as Rol,
+          ),
         )
       ) {
-        qb.andWhere(
-          'v.work_order_status IN (:...activeStatuses) AND ((v.assigned_user_id IS NULL AND v.work_order_status IN (:...eligibleStatuses)) OR v.assigned_user_id=:subject)',
-          {
-            subject: actor.subject,
-            eligibleStatuses: activeStatuses,
-            activeStatuses,
-          },
-        );
+        if (query.cola === 'cerradas') {
+          qb.andWhere('v.work_order_status=:completed AND v.assigned_user_id=:subject', { completed: WorkOrderStatus.COMPLETED, subject: actor.subject });
+        } else {
+          qb.andWhere('v.work_order_status IN (:...activeStatuses) AND ((v.assigned_user_id IS NULL AND v.work_order_status IN (:...eligibleStatuses)) OR v.assigned_user_id=:subject)', { subject: actor.subject, eligibleStatuses: activeStatuses, activeStatuses });
+        }
       }
     }
     if (query.unidadId)
