@@ -9,7 +9,10 @@ mantenimiento; publicar sólo JSX contra la API anterior no ofrece esas funcione
 `railway.toml` y `api/railway.toml` ejecutan
 `node dist/db/run-ui-release-migrations.js` como preDeployCommand. Funciona con
 las imágenes productivas sin ts-node. `startCommand` permanece node dist/main.js:
-no se migra en cada arranque/reinicio. No cambia la configuración de Vercel/web.
+production también comprueba sus dos ledgers antes de inicializar Nest (ADR024),
+para completar pendientes si Railway no ejecutó pre-deploy. Sólo aplica migraciones
+pendientes; reentradas no repitenDDL. Desarrollo/test no usa ese guard automático.
+No cambia la configuración de Vercel/web.
 
 El paso usa la misma conexión configurada que la API, compara el nombre efectivo
 de base contra el nombre de esa conexión, exige DB_SYNCHRONIZE=false y

@@ -3,7 +3,7 @@ import { createAlertMigrationDataSource } from './alert-migration-data-source';
 import { createOrdersMigrationDataSource } from './orders-migration-data-source';
 import { PostgresConnectionOptions } from './postgres-options';
 
-/** Railway pre-deploy only: never invoked by application startup. */
+/** The two authorized additive release migrations, protected by ledgers and a lock. */
 export async function migrateUiRelease(
   connection: PostgresConnectionOptions,
   flags: { synchronize?: string; dropSchema?: string },
