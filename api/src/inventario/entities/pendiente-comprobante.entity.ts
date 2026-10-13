@@ -24,7 +24,7 @@ export class PendienteComprobante {
   @JoinColumn({ name: 'item_id' })
   item: Item;
 
-  @Column({ type: 'int' })
+  @Column({ type: 'numeric', precision: 20, scale: 6, transformer: { to: (v: number) => v, from: (v: string) => Number(v) } })
   qty: number;
 
   @Column({ type: 'enum', enum: EstadoPendiente, default: EstadoPendiente.PENDIENTE })

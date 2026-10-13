@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum, IsInt, IsUUID, Min } from 'class-validator';
+import { IsEnum, IsNumber, IsUUID, Min } from 'class-validator';
 import { OrigenConsumo } from '../../kernel/events/visita-cerrada';
 
 export class PiezaDto {
@@ -8,8 +8,8 @@ export class PiezaDto {
   itemId: string;
 
   @ApiProperty({ example: 1 })
-  @IsInt({ message: 'La cantidad debe ser un número entero.' })
-  @Min(1, { message: 'La cantidad debe ser al menos 1.' })
+  @IsNumber({ maxDecimalPlaces: 6 }, { message: 'La cantidad admite hasta seis decimales.' })
+  @Min(0.000001, { message: 'La cantidad debe ser positiva.' })
   qty: number;
 
   @ApiProperty({ enum: OrigenConsumo })

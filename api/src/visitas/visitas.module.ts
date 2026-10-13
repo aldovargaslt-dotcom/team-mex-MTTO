@@ -2,6 +2,8 @@ import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ChoferesModule } from '../choferes/choferes.module';
 import { UnidadesModule } from '../unidades/unidades.module';
+import { InventarioModule } from '../inventario/inventario.module';
+import { MaterialsController } from './materials.controller';
 import { Visita } from './visita.entity';
 import { VisitaFirma } from './visita-firma.entity';
 import { VisitaFoto } from './visita-foto.entity';
@@ -60,11 +62,12 @@ import {
       CheckSignature,
       CheckInvalidation,
     ]),
+    InventarioModule,
     UnidadesModule,
     ChoferesModule,
     forwardRef(() => FlotaModule),
   ],
-  controllers: [VisitasController, CanonicalOrdersController],
+  controllers: [VisitasController, CanonicalOrdersController, MaterialsController],
   providers: [
     VisitasService,
     VisitasInvariantService,

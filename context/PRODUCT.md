@@ -105,3 +105,5 @@ Owner approved SPEC-CHK-001 discovery and decisions D01–D14; durable [Slice 0 
 
 
 Approved owner update2026-10-01: R01–R05 adoptadas en [Slice0 package](../docs/engineering-work-orders/CHK-001-slice-0-review.md). Mapping facility por vehículo; MexicoCity día local; daily ACTIVA+Flota EN_PATIO/sinCHECKactivo; hard blockers aceite/refrigerante crítico/fuga severa/llanta severa-ponchadura/PSIcriticalconfig; claim/assign/invalidation en authorizedfacility; physical source Flota enum4 y divergence explícita; retorno overdue<=2hAttention/>2hCritical configurables. Sin decisiones owner pendientes ni código implementado; EWO015 Ready técnico, ejecución retenida.
+
+Approved bounded increment (39cd9a5 / EWO-038): operational material costs per maintenance OT, weighted warehouse valuation, direct purchase price, fractional divisible units, optional purchase receipts and audited Admin corrections are now implemented locally under [ADR-025](../docs/adr/025-work-order-inventory-costs.md). This supersedes only the cost exclusion above for this increment; formal OC, reservations, multi-warehouse and physical lots remain outside scope. Production rollout has not occurred.

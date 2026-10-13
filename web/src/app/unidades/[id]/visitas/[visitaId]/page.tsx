@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
+import { OrderMaterials, type MaterialsView } from '@/components/OrderMaterials';
 import { RoleGate } from '@/components/RoleGate';
 import { SignaturePad } from '@/components/SignaturePad';
 import {
@@ -196,7 +197,8 @@ function VisitaReadonly({
         <ReadStatus loading={piezaRead.loading && visita.piezas.length > 0} error={piezaRead.error}
           loadingText="Cargando datos de las piezas…" errorText="No se pudieron consultar las piezas. Se conservan cantidades y origen."
           retry={piezaRead.retry} retryLabel="Reintentar piezas" />
-        <PiezasReadonly piezas={piezas} />
+        {piezas.length > 0 ? <PiezasReadonly piezas={piezas} /> : null}
+        <OrderMaterials visitaId={visita.id} closed={visita.estado === 'CERRADO'} />
 
         <section className="doc-section">
           <h2>Firmas</h2>
@@ -237,6 +239,7 @@ function VisitWizard({
 }) {
   const { role, userId } = useRole();
   const router = useRouter();
+  const materialRead = useReadResource(role ? JSON.stringify([role, userId, visita.id, 'materials-close']) : null, () => api<MaterialsView>(`/visitas/${visita.id}/materiales`, { role: role!, userId }), true);
   const [step, setStep] = useState<StepId>('datos');
   const opts = { role: role!, userId };
   const actorKey = role ? JSON.stringify([role, userId, unidadId, visita.id]) : null;
@@ -247,7 +250,7 @@ function VisitWizard({
     () => hydratePiezasFromInventario(visita.piezas ?? [], opts));
   const stockRead = useReadResource(actorKey && step === 'piezas' && visita.tipoVehiculoId
     ? JSON.stringify([actorKey, 'stock', visita.tipoVehiculoId]) : null,
-    () => api<SkuCompatible[]>(`/inventario/skus?tipoVehiculoId=${visita.tipoVehiculoId}`, opts));
+    () => api<SkuCompatible[]>(`/inventario/skus?unidadId=${visita.unidadId}`, opts));
   const choferes = driversRead.data ?? [];
   const choferesListos = driversRead.data !== null;
   const catalogo = catalogRead.data ?? [];
@@ -411,6 +414,8 @@ function VisitWizard({
   }
 
   const faltantes: string[] = [];
+  if (materialRead.loading || materialRead.error || !materialRead.data) faltantes.push('Verificar refacciones contabilizadas');
+  if (materialRead.data?.summary.pendingDestinations.length) faltantes.push('Asignar destino físico a todas las cantidades compradas');
   if (!choferId) faltantes.push('Chofer del catálogo');
   if (km.trim() === '') faltantes.push('Kilometraje');
   if (!tipo) faltantes.push('Tipo predictivo o correctivo');
@@ -619,16 +624,10 @@ function VisitWizard({
         </Card>
       ) : null}
 
-      {step === 'piezas' ? (
-        <PiezasStep
-          role={role!}
-          userId={userId}
-          tipoVehiculoId={visita.tipoVehiculoId}
-          tipoVehiculoNombre={visita.tipoVehiculoNombre}
-          lineas={piezas}
-          onChange={setPiezas}
-        />
-      ) : null}
+      {step === 'piezas' ? <>
+        <Card className="p-3"><OrderMaterials visitaId={visita.id} onChanged={materialRead.setData} /></Card>
+        {piezas.length ? <PiezasStep unidadId={visita.unidadId} role={role!} userId={userId} tipoVehiculoId={visita.tipoVehiculoId} tipoVehiculoNombre={visita.tipoVehiculoNombre} lineas={piezas} onChange={setPiezas} /> : null}
+      </> : null}
 
       {step === 'firmas' ? (
         <Card className="p-3">
@@ -667,7 +666,7 @@ function VisitWizard({
             <dd>{fotos.length}</dd>
             <dt>Piezas</dt>
             <dd>
-              {piezas.length === 0 ? 'Ninguna' : resumenOrigenPiezas(piezas)}
+              {(Boolean(materialRead.data?.state.purchases.length) || materialRead.data?.state.postings.some(p => ['WAREHOUSE_USE', 'DIRECT_USE'].includes(p.kind))) ? 'Refacciones registradas en Refacciones y costos' : piezas.length === 0 ? 'Ninguna' : resumenOrigenPiezas(piezas)}
             </dd>
           </dl>
           {faltantes.length ? (
@@ -723,7 +722,9 @@ function VisitWizard({
             </DialogDescription>
           </DialogHeader>
           <ul className="grid gap-1 text-sm">
-            {piezas.length === 0 ? (
+            {(Boolean(materialRead.data?.state.purchases.length) || materialRead.data?.state.postings.some(p => ['WAREHOUSE_USE', 'DIRECT_USE'].includes(p.kind))) ? (
+              <li>Los usos de refacciones ya están contabilizados. El cierre conserva sus movimientos. {materialRead.data?.summary.complete ? `Costo: ${new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(Number(materialRead.data?.summary.materialsCost))}.` : 'Costo pendiente · Total incompleto.'}</li>
+            ) : piezas.length === 0 ? (
               <li>Sin piezas.</li>
             ) : (
               piezas.map((linea) => (

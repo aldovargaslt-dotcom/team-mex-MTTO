@@ -1,3 +1,4 @@
+import { UnidadesService } from '../unidades/unidades.service';
 import {
   BadRequestException,
   Inject,
@@ -50,6 +51,12 @@ import { ItemProveedor } from './entities/item-proveedor.entity';
 import { Movimiento } from './entities/movimiento.entity';
 import { PendienteComprobante } from './entities/pendiente-comprobante.entity';
 import { Proveedor } from './entities/proveedor.entity';
+import { mensajeStockInsuficiente } from './stock-rules';
+import { executeMaterials } from './materials-engine';
+import { emptyMaterials, Balance } from './materials-model';
+import { ensureSources } from './valuation-sources';
+import { MaterialAccount, MaterialClosure } from './materials.entity';
+import { decimal as exact, formatDecimal, quantity } from './cost-decimal';
 import { Stock } from './entities/stock.entity';
 import { EstadoPendiente, TipoMovimiento, UOM_PIEZA } from './enums';
 import { STOCK_ALERT_PORT, StockAlertPort } from './ports';
@@ -63,7 +70,6 @@ import {
   esStockBajo,
   severidadAlertaStock,
 } from './stock-alerta-rules';
-import { mensajeStockInsuficiente, stockTrasMovimiento } from './stock-rules';
 
 type StockCrossing = {
   item: Item;
@@ -95,6 +101,7 @@ export class InventarioService implements OnModuleInit {
     @InjectRepository(PendienteComprobante)
     private readonly pendientes: Repository<PendienteComprobante>,
     private readonly tipos: TiposVehiculoService,
+    private readonly unidades: UnidadesService,
     private readonly outbox: OutboxService,
     @Optional()
     @Inject(STOCK_ALERT_PORT)
@@ -212,6 +219,8 @@ export class InventarioService implements OnModuleInit {
   }
 
   async createItem(dto: CreateItemDto) {
+    if ((dto.uom ?? UOM_PIEZA) === UOM_PIEZA && (dto.quantityScale ?? 0) !== 0) throw new BadRequestException('Las piezas son indivisibles; su precisión debe ser cero.');
+    await this.validateCompatibility(dto.tipoVehiculoIds, dto.unidadIds);
     const familia = await this.requireFamilia(dto.familiaId);
     if (!familia.activa) {
       throw new BadRequestException('La familia está inactiva.');
@@ -224,20 +233,17 @@ export class InventarioService implements OnModuleInit {
       ),
       familia,
       oem: dto.oem?.trim() || null,
-      uom: UOM_PIEZA,
+      uom: dto.uom ?? UOM_PIEZA,
+      quantityScale: dto.quantityScale ?? 0,
       activo: dto.activo ?? true,
+      unidadIds: [...new Set(dto.unidadIds ?? [])],
     });
-    const saved = await this.items.save(item);
-    await this.stock.save(
-      this.stock.create({
-        itemId: saved.id,
-        qty: 0,
-        minQty: dto.minQty ?? null,
-      }),
-    );
-    if (dto.tipoVehiculoIds?.length) {
-      await this.replaceCompatibilidad(saved.id, dto.tipoVehiculoIds);
-    }
+    const saved = await this.items.manager.transaction(async manager => {
+      const saved = await manager.getRepository(Item).save(item);
+      await manager.getRepository(Stock).save(manager.getRepository(Stock).create({ itemId: saved.id, qty: 0, minQty: dto.minQty ?? null }));
+      if (dto.tipoVehiculoIds?.length) await this.replaceCompatibilidad(saved.id, dto.tipoVehiculoIds, manager);
+      return saved;
+    });
     await this.emitCruceUmbral({
       item: saved,
       prevQty: 0,
@@ -249,7 +255,9 @@ export class InventarioService implements OnModuleInit {
   }
 
   async updateItem(id: string, dto: UpdateItemDto) {
+    await this.validateCompatibility(dto.tipoVehiculoIds, dto.unidadIds);
     const item = await this.requireItemEntity(id);
+    if (dto.unidadIds !== undefined) item.unidadIds = [...new Set(dto.unidadIds)];
     const stockRow = await this.stock.findOne({ where: { itemId: id } });
     const prevMin = stockRow?.minQty ?? null;
     const prevCritical = stockRow?.criticalQty ?? 0;
@@ -257,7 +265,7 @@ export class InventarioService implements OnModuleInit {
     const nextCritical =
       dto.criticalQty ??
       (nextMin == null ? prevCritical : Math.min(prevCritical, nextMin));
-    this.validateAlertThresholds(nextMin, nextCritical);
+    this.validateAlertThresholds(nextMin, nextCritical, item.quantityScale ?? 0);
     if (dto.sku !== undefined) {
       item.sku = requireTrimmed(dto.sku, 'El SKU no puede estar vacío.');
     }
@@ -399,6 +407,7 @@ export class InventarioService implements OnModuleInit {
       familia: row.item.familia?.nombre ?? null,
       activo: row.item.activo,
       uom: row.item.uom,
+      quantityScale: row.item.quantityScale,
       qty: row.qty,
       minQty: row.minQty ?? null,
       alerta: estadoAlertaStock(row.qty, row.minQty ?? null),
@@ -410,10 +419,14 @@ export class InventarioService implements OnModuleInit {
     }));
   }
 
-  validateAlertThresholds(minQty: number | null, criticalQty: number) {
+  validateAlertThresholds(minQty: number | null, criticalQty: number, scale = 0) {
+    try {
+      if (minQty !== null) quantity(String(minQty), scale, true);
+      quantity(String(criticalQty), scale, true);
+    } catch (error) { throw new BadRequestException(error instanceof Error ? error.message : 'Umbral inválido.'); }
     if (
-      (minQty !== null && (!Number.isInteger(minQty) || minQty < 0)) ||
-      !Number.isInteger(criticalQty) ||
+      (minQty !== null && (!Number.isFinite(minQty) || minQty < 0)) ||
+      !Number.isFinite(criticalQty) ||
       criticalQty < 0 ||
       (minQty !== null && criticalQty > minQty)
     ) {
@@ -440,7 +453,8 @@ export class InventarioService implements OnModuleInit {
       (minQty == null
         ? stock.criticalQty
         : Math.min(stock.criticalQty, minQty));
-    this.validateAlertThresholds(minQty, nextCritical);
+    const item = await manager.getRepository(Item).findOneByOrFail({ id: itemId });
+    this.validateAlertThresholds(minQty, nextCritical, item.quantityScale ?? 0);
     stock.minQty = minQty;
     stock.criticalQty = nextCritical;
     await repo.save(stock);
@@ -466,6 +480,7 @@ export class InventarioService implements OnModuleInit {
           (row.minQty == null
             ? existing.criticalQty
             : Math.min(existing.criticalQty, row.minQty)),
+        existing.quantityScale ?? 0,
       );
     }
     const priorities = new Map<string, 'WARNING' | 'CRITICAL'>();
@@ -529,6 +544,7 @@ export class InventarioService implements OnModuleInit {
       nombre: row.item.nombre,
       qty: row.qty,
       delta: row.delta,
+      cost: row.cost, knownCost: row.knownCost, unknownQty: row.unknownQty,
       visitaId: row.visitaId,
       nota: row.nota,
       createdBy: row.createdBy,
@@ -540,7 +556,14 @@ export class InventarioService implements OnModuleInit {
     const rows = await this.pendientes.find({
       order: { createdAt: 'DESC' },
     });
-    return rows.map((row) => this.toPendienteDto(row));
+    const accounts = await this.items.manager.getRepository(MaterialAccount).find();
+    const purchases = accounts.flatMap(account => account.state.purchases.filter(p => !p.receiptKey).map(p => ({
+      id: p.id, visitaId: account.visitaId, itemId: '', qty: 0, estado: EstadoPendiente.PENDIENTE,
+      ticketDataUrl: null, createdAt: new Date(p.createdAt), nombre: 'Comprobante pendiente',
+      sku: `${p.lines.length} refacción(es)`, purchase: true,
+      href: `/ordenes?orden=${account.visitaId}&compra=${p.id}`,
+    })));
+    return [...rows.map(row => ({ ...this.toPendienteDto(row), purchase: false, href: `/inventario/pendientes?pendienteId=${row.id}#pendiente-${row.id}` })), ...purchases];
   }
 
   async adjuntarTicket(id: string, dto: TicketDto) {
@@ -611,21 +634,21 @@ export class InventarioService implements OnModuleInit {
     return this.findItem(dto.itemId);
   }
 
-  async skusCompatibles(tipoVehiculoId: string, q?: string) {
+  async skusCompatibles(tipoVehiculoId?: string, q?: string, unidadId?: string) {
+    if (unidadId) {
+      const unidad = await this.unidades.findOne(unidadId);
+      if (tipoVehiculoId && tipoVehiculoId !== unidad.tipo.id) throw new BadRequestException('El tipo no corresponde a la unidad seleccionada.');
+      tipoVehiculoId = unidad.tipo.id;
+    }
+    if (!tipoVehiculoId) throw new BadRequestException('Selecciona un tipo o una unidad.');
     await this.tipos.findOne(tipoVehiculoId);
     const qb = this.items
       .createQueryBuilder('item')
       .innerJoinAndSelect('item.familia', 'familia')
       .leftJoinAndSelect('item.stock', 'stock')
-      .innerJoin(
-        'item.compatibilidades',
-        'compat',
-        'compat.tipoVehiculoId = :tipoId',
-        {
-          tipoId: tipoVehiculoId,
-        },
-      )
+      .leftJoin('item.compatibilidades', 'compat')
       .where('item.activo = true')
+      .andWhere(unidadId ? '(compat.tipoVehiculoId = :tipoId OR :unidadId = ANY(item.unidadIds))' : 'compat.tipoVehiculoId = :tipoId', { tipoId: tipoVehiculoId, unidadId })
       .orderBy('item.sku', 'ASC');
 
     const query = q?.trim();
@@ -646,7 +669,10 @@ export class InventarioService implements OnModuleInit {
       familia: item.familia?.nombre ?? null,
       oem: item.oem,
       uom: item.uom,
+      quantityScale: item.quantityScale,
       stock: item.stock?.qty ?? 0,
+      knownValue: item.stock?.knownValue ?? '0',
+      unknownQty: item.stock?.unknownQty ?? String(item.stock?.qty ?? 0),
     }));
   }
 
@@ -654,11 +680,16 @@ export class InventarioService implements OnModuleInit {
     payload: VisitaCerradaPayload,
     manager: EntityManager,
   ) {
+    // Old outbox events share the same financial serialization and account lock as new commands.
+    await manager.query("SELECT pg_advisory_xact_lock(hashtextextended('inventory-material-posting', 0))");
+    await manager.query('INSERT INTO inventario.material_accounts(visita_id) VALUES ($1) ON CONFLICT DO NOTHING', [payload.visitaId]);
+    const account = await manager.findOneOrFail(MaterialAccount, { where: { visitaId: payload.visitaId }, lock: { mode: 'pessimistic_write' } });
     const crossings: StockCrossing[] = [];
-    for (const line of payload.consumos) {
-      if (line.qty < 1) {
+    const receipt = await manager.findOneBy(MaterialClosure, { eventId: payload.eventId });
+    for (const line of receipt?.legacy ?? payload.consumos) {
+      if (line.qty <= 0) {
         throw new BadRequestException(
-          'La cantidad de cada pieza debe ser al menos 1.',
+          'La cantidad de cada pieza debe ser positiva.',
         );
       }
       if (line.origen === OrigenConsumo.DESDE_STOCK) {
@@ -672,7 +703,8 @@ export class InventarioService implements OnModuleInit {
           ),
         );
       } else if (line.origen === OrigenConsumo.COMPRA_EXTERNA) {
-        await this.requireItemEntity(line.itemId, manager);
+        const externalItem = await this.requireItemEntity(line.itemId, manager);
+        try { quantity(String(line.qty), externalItem.quantityScale ?? 0); } catch (error) { throw new BadRequestException(error instanceof Error ? error.message : 'Cantidad inválida.'); }
         const pendientes = manager.getRepository(PendienteComprobante);
         await pendientes.save(
           pendientes.create({
@@ -683,6 +715,20 @@ export class InventarioService implements OnModuleInit {
           }),
         );
       }
+    }
+    if (account) {
+      const movements = await manager.getRepository(Movimiento).find({ where: { visitaId: payload.visitaId, tipo: TipoMovimiento.SALIDA_OT } });
+      for (const movement of movements) {
+        if (account.state.postings.some(p => p.id === movement.id)) continue;
+        account.state.postings.push({ id: movement.id, itemId: movement.item.id, kind: 'WAREHOUSE_USE', qty: String(movement.qty), stockDelta: String(movement.delta), cost: movement.cost ?? null, knownCost: movement.knownCost ?? '0', unknownQty: movement.unknownQty ?? String(movement.qty), sources: movement.costSources ?? [], actor: movement.createdBy ?? 'legacy', occurredAt: movement.createdAt.toISOString() });
+      }
+      for (const [index, line] of (receipt?.legacy ?? payload.consumos).entries()) {
+        if (line.origen !== OrigenConsumo.COMPRA_EXTERNA) continue;
+        const id = `${payload.eventId}:legacy:${index}`;
+        if (!account.state.postings.some(p => p.id === id)) account.state.postings.push({ id, itemId: line.itemId, kind: 'DIRECT_USE', qty: String(line.qty), stockDelta: '0', cost: null, knownCost: '0', unknownQty: String(line.qty), actor: 'legacy', occurredAt: payload.cerradoAt });
+      }
+      account.revision++;
+      await manager.save(account);
     }
     for (const crossing of crossings) {
       await this.emitCruceUmbral(crossing);
@@ -721,32 +767,31 @@ export class InventarioService implements OnModuleInit {
       stock = stockRepo.create({ itemId, qty: 0, minQty: null });
     }
 
-    const prevQty = stock.qty;
+    const [raw] = await manager.query('SELECT qty::text, known_value::text AS "knownValue", unknown_qty::text AS "unknownQty", cost_sources AS sources FROM inventario.stock WHERE item_id=$1 FOR UPDATE', [itemId]);
+    const balance: Balance = raw ?? { qty: '0', knownValue: '0', unknownQty: '0', sources: [] };
+    const prevQty = Number(balance.qty);
+    let cost: string | null = null, knownCost = '0', unknownQty = '0';
+    let next: Balance;
+    let sources: import('./materials-model').ValueSource[] = [];
     try {
-      stock.qty = stockTrasMovimiento(stock.qty, delta);
-    } catch {
-      if (tipo === TipoMovimiento.SALIDA_OT) {
-        throw new BadRequestException(
-          mensajeStockInsuficiente(item.sku, stock.qty, Math.abs(delta)),
-        );
+      const amount = quantity(String(Math.abs(delta)), item.quantityScale ?? 0);
+      if (delta > 0) {
+        next = structuredClone(balance); ensureSources(next);
+        next.sources!.push({ id: randomUUID(), qty: formatDecimal(amount), value: '0', unknown: true });
+        next.qty = formatDecimal(exact(next.qty) + amount);
+        next.unknownQty = formatDecimal(exact(next.unknownQty) + amount);
+      } else {
+        const result = executeMaterials(emptyMaterials(), { [itemId]: balance }, { [itemId]: { id: itemId, sku: item.sku, nombre: item.nombre, uom: item.uom, quantityScale: item.quantityScale ?? 0 } }, { type: 'USE', itemId, qty: formatDecimal(amount) }, { actor: extra.createdBy ?? 'legacy', now: new Date().toISOString(), id: randomUUID, admin: false });
+        next = result.balances[itemId];
+        const posting = result.state.postings[0]; cost = posting.cost; knownCost = posting.knownCost; unknownQty = posting.unknownQty; sources = posting.sources ?? [];
       }
-      throw new BadRequestException(
-        `El ajuste dejaría stock negativo para ${item.sku} (hay ${stock.qty}).`,
-      );
+    } catch (error) {
+      if (exact(balance.qty) + exact(String(delta)) < 0n) throw new BadRequestException(tipo === TipoMovimiento.SALIDA_OT ? mensajeStockInsuficiente(item.sku, prevQty, Math.abs(delta)) : `El ajuste dejaría stock negativo para ${item.sku} (hay ${prevQty}).`);
+      throw new BadRequestException(error instanceof Error ? error.message : 'Movimiento inválido.');
     }
-
-    await stockRepo.save(stock);
-    await movRepo.save(
-      movRepo.create({
-        tipo,
-        item: { id: itemId } as Item,
-        qty: Math.abs(delta),
-        delta,
-        visitaId: extra.visitaId ?? null,
-        nota: extra.nota ?? null,
-        createdBy: extra.createdBy ?? null,
-      }),
-    );
+    stock.qty = Number(next.qty);
+    await manager.query('UPDATE inventario.stock SET qty=$2, known_value=$3, unknown_qty=$4, cost_sources=$5::jsonb, updated_at=now() WHERE item_id=$1', [itemId, next.qty, next.knownValue, next.unknownQty, JSON.stringify(next.sources ?? [])]);
+    await movRepo.save(movRepo.create({ tipo, item: { id: itemId } as Item, qty: Math.abs(delta), delta, visitaId: extra.visitaId ?? null, nota: extra.nota ?? null, createdBy: extra.createdBy ?? null, cost, knownCost, unknownQty, costSources: sources }));
     const min = stock.minQty ?? null;
     return {
       item,
@@ -778,19 +823,26 @@ export class InventarioService implements OnModuleInit {
     );
   }
 
+  private async validateCompatibility(tipos: string[] = [], unidades: string[] = []) {
+    for (const id of new Set(tipos)) await this.tipos.findOne(id);
+    for (const id of new Set(unidades)) await this.unidades.findOne(id);
+  }
+
   private async replaceCompatibilidad(
     itemId: string,
     tipoVehiculoIds: string[],
+    manager: EntityManager = this.items.manager,
   ) {
+    const compatibilidades = manager.getRepository(Compatibilidad);
     const unique = [...new Set(tipoVehiculoIds)];
     for (const tipoId of unique) {
       await this.tipos.findOne(tipoId);
     }
-    await this.compatibilidades.delete({ item: { id: itemId } });
+    await compatibilidades.delete({ item: { id: itemId } });
     if (unique.length) {
-      await this.compatibilidades.save(
+      await compatibilidades.save(
         unique.map((tipoVehiculoId) =>
-          this.compatibilidades.create({
+          compatibilidades.create({
             item: { id: itemId } as Item,
             tipoVehiculoId,
           }),
@@ -859,14 +911,18 @@ export class InventarioService implements OnModuleInit {
       familiaNombre: item.familia?.nombre ?? null,
       oem: item.oem,
       uom: item.uom,
+      quantityScale: item.quantityScale,
       activo: item.activo,
       stock: item.stock?.qty ?? 0,
+      knownValue: item.stock?.knownValue ?? '0',
+      unknownQty: item.stock?.unknownQty ?? String(item.stock?.qty ?? 0),
       minQty: item.stock?.minQty ?? null,
       criticalQty: item.stock?.criticalQty ?? 0,
       alerta: estadoAlertaStock(
         item.stock?.qty ?? 0,
         item.stock?.minQty ?? null,
       ),
+      unidadIds: item.unidadIds ?? [],
       tipoVehiculoIds: (item.compatibilidades ?? []).map(
         (c) => c.tipoVehiculoId,
       ),

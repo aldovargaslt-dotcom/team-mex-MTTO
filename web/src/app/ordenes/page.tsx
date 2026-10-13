@@ -1,5 +1,6 @@
 'use client';
 
+import { OrderMaterials } from '@/components/OrderMaterials';
 import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
@@ -91,7 +92,8 @@ function OrdenesContent() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const { role, userId, isAdmin } = useRole();
-  const cola = parseCola(searchParams.get('cola'), isAdmin);
+  const requestedCola = parseCola(searchParams.get('cola'), isAdmin);
+  const purchaseId = searchParams.get('compra');
   const tipo = parseTipo(searchParams.get('tipo'));
   const q = searchParams.get('q') ?? '';
   const ordenId = searchParams.get('orden');
@@ -111,6 +113,7 @@ function OrdenesContent() {
 
   function setParams(patch: Record<string, string | null>) {
     const params = new URLSearchParams(searchParams.toString());
+    if ('cola' in patch || 'tipo' in patch || ('orden' in patch && patch.orden !== ordenId)) params.delete('compra');
     for (const [key, value] of Object.entries(patch)) {
       if (value == null || value === '') params.delete(key);
       else params.set(key, value);
@@ -121,7 +124,7 @@ function OrdenesContent() {
 
   const opts = { role: role!, userId };
   const successful = useRef<{ key: string; units: Unidad[]; rows: Map<string, OrdenRow[]>; checks: OrdenRow[]; failed: string[] } | null>(null);
-  const listKey = role ? JSON.stringify([role, userId, 'ordenes']) : null;
+  const listKey = role ? JSON.stringify([role, userId, 'ordenes', Boolean(purchaseId)]) : null;
   const list = useReadResource(listKey, async () => {
     const cached = successful.current?.key === listKey ? successful.current : null;
     const retryPartial = Boolean(cached?.failed.length);
@@ -130,6 +133,8 @@ function OrdenesContent() {
     const loaded = retryPartial ? new Map(cached!.rows) : new Map<string, OrdenRow[]>();
     const shouldReadChecks = !retryPartial || cached!.failed.includes('CHECK');
     const checksRequest = async (): Promise<OrdenRow[]> => {
+      // A purchase link is scoped to maintenance; unrelated CHECK authentication must not interrupt receipt capture.
+      if (purchaseId) return [];
       const items: CheckOrderSummary[] = [];
       const seen = new Set<string>();
       let cursor: string | null = null;
@@ -167,6 +172,8 @@ function OrdenesContent() {
     return { rows, failed: failed.map((id) => id === 'CHECK' ? 'revisiones' : units.find((unit) => unit.id === id)?.numeroInterno ?? 'mantenimiento') };
   }, true);
   const rows = list.data?.rows ?? null;
+  const purchaseOrder = purchaseId ? rows?.find(row => row.id === ordenId && row.tipo !== 'CHECK') : null;
+  const cola: Cola = purchaseOrder ? (purchaseOrder.estado === 'CERRADO' ? 'cerradas' : purchaseOrder.openedAt ? 'abiertas' : 'borradores') : requestedCola;
   const selectedCheck = rows?.find((row) => row.id === ordenId)?.tipo === 'CHECK';
   const detailRead = useReadResource(role && ordenId && rows ? JSON.stringify([role, userId, ordenId, selectedCheck]) : null,
     async (): Promise<{ maintenance: VisitaDetalle | null; check: CheckOrderDetail | null }> => selectedCheck
@@ -199,7 +206,7 @@ function OrdenesContent() {
     });
   }, [rows, cola, q]);
   const filtered = useMemo(() => queueRows.filter((row) => tipo === 'todos' || row.tipo === tipo), [queueRows, tipo]);
-  const typeOptions = TIPOS.map((option) => ({ ...option,
+  const typeOptions = TIPOS.filter(option => !purchaseId || option.id !== 'CHECK').map((option) => ({ ...option,
     label: rows ? `${option.label} (${queueRows.filter((row) => option.id === 'todos' || row.tipo === option.id).length})` : option.label,
   }));
 
@@ -553,7 +560,8 @@ function OrdenDetalle({
           <p className="muted">Sin comentarios.</p>
         )}
       </section>
-      <section className="ordenes-section" aria-labelledby="orden-piezas">
+      <section className="ordenes-section"><OrderMaterials visitaId={detalle.id} closed={detalle.estado === 'CERRADO'} /></section>
+      {piezas.length > 0 ? <section className="ordenes-section" aria-labelledby="orden-piezas">
         <h2 id="orden-piezas">SKU</h2>
         <ReadStatus loading={piezaRead.loading && detalle.piezas.length > 0} error={piezaRead.error}
           loadingText="Cargando datos de las piezas…" errorText="No se pudieron cargar los nombres de las piezas. Se conservan cantidades y origen."
@@ -586,7 +594,7 @@ function OrdenDetalle({
             </Table>
           </div>
         )}
-      </section>
+      </section> : null}
     </>
   );
 }

@@ -53,4 +53,6 @@ No reescribir en silencio un ADR aceptado. Ver regla en `.cursor/rules/docs-adr.
 
 [ADR024 — Guard de schema del release antes de bootstrap](024-ui-release-bootstrap-guard.md).
 
-[ADR025 — Costeo de materiales y movimientos explícitos por OT](025-work-order-inventory-costs.md): **propuesto**, vinculado a SPEC-INV-OT-001; no sustituye todavía ADR-002 ni describe código implementado.
+[ADR025 — Costeo y movimientos explícitos por OT](025-work-order-inventory-costs.md): adopción acotada bajo EWO-038; conserva envelope y legacy de ADR-002.
+
+[ADR026 — Compatibilidad por tipo o unidad](026-item-unit-compatibility.md): unión explícita de selecciones de catálogo, sin asignación física ni FK/JOIN cruzada.

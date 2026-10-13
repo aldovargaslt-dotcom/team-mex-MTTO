@@ -41,6 +41,13 @@ export class Item {
   @Column({ default: UOM_PIEZA })
   uom: string;
 
+  @Column({ name: 'quantity_scale', type: 'int', default: 0 })
+  quantityScale: number;
+
+  /** Opaque Kernel IDs: catalog applicability, never stock allocation. */
+  @Column({ name: 'unidad_ids', type: 'uuid', array: true, default: () => "'{}'::uuid[]" })
+  unidadIds: string[];
+
   @Column({ default: true })
   activo: boolean;
 

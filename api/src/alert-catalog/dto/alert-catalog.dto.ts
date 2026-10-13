@@ -5,6 +5,7 @@ import {
   IsBoolean,
   IsIn,
   IsInt,
+  IsNumber,
   IsOptional,
   IsString,
   IsUUID,
@@ -94,7 +95,7 @@ export class StockMinInputDto {
   @ApiPropertyOptional({ default: 0 })
   @IsOptional()
   @Type(() => Number)
-  @IsInt()
+  @IsNumber({ maxDecimalPlaces: 6 })
   @Min(0)
   criticalQty?: number;
 
@@ -105,7 +106,7 @@ export class StockMinInputDto {
   @ApiPropertyOptional({ nullable: true })
   @ValidateIf((_, value) => value != null)
   @Type(() => Number)
-  @IsInt()
+  @IsNumber({ maxDecimalPlaces: 6 })
   @Min(0, { message: 'Avisar si quedan no puede ser negativo.' })
   minQty: number | null;
 }

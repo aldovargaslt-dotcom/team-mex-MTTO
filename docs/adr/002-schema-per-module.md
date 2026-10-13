@@ -29,3 +29,7 @@ Integración en el cierre (misma transacción + fila de outbox en el monolito mo
 1. Mantenimiento persiste las líneas de pieza (sin campos de stock) y marca la visita cerrada.
 2. Escribe `outbox_events` con el envelope `VisitaCerrada` (ADR-001) e incluye `consumos: [{ itemId, qty, origen }]`.
 3. Handler de Inventario (mismo txn): `DESDE_STOCK` → `SALIDA_OT` si stock ≥ qty (si no, falla y no cierra); `COMPRA_EXTERNA` → pendiente de comprobante, sin movimiento de stock.
+
+## Supersession link — EWO-038
+
+[ADR-025](025-work-order-inventory-costs.md) supersedes only the new posted-flow timing and decimal storage for divisible items. Historical close-time application, module ownership and alert opt-in remain compatible; the accepted body above is preserved.

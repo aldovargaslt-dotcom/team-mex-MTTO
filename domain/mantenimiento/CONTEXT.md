@@ -48,3 +48,7 @@ Revisión es CHECK operativo de la unidad; Preventivo y Correctivo son mantenimi
 Una revisión concluida conserva dictamen/aptitud como concepto distinto; no
 representa mantenimiento realizado. A–E son trabajos, no tipos de inspección.
 [Glosario](../../context/GLOSSARY.md), [filtro aprobado2026-10-12](../../docs/design/ux-orders-type-filter-v1.md).
+
+## Materials posting seam
+
+[ADR-025](../../docs/adr/025-work-order-inventory-costs.md) / [EWO-038](../../docs/engineering-work-orders/EWO-038.md): Mantenimiento locks the OT and calls InventoryMaterialsPort with an opaque reference. Close verifies destinations and stores a separate inventory closure receipt; frozen VisitaCerrada retains its shape and only legacy lines are applied again at close. Administrative material changes remain in Inventario history and never reemit completed maintenance. Posted drafts cannot be deleted.

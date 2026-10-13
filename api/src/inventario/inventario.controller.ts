@@ -88,10 +88,11 @@ export class InventarioController {
     summary: 'SKUs compatibles con un tipo de vehículo (paso Piezas)',
   })
   skus(
-    @Query('tipoVehiculoId', ParseUUIDPipe) tipoVehiculoId: string,
+    @Query('tipoVehiculoId', new ParseUUIDPipe({ optional: true })) tipoVehiculoId?: string,
     @Query('q') q?: string,
+    @Query('unidadId', new ParseUUIDPipe({ optional: true })) unidadId?: string,
   ) {
-    return this.service.skusCompatibles(tipoVehiculoId, q);
+    return this.service.skusCompatibles(tipoVehiculoId, q, unidadId);
   }
 
   @Get('items/:id')

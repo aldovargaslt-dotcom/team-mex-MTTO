@@ -77,3 +77,7 @@ Ver ADR-004. Spec: `api/src/inventario/stock-alerta-rules.spec.ts`.
 ## Fuera de v0
 
 OC automática, multi-almacén, preferencias por usuario, WhatsApp Inventario.
+
+## Supersession link — EWO-038
+
+[ADR-025](025-work-order-inventory-costs.md) supersedes only the new posted-flow timing and decimal storage for divisible items. Historical close-time application, module ownership and alert opt-in remain compatible; the accepted body above is preserved.

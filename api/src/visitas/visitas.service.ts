@@ -32,6 +32,9 @@ import { EstadoVisita, TipoFirma } from './enums';
 import { CreateVisitaDto } from './dto/create-visita.dto';
 import { UpdateVisitaDto } from './dto/update-visita.dto';
 import { esTrabajoCatalogo } from './trabajos-catalogo';
+import { InventoryMaterialsPort } from '../inventario/materials.port';
+import { MaterialCommandDto } from './dto/material-command.dto';
+import { decimal as exact, formatDecimal } from '../inventario/cost-decimal';
 import { Visita } from './visita.entity';
 import {
   maintenanceTypes,
@@ -66,6 +69,7 @@ export class VisitasService {
     private readonly outbox: OutboxService,
     private readonly dataSource: DataSource,
     private readonly unitOperations: UnitOperationCoordinator,
+    private readonly materials: InventoryMaterialsPort,
   ) {}
 
   async createDraft(unidadId: string, dto: CreateVisitaDto, user: CurrentUser) {
@@ -198,8 +202,8 @@ export class VisitasService {
     );
   }
 
-  async findDetalle(id: string, user: CurrentUser) {
-    const visita = await this.repo.findOne({
+  async findDetalle(id: string, user: CurrentUser, manager?: EntityManager) {
+    const visita = await (manager ? manager.getRepository(Visita) : this.repo).findOne({
       where: { id, workOrderType: In(maintenanceTypes), estado: Not(IsNull()) },
       relations: {
         trabajos: true,
@@ -241,7 +245,9 @@ export class VisitasService {
   }
 
   async updateDraft(id: string, dto: UpdateVisitaDto, _user: CurrentUser) {
-    const visita = await this.requireDraft(id);
+    return this.dataSource.transaction(async manager => {
+    await manager.query('SELECT id FROM public.visitas WHERE id=$1 FOR UPDATE', [id]);
+    const visita = await this.requireDraft(id, manager);
     if (dto.choferId !== undefined) {
       visita.chofer = dto.choferId
         ? await this.choferes.requireActivo(dto.choferId)
@@ -261,15 +267,15 @@ export class VisitasService {
     if (dto.observaciones !== undefined) {
       visita.observaciones = dto.observaciones?.trim() || null;
     }
-    await this.repo.save(visita);
+    await manager.getRepository(Visita).save(visita);
 
     if (dto.trabajos) {
       this.assertTrabajosCatalogo(dto.trabajos);
-      await this.trabajos.delete({ visita: { id } });
+      await manager.getRepository(VisitaTrabajo).delete({ visita: { id } });
       if (dto.trabajos.length) {
-        await this.trabajos.save(
+        await manager.getRepository(VisitaTrabajo).save(
           dto.trabajos.map((trabajo) =>
-            this.trabajos.create({
+            manager.getRepository(VisitaTrabajo).create({
               visita: { id } as Visita,
               categoria: trabajo.categoria,
               item: trabajo.item,
@@ -279,11 +285,11 @@ export class VisitasService {
       }
     }
     if (dto.fotos) {
-      await this.fotos.delete({ visita: { id } });
+      await manager.getRepository(VisitaFoto).delete({ visita: { id } });
       if (dto.fotos.length) {
-        await this.fotos.save(
+        await manager.getRepository(VisitaFoto).save(
           dto.fotos.map((foto) =>
-            this.fotos.create({
+            manager.getRepository(VisitaFoto).create({
               visita: { id } as Visita,
               dataUrl: foto.dataUrl,
             }),
@@ -292,12 +298,12 @@ export class VisitasService {
       }
     }
     if (dto.firmas) {
-      await this.firmas.delete({ visita: { id } });
+      await manager.getRepository(VisitaFirma).delete({ visita: { id } });
       const byTipo = new Map(dto.firmas.map((firma) => [firma.tipo, firma]));
       if (byTipo.size) {
-        await this.firmas.save(
+        await manager.getRepository(VisitaFirma).save(
           [...byTipo.values()].map((firma) =>
-            this.firmas.create({
+            manager.getRepository(VisitaFirma).create({
               visita: { id } as Visita,
               tipo: firma.tipo,
               dataUrl: firma.dataUrl,
@@ -307,25 +313,61 @@ export class VisitasService {
       }
     }
     if (dto.piezas) {
-      await this.replacePiezas(id, dto.piezas);
+      await this.replacePiezas(id, dto.piezas, manager);
     }
 
-    return this.findDetalle(id, _user);
+    return this.findDetalle(id, _user, manager);
+    });
   }
 
   async removeDraft(id: string) {
-    const visita = await this.requireDraft(id);
-    await this.firmas.delete({ visita: { id } });
-    await this.fotos.delete({ visita: { id } });
-    await this.trabajos.delete({ visita: { id } });
-    await this.piezas.delete({ visita: { id } });
-    await this.repo.remove(visita);
+    await this.dataSource.transaction(async manager => {
+      await manager.query('SELECT id FROM public.visitas WHERE id=$1 FOR UPDATE', [id]);
+      const visita = await manager.findOneBy(Visita, { id, workOrderType: In(maintenanceTypes) });
+      if (!visita) throw new NotFoundException('No se encontró la visita.');
+      if (visita.estado !== EstadoVisita.BORRADOR) throw new BadRequestException('La visita no es un borrador disponible.');
+      if (await this.materials.hasPostings(manager, id)) throw new BadRequestException('Esta orden tiene movimientos contabilizados. Conserva la orden y corrige los destinos físicos; no se puede eliminar su historial.');
+      await manager.delete(VisitaFirma, { visita: { id } });
+      await manager.delete(VisitaFoto, { visita: { id } });
+      await manager.delete(VisitaTrabajo, { visita: { id } });
+      await manager.delete(VisitaPieza, { visita: { id } });
+      await manager.remove(visita);
+    });
     return { message: 'Borrador eliminado.' };
+  }
+
+  async materialsRead(id: string, user: CurrentUser) {
+    await this.findDetalle(id, user);
+    return this.materials.read(id);
+  }
+
+  async materialsCommand(id: string, dto: MaterialCommandDto, user: CurrentUser) {
+    const result = await this.dataSource.transaction(async manager => {
+      await manager.query('SELECT id FROM public.visitas WHERE id=$1 FOR UPDATE', [id]);
+      const visita = await manager.findOneBy(Visita, { id, workOrderType: In(maintenanceTypes) });
+      if (!visita || visita.estado === null || visita.workOrderStatus === WorkOrderStatus.CANCELLED) throw new NotFoundException('No se encontró la orden disponible.');
+      return this.materials.command(manager, id, dto.key, dto.revision, dto.command, user, visita.estado === EstadoVisita.CERRADO);
+    });
+    await this.materials.reconcile(id);
+    return result;
+  }
+
+  async materialsReceipt(id: string, purchaseId: string, dataUrl: string, user: CurrentUser) {
+    await this.findDetalle(id, user);
+    return this.dataSource.transaction(async manager => {
+      await manager.query('SELECT id FROM public.visitas WHERE id=$1 FOR UPDATE', [id]);
+      return this.materials.attachReceipt(manager, id, purchaseId, dataUrl, user);
+    });
+  }
+
+  async readMaterialsReceipt(id: string, purchaseId: string, user: CurrentUser) {
+    await this.findDetalle(id, user);
+    return this.materials.receipt(id, purchaseId);
   }
 
   async close(id: string, user: CurrentUser) {
     await this.dataSource.transaction(async (manager) => {
-      const visita = await manager.findOne(Visita, {
+      let visita = await manager.findOne(Visita, {
         where: {
           id,
           workOrderType: In(maintenanceTypes),
@@ -343,6 +385,10 @@ export class VisitasService {
         throw new NotFoundException('No se encontró la visita.');
       }
       await this.unitOperations.lock(manager, visita.unidad.id);
+      await manager.query('SELECT id FROM public.visitas WHERE id=$1 FOR UPDATE', [id]);
+      visita = await manager.findOneOrFail(Visita, { where: { id }, relations: { chofer: true, unidad: { tipo: true }, trabajos: true, firmas: true, piezas: true } });
+      const materialView = await this.materials.read(id, manager);
+      if (materialView.summary.pendingDestinations.length) throw new BadRequestException('Faltan piezas por asignar a un destino antes de cerrar.');
       const ultimoKm = await this.ultimoKmCerrado(visita.unidad.id);
       const errores = erroresCierre({
         estadoVisita: visita.estado!,
@@ -368,18 +414,23 @@ export class VisitasService {
       visita.completedAt = visita.cerradoAt;
       visita.legacyCompatDraft = false;
       await manager.save(visita);
+      const eventId = randomUUID();
+      const legacy = (visita.piezas ?? []).map(pieza => ({ itemId: pieza.itemId, qty: pieza.qty, origen: pieza.origen }));
+      await this.materials.prepareClose(manager, visita.id, eventId, legacy);
+      const posted = materialView.state.postings.filter(p => ['WAREHOUSE_USE', 'DIRECT_USE'].includes(p.kind))
+        .map(p => {
+          const reversals = materialView.state.postings.filter(r => r.reverses === p.id && r.kind === 'USE_REVERSAL');
+          const net = exact(p.qty) + reversals.reduce((sum, r) => sum + exact(r.qty), 0n);
+          return { itemId: p.itemId, qty: Number(formatDecimal(net)), origen: p.kind === 'WAREHOUSE_USE' ? OrigenConsumo.DESDE_STOCK : OrigenConsumo.COMPRA_EXTERNA };
+        }).filter(p => p.qty > 0);
       const payload = buildVisitaCerrada({
-        eventId: randomUUID(),
+        eventId,
         visitaId: visita.id,
         unidadId: visita.unidad.id,
         tipoVehiculoId: visita.unidad.tipo.id,
         km: visita.km as number,
         cerradoAt: visita.cerradoAt,
-        consumos: (visita.piezas ?? []).map((pieza) => ({
-          itemId: pieza.itemId,
-          qty: pieza.qty,
-          origen: pieza.origen,
-        })),
+        consumos: [...legacy, ...posted],
       });
       await this.outbox.enqueueAndDispatch(manager, VISITA_CERRADA, payload);
       if (visita.requiresReinspection) {
@@ -521,6 +572,7 @@ export class VisitasService {
   private async replacePiezas(
     visitaId: string,
     piezas: { itemId: string; qty: number; origen: OrigenConsumo }[],
+    manager = this.dataSource.manager,
   ) {
     const seen = new Set<string>();
     for (const pieza of piezas) {
@@ -530,17 +582,17 @@ export class VisitasService {
         );
       }
       seen.add(pieza.itemId);
-      if (pieza.qty < 1) {
+      if (pieza.qty <= 0) {
         throw new BadRequestException(
-          'La cantidad de cada pieza debe ser al menos 1.',
+          'La cantidad de cada pieza debe ser positiva.',
         );
       }
     }
-    await this.piezas.delete({ visita: { id: visitaId } });
+    await manager.getRepository(VisitaPieza).delete({ visita: { id: visitaId } });
     if (piezas.length) {
-      await this.piezas.save(
+      await manager.getRepository(VisitaPieza).save(
         piezas.map((pieza) =>
-          this.piezas.create({
+          manager.getRepository(VisitaPieza).create({
             visita: { id: visitaId } as Visita,
             itemId: pieza.itemId,
             qty: pieza.qty,
@@ -551,8 +603,8 @@ export class VisitasService {
     }
   }
 
-  private async requireDraft(id: string) {
-    const visita = await this.repo.findOne({
+  private async requireDraft(id: string, manager?: EntityManager) {
+    const visita = await (manager ? manager.getRepository(Visita) : this.repo).findOne({
       where: { id, workOrderType: In(maintenanceTypes), estado: Not(IsNull()) },
       relations: { chofer: true, unidad: true },
     });

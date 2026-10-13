@@ -3,7 +3,7 @@ import {
   IsArray,
   IsBoolean,
   IsOptional,
-  IsInt,
+  IsNumber,
   Min,
   IsUUID,
   MaxLength,
@@ -46,9 +46,15 @@ export class UpdateItemDto {
   @IsUUID('4', { each: true, message: 'El tipo de vehículo no es válido.' })
   tipoVehiculoIds?: string[];
 
+  @ApiPropertyOptional({ type: [String] })
+  @IsOptional()
+  @IsArray()
+  @IsUUID('4', { each: true, message: 'La unidad no es válida.' })
+  unidadIds?: string[];
+
   @ApiPropertyOptional({ default: 0 })
   @IsOptional()
-  @IsInt()
+  @IsNumber({ maxDecimalPlaces: 6 })
   @Min(0)
   criticalQty?: number;
 
