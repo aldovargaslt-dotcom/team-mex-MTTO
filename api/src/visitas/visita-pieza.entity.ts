@@ -25,7 +25,7 @@ export class VisitaPieza {
   @Column({ name: 'item_id', type: 'uuid' })
   itemId: string;
 
-  @Column({ type: 'int' })
+  @Column({ type: 'numeric', precision: 20, scale: 6, transformer: { to: (value: number) => value, from: (value: string) => Number(value) } })
   qty: number;
 
   @Column({ type: 'enum', enum: OrigenConsumo })

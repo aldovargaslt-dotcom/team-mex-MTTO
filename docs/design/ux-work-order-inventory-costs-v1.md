@@ -1,6 +1,6 @@
 # UX — Refacciones y costos de OT
 
-Estado: Proposed; contrato funcional en [SPEC-INV-OT-001](../specs/work-order-inventory-costs-v1.md). Documento de diseño, sin UI implementada.
+Estado: Implemented locally; visual review tracked in [EWO-038 evidence](../evidence/EWO-038.md); contrato funcional en [SPEC-INV-OT-001](../specs/work-order-inventory-costs-v1.md). Implemented in the existing wizard and closed-order detail; not deployed.
 
 ## Screen purpose / primary user
 

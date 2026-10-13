@@ -27,3 +27,7 @@ Familia, ítem, SKU, proveedor, stock, `min_qty`, Bajo, Agotado, `SALIDA_OT`, pe
 ## Constraint
 
 Do not expand Inventario ownership without a new/updated ADR. Visual-only cortes do not touch `api/src`.
+
+## Inventory / OT costs extension
+
+[ADR-025](../../docs/adr/025-work-order-inventory-costs.md), [SPEC-INV-OT-001](../../docs/specs/work-order-inventory-costs-v1.md), [EWO-038](../../docs/engineering-work-orders/EWO-038.md). InventoryMaterialsPort coordinates exact, immediate postings within Mantenimiento transactions. Inventario owns weighted-average source attribution, purchase-line records, immutable costs/reversals, idempotency, valuation and private receipt references. Quantity scale is explicit per item; opening/legacy costs remain unknown. No new BC, cross-schema JOIN/FK, payment accounting or physical lot system. Runtime capability is subject to migration and evidence, not a deployment claim.

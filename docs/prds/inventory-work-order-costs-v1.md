@@ -2,13 +2,13 @@
 
 ## Status and owner
 
-Proposed, 2026-10-12. Reglas de producto confirmadas por usuario en chat: supervisor opera y cierra, sin aprobación; cantidad usada explícita; sobrantes al almacén; compra para OT a costo real (opción B); almacén a valoración; administrador corrige con historia. No implica código desplegado.
+Adopted for bounded local implementation by the request to follow commit 39cd9a5, 2026-10-12. Execution and verification: [EWO-038](../engineering-work-orders/EWO-038.md). Reglas de producto confirmadas por usuario en chat: supervisor opera y cierra, sin aprobación; cantidad usada explícita; sobrantes al almacén; compra para OT a costo real (opción B); almacén a valoración; administrador corrige con historia. No implica código desplegado.
 
 ## Summary and business problem
 
 Unir refacciones, compras y consumo de mantenimiento para explicar costos sin cargar al supervisor con formularios de contabilidad. Distinguir adquisición, uso y recepción física evita inflar stock o cargar una compra completa a una reparación parcial.
 
-## Current process and desired outcome
+## Baseline process and desired outcome
 
 Ya existen `DESDE_STOCK`, `COMPRA_EXTERNA`, movimientos y comprobantes pendientes, pero sin valoración ni correcciones de materiales cerrados. La [especificación](../specs/work-order-inventory-costs-v1.md) contiene evidencia de código y requisitos verificables.
 

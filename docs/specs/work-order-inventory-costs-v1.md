@@ -2,13 +2,13 @@
 
 ## Status
 
-Proposed — reglas de producto acordadas por el usuario en este chat; especificación técnica preparada el 2026-10-12. No describe funcionalidad implementada ni autoriza una migración. La solicitud «Okay go ahead with this» sigue a la propuesta de elaborar una especificación.
+Approved for bounded local implementation by the 2026-10-12 request to follow commit 39cd9a5. Execution and actual verification: [EWO-038](../engineering-work-orders/EWO-038.md) and [evidence](../evidence/EWO-038.md). No deployment or production migration approval. The requirements below remain the canonical ACs; planned verification is not evidence.
 
 ## Problem
 
 Registrar piezas de almacén y compras para una OT sin duplicar captura, perder sobrantes o confundir gasto de compra con costo de mantenimiento. El supervisor realiza la operación y puede cerrar la OT; no se incorpora aprobación de compras.
 
-## Context and current evidence
+## Baseline inspected before implementation
 
 - `api/src/visitas/visitas.service.ts`: cierre transaccional, consumos en `VisitaCerrada`; administrador consulta cerradas y no ve borradores en el detalle legacy.
 - `api/src/inventario/inventario.service.ts`: `applyVisitaCerrada` descuenta `DESDE_STOCK`; `COMPRA_EXTERNA` crea pendiente de comprobante sin movimiento. `marcarRecibida` sólo cambia estado del comprobante.
@@ -16,7 +16,7 @@ Registrar piezas de almacén y compras para una OT sin duplicar captura, perder 
 - `api/src/inventario/entities/movimiento.entity.ts`: movimientos sin costo unitario ni referencia de corrección.
 - `web/src/app/inventario/pendientes/page.tsx`: cierre documental explícitamente no cambia existencias.
 
-Costeo y OC formal figuran fuera de v0 en [PRODUCT](../../context/PRODUCT.md). Este incremento incorpora el costeo acordado; mantiene fuera una suite de compras y OC formal. La [propuesta ADR-025](../adr/025-work-order-inventory-costs.md) identifica la modificación necesaria de ADR-002; no altera el baseline aceptado.
+Costeo y OC formal figuran fuera de v0 en [PRODUCT](../../context/PRODUCT.md). Este incremento incorpora el costeo acordado; mantiene fuera una suite de compras y OC formal. La [decisión ADR-025](../adr/025-work-order-inventory-costs.md) identifica la modificación necesaria de ADR-002; no altera el baseline aceptado.
 
 ## Goals and non-goals
 

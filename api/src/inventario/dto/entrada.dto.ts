@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsInt, IsOptional, IsUUID, Min } from 'class-validator';
+import { IsNumber, IsOptional, IsUUID, Min } from 'class-validator';
 import { OptionalTrimmed } from '../../common/trim';
 
 export class EntradaDto {
@@ -8,8 +8,8 @@ export class EntradaDto {
   itemId: string;
 
   @ApiProperty({ example: 10 })
-  @IsInt({ message: 'La cantidad debe ser un número entero.' })
-  @Min(1, { message: 'La cantidad de entrada debe ser al menos 1.' })
+  @IsNumber({ maxDecimalPlaces: 6 }, { message: 'La cantidad admite hasta seis decimales.' })
+  @Min(0.000001, { message: 'La cantidad de entrada debe ser positiva.' })
   qty: number;
 
   @ApiPropertyOptional()

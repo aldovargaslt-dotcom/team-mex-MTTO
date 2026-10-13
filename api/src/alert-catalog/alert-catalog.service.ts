@@ -397,11 +397,11 @@ export class AlertCatalogService implements OnModuleInit, AlertTypeActivePort {
           area: 'INVENTARIO',
           severity: 'WARNING',
           title: row.nombre,
-          detail: 'Comprobante de compra pendiente',
+          detail: row.purchase ? 'Comprobante pendiente' : 'Comprobante de compra pendiente',
           reference: row.sku,
           photo: null,
-          href: `/inventario/pendientes?pendienteId=${row.id}#pendiente-${row.id}`,
-          action: 'Revisar compra',
+          href: row.href,
+          action: row.purchase ? 'Adjuntar comprobante' : 'Revisar compra',
           createdAt: new Date(row.createdAt).toISOString(),
         });
       }

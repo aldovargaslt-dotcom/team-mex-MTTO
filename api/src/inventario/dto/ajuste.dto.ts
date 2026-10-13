@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsDefined, IsInt, IsUUID, NotEquals } from 'class-validator';
+import { IsDefined, IsNumber, IsUUID, NotEquals } from 'class-validator';
 import { RequiredTrimmed } from '../../common/trim';
 
 export class AjusteDto {
@@ -8,7 +8,7 @@ export class AjusteDto {
   itemId: string;
 
   @ApiProperty({ example: -2, description: 'Delta con signo; no puede ser 0.' })
-  @IsInt({ message: 'El ajuste debe ser un número entero.' })
+  @IsNumber({ maxDecimalPlaces: 6 }, { message: 'El ajuste admite hasta seis decimales.' })
   @NotEquals(0, { message: 'El ajuste no puede ser 0.' })
   qtyDelta: number;
 

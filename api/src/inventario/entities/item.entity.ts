@@ -41,6 +41,9 @@ export class Item {
   @Column({ default: UOM_PIEZA })
   uom: string;
 
+  @Column({ name: 'quantity_scale', type: 'int', default: 0 })
+  quantityScale: number;
+
   @Column({ default: true })
   activo: boolean;
 

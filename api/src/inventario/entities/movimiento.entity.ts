@@ -23,10 +23,10 @@ export class Movimiento {
   @JoinColumn({ name: 'item_id' })
   item: Item;
 
-  @Column({ type: 'int' })
+  @Column({ type: 'numeric', precision: 20, scale: 6, transformer: { to: (v: number) => v, from: (v: string) => Number(v) } })
   qty: number;
 
-  @Column({ type: 'int' })
+  @Column({ type: 'numeric', precision: 20, scale: 6, transformer: { to: (v: number) => v, from: (v: string) => Number(v) } })
   delta: number;
 
   /** ID opaco de la visita (mantenimiento). Sin FK cruzada. */
@@ -38,6 +38,16 @@ export class Movimiento {
 
   @Column({ name: 'created_by', type: 'varchar', nullable: true })
   createdBy: string | null;
+
+  @Column({ type: 'numeric', precision: 20, scale: 6, nullable: true })
+  cost: string | null;
+  @Column({ name: 'known_cost', type: 'numeric', precision: 20, scale: 6, nullable: true })
+  knownCost: string | null;
+  @Column({ name: 'unknown_qty', type: 'numeric', precision: 20, scale: 6, nullable: true })
+  unknownQty: string | null;
+
+  @Column({ name: 'cost_sources', type: 'jsonb', nullable: true })
+  costSources: import('../materials-model').ValueSource[] | null;
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;

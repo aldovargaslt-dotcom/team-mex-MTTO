@@ -3,7 +3,7 @@ import {
   IsArray,
   IsBoolean,
   IsOptional,
-  IsInt,
+  IsNumber,
   Min,
   IsUUID,
   MaxLength,
@@ -48,7 +48,7 @@ export class UpdateItemDto {
 
   @ApiPropertyOptional({ default: 0 })
   @IsOptional()
-  @IsInt()
+  @IsNumber({ maxDecimalPlaces: 6 })
   @Min(0)
   criticalQty?: number;
 

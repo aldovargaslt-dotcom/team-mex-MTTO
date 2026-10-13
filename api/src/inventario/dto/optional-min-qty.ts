@@ -1,7 +1,7 @@
 import { applyDecorators } from '@nestjs/common';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
-import { IsInt, IsOptional, Min, ValidateIf } from 'class-validator';
+import { IsNumber, IsOptional, Min, ValidateIf } from 'class-validator';
 
 /** Entero >= 0, o null para quitar el umbral (opt-in). ADR-007 `min_qty`. */
 export function OptionalMinQty() {
@@ -20,7 +20,7 @@ export function OptionalMinQty() {
     }),
     IsOptional(),
     ValidateIf((_, value) => value !== null && value !== undefined),
-    IsInt({ message: 'El mínimo debe ser un número entero.' }),
+    IsNumber({ maxDecimalPlaces: 6 }, { message: 'El mínimo admite hasta seis decimales.' }),
     Min(0, { message: 'El mínimo no puede ser negativo.' }),
   );
 }
