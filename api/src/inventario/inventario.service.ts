@@ -1,3 +1,4 @@
+import { UnidadesService } from '../unidades/unidades.service';
 import {
   BadRequestException,
   Inject,
@@ -100,6 +101,7 @@ export class InventarioService implements OnModuleInit {
     @InjectRepository(PendienteComprobante)
     private readonly pendientes: Repository<PendienteComprobante>,
     private readonly tipos: TiposVehiculoService,
+    private readonly unidades: UnidadesService,
     private readonly outbox: OutboxService,
     @Optional()
     @Inject(STOCK_ALERT_PORT)
@@ -218,6 +220,7 @@ export class InventarioService implements OnModuleInit {
 
   async createItem(dto: CreateItemDto) {
     if ((dto.uom ?? UOM_PIEZA) === UOM_PIEZA && (dto.quantityScale ?? 0) !== 0) throw new BadRequestException('Las piezas son indivisibles; su precisión debe ser cero.');
+    await this.validateCompatibility(dto.tipoVehiculoIds, dto.unidadIds);
     const familia = await this.requireFamilia(dto.familiaId);
     if (!familia.activa) {
       throw new BadRequestException('La familia está inactiva.');
@@ -233,18 +236,14 @@ export class InventarioService implements OnModuleInit {
       uom: dto.uom ?? UOM_PIEZA,
       quantityScale: dto.quantityScale ?? 0,
       activo: dto.activo ?? true,
+      unidadIds: [...new Set(dto.unidadIds ?? [])],
     });
-    const saved = await this.items.save(item);
-    await this.stock.save(
-      this.stock.create({
-        itemId: saved.id,
-        qty: 0,
-        minQty: dto.minQty ?? null,
-      }),
-    );
-    if (dto.tipoVehiculoIds?.length) {
-      await this.replaceCompatibilidad(saved.id, dto.tipoVehiculoIds);
-    }
+    const saved = await this.items.manager.transaction(async manager => {
+      const saved = await manager.getRepository(Item).save(item);
+      await manager.getRepository(Stock).save(manager.getRepository(Stock).create({ itemId: saved.id, qty: 0, minQty: dto.minQty ?? null }));
+      if (dto.tipoVehiculoIds?.length) await this.replaceCompatibilidad(saved.id, dto.tipoVehiculoIds, manager);
+      return saved;
+    });
     await this.emitCruceUmbral({
       item: saved,
       prevQty: 0,
@@ -256,7 +255,9 @@ export class InventarioService implements OnModuleInit {
   }
 
   async updateItem(id: string, dto: UpdateItemDto) {
+    await this.validateCompatibility(dto.tipoVehiculoIds, dto.unidadIds);
     const item = await this.requireItemEntity(id);
+    if (dto.unidadIds !== undefined) item.unidadIds = [...new Set(dto.unidadIds)];
     const stockRow = await this.stock.findOne({ where: { itemId: id } });
     const prevMin = stockRow?.minQty ?? null;
     const prevCritical = stockRow?.criticalQty ?? 0;
@@ -633,21 +634,21 @@ export class InventarioService implements OnModuleInit {
     return this.findItem(dto.itemId);
   }
 
-  async skusCompatibles(tipoVehiculoId: string, q?: string) {
+  async skusCompatibles(tipoVehiculoId?: string, q?: string, unidadId?: string) {
+    if (unidadId) {
+      const unidad = await this.unidades.findOne(unidadId);
+      if (tipoVehiculoId && tipoVehiculoId !== unidad.tipo.id) throw new BadRequestException('El tipo no corresponde a la unidad seleccionada.');
+      tipoVehiculoId = unidad.tipo.id;
+    }
+    if (!tipoVehiculoId) throw new BadRequestException('Selecciona un tipo o una unidad.');
     await this.tipos.findOne(tipoVehiculoId);
     const qb = this.items
       .createQueryBuilder('item')
       .innerJoinAndSelect('item.familia', 'familia')
       .leftJoinAndSelect('item.stock', 'stock')
-      .innerJoin(
-        'item.compatibilidades',
-        'compat',
-        'compat.tipoVehiculoId = :tipoId',
-        {
-          tipoId: tipoVehiculoId,
-        },
-      )
+      .leftJoin('item.compatibilidades', 'compat')
       .where('item.activo = true')
+      .andWhere(unidadId ? '(compat.tipoVehiculoId = :tipoId OR :unidadId = ANY(item.unidadIds))' : 'compat.tipoVehiculoId = :tipoId', { tipoId: tipoVehiculoId, unidadId })
       .orderBy('item.sku', 'ASC');
 
     const query = q?.trim();
@@ -822,19 +823,26 @@ export class InventarioService implements OnModuleInit {
     );
   }
 
+  private async validateCompatibility(tipos: string[] = [], unidades: string[] = []) {
+    for (const id of new Set(tipos)) await this.tipos.findOne(id);
+    for (const id of new Set(unidades)) await this.unidades.findOne(id);
+  }
+
   private async replaceCompatibilidad(
     itemId: string,
     tipoVehiculoIds: string[],
+    manager: EntityManager = this.items.manager,
   ) {
+    const compatibilidades = manager.getRepository(Compatibilidad);
     const unique = [...new Set(tipoVehiculoIds)];
     for (const tipoId of unique) {
       await this.tipos.findOne(tipoId);
     }
-    await this.compatibilidades.delete({ item: { id: itemId } });
+    await compatibilidades.delete({ item: { id: itemId } });
     if (unique.length) {
-      await this.compatibilidades.save(
+      await compatibilidades.save(
         unique.map((tipoVehiculoId) =>
-          this.compatibilidades.create({
+          compatibilidades.create({
             item: { id: itemId } as Item,
             tipoVehiculoId,
           }),
@@ -914,6 +922,7 @@ export class InventarioService implements OnModuleInit {
         item.stock?.qty ?? 0,
         item.stock?.minQty ?? null,
       ),
+      unidadIds: item.unidadIds ?? [],
       tipoVehiculoIds: (item.compatibilidades ?? []).map(
         (c) => c.tipoVehiculoId,
       ),

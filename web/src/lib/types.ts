@@ -246,6 +246,7 @@ export type ItemInventario = {
   minQty: number | null;
   alerta: AlertaStock | null;
   tipoVehiculoIds: string[];
+  unidadIds?: string[];
   proveedores: {
     id: string;
     proveedorId: string;

@@ -199,7 +199,7 @@ export default function ItemsPage() {
             />
           </div>
 
-          <div className="inventario-refacciones-mobile">
+          <div className="inventario-refacciones-mobile md:hidden">
             {filtered.length > 0 ? (
               <ul className="inventory-mobile-list" aria-label="Refacciones">
                 {filtered.map((item) => (

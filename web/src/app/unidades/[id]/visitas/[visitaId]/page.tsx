@@ -250,7 +250,7 @@ function VisitWizard({
     () => hydratePiezasFromInventario(visita.piezas ?? [], opts));
   const stockRead = useReadResource(actorKey && step === 'piezas' && visita.tipoVehiculoId
     ? JSON.stringify([actorKey, 'stock', visita.tipoVehiculoId]) : null,
-    () => api<SkuCompatible[]>(`/inventario/skus?tipoVehiculoId=${visita.tipoVehiculoId}`, opts));
+    () => api<SkuCompatible[]>(`/inventario/skus?unidadId=${visita.unidadId}`, opts));
   const choferes = driversRead.data ?? [];
   const choferesListos = driversRead.data !== null;
   const catalogo = catalogRead.data ?? [];
@@ -626,7 +626,7 @@ function VisitWizard({
 
       {step === 'piezas' ? <>
         <Card className="p-3"><OrderMaterials visitaId={visita.id} onChanged={materialRead.setData} /></Card>
-        {piezas.length ? <PiezasStep role={role!} userId={userId} tipoVehiculoId={visita.tipoVehiculoId} tipoVehiculoNombre={visita.tipoVehiculoNombre} lineas={piezas} onChange={setPiezas} /> : null}
+        {piezas.length ? <PiezasStep unidadId={visita.unidadId} role={role!} userId={userId} tipoVehiculoId={visita.tipoVehiculoId} tipoVehiculoNombre={visita.tipoVehiculoNombre} lineas={piezas} onChange={setPiezas} /> : null}
       </> : null}
 
       {step === 'firmas' ? (

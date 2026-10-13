@@ -48,6 +48,12 @@ export class CreateItemDto {
   @IsUUID('4', { each: true, message: 'El tipo de vehículo no es válido.' })
   tipoVehiculoIds?: string[];
 
+  @ApiPropertyOptional({ type: [String] })
+  @IsOptional()
+  @IsArray()
+  @IsUUID('4', { each: true, message: 'La unidad no es válida.' })
+  unidadIds?: string[];
+
   @OptionalMinQty()
   minQty?: number | null;
 }

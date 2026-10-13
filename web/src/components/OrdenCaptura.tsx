@@ -146,8 +146,9 @@ function PiezaPanel({
   const role = opts.role;
   const userId = opts.userId;
 
-  const search = useReadResource(detalle.tipoVehiculoId ? JSON.stringify([role, userId, detalle.tipoVehiculoId, q]) : null, () => {
-    const params = new URLSearchParams({ tipoVehiculoId: detalle.tipoVehiculoId! });
+  const search = useReadResource(detalle.tipoVehiculoId ? JSON.stringify([role, userId, detalle.tipoVehiculoId, detalle.unidadId, q]) : null, () => {
+    const params = new URLSearchParams({ unidadId: detalle.unidadId });
+    params.set('unidadId', detalle.unidadId);
     if (q.trim()) params.set('q', q.trim());
     return api<SkuCompatible[]>(`/inventario/skus?${params}`, { role, userId });
   });

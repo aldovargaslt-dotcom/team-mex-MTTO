@@ -20,3 +20,7 @@ After migration, compare quantities, history, pending counts and frozen outbox p
 Do not downgrade quantities to integers after fractional operations. The down migration refuses unsafe truncation and requires a reviewed backup restore; there is no automatic production rollback. Keep writers stopped for a restore and reconcile any post-backup physical activity before reopening.
 
 Verification: real PostgreSQL migration fixture preserved stock, old pending records, historical movements and frozen outbox; repeated execution and constraints checked. See [actual results](../evidence/EWO-038.md). Deployment and production execution remain outside this task.
+
+## EWO-039 — Specific-unit catalog compatibility
+
+`ItemUnitCompatibility1791936000001` follows the cost migration in the same explicit runner/ledger. It adds a default-empty opaque UUID array `inventario.items.unidad_ids`; quantities, valuations, purchase receipts and prior type compatibility are unchanged. Existing installations that already ran the cost migration apply only this new pending migration. Use the compiled runner above with a reviewed backup and stopped writers; production execution remains outside this task. Downgrade refuses discarding compatibility selections. Rehearsal verifies existing items start with empty selections, data is preserved and rerunning is a no-op.

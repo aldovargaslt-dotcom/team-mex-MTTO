@@ -69,6 +69,7 @@ export function PiezasStep({
   role,
   userId,
   tipoVehiculoId,
+  unidadId,
   tipoVehiculoNombre,
   lineas,
   onChange,
@@ -76,13 +77,15 @@ export function PiezasStep({
   role: string;
   userId?: string;
   tipoVehiculoId: string | null;
+  unidadId?: string;
   tipoVehiculoNombre: string | null;
   lineas: PiezaLinea[];
   onChange: (lineas: PiezaLinea[]) => void;
 }) {
   const [q, setQ] = useState('');
-  const search = useReadResource(tipoVehiculoId ? JSON.stringify([role, userId, tipoVehiculoId, q.trim()]) : null, () => {
-    const params = new URLSearchParams({ tipoVehiculoId: tipoVehiculoId! });
+  const search = useReadResource(tipoVehiculoId ? JSON.stringify([role, userId, tipoVehiculoId, unidadId, q.trim()]) : null, () => {
+    const params = new URLSearchParams(unidadId ? { unidadId } : { tipoVehiculoId: tipoVehiculoId! });
+    if (unidadId) params.set('unidadId', unidadId);
     if (q.trim()) params.set('q', q.trim());
     return api<SkuCompatible[]>(`/inventario/skus?${params}`, { role, userId });
   });

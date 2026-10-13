@@ -25,7 +25,7 @@ describe('EWO-038 additive inventory cost migration', () => {
     await db.query('DROP TABLE inventario.material_commands, inventario.material_closures, inventario.material_accounts');
     await db.query('ALTER TABLE inventario.stock DROP CONSTRAINT IF EXISTS inventory_nonnegative');
     await db.query('ALTER TABLE inventario.stock DROP COLUMN known_value, DROP COLUMN unknown_qty, DROP COLUMN cost_sources');
-    await db.query('ALTER TABLE inventario.items DROP COLUMN quantity_scale');
+    await db.query('ALTER TABLE inventario.items DROP COLUMN quantity_scale, DROP COLUMN unidad_ids');
     await db.query('ALTER TABLE inventario.movimientos DROP COLUMN cost, DROP COLUMN known_cost, DROP COLUMN unknown_qty, DROP COLUMN cost_sources');
     for (const [table, columns] of [
       ['inventario.stock', ['qty', 'min_qty', 'critical_qty']],
@@ -36,10 +36,11 @@ describe('EWO-038 additive inventory cost migration', () => {
     const migrationDb = createCostMigrationDataSource();
     await migrationDb.initialize();
     try {
-      expect((await migrationDb.runMigrations({ transaction: 'all' })).map(m => m.name)).toEqual(['InventoryWorkOrderCosts1791849600001']);
+      expect((await migrationDb.runMigrations({ transaction: 'all' })).map(m => m.name)).toEqual(['InventoryWorkOrderCosts1791849600001', 'ItemUnitCompatibility1791936000001']);
       expect(await migrationDb.runMigrations({ transaction: 'all' })).toEqual([]);
     } finally { await migrationDb.destroy(); }
     const [{ data_type: quantityType, numeric_scale: quantityScale }] = await db.query("SELECT data_type, numeric_scale FROM information_schema.columns WHERE table_schema='public' AND table_name='visita_piezas' AND column_name='qty'");
+    expect((await db.query('SELECT unidad_ids FROM inventario.items')).every((r: { unidad_ids: string[] }) => r.unidad_ids.length === 0)).toBe(true);
     expect(quantityType).toBe('numeric'); expect(quantityScale).toBe(6);
     const after = await db.query('SELECT item_id, qty::text, min_qty::text, known_value::text, unknown_qty::text FROM inventario.stock ORDER BY item_id');
     expect(after.map((row: { item_id: string; qty: string; min_qty: string | null }) => ({ item_id: row.item_id, qty: Number(row.qty), min_qty: row.min_qty === null ? null : Number(row.min_qty) }))).toEqual(before.map((row: { item_id: string; qty: string; min_qty: string | null }) => ({ item_id: row.item_id, qty: Number(row.qty), min_qty: row.min_qty === null ? null : Number(row.min_qty) })));
