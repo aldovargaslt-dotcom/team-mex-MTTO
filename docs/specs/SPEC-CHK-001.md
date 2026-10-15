@@ -1,5 +1,14 @@
 # SPEC-CHK-001 — Chequeo Operativo de Flota y Órdenes de Trabajo
 
+> **Current target amendment — 2026-10-15:** [ADR025](../adr/025-abc-utilization-downtime.md)
+> explicitly supersedes the requirements below for future PSI/configuration,
+> completed-base-only approval, repair-scoped rechecks, opened-maintenance downtime
+> and correlated departure. Canonical new AC: [ABC-01–14](ABC-daily-release-spec-and-gap-analysis.md)
+> and [UTIL-01–18](SPEC-UTIL-INPUTS-001.md). The historical Approved baseline below
+> remains evidence for unchanged rules; it does not approve the proposed new
+> technical contract or make this increment implementation-ready. Signed history
+> is preserved; no runtime capability or EWO approval is inferred.
+
 **Estado:** Approved — paquete Slice0/contrato y owner D01–D14/R01–R05 aprobados 2026-10-01; no autoriza implementación de Slices1–8.
 **Aprobación de decisiones:** owner, esta conversación, 2026-10-01; [paquete Slice 0](../engineering-work-orders/CHK-001-slice-0-review.md).\
 **Producto:** Team Mex MTTO\

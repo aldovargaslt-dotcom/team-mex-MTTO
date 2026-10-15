@@ -1,5 +1,14 @@
 # Logística — routing card
 
+## Current target vocabulary — 2026-10-15
+
+Parada correctiva is Logistics' recorded stop routed to external or internal repair.
+External-service cost is distinct from confirmation of actual release. Resolving
+an operational reason does not declare a repair verified or authorize departure.
+Journey and yard custody remain distinct correlated facts. Decisions and artifact
+routing: [ADR025](../../docs/adr/025-abc-utilization-downtime.md). Earlier target-only
+descriptions do not establish deployed readiness.
+
 **DDD status:** provisional / unvalidated. **Likely an application service on Kernel**, not a confirmed Bounded Context: there is **no** `logistica` PostgreSQL schema. Evidence: `api/src/logistica` writes kernel `unidades` columns and (parked) `chofer_id`.
 
 ## Purpose

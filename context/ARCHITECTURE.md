@@ -1,5 +1,10 @@
 # Architecture Baseline
 
+> Current target extension: [ADR025](../docs/adr/025-abc-utilization-downtime.md)
+> records the 2026-10-15 ABC/utilization decisions and precise partial supersession.
+> [Proposed contract](../docs/contracts/ABC-UTIL-001-contract.md) is not as-is
+> architecture or implementation approval. No runtime changes made by that review.
+
 Architecture **as it exists** in this repository. Not a target architecture. Authoritative decisions live in [`docs/adr/`](../docs/adr/) (index: [README](../docs/adr/README.md)). Directory map of modules: [docs/adr/context-map.md](../docs/adr/context-map.md).
 
 Legend:

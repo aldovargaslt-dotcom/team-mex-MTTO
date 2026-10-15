@@ -1,5 +1,12 @@
 # Project Context Map — ICM
 
+For the current ABC/utilization increment start with
+[ADR025](docs/adr/025-abc-utilization-downtime.md) and the
+[revised plan](workspace/shaping/abc-utilization-implementation-plan.md); these
+route to the bounded specs/UX/Proposed contract/safety matrix and explicitly amend
+older PSI/opening/approval statements below. Read only the named owner seams.
+Documentation approval is not implementation readiness or runtime authorization.
+
 This file is the **context router** for Team Mex MTTO. Goal: **minimum sufficient authoritative context**, never “load the repository”.
 
 Read this file before opening large trees. Then open only the paths listed for the current stage **and** the affected area in [domain/README.md](domain/README.md).

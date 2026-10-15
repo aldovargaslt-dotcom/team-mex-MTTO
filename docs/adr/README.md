@@ -52,3 +52,9 @@ No reescribir en silencio un ADR aceptado. Ver regla en `.cursor/rules/docs-adr.
 [ADR023 — Apertura explícita de mantenimiento](023-maintenance-order-opening.md): marca de apertura sin cambiar lifecycle/efectos de CHECK o cierre.
 
 [ADR024 — Guard de schema del release antes de bootstrap](024-ui-release-bootstrap-guard.md).
+
+[ADR025 — ABC, reason-based downtime and correlated departure](025-abc-utilization-downtime.md)
+records user-confirmed target decisions consolidated 2026-10-15. Explicit partial
+supersession of ADR016/017/020/023 and extension of ADR011; historical bodies are
+preserved. Safety validation and the new proposed technical contract remain gates,
+not implementation or deployment approval.

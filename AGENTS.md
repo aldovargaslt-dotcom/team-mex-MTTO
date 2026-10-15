@@ -1,5 +1,21 @@
 # AGENTS
 
+## Current target amendment — ABC/utilization (2026-10-15)
+
+[ADR025](docs/adr/025-abc-utilization-downtime.md) explicitly amends older CHECK/
+opening notes below: no future PSI; opening maintenance withdraws and starts/joins
+reason-based downtime; Logistics routes corrective stops/external service; scoped
+signed recheck and correlated physical departure preserve original evidence.
+Read the [revised plan](workspace/shaping/abc-utilization-implementation-plan.md),
+[ABC spec](docs/specs/ABC-daily-release-spec-and-gap-analysis.md),
+[UTIL spec](docs/specs/SPEC-UTIL-INPUTS-001.md) and
+[UX](docs/design-system/ux-utilization-inputs-v1.md) for this increment.
+Product decisions confirmed; [safety matrix](docs/specs/ABC-UTIL-safety-matrix.md)
+and [Proposed contract](docs/contracts/ABC-UTIL-001-contract.md) are not execution
+approval. Historical target-only statements below are not evidence that current
+source lacks CHECK. Do not change runtime, migrations, permissions or old EWOs
+based on this documentation update.
+
 Índice **de este repositorio**. La metodología global (SDD, DDD, TDD, ADR, ICM, Engineering Work Orders, verificación) no se copia aquí.
 
 **Producto:** Team Mex MTTO — visitas de mantenimiento, inventario (piezas), Andon, campanita, bitácora de patio, ops Logística, salud de unidad.

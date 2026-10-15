@@ -1,5 +1,11 @@
 # ADR-016 — Evolución Visita/CHECK y supersession parcial de ADR-015
 
+> Partially superseded for the revised target by [ADR025](025-abc-utilization-downtime.md),
+> 2026-10-15. Opening maintenance now adds downtime independently of the old
+> blocks_operation flag. Draft/generated-unopened corrective existence alone still
+> does not block. Scoped signed rechecks augment effective approval; no future PSI
+> dependency. The historical body and all unchanged identity/event rules remain.
+
 ## Status
 
 Accepted para las decisiones de owner D08 y la separación CHECK_COMPLETED, aprobadas en esta conversación el 2026-10-01. El contrato técnico y plan de ejecución se entregan para revisión en Slice 0; ningún EWO de implementación está autorizado.

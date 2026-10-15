@@ -1,5 +1,13 @@
 # ADR023 — Confirmación explícita de apertura de mantenimiento
 
+> **Supersession parcial — 2026-10-15:** [ADR025](025-abc-utilization-downtime.md)
+> sustituye sólo la semántica de apertura sin retiro: abrir PREVENTIVE/CORRECTIVE
+> retira la unidad de operación y agrega un motivo de indisponibilidad. Borrador,
+> CHECK y correctiva generada sin abrir no lo hacen. Conservar marca, lifecycle y
+> permisos existentes; no inventar movimiento físico ni cambiar ACTIVA/INACTIVA.
+> Cancelar/completar recalcula por motivos restantes, sin borrar holds ni historia.
+> El cuerpo aceptado original se conserva abajo. No habilita implementación.
+
 Aceptado por usuario,2026-10-11 (fecha cliente): «Confirmar Abrir orden».
 Contexto: legacy BORRADOR permanece hasta CERRADO y no distingue preparación de
 trabajo listo. CHECK tiene lifecycle propio; no reinterpretar ASSIGNED como apertura.
