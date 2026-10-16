@@ -1,0 +1,74 @@
+
+> web@0.1.0 build
+> next build --turbopack
+
+   ▲ Next.js 15.5.25 (Turbopack)
+
+   Creating an optimized production build ...
+ ✓ Finished writing to disk in 96ms
+ ✓ Compiled successfully in 20.1s
+   Linting and checking validity of types ...
+   Collecting page data ...
+   Generating static pages (0/32) ...
+   Generating static pages (8/32)
+   Generating static pages (16/32)
+   Generating static pages (24/32)
+ ✓ Generating static pages (32/32)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                               Size  First Load JS
+┌ ○ /                                  1.02 kB         157 kB
+├ ○ /_not-found                            0 B         156 kB
+├ ○ /andon                             7.71 kB         176 kB
+├ ƒ /api/auth/callback                     0 B            0 B
+├ ƒ /api/auth/login                        0 B            0 B
+├ ƒ /api/auth/logout                       0 B            0 B
+├ ƒ /api/auth/session                      0 B            0 B
+├ ƒ /backend/[...path]                     0 B            0 B
+├ ƒ /checks/[id]                       10.3 kB         166 kB
+├ ○ /choferes                          6.71 kB         175 kB
+├ ○ /configuracion/alertas             8.93 kB         179 kB
+├ ○ /configuracion/usuarios            5.31 kB         175 kB
+├ ○ /flota                             8.18 kB         178 kB
+├ ○ /flota/alertas                     2.42 kB         160 kB
+├ ○ /flota/ranking                     9.31 kB         180 kB
+├ ○ /flota/sitios                      3.54 kB         174 kB
+├ ƒ /flota/unidades/[id]               7.31 kB         165 kB
+├ ○ /inicio                            6.94 kB         163 kB
+├ ○ /inventario                        8.81 kB         179 kB
+├ ○ /inventario/consumo                5.55 kB         175 kB
+├ ○ /inventario/familias               2.28 kB         159 kB
+├ ○ /inventario/movimientos            7.58 kB         177 kB
+├ ○ /inventario/pendientes             6.35 kB         163 kB
+├ ○ /inventario/proveedores            2.28 kB         159 kB
+├ ○ /inventario/stock                  10.2 kB         180 kB
+├ ○ /logistica                         10.5 kB         179 kB
+├ ○ /mi-trabajo                        9.31 kB         165 kB
+├ ○ /notificaciones                    5.58 kB         162 kB
+├ ○ /ordenes                           18.6 kB         175 kB
+├ ○ /tipos                                 0 B         156 kB
+├ ○ /unidades                          17.6 kB         186 kB
+├ ƒ /unidades/[id]                     17.8 kB         187 kB
+├ ƒ /unidades/[id]/editar              8.33 kB         164 kB
+├ ƒ /unidades/[id]/visitas/[visitaId]  12.6 kB         169 kB
+└ ○ /unidades/nueva                    8.16 kB         164 kB
++ First Load JS shared by all           177 kB
+  ├ chunks/36e77f13ba8889ab.js           12 kB
+  ├ chunks/507d6047368c9e8e.js         15.4 kB
+  ├ chunks/72aab3c7db664e2c.js         13.2 kB
+  ├ chunks/92fbc226a643a238.js         13.4 kB
+  ├ chunks/c20516c263ef3a09.js         17.2 kB
+  ├ chunks/c2d8dfc9e40000eb.js         59.2 kB
+  ├ chunks/a0b657db7781b8c4.css        19.2 kB
+  └ other shared chunks (total)        27.3 kB
+
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice

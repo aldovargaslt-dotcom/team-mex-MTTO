@@ -32,6 +32,10 @@ import {
 } from './checks/facility-calendar.port';
 import { FlotaModule } from '../flota/flota.module';
 import {
+  ConfiguredFacilityResource,
+  FacilityResourceReadPort,
+} from './checks/facility-resource-read.port';
+import {
   TypeOrmMaintenanceBlockReadAdapter,
   TypeOrmSignedCheckReadAdapter,
 } from './checks/signed-check-read.adapter';
@@ -77,6 +81,7 @@ import {
       useExisting: PrivateFilesystemStorageAdapter,
     },
     { provide: FacilityCalendarPort, useClass: ConfiguredFacilityCalendar },
+    { provide: FacilityResourceReadPort, useClass: ConfiguredFacilityResource },
     TypeOrmSignedCheckReadAdapter,
     TypeOrmMaintenanceBlockReadAdapter,
     {
@@ -92,6 +97,7 @@ import {
     TypeOrmModule,
     VisitasService,
     FacilityCalendarPort,
+    FacilityResourceReadPort,
     SignedCheckReadPort,
     MaintenanceBlockReadPort,
   ],

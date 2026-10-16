@@ -14,6 +14,10 @@ import { VisitasModule } from '../visitas/visitas.module';
 import { VehicleDocumentsModule } from '../vehicle-documents/vehicle-documents.module';
 import { DeparturePolicyPort } from './departure-policy.port';
 import { DeparturePolicyService } from './departure-policy.service';
+import { LogisticaJourney } from './journey.entity';
+import { LogisticaJourneyReceipt } from './journey-receipt.entity';
+import { LogisticaJourneyCapture } from './journey-capture.entity';
+import { LogisticaJourneyService } from './journey.service';
 import { LogisticaDepartureAudit } from './departure-audit.entity';
 import {
   FLOTA_SIN_REGRESO_PORT,
@@ -22,7 +26,13 @@ import {
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Unidad, LogisticaDepartureAudit]),
+    TypeOrmModule.forFeature([
+      Unidad,
+      LogisticaDepartureAudit,
+      LogisticaJourney,
+      LogisticaJourneyReceipt,
+      LogisticaJourneyCapture,
+    ]),
     UnidadesModule,
     ChoferesModule,
     AlertasModule,
@@ -34,6 +44,7 @@ import {
   controllers: [LogisticaController],
   providers: [
     LogisticaService,
+    LogisticaJourneyService,
     ControlTowerService,
     DeparturePolicyService,
     { provide: DeparturePolicyPort, useExisting: DeparturePolicyService },

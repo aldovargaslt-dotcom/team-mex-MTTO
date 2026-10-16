@@ -6,7 +6,9 @@ async function proxy(request: NextRequest, context: { params: Promise<{ path: st
     const legacy = legacyDevelopment();
     const apiUrl = legacy ? (process.env.API_URL || 'http://localhost:3001') : authConfig().apiUrl;
     const headers = new Headers();
-    for (const name of ['content-type', 'accept', 'idempotency-key', 'x-role']) {
+    for (const name of ['content-type', 'accept', 'idempotency-key', 'x-role',
+      'x-logistica-expected-subject', 'x-logistica-unit-revision', 'x-logistica-history-state',
+      'x-logistica-journey-ref', 'x-logistica-journey-revision']) {
       const value = request.headers.get(name);
       if (value) headers.set(name, value);
     }

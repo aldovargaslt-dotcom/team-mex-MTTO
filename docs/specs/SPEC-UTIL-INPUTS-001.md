@@ -182,6 +182,42 @@ product choices; no technical readiness is implied.
 | UTIL-17 | Valid breakdown overlaps trip => source layers preserved; elapsed downtime counted once without blanket inconsistency warning. |
 | UTIL-18 | Missing eligibility/facility/return history => explicit coverage/unassessed time; denominator not improved by dropping unknown eligible hours. |
 
+## Bounded journey slice — AC
+
+Status: Approved for EWO-041, 2026-10-15. Approval reference: owner in this chat,
+“okay go ahead with the plan”. These criteria bound durable Logistics journey/return capture only.
+[Contract](../contracts/LOG-JOURNEY-001-contract.md),
+[ADR027](../adr/027-logistica-durable-journeys.md) and
+[execution brief/test mapping](../engineering-work-orders/LOG-JOURNEY-001-execution-brief.md)
+form the approved bounded package. Owner authorized implementation in this chat:
+“okay go ahead with the plan”. Results belong to [EWO-041 evidence](../evidence/EWO-041.md);
+these criteria do not approve the global ABC/UTIL feature.
+
+| ID | Given / when / then |
+|---|---|
+| UTIL-J01 | Successful new departure => one stable journey and exact existing departure audit reference persist atomically with EN_RUTA/salidaAt; repeated trips keep distinct records and immutable departure context. |
+| UTIL-J02 | Matching genuine return => effective and registered times plus trusted actor/auth attribution and authorized facility versions persist before current departure state is cleared; later assignment changes do not rewrite historical driver context. |
+| UTIL-J03 | Existing departure blockers => unchanged policy rejection and no partial writes; authorized genuine return remains possible despite expired ABC/insurance, inactive administrative state or invalid operational-calendar config when resource mapping/scope are valid, without implicit Flota/custody mutation or new departure-readiness requirement. |
+| UTIL-J04 | Identical committed retry => original 204, endpoint, actor and times; incompatible key/payload or stale journey/revision => referenced conflict. Concurrent departure/return/two return intents cannot duplicate endpoints or close a later trip; J1 retry after J2 departure touches only J1's receipt. |
+| UTIL-J05 | Audit/journey/return/unit/receipt persistence failure => transaction rolls back together; postcommit response/notification failure => durable receipt supports safe retry without duplicate history or later-trip mutation. |
+| UTIL-J06 | Existing EN_RUTA legacy or genuinely missing historical record => explicit incomplete legacy representation and authorized matched return; dangling UUID uses MISSING_ROW with null journey revision, absent pointer uses MISSING_POINTER/sentinel; absence is revalidated under coordination. No fabricated departure/driver/actor/audit or closed-trip reconstruction. Contradictory/appearing history conflicts; source failure is not missing data. |
+| UTIL-J07 | Missing/forged trusted actor, wrong role/facility or unavailable facility mapping => no mutation; frozen confirming-subject mismatch against current authenticated subject also rejects initial/replayed commands without disclosure. Return attribution comes only from AuthenticationPort; committed replay validates current scope. |
+| UTIL-J08 | Additive migration/cutover => recorded verified capture boundary and legacy counts, drained old writers and isolated rehearsal; failure is atomic, populated history refuses destructive down, interruptions remain explicit coverage gaps with forward recovery. |
+| UTIL-J09 | Both existing return callers and departure caller => unchanged business fields/empty 204 response; actual browser/BFF/API path preserves every binding header. Only confirmed pending commands resume automatically after reload, including first commit if unsent, with original subject/key/body/history expectations and at most one automatic attempt per load. Drafts never replay; identity/scope/state conflicts suspend replay. Stale metadata is never rebound; obsolete unbound calls reject without mutation. |
+| UTIL-J10 | Captured/legacy/missing history is read => exact provenance, capture epoch and unknown endpoints remain distinguishable; a reliable new return cannot imply an unknown earlier interval was available or complete. |
+| UTIL-J11 | Catalog/status/assignment update overlaps departure or return => its permitted fields change while lifecycle state, trip context, active pointer, revision and endpoints remain intact; no stale full-entity save can reverse the committed journey. Existing status/assignment authority and validation remain enforced under coordination. |
+| UTIL-J12 | Startup seed/bootstrap runs after departure or return => recorded lifecycle state/context/pointer/revision and journey/audit/receipt evidence remain unchanged. Captured placeholder units are not deleted; post-capture ordinary seed creates no unaudited EN_RUTA trip. Disposable pre-capture fixtures remain explicitly separate. |
+
+UTIL-05/11/12/13/17/18 remain broader related constraints. This slice does not
+complete historical correction, downtime overlap/reporting, safety or the global
+UTIL feature. Bounded execution is approved; verification results are recorded
+in EWO-041 evidence.
+
+Owner decision reference for automatic resumption: this chat, 2026-10-15,
+reply “1. Yes” to GrillMe Q1. That answer resolves retry behavior only; bounded
+design/spec/ADR and implementation were subsequently approved by “okay go ahead
+with the plan”, recorded in [EWO-041](../engineering-work-orders/EWO-041.md).
+
 ## Constraints, non-goals and verification
 
 Preserve module ports, opaque IDs, no cross-schema JOIN/FK or new WorkOrder/BC.
@@ -190,7 +226,8 @@ ABC step, GPS or general costing. Existing safety gates stay enforced during pil
 
 Planned: UTIL-01–10/14–18 domain+API integration; UTIL-11–13 real PostgreSQL
 correction/concurrency/auth tests; desktop/mobile role walkthroughs and separate
-visual review for UX states. No execution evidence exists for these new AC.
+visual review for UX states. The bounded journey subset has separate
+[EWO-041 evidence](../evidence/EWO-041.md); other new AC remain unimplemented.
 All affected data/migration/endpoint designs remain [Proposed](../contracts/ABC-UTIL-001-contract.md).
 Approve technical handoff/cost contracts and safety policy, then bounded EWOs.
 Product: [PRD](../prds/abc-utilization-v1.md); plan:

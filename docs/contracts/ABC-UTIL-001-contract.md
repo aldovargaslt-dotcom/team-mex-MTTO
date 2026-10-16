@@ -138,6 +138,13 @@ exact endpoint names and payload codes remain design work, not invented runtime 
 
 ## Required pre-execution review
 
+The candidate first foundation slice has its own
+[Proposed journey contract](LOG-JOURNEY-001-contract.md),
+[ADR027](../adr/027-logistica-durable-journeys.md) and
+[execution brief](../engineering-work-orders/LOG-JOURNEY-001-execution-brief.md).
+Review it independently; it does not approve this broader contract, alter safety
+policy or settle later physical-departure correlation.
+
 Validate safety matrix, defect evidence limits and issue-link grouping; external
 cost precision/currency limits; reason-handoff authority; manifest signing/storage;
 departure correlation/commit boundary; historical correction projection and rollout

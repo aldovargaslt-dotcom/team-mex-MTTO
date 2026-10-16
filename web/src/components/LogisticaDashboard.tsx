@@ -1,5 +1,8 @@
 "use client";
 
+import { submitJourney } from "@/lib/journey-commands";
+import { useJourneyContext } from "@/lib/use-journey-context";
+
 import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import {
@@ -151,6 +154,14 @@ export function LogisticaDashboard() {
     void cargar();
   }, [cargar]);
 
+  useEffect(() => {
+    const updated = () => { void cargar(); };
+    const failed = (event: Event) => setError((event as CustomEvent<string>).detail);
+    window.addEventListener('team-mex-journey-updated', updated);
+    window.addEventListener('team-mex-journey-error', failed);
+    return () => { window.removeEventListener('team-mex-journey-updated', updated); window.removeEventListener('team-mex-journey-error', failed); };
+  }, [cargar]);
+
   const rows = data?.items ?? EMPTY_ROWS;
   const unidadesActivas = useMemo(
     () => rows.filter((row) => row.estado === "ACTIVA"),
@@ -169,6 +180,8 @@ export function LogisticaDashboard() {
   );
   const choferElegido = choferes.find((row) => row.choferId === form.choferId);
   const unidadRegreso = enRuta.find((row) => row.unidadId === regresoUnidadId);
+  const salidaContext = useJourneyContext(salidaOpen ? unidadElegida : undefined, role, userId);
+  const regresoContext = useJourneyContext(regresoOpen ? unidadRegreso : undefined, role, userId);
   const movimientosDelDia = movimientosHoy?.items ?? [];
 
   function abrirSalida(unidadId = "") {
@@ -238,16 +251,10 @@ export function LogisticaDashboard() {
     setSaving(true);
     setError(null);
     try {
-      await api<void>(`/logistica/salidas/${form.unidadId}`, {
-        role: role!,
-        userId,
-        method: "POST",
-        body: JSON.stringify({
-          ambito: form.ambito,
-          destino: form.destino.trim(),
-          choferId: form.choferId,
-        }),
-      });
+      if (!salidaContext.context) throw new Error(salidaContext.error ?? 'Verifica el viaje antes de confirmar.');
+      await submitJourney('salidas', salidaContext.context, {
+        ambito: form.ambito, destino: form.destino.trim(), choferId: form.choferId,
+      }, role!, userId);
       setSalidaOpen(false);
       setForm(VACIO);
       setNotice(
@@ -267,11 +274,8 @@ export function LogisticaDashboard() {
     setRegresoSaving(true);
     setRegresoError(null);
     try {
-      await api<void>(`/logistica/regresos/${regresoUnidadId}`, {
-        role: role!,
-        userId,
-        method: "POST",
-      });
+      if (!regresoContext.context) throw new Error(regresoContext.error ?? 'Verifica el viaje antes de confirmar.');
+      await submitJourney('regresos', regresoContext.context, null, role!, userId);
       setRegresoOpen(false);
       setRegresoUnidadId("");
       setNotice(
@@ -530,7 +534,7 @@ export function LogisticaDashboard() {
                   timeStyle: "short",
                 }).format(new Date())}
               </p>
-              <FormAlert>{error}</FormAlert>
+              <FormAlert>{error ?? salidaContext.error}</FormAlert>
             </div>
             <SheetFooter className="sticky bottom-0 mt-auto flex-col border-t bg-background p-4 sm:flex-row">
               <Button
@@ -545,7 +549,7 @@ export function LogisticaDashboard() {
                 type="submit"
                 className="min-h-12 flex-1"
                 disabled={
-                  saving || !disponiblesParaSalida.length || !choferes.length
+                  saving || !disponiblesParaSalida.length || !choferes.length || !salidaContext.context
                 }
               >
                 {saving ? "Registrando…" : "Registrar salida"}
@@ -642,7 +646,7 @@ export function LogisticaDashboard() {
                   ))}
                 </NativeSelect>
               </Field>
-              <FormAlert>{regresoError}</FormAlert>
+              <FormAlert>{regresoError ?? regresoContext.error}</FormAlert>
             </div>
             <SheetFooter className="sticky bottom-0 mt-auto flex-col border-t bg-background p-4 sm:flex-row">
               <Button
@@ -656,7 +660,7 @@ export function LogisticaDashboard() {
               <Button
                 type="submit"
                 className="min-h-12 flex-1"
-                disabled={regresoSaving || !regresoUnidadId}
+                disabled={regresoSaving || !regresoUnidadId || !regresoContext.context}
               >
                 {regresoSaving ? "Registrando…" : "Registrar entrada"}
               </Button>

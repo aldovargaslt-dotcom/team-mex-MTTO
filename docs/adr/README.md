@@ -60,3 +60,5 @@ preserved. Safety validation and the new proposed technical contract remain gate
 not implementation or deployment approval.
 
 [ADR026 — Costos históricos y valoración de refacciones](026-inventario-costos-historicos.md): Accepted for the authorized implementation; Inventario owns valuation and historical snapshots. Manual migration and coordinated feature activation remain explicit release steps.
+
+[ADR027 — Durable Logistics journeys](027-logistica-durable-journeys.md): Logistics journey/return capture with trusted attribution and isolated controlled cutover; integrates PR95 without replacing inventory ADR026.

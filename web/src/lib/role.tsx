@@ -1,6 +1,7 @@
 'use client';
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { resumeJourneys } from './journey-commands';
 import type { Role } from './types';
 const ROLE_KEY = 'team-mex-role';
 const USER_KEY = 'team-mex-user-id';
@@ -61,6 +62,13 @@ export function RoleProvider({ children }: { children: React.ReactNode }) {
     window.addEventListener('team-mex-session-expired', expired);
     return () => window.removeEventListener('team-mex-session-expired', expired);
   }, [reloadSession]);
+  useEffect(() => {
+    if (ready && userId && (role === 'LOGISTICA' || role === 'ADMIN_DIRECTIVO')) {
+      void resumeJourneys(userId, role).catch(() => {
+        window.dispatchEvent(new CustomEvent('team-mex-journey-error', { detail: 'No se pudo recuperar la operación pendiente.' }));
+      });
+    }
+  }, [ready, userId, role]);
   const setRole = useCallback((next: Role) => {
     if (!roles.includes(next)) return;
     window.localStorage.setItem(ROLE_KEY, next);

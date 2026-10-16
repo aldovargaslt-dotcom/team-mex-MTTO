@@ -72,7 +72,7 @@ export type AmbitoUnidad = "FORANEO" | "LOCAL";
 
 export type ChipLogisticaUnidad = "EN_RUTA" | "DISPONIBLE" | "TODAS";
 
-export type LogisticaUnidadRow = {
+export type LogisticaUnidadRow = import('./journey-commands').JourneyBinding & {
   unidadId: string;
   placas: string;
   numeroInterno: string;

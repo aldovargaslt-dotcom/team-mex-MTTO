@@ -45,6 +45,13 @@ Do **not** use `docs/decisions/`. That path is not part of this repository’s S
 
 ## Data Stores
 
+EWO-041 adds durable Logistics journey/command/capture tables in the existing
+Kernel/public seam, with a separately controlled Logistics migration journal.
+It preserves the departure-audit and independent Flota ownership.
+[ADR027](../docs/adr/027-logistica-durable-journeys.md) and
+[local run/recovery guide](../docs/migrations/logistica-journey-history.md) describe
+the implementation; production migration/deployment remain unverified.
+
 **Evidence:** PostgreSQL 16. Schemas created at boot / `docker/init.sql`:
 
 | Schema | Typical owner module |

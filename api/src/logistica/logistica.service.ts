@@ -21,17 +21,13 @@ import { Chofer } from '../choferes/chofer.entity';
 import { EstadoChofer } from '../choferes/estado-chofer.enum';
 import { AmbitoUnidad } from '../unidades/ambito-unidad.enum';
 import { Unidad } from '../unidades/unidad.entity';
-import { UnidadesService } from '../unidades/unidades.service';
-import { OpsEstadoUnidad } from '../unidades/ops-estado-unidad.enum';
 import { TrustedActor } from '../auth/trusted-actor';
 import { UnitOperationCoordinator } from '../kernel/unit-operation.module';
-import { DeparturePolicyPort } from './departure-policy.port';
-import { LogisticaDepartureAudit } from './departure-audit.entity';
+import { LogisticaJourneyService } from './journey.service';
+import { JourneyCommand } from './journey-command';
 import {
   alertaSinRegreso,
   errorAssign,
-  errorRegreso,
-  errorSalida,
   filaChofer,
   filtrarFilas,
   filtrarUnidadesOps,
@@ -52,7 +48,6 @@ import {
 @Injectable()
 export class LogisticaService implements UnidadChoferAssignmentPort {
   constructor(
-    private readonly unidades: UnidadesService,
     private readonly choferes: ChoferesService,
     private readonly alertas: AlertasService,
     @InjectRepository(Unidad)
@@ -60,8 +55,8 @@ export class LogisticaService implements UnidadChoferAssignmentPort {
     @Inject(FLOTA_SIN_REGRESO_PORT)
     private readonly flotaAlert: FlotaSinRegresoPort,
     private readonly dataSource: DataSource,
-    private readonly departurePolicy: DeparturePolicyPort,
     private readonly unitOperations: UnitOperationCoordinator,
+    private readonly journeys: LogisticaJourneyService,
     @Optional()
     @Inject(ALERT_TYPE_ACTIVE_PORT)
     private readonly alertTypes?: AlertTypeActivePort,
@@ -92,13 +87,11 @@ export class LogisticaService implements UnidadChoferAssignmentPort {
   }
 
   async listUnidades(q?: string, chip?: ChipLogisticaUnidad) {
-    const [unidades, config] = await Promise.all([
-      this.unidadRepo.find({
-        relations: { tipo: true },
-        order: { placas: 'ASC' },
-      }),
+    const [snapshot, config] = await Promise.all([
+      this.journeys.listSnapshot(),
       this.alertas.getConfig(),
     ]);
+    const unidades = snapshot.units;
     const choferIds = [
       ...new Set(
         unidades
@@ -126,6 +119,7 @@ export class LogisticaService implements UnidadChoferAssignmentPort {
         defaultForaneoH: config.foraneoH,
       });
       const row = this.toUnidadRow(unidad, nombreById, now, thresholdHoras);
+      Object.assign(row, snapshot.contexts.get(unidad.id));
       rows.push(row);
       await this.syncInbox(unidad, row, now, thresholdHoras);
     }
@@ -139,82 +133,34 @@ export class LogisticaService implements UnidadChoferAssignmentPort {
     unidadId: string,
     input: RegistrarSalidaInput,
     actor: TrustedActor,
+    command: JourneyCommand,
   ): Promise<void> {
-    const error = errorSalida(input.ambito);
-    if (error) {
-      throw new BadRequestException(error);
-    }
-    await this.dataSource.transaction(async (manager) => {
-      await this.unitOperations.lock(manager, unidadId);
-      const authorization = await this.departurePolicy.authorize(
-        unidadId,
-        actor,
-        manager,
-      );
-      const unidad = await manager
-        .getRepository(Unidad)
-        .createQueryBuilder('unit')
-        .where('unit.id=:unidadId', { unidadId })
-        .setLock('pessimistic_write')
-        .getOne();
-      if (!unidad) throw new NotFoundException('No se encontró la unidad.');
-      if (input.choferId) {
-        const chofer = await manager.findOneBy(Chofer, { id: input.choferId });
-        if (!chofer) throw new NotFoundException('No se encontró el chofer.');
-        const ocupadaPorChofer = await manager.findOne(Unidad, {
-          where: { choferId: input.choferId },
-        });
-        const assignmentError = errorAssign({
-          choferEstado: chofer?.estado ?? null,
-          unidadExiste: true,
-          unidadChoferId: unidad.choferId,
-          choferUnidadId: ocupadaPorChofer?.id ?? null,
-          choferId: input.choferId,
-        });
-        if (assignmentError) throw new BadRequestException(assignmentError);
-        unidad.choferId = input.choferId;
-      }
-      unidad.opsEstado = OpsEstadoUnidad.EN_RUTA;
-      unidad.ambito =
-        input.ambito === 'FORANEO' ? AmbitoUnidad.FORANEO : AmbitoUnidad.LOCAL;
-      if (input.destino !== undefined) {
-        unidad.destino = input.destino.trim() || null;
-      }
-      unidad.salidaAt = new Date();
-      await manager.save(unidad);
-      await manager.save(
-        manager.create(LogisticaDepartureAudit, {
-          unidadId,
-          actorId: actor.subject,
-          sourceCheckId: authorization.signedCheckRef.checkId,
-          snapshotHash: authorization.signedCheckRef.snapshotHash,
-          checkVersion: authorization.signedCheckRef.version,
-          validationRefs: authorization,
-          evaluatedAt: new Date(authorization.evaluatedAt),
-          operationalDate: authorization.operationalDate,
-        }),
-      );
-    });
-    await this.evalUnidad(await this.unidades.findOne(unidadId));
+    if (
+      await this.journeys.execute('DEPARTURE', unidadId, input, actor, command)
+    )
+      await this.evalCurrentUnidad(unidadId);
   }
 
-  async registrarRegreso(unidadId: string): Promise<void> {
-    await this.dataSource.transaction(async (manager) => {
-      await this.unitOperations.lock(manager, unidadId);
-      const unidad = await manager
-        .getRepository(Unidad)
-        .createQueryBuilder('unit')
-        .where('unit.id=:unidadId', { unidadId })
-        .setLock('pessimistic_write')
-        .getOne();
-      if (!unidad) throw new NotFoundException('No se encontró la unidad.');
-      const error = errorRegreso(unidad.opsEstado);
-      if (error) throw new BadRequestException(error);
-      unidad.opsEstado = OpsEstadoUnidad.DISPONIBLE;
-      unidad.salidaAt = null;
-      await manager.save(unidad);
-    });
-    await this.evalUnidad(await this.unidades.findOne(unidadId));
+  async registrarRegreso(
+    unidadId: string,
+    actor: TrustedActor,
+    command: JourneyCommand,
+  ): Promise<void> {
+    if (await this.journeys.execute('RETURN', unidadId, null, actor, command))
+      await this.evalCurrentUnidad(unidadId);
+  }
+
+  journeyContext(unidadId: string, actor: TrustedActor) {
+    return this.journeys.context(unidadId, actor);
+  }
+
+  private async evalCurrentUnidad(unidadId: string) {
+    // Only a new commit runs the existing postcommit projection. Replay returns
+    // its durable receipt without emitting an old effect or consuming extra SQL
+    // connections while external owner repositories perform their own work.
+    await this.evalUnidad(
+      await this.unidadRepo.findOneByOrFail({ id: unidadId }),
+    );
   }
 
   getAlertasSinRegreso() {
@@ -230,35 +176,34 @@ export class LogisticaService implements UnidadChoferAssignmentPort {
   }
 
   async assign(unidadId: string, choferId: string): Promise<void> {
-    const chofer = await this.choferes.findOne(choferId);
-    const unidad = await this.unidades.findOne(unidadId);
-    const ocupadaPorChofer = await this.unidadRepo.findOne({
-      where: { choferId },
+    await this.dataSource.transaction(async (manager) => {
+      await this.unitOperations.lock(manager, unidadId);
+      const unidad = await manager.findOneBy(Unidad, { id: unidadId });
+      if (!unidad) throw new NotFoundException('No se encontró la unidad.');
+      const chofer = await manager.findOneBy(Chofer, { id: choferId });
+      if (!chofer) throw new NotFoundException('No se encontró el chofer.');
+      const occupied = await manager.findOneBy(Unidad, { choferId });
+      const error = errorAssign({
+        choferEstado: chofer.estado,
+        unidadExiste: true,
+        unidadChoferId: unidad.choferId,
+        choferUnidadId: occupied?.id ?? null,
+        choferId,
+      });
+      if (error) throw new BadRequestException(error);
+      if (unidad.choferId !== choferId)
+        await manager.update(Unidad, unidadId, { choferId });
     });
-    const error = errorAssign({
-      choferEstado: chofer.estado,
-      unidadExiste: true,
-      unidadChoferId: unidad.choferId,
-      choferUnidadId: ocupadaPorChofer?.id ?? null,
-      choferId,
-    });
-    if (error) {
-      throw new BadRequestException(error);
-    }
-    if (unidad.choferId === choferId) {
-      return;
-    }
-    unidad.choferId = choferId;
-    await this.unidadRepo.save(unidad);
   }
 
   async unassign(unidadId: string): Promise<void> {
-    const unidad = await this.unidades.findOne(unidadId);
-    if (!unidad.choferId) {
-      return;
-    }
-    unidad.choferId = null;
-    await this.unidadRepo.save(unidad);
+    await this.dataSource.transaction(async (manager) => {
+      await this.unitOperations.lock(manager, unidadId);
+      const unidad = await manager.findOneBy(Unidad, { id: unidadId });
+      if (!unidad) throw new NotFoundException('No se encontró la unidad.');
+      if (unidad.choferId)
+        await manager.update(Unidad, unidadId, { choferId: null });
+    });
   }
 
   private toUnidadRow(

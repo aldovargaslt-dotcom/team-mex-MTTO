@@ -1,3 +1,7 @@
+import {
+  commandHeaders,
+  initializeJourneyFixture,
+} from './journey-test-fixture';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import request from 'supertest';
@@ -65,6 +69,15 @@ describe('Logística asignación chofer↔unidad (e2e L1–L4)', () => {
     await app.init();
     server = app.getHttpServer();
     ds = app.get(DataSource);
+    await initializeJourneyFixture(ds);
+    await ds.query(
+      "INSERT INTO facilities(id,name,timezone,version) VALUES ($1,$1,'America/Mexico_City',1) ON CONFLICT DO NOTHING",
+      [FACILITY],
+    );
+    await ds.query(
+      'INSERT INTO vehicle_facilities(unidad_id,facility_id,version) SELECT id,$1,1 FROM unidades ON CONFLICT DO NOTHING',
+      [FACILITY],
+    );
   });
 
   afterAll(async () => {
@@ -357,7 +370,8 @@ describe('Logística asignación chofer↔unidad (e2e L1–L4)', () => {
 
     await request(server)
       .post(`/logistica/regresos/${ram!.unidadId}`)
-      .set(LOGISTICA)
+      .set(TRUSTED_LOGISTICA)
+      .set(await commandHeaders(ds, ram!.unidadId, 'log-asig'))
       .expect(204);
 
     const after = await request(server)
@@ -377,7 +391,8 @@ describe('Logística asignación chofer↔unidad (e2e L1–L4)', () => {
 
     const again = await request(server)
       .post(`/logistica/regresos/${ram!.unidadId}`)
-      .set(LOGISTICA)
+      .set(TRUSTED_LOGISTICA)
+      .set(await commandHeaders(ds, ram!.unidadId, 'log-asig'))
       .expect(400);
     expect(again.body.message).toMatch(/no está en ruta/i);
   });
@@ -403,6 +418,7 @@ describe('Logística asignación chofer↔unidad (e2e L1–L4)', () => {
     await request(server)
       .post(`/logistica/salidas/${nissan!.unidadId}`)
       .set(TRUSTED_LOGISTICA)
+      .set(await commandHeaders(ds, nissan!.unidadId, 'log-asig'))
       .send({ ambito: 'LOCAL', destino: 'CEDIS prueba' })
       .expect(204);
 
@@ -451,6 +467,17 @@ describe('Logística asignación chofer↔unidad (e2e L1–L4)', () => {
       list.body.items as { unidadId: string; placas: string }[]
     ).find((r) => r.placas === 'VU2626C');
     expect(ducatoRutas).toBeTruthy();
+    const beforePrepare = await ds.query(
+      'SELECT ops_estado FROM unidades WHERE id=$1',
+      [ducatoRutas!.unidadId],
+    );
+    if (beforePrepare[0].ops_estado === 'EN_RUTA') {
+      await request(server)
+        .post('/logistica/regresos/' + ducatoRutas!.unidadId)
+        .set(TRUSTED_LOGISTICA)
+        .set(await commandHeaders(ds, ducatoRutas!.unidadId, 'log-asig'))
+        .expect(204);
+    }
     await prepareDepartureFixture(
       ds,
       ducatoRutas!.unidadId,
@@ -471,6 +498,7 @@ describe('Logística asignación chofer↔unidad (e2e L1–L4)', () => {
     await request(server)
       .post(`/logistica/salidas/${ducatoRutas!.unidadId}`)
       .set(TRUSTED_LOGISTICA)
+      .set(await commandHeaders(ds, ducatoRutas!.unidadId, 'log-asig'))
       .send({ ambito: 'LOCAL', destino: 'Override 1h' })
       .expect(204);
 
@@ -537,7 +565,8 @@ describe('Logística asignación chofer↔unidad (e2e L1–L4)', () => {
 
     await request(server)
       .post(`/logistica/regresos/${foton!.unidadId}`)
-      .set(LOGISTICA)
+      .set(TRUSTED_LOGISTICA)
+      .set(await commandHeaders(ds, foton!.unidadId, 'log-asig'))
       .expect(204);
 
     const afterInbox = await request(server)
