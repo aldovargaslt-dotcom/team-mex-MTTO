@@ -15,6 +15,7 @@ import { DataSource, EntityManager } from 'typeorm';
 import { TrustedActor, validateActor } from '../auth/trusted-actor';
 import { Rol } from '../auth/roles.enum';
 import { allocatedCost, calculateCost, cents } from './cost-rules';
+import { inventoryCostsEnabled } from './cost-feature';
 import { AjusteDto } from './dto/ajuste.dto';
 import { stockTrasMovimiento } from './stock-rules';
 import { OpeningDto, ReceiptDto, ReturnDto, RevisionDto } from './dto/cost.dto';
@@ -79,9 +80,7 @@ export class InventoryCostsService {
     }
   }
   get enabled() {
-    return process.env.INVENTORY_COSTS_ENABLED != null
-      ? process.env.INVENTORY_COSTS_ENABLED === 'true'
-      : process.env.NODE_ENV !== 'production';
+    return inventoryCostsEnabled();
   }
   authorize(actor: TrustedActor, admin = false) {
     if (!this.enabled)

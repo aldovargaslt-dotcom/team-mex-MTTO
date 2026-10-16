@@ -1,24 +1,12 @@
 import 'reflect-metadata';
-import { DataSource } from 'typeorm';
-import { postgresConnectionOptions } from './postgres-options';
-import { InventoryCosts1792108800001 } from './migrations/1792108800001-InventoryCosts';
+import { createInventoryCostMigrationDataSource } from './inventory-cost-migration-data-source';
 async function run() {
   if (
     process.env.DB_SYNCHRONIZE !== 'false' ||
     process.env.DB_DROP_SCHEMA !== 'false'
   )
     throw new Error('Set DB_SYNCHRONIZE=false and DB_DROP_SCHEMA=false.');
-  const db = new DataSource({
-    ...postgresConnectionOptions({
-      get: <T = string>(key: string, fallback?: T) =>
-        (process.env[key] ?? fallback) as T,
-    }),
-    synchronize: false,
-    dropSchema: false,
-    migrationsRun: false,
-    migrationsTableName: 'inventory_cost_schema_migrations',
-    migrations: [InventoryCosts1792108800001],
-  });
+  const db = createInventoryCostMigrationDataSource();
   await db.initialize();
   const lock = db.createQueryRunner();
   await lock.connect();

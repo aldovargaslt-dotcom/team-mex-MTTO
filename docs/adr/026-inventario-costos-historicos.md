@@ -61,3 +61,7 @@ Revisar contrato; aceptar ADR antes de implementar cambios de schema/ownership; 
 ## Ownership
 
 Fecha de cliente: 2026-10-15. Elaborado por Codex a petición del usuario. Reglas de negocio: respuestas del chat; decisión arquitectónica: **propuesta**, no se registra aprobación inexistente.
+
+## Production release amendment — 2026-10-15 (client date)
+
+The user subsequently authorized: “Go ahead and do the changes to push to production.” This supersedes the initial implementation-only release hold. It extends the narrow production guard of ADR024 to the inventory-cost migration ledger, without changing its historical decision or running CHECK/Auth migrations. The existing Railway pre-deploy command and production bootstrap fallback prepare only these three explicitly approved additive migrations. Costing now defaults enabled after that guard; explicit `INVENTORY_COSTS_ENABLED=false` remains an operator disable and skips the inventory migration. Both manual and release runners share the inventory advisory lock/ledger. No seed, down, synchronize, guessed stock price or quantity backfill is introduced. No deployment credentials or successful production migration are inferred from this authorization.
