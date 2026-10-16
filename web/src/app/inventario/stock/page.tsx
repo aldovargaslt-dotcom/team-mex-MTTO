@@ -1,14 +1,14 @@
 'use client';
 
 import { AlertTriangle, List, PackageX, type LucideIcon } from 'lucide-react';
-import { FormEvent, Suspense, useEffect, useMemo, useState } from 'react';
+import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { ColumnDef } from '@tanstack/react-table';
 import { ReadStatus } from '@/components/ReadStatus';
 import { useReadResource } from '@/lib/use-read-resource';
 import { api, HttpError } from '@/lib/api';
 import { etiquetaMinimo, etiquetaUom } from '@/lib/format';
-import { notifyInboxChanged } from '@/lib/inbox';
+import { InventarioAlertasDialog } from '@/components/inventario/InventarioAlertasDialog';
 import { useRole } from '@/lib/role';
 import type {
   AlertaStock,
@@ -29,14 +29,6 @@ import { Button } from '@/components/ui/button';
 import { DataTable } from '@/components/ui/data-table';
 import { Field, FormAlert, PageHeader } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
 
 const FILTROS: { id: 'TODOS' | AlertaStock; label: string; icon: LucideIcon }[] = [
   { id: 'TODOS', label: 'Todos', icon: List },
@@ -105,18 +97,14 @@ function StockContent() {
   const tipos = tipoRead.data ?? [];
   const proveedores = (provRead.data ?? []).filter((p) => p.activo);
   const [error, setError] = useState<string | null>(null);
-  const [minDraft, setMinDraft] = useState<Record<string, string>>({});
   const [ficha, setFicha] = useState<ItemInventario | null>(null);
   const [itemId, setItemId] = useState('');
   const [mode, setMode] = useState<MovimientoSheetMode | null>(null);
   const [lockItem, setLockItem] = useState(false);
   const [alertasOpen, setAlertasOpen] = useState(false);
-  const [savingAlertas, setSavingAlertas] = useState(false);
+  const alertTrigger = useRef<HTMLButtonElement>(null);
 
   function cargar() { read.retry(); }
-  useEffect(() => {
-    if (read.data) setMinDraft(Object.fromEntries(read.data.map((row) => [row.itemId, row.minQty == null ? '' : String(row.minQty)])));
-  }, [read.data]);
 
   useEffect(() => {
     const selectedItem = searchParams.get('itemId');
@@ -160,44 +148,6 @@ function StockContent() {
     }
   }
 
-  async function guardarAlertas(event: FormEvent) {
-    event.preventDefault();
-    setError(null);
-    for (const row of rows) {
-      const raw = minDraft[row.itemId] ?? '';
-      const next = raw.trim() === '' ? null : Number(raw);
-      if (next !== null && (!Number.isInteger(next) || next < 0)) {
-        setError('Indique un número entero, o déjelo vacío.');
-        return;
-      }
-    }
-    setSavingAlertas(true);
-    try {
-      for (const row of rows) {
-        const raw = minDraft[row.itemId] ?? '';
-        const next = raw.trim() === '' ? null : Number(raw);
-        if (next === row.minQty) continue;
-        await api(`/inventario/items/${row.itemId}`, {
-          role: role!,
-          userId,
-          method: 'PATCH',
-          body: JSON.stringify({ minQty: next }),
-        });
-      }
-      notifyInboxChanged();
-      setAlertasOpen(false);
-      await cargar();
-    } catch (err) {
-      setError(
-        err instanceof HttpError
-          ? err.message
-          : 'No se pudo guardar cuándo avisar.',
-      );
-    } finally {
-      setSavingAlertas(false);
-    }
-  }
-
   const filtered = useMemo(() => {
     const term = q.trim().toLocaleLowerCase('es');
     return rows.filter((row) =>
@@ -233,13 +183,14 @@ function StockContent() {
             <Button
               type="button"
               variant="secondary"
+              ref={alertTrigger}
               onClick={() => {
                 setMode(null);
                 setItemId('');
                 setError(null);
                 setAlertasOpen(true);
               }}
-              disabled={read.data === null || rows.length === 0 || tipoRead.data === null || provRead.data === null}
+              disabled={role !== 'SUPERVISOR' && role !== 'ADMIN_DIRECTIVO'}
             >
               Configurar alertas
             </Button>
@@ -348,95 +299,16 @@ function StockContent() {
         onError={setError}
       />
 
-      <Dialog
-        open={alertasOpen}
-        onOpenChange={(next) => {
-          if (!next) {
-            setMinDraft(
-              Object.fromEntries(
-                rows.map((row) => [
-                  row.itemId,
-                  row.minQty == null ? '' : String(row.minQty),
-                ]),
-              ),
-            );
-          }
-          setAlertasOpen(next);
+      {alertasOpen && role ? <InventarioAlertasDialog
+        key={`${role}:${userId ?? ''}`}
+        role={role}
+        userId={userId}
+        onStock={read.setData}
+        onClose={() => {
+          setAlertasOpen(false);
+          requestAnimationFrame(() => alertTrigger.current?.focus());
         }}
-      >
-        <DialogContent className="inventory-alert-dialog max-h-[90vh] overflow-hidden">
-          <form
-            className="grid max-h-[calc(90vh-2rem)] grid-rows-[auto_minmax(0,1fr)_auto]"
-            onSubmit={guardarAlertas}
-          >
-            <DialogHeader>
-              <DialogTitle className="text-[16px]">Alertas de inventario</DialogTitle>
-              <DialogDescription>
-                Te avisamos al llegar al mínimo configurado. Déjalo vacío para no avisar.
-              </DialogDescription>
-            </DialogHeader>
-            <div className="inventory-alert-list min-h-0 overflow-y-auto py-3">
-              {rows.map((row) => (
-                <div
-                  key={row.itemId}
-                  className="inventory-alert-row"
-                >
-                  <div className="inventory-identity"><p className="text-sm font-medium text-navy">{row.nombre}</p>
-                  <p className="mb-2 text-xs text-muted-foreground">
-                    <span className="mono">{row.sku}</span>
-                    {' · '}
-                    Existencia: {row.qty} {etiquetaUom(row.uom)}
-                  </p></div>
-                  <Field
-                    label="Mínimo"
-                    htmlFor={`alertaMin-${row.itemId}`}
-                  >
-                    <Input
-                      id={`alertaMin-${row.itemId}`}
-                      aria-label={`Mínimo de ${row.nombre}`}
-                      type="number"
-                      min={0}
-                      step={1}
-                      inputMode="numeric"
-                      placeholder="Sin mínimo"
-                      value={minDraft[row.itemId] ?? ''}
-                      onChange={(e) =>
-                        setMinDraft((current) => ({
-                          ...current,
-                          [row.itemId]: e.target.value,
-                        }))
-                      }
-                    />
-                  </Field>
-                </div>
-              ))}
-              <FormAlert>{alertasOpen ? error : null}</FormAlert>
-            </div>
-            <DialogFooter>
-              <Button
-                type="button"
-                variant="secondary"
-                onClick={() => {
-                  setMinDraft(
-                    Object.fromEntries(
-                      rows.map((row) => [
-                        row.itemId,
-                        row.minQty == null ? '' : String(row.minQty),
-                      ]),
-                    ),
-                  );
-                  setAlertasOpen(false);
-                }}
-              >
-                Cancelar
-              </Button>
-              <Button type="submit" disabled={savingAlertas || rows.length === 0}>
-                {savingAlertas ? 'Guardando…' : 'Guardar'}
-              </Button>
-            </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
+      /> : null}
     </div>
   );
 }
