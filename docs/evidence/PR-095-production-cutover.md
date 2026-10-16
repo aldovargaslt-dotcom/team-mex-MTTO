@@ -34,7 +34,9 @@ Verified Railway web: https://web-production-022a6.up.railway.app/
 
 ## Remaining verification and recovery limits
 
-At this evidence commit, Vercel's Production deployment still identified the previous inventory commit; its deployment must be checked following the normal main push. This does not invalidate the verified Railway web deployment. The temporary helper's command was reset to read-only inspection after migration; remove the helper after final verification.
+PASS — the normal evidence push produced Vercel Production deployment `7123990935` at `4b6d0c03ecfbe4affe1a34e88a1df632ba35b582`, with successful GitHub/Vercel status. Its application source equals merged PR95; only the cutover evidence and EWO changed. The deployment URL `https://team-mex-mtto-f02a9l7pn-aldovargaslt-dotcoms-projects.vercel.app/` redirects to existing Vercel SSO protection, so direct authenticated application access was not verified. Railway web is public HTTP200. The API's unauthenticated Logistics list returns401 `TRUSTED_AUTHENTICATION_REQUIRED`, preserving trusted authentication.
+
+PASS — after verification, the temporary migration service was deleted and project readback contains only the original Postgres, web and API services. API readiness still returns200. No migration-runner service or drained-writer flag remains attached to the API.
 
 Real authenticated OIDC departure/return/reload workflows were not exercised in production. Exact-head automated and prior local trusted-actor walkthrough evidence remain in [combined verification](PR-095-096-integration.md). Public health/UI200 do not establish authenticated workflow success.
 
