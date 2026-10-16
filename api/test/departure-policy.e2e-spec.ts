@@ -1,3 +1,7 @@
+import {
+  commandHeaders,
+  initializeJourneyFixture,
+} from './journey-test-fixture';
 import { randomUUID } from 'crypto';
 import { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
@@ -46,6 +50,7 @@ describe('EWO-022 shared departure policy (e2e)', () => {
     configureApp(app);
     await app.init();
     db = app.get(DataSource);
+    await initializeJourneyFixture(db);
     await db.getRepository(Facility).save({
       id: 'departure-mex',
       name: 'Departure test facility',
@@ -141,6 +146,7 @@ describe('EWO-022 shared departure policy (e2e)', () => {
     const logistics = await request(app.getHttpServer())
       .post(`/logistica/salidas/${unidadId}`)
       .set(LOGISTICS)
+      .set(await commandHeaders(db, unidadId, actor.subject))
       .send({ ambito: 'LOCAL' })
       .expect(409);
     expect(logistics.body).toMatchObject({ code: 'DEPARTURE_BLOCKED' });
@@ -165,6 +171,7 @@ describe('EWO-022 shared departure policy (e2e)', () => {
     await request(app.getHttpServer())
       .post(`/logistica/salidas/${unidadId}`)
       .set(LOGISTICS)
+      .set(await commandHeaders(db, unidadId, actor.subject))
       .send({ ambito: 'LOCAL', destino: 'Ruta norte' })
       .expect(204);
     const [unit] = await db.query(
@@ -184,6 +191,7 @@ describe('EWO-022 shared departure policy (e2e)', () => {
     const duplicate = await request(app.getHttpServer())
       .post(`/logistica/salidas/${unidadId}`)
       .set(LOGISTICS)
+      .set(await commandHeaders(db, unidadId, actor.subject))
       .send({ ambito: 'LOCAL', destino: 'Segundo viaje' })
       .expect(409);
     expect(duplicate.body.details.reasons).toContain(
@@ -251,6 +259,7 @@ describe('EWO-022 shared departure policy (e2e)', () => {
     const pending = request(app.getHttpServer())
       .post(`/logistica/salidas/${unidadId}`)
       .set(LOGISTICS)
+      .set(await commandHeaders(db, unidadId, actor.subject))
       .send({ ambito: 'LOCAL' })
       .then((response) => response);
     await new Promise((resolve) => setTimeout(resolve, 100));
@@ -273,6 +282,7 @@ describe('EWO-022 shared departure policy (e2e)', () => {
     await request(app.getHttpServer())
       .post(`/logistica/salidas/${unidadId}`)
       .set(LOGISTICS)
+      .set(await commandHeaders(db, unidadId, actor.subject))
       .send({ ambito: 'FORANEO', destino: 'Retorno seguro' })
       .expect(204);
     await db.query(
@@ -282,7 +292,8 @@ describe('EWO-022 shared departure policy (e2e)', () => {
     );
     await request(app.getHttpServer())
       .post(`/logistica/regresos/${unidadId}`)
-      .set(LEGACY_LOGISTICS)
+      .set(LOGISTICS)
+      .set(await commandHeaders(db, unidadId, actor.subject))
       .expect(204);
   });
 

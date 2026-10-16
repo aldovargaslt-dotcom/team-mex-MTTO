@@ -4,7 +4,8 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, In, Not, IsNull } from 'typeorm';
+import { DataSource, Repository, In, Not, IsNull } from 'typeorm';
+import { UnitOperationCoordinator } from '../kernel/unit-operation.module';
 import { CurrentUser } from '../auth/current-user';
 import { Rol } from '../auth/roles.enum';
 import { mensajesHub, puedeCrearVisita } from '../common/hub-policy';
@@ -52,6 +53,8 @@ export class UnidadesService {
     @InjectRepository(Chofer)
     private readonly choferes: Repository<Chofer>,
     private readonly tipos: TiposVehiculoService,
+    private readonly dataSource: DataSource,
+    private readonly unitOperations: UnitOperationCoordinator,
   ) {}
 
   async findAll(filtros: FiltrarUnidadesDto) {
@@ -130,39 +133,42 @@ export class UnidadesService {
   }
 
   async update(id: string, dto: UpdateUnidadDto) {
-    const unidad = await this.findOne(id);
-    if (dto.tipoId) {
-      unidad.tipo = await this.tipos.findOne(dto.tipoId);
-    }
-    if (dto.numeroInterno !== undefined) {
-      unidad.numeroInterno = requireTrimmed(
-        dto.numeroInterno,
-        'El número interno no puede estar vacío.',
-      );
-    }
-    if (dto.placas !== undefined) {
-      unidad.placas = requireTrimmed(
-        dto.placas,
-        'Las placas no pueden estar vacías.',
-      ).toUpperCase();
-    }
-    if (dto.vin !== undefined) {
-      unidad.vin = this.normalizeVin(dto.vin);
-    }
-    if (dto.estado !== undefined) {
-      unidad.estado = dto.estado;
-      unidad.motivoInactivacion = null;
-    }
-    if (dto.marcaModelo !== undefined) {
-      unidad.marcaModelo = dto.marcaModelo.trim() || null;
-    }
-    if (dto.anio !== undefined) {
-      unidad.anio = dto.anio;
-    }
-    if (dto.fotoDataUrl !== undefined) {
-      unidad.fotoDataUrl = this.normalizeFoto(dto.fotoDataUrl);
-    }
-    return this.repo.save(unidad);
+    return this.patchUnit(id, async () => {
+      const patch: Partial<Unidad> = {};
+      if (dto.tipoId) patch.tipo = await this.tipos.findOne(dto.tipoId);
+      if (dto.numeroInterno !== undefined)
+        patch.numeroInterno = requireTrimmed(
+          dto.numeroInterno,
+          'El número interno no puede estar vacío.',
+        );
+      if (dto.placas !== undefined)
+        patch.placas = requireTrimmed(
+          dto.placas,
+          'Las placas no pueden estar vacías.',
+        ).toUpperCase();
+      if (dto.vin !== undefined) patch.vin = this.normalizeVin(dto.vin);
+      if (dto.estado !== undefined) {
+        patch.estado = dto.estado;
+        patch.motivoInactivacion = null;
+      }
+      if (dto.marcaModelo !== undefined)
+        patch.marcaModelo = dto.marcaModelo.trim() || null;
+      if (dto.anio !== undefined) patch.anio = dto.anio;
+      if (dto.fotoDataUrl !== undefined)
+        patch.fotoDataUrl = this.normalizeFoto(dto.fotoDataUrl);
+      return patch;
+    });
+  }
+
+  private async patchUnit(id: string, build: () => Promise<Partial<Unidad>>) {
+    return this.dataSource.transaction(async (manager) => {
+      await this.unitOperations.lock(manager, id);
+      const unit = await manager.findOneBy(Unidad, { id });
+      if (!unit) throw new NotFoundException('No se encontró la unidad.');
+      const patch = await build();
+      if (Object.keys(patch).length) await manager.update(Unidad, id, patch);
+      return manager.findOneByOrFail(Unidad, { id });
+    });
   }
 
   private normalizeFoto(value: string | null | undefined) {
@@ -177,17 +183,17 @@ export class UnidadesService {
   }
 
   async marcarEnvioEspecial(id: string) {
-    const unidad = await this.findOne(id);
-    unidad.estado = EstadoUnidad.INACTIVA;
-    unidad.motivoInactivacion = MotivoInactivacion.ENVIO_ESPECIAL;
-    return this.repo.save(unidad);
+    return this.patchUnit(id, async () => ({
+      estado: EstadoUnidad.INACTIVA,
+      motivoInactivacion: MotivoInactivacion.ENVIO_ESPECIAL,
+    }));
   }
 
   async reactivar(id: string) {
-    const unidad = await this.findOne(id);
-    unidad.estado = EstadoUnidad.ACTIVA;
-    unidad.motivoInactivacion = null;
-    return this.repo.save(unidad);
+    return this.patchUnit(id, async () => ({
+      estado: EstadoUnidad.ACTIVA,
+      motivoInactivacion: null,
+    }));
   }
 
   async ultimoKmCerrado(unidadId: string): Promise<number | null> {

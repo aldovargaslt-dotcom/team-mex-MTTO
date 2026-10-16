@@ -1,5 +1,10 @@
 # Architecture Baseline
 
+> Current target extension: [ADR025](../docs/adr/025-abc-utilization-downtime.md)
+> records the 2026-10-15 ABC/utilization decisions and precise partial supersession.
+> [Proposed contract](../docs/contracts/ABC-UTIL-001-contract.md) is not as-is
+> architecture or implementation approval. No runtime changes made by that review.
+
 Architecture **as it exists** in this repository. Not a target architecture. Authoritative decisions live in [`docs/adr/`](../docs/adr/) (index: [README](../docs/adr/README.md)). Directory map of modules: [docs/adr/context-map.md](../docs/adr/context-map.md).
 
 Legend:
@@ -39,6 +44,13 @@ Do **not** use `docs/decisions/`. That path is not part of this repository’s S
 | Seed | `api/src/seed` | Idempotent demo catalog |
 
 ## Data Stores
+
+EWO-038 adds durable Logistics journey/command/capture tables in the existing
+Kernel/public seam, with a separately controlled Logistics migration journal.
+It preserves the departure-audit and independent Flota ownership.
+[ADR026](../docs/adr/026-logistica-durable-journeys.md) and
+[local run/recovery guide](../docs/migrations/logistica-journey-history.md) describe
+the implementation; production migration/deployment remain unverified.
 
 **Evidence:** PostgreSQL 16. Schemas created at boot / `docker/init.sql`:
 

@@ -1,0 +1,31 @@
+
+> api@0.0.1 test
+> jest --runInBand
+
+[Nest] 88231  - 10/16/2026, 1:45:27 AM    WARN [OutboxService] Sin handler para outbox VisitaCerrada; queda pendiente.
+[Nest] 88231  - 10/16/2026, 1:45:27 AM    WARN [TwilioWhatsAppAdapter] Twilio 500 ops=+5215511111111 aviso=aviso-1: fail
+[Nest] 88231  - 10/16/2026, 1:45:27 AM    WARN [TwilioWhatsAppAdapter] Twilio 500 ops=+5215522222222 aviso=aviso-1: fail
+[Nest] 88231  - 10/16/2026, 1:45:27 AM    WARN [AndonNotifier] ANDON_NOTIFY_PROVIDER=evolution: adapter no cableado en este PR (lab Baileys/ToS; otro agente). noop/log.
+[Nest] 88231  - 10/16/2026, 1:45:27 AM     LOG [AndonNotifier] Andon notifier: noop/log (default). Enterado es in-app.
+[Nest] 88231  - 10/16/2026, 1:45:27 AM     LOG [AndonNotifier] Andon notifier: noop/log (default). Enterado es in-app.
+[Nest] 88231  - 10/16/2026, 1:45:27 AM     LOG [AndonNotifier] Andon notifier: Twilio opcional, fan-out a 2 teléfono(s) ops.
+[Nest] 88231  - 10/16/2026, 1:45:27 AM     LOG [NoopNotifyAdapter] [noop notify] AVISO aviso=aviso-1 unidad=unidad-1
+[Nest] 88231  - 10/16/2026, 1:45:27 AM     LOG [AndonNotify] Andon notify: noop (ANDON_NOTIFY_PROVIDER≠evolution).
+[Nest] 88231  - 10/16/2026, 1:45:27 AM     LOG [NoopNotifyAdapter] [noop notify] AVISO aviso=aviso-1 unidad=unidad-1
+[Nest] 88231  - 10/16/2026, 1:45:27 AM    WARN [EvolutionNotifyAdapter] Evolution 500 aviso=aviso-1: fail
+[Nest] 88231  - 10/16/2026, 1:45:27 AM     LOG [AndonNotify] Andon notify: evolution seleccionado pero env incompleto (base URL, api key, instance, JID @g.us). Usando noop.
+[Nest] 88231  - 10/16/2026, 1:45:27 AM     LOG [NoopNotifyAdapter] [noop notify] AVISO aviso=aviso-1 unidad=unidad-1
+[Nest] 88231  - 10/16/2026, 1:45:27 AM     LOG [AndonNotify] Andon notify: Evolution instance=andon-lab group=120363025536974933@g.us
+[Nest] 88231  - 10/16/2026, 1:45:27 AM     LOG [AndonNotify] Andon notify: Evolution instance=andon-lab group=120363025536974933@g.us
+[Nest] 88231  - 10/16/2026, 1:45:27 AM     LOG [AndonNotifier] Andon notifier: noop/log (default). Enterado es in-app.
+
+Test Suites: 52 passed, 52 total
+Tests:       253 passed, 253 total
+Snapshots:   0 total
+Time:        4.509 s, estimated 8 s
+Ran all test suites.
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice

@@ -1,5 +1,28 @@
 # Logística — routing card
 
+## EWO-038 source implementation — not deployment evidence
+
+Durable operational journeys now live at the existing Logistics/Kernel seam:
+public.logistica_journeys, logistica_journey_commands and logistica_journey_capture.
+Departure retains its exact audit; return records trusted actor/facility and
+effective/registered times before clearing the current-state pointer. Durable
+command receipts and unit/journey revisions bind retries to the original trip.
+Legacy missing history remains explicit; no Flota movement is inferred.
+[ADR026](../../docs/adr/026-logistica-durable-journeys.md),
+[contract](../../docs/contracts/LOG-JOURNEY-001-contract.md),
+[EWO/evidence](../../docs/engineering-work-orders/EWO-038.md).
+Migration is isolated and controlled; GET /health/ready reports missing capture
+configuration. This does not approve or assert production activation.
+
+## Current target vocabulary — 2026-10-15
+
+Parada correctiva is Logistics' recorded stop routed to external or internal repair.
+External-service cost is distinct from confirmation of actual release. Resolving
+an operational reason does not declare a repair verified or authorize departure.
+Journey and yard custody remain distinct correlated facts. Decisions and artifact
+routing: [ADR025](../../docs/adr/025-abc-utilization-downtime.md). Earlier target-only
+descriptions do not establish deployed readiness.
+
 **DDD status:** provisional / unvalidated. **Likely an application service on Kernel**, not a confirmed Bounded Context: there is **no** `logistica` PostgreSQL schema. Evidence: `api/src/logistica` writes kernel `unidades` columns and (parked) `chofer_id`.
 
 ## Purpose

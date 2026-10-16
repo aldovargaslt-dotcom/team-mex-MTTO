@@ -1,6 +1,10 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { In, Repository } from 'typeorm';
+import { DataSource, In, Repository } from 'typeorm';
+import { UnitOperationCoordinator } from '../kernel/unit-operation.module';
+import { LogisticaJourney } from '../logistica/journey.entity';
+import { LogisticaJourneyReceipt } from '../logistica/journey-receipt.entity';
+import { LogisticaJourneyCapture } from '../logistica/journey-capture.entity';
 import { Rol } from '../auth/roles.enum';
 import { Chofer } from '../choferes/chofer.entity';
 import { EstadoChofer } from '../choferes/estado-chofer.enum';
@@ -59,6 +63,8 @@ export class SeedService implements OnModuleInit {
     private readonly inventario: InventarioService,
     private readonly andon: AndonService,
     private readonly visitasService: VisitasService,
+    private readonly dataSource: DataSource,
+    private readonly unitOperations: UnitOperationCoordinator,
   ) {}
 
   async onModuleInit() {
@@ -121,20 +127,27 @@ export class SeedService implements OnModuleInit {
       });
     }
     if (exists) {
-      exists.numeroInterno = item.nombre;
-      exists.placas = placas;
-      exists.tipo = tipo;
-      exists.estado = EstadoUnidad.ACTIVA;
-      exists.motivoInactivacion = null;
-      exists.ambito = item.ambito === 'FORANEO' ? AmbitoUnidad.FORANEO : AmbitoUnidad.LOCAL;
-      exists.opsEstado =
-        item.opsEstado === 'EN_RUTA'
-          ? OpsEstadoUnidad.EN_RUTA
-          : OpsEstadoUnidad.DISPONIBLE;
-      exists.destino = item.destino?.trim() || null;
-      exists.salidaAt = this.salidaAtFromSeed(item);
-      return this.unidades.save(exists);
+      const id = exists.id;
+      return this.dataSource.transaction(async (manager) => {
+        await this.unitOperations.lock(manager, id);
+        // Catalog-only patch: never resave stale trip/assignment state at startup.
+        await manager.update(Unidad, id, {
+          numeroInterno: item.nombre,
+          placas,
+          tipo,
+          estado: EstadoUnidad.ACTIVA,
+          motivoInactivacion: null,
+        });
+        return manager.findOneByOrFail(Unidad, { id });
+      });
     }
+    const captureActive = await this.dataSource
+      .getRepository(LogisticaJourneyCapture)
+      .count();
+    const legacyFixture =
+      process.env.NODE_ENV === 'test' &&
+      process.env.EWO_DISPOSABLE_DB === 'true' &&
+      !captureActive;
     return this.unidades.save(
       this.unidades.create({
         numeroInterno: item.nombre,
@@ -142,13 +155,14 @@ export class SeedService implements OnModuleInit {
         vin: null,
         tipo,
         estado: EstadoUnidad.ACTIVA,
-        ambito: item.ambito === 'FORANEO' ? AmbitoUnidad.FORANEO : AmbitoUnidad.LOCAL,
+        ambito:
+          item.ambito === 'FORANEO' ? AmbitoUnidad.FORANEO : AmbitoUnidad.LOCAL,
         opsEstado:
-          item.opsEstado === 'EN_RUTA'
+          legacyFixture && item.opsEstado === 'EN_RUTA'
             ? OpsEstadoUnidad.EN_RUTA
             : OpsEstadoUnidad.DISPONIBLE,
-        destino: item.destino?.trim() || null,
-        salidaAt: this.salidaAtFromSeed(item),
+        destino: legacyFixture ? item.destino?.trim() || null : null,
+        salidaAt: legacyFixture ? this.salidaAtFromSeed(item) : null,
       }),
     );
   }
@@ -165,12 +179,11 @@ export class SeedService implements OnModuleInit {
    * Standing despacho assignment is Kernel unidades.chofer_id (logistica); seed
    * leaves it null so the UI starts DISPONIBLE.
    */
-  private async upsertChoferUsual(
-    unidad: Unidad,
-    choferNombre: string | null,
-  ) {
+  private async upsertChoferUsual(unidad: Unidad, choferNombre: string | null) {
     if (!choferNombre) return;
-    const chofer = await this.choferes.findOneByOrFail({ nombre: choferNombre });
+    const chofer = await this.choferes.findOneByOrFail({
+      nombre: choferNombre,
+    });
     const op = await this.operativas.findOne({
       where: { unidadId: unidad.id },
     });
@@ -200,19 +213,33 @@ export class SeedService implements OnModuleInit {
       where: { placas: In([...LEGACY_UNIDADES_PLACAS]) },
     });
     for (const unidad of legacyUnidades) {
-      const visitas = await this.visitas.find({
-        where: { unidad: { id: unidad.id } },
+      await this.dataSource.transaction(async (manager) => {
+        await this.unitOperations.lock(manager, unidad.id);
+        const current = await manager.findOneBy(Unidad, { id: unidad.id });
+        if (!current) return;
+        if (
+          current.activeLogisticaJourneyId ||
+          BigInt(current.logisticaJourneyRevision) > 0n ||
+          (await manager.existsBy(LogisticaJourney, { unidadId: unidad.id })) ||
+          (await manager.existsBy(LogisticaJourneyReceipt, {
+            unidadId: unidad.id,
+          }))
+        ) {
+          this.logger.warn(
+            'Semilla preserva unidad con historia de viajes: ' + unidad.id,
+          );
+          return;
+        }
+        const visitas = await manager.find(Visita, {
+          where: { unidad: { id: unidad.id } },
+        });
+        if (visitas.length) await manager.remove(visitas);
+        const op = await manager.findOneBy(UnidadOperativaEntity, {
+          unidadId: unidad.id,
+        });
+        if (op) await manager.remove(op);
+        await manager.remove(current);
       });
-      if (visitas.length) {
-        await this.visitas.remove(visitas);
-      }
-      const op = await this.operativas.findOne({
-        where: { unidadId: unidad.id },
-      });
-      if (op) {
-        await this.operativas.remove(op);
-      }
-      await this.unidades.remove(unidad);
     }
 
     for (const nombre of LEGACY_CHOFERES_DEMO) {
@@ -228,7 +255,9 @@ export class SeedService implements OnModuleInit {
     for (const nombre of LEGACY_TIPOS_DEMO) {
       const tipo = await this.tipos.findOne({ where: { nombre } });
       if (!tipo) continue;
-      const used = await this.unidades.count({ where: { tipo: { id: tipo.id } } });
+      const used = await this.unidades.count({
+        where: { tipo: { id: tipo.id } },
+      });
       if (used > 0) continue;
       await this.tipos.remove(tipo);
     }

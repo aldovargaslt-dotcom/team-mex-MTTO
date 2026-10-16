@@ -4,6 +4,8 @@ import {
   Delete,
   Get,
   HttpCode,
+  Headers,
+  Header,
   Param,
   ParseUUIDPipe,
   Patch,
@@ -22,6 +24,7 @@ import {
   PatchAlertasSinRegresoDto,
   RegistrarSalidaDto,
 } from './dto/logistica.dto';
+import { journeyCommand } from './journey-command';
 import { LogisticaService } from './logistica.service';
 import { ControlTowerService } from './control-tower.service';
 import { ControlTowerQueryDto } from './control-tower.dto';
@@ -81,6 +84,16 @@ export class LogisticaController {
     return this.service.patchAlertasSinRegreso(dto);
   }
 
+  @Get('unidades/:unidadId/journey-context')
+  @TrustedAuthentication()
+  @Header('Cache-Control', 'private, no-store')
+  journeyContext(
+    @Param('unidadId', ParseUUIDPipe) unidadId: string,
+    @Actor() actor: TrustedActor,
+  ) {
+    return this.service.journeyContext(unidadId, actor);
+  }
+
   @Post('salidas/:unidadId')
   @TrustedAuthentication()
   @HttpCode(204)
@@ -90,18 +103,33 @@ export class LogisticaController {
   registrarSalida(
     @Param('unidadId', ParseUUIDPipe) unidadId: string,
     @Body() dto: RegistrarSalidaDto,
+    @Headers() headers: Record<string, string | string[] | undefined>,
     @Actor() actor: TrustedActor,
   ) {
-    return this.service.registrarSalida(unidadId, dto, actor);
+    return this.service.registrarSalida(
+      unidadId,
+      dto,
+      actor,
+      journeyCommand(headers),
+    );
   }
 
   @Post('regresos/:unidadId')
+  @TrustedAuthentication()
   @HttpCode(204)
   @ApiOperation({
     summary: 'Registrar regreso: DISPONIBLE y limpia salida_at.',
   })
-  registrarRegreso(@Param('unidadId', ParseUUIDPipe) unidadId: string) {
-    return this.service.registrarRegreso(unidadId);
+  registrarRegreso(
+    @Param('unidadId', ParseUUIDPipe) unidadId: string,
+    @Headers() headers: Record<string, string | string[] | undefined>,
+    @Actor() actor: TrustedActor,
+  ) {
+    return this.service.registrarRegreso(
+      unidadId,
+      actor,
+      journeyCommand(headers),
+    );
   }
 
   @Post('asignaciones')

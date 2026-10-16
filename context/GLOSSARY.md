@@ -1,5 +1,23 @@
 # Ubiquitous Language / Glossary
 
+## Current ABC/utilization vocabulary — 2026-10-15
+
+These target meanings follow [ADR025](../docs/adr/025-abc-utilization-downtime.md);
+older opening/PSI descriptions below are historical where explicitly superseded.
+
+| Term | Meaning |
+|---|---|
+| Borrador de mantenimiento | Preparation for future maintenance; does not withdraw the unit. |
+| Abrir orden | Explicitly withdraw the unit for Preventive/Corrective maintenance now. |
+| Indisponibilidad / downtime | Confirmed withdrawal from operation, supported by one or more active reasons. |
+| Motivo de indisponibilidad | A team's unresolved maintenance/operational reason; resolving it does not resolve another team's reason. |
+| Parada correctiva | Logistics-recorded stop routed to external service or internal corrective maintenance. |
+| Servicio externo finalizado | Logistics confirms real release from external service; entering cost alone is not completion. |
+| Retenida para verificación | Maintenance downtime may have ended, but technical verification still prevents departure. |
+| Revisión focalizada / focused recheck | Personal signed verification of named repaired findings, preserving the original ABC. |
+| Requiere confirmación | Current display status when evidence is missing/conflicting; not inferred availability. |
+| Administrativo | Existing ADMIN_DIRECTIVO role, not a new actor type. |
+
 Terms found in code, UI, database, tests, or documentation. **Do not invent business terms.** If a word means different things, that is called out.
 
 **WO** is reserved for the Supervisor visit wizard (Orden de Trabajo / work-order UI). Engineering execution artifacts are **Engineering Work Order** with IDs `EWO-xxx`. Never call those `WO`.

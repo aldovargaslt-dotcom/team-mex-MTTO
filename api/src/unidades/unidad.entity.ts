@@ -1,6 +1,7 @@
 import { randomUUID } from 'crypto';
 import {
   BeforeInsert,
+  Check,
   Column,
   CreateDateColumn,
   Entity,
@@ -16,6 +17,10 @@ import { AmbitoUnidad } from './ambito-unidad.enum';
 import { OpsEstadoUnidad } from './ops-estado-unidad.enum';
 
 @Entity('unidades')
+@Check(
+  'unidades_logistica_journey_revision_check',
+  'logistica_journey_revision>=0',
+)
 export class Unidad {
   @PrimaryColumn('uuid')
   id: string;
@@ -70,6 +75,12 @@ export class Unidad {
   /** Clock start for Flota sin-regreso (ADR-010). Set on salida, cleared on regreso. */
   @Column({ name: 'salida_at', type: 'timestamptz', nullable: true })
   salidaAt: Date | null;
+
+  @Column({ name: 'active_logistica_journey_id', type: 'uuid', nullable: true })
+  activeLogisticaJourneyId: string | null;
+
+  @Column({ name: 'logistica_journey_revision', type: 'bigint', default: 0 })
+  logisticaJourneyRevision: string;
 
   @Column({ name: 'marca_modelo', type: 'varchar', nullable: true })
   marcaModelo: string | null;

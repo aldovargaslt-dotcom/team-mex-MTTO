@@ -1,5 +1,12 @@
 # ADR-017 — CHECK firmado y seam de salidas Flota/Logística
 
+> Partially superseded for the revised target by [ADR025](025-abc-utilization-downtime.md),
+> 2026-10-15: focused finding-scoped approval, required-active inspection gate,
+> downtime reasons, persistent safety holds and correlated Logistics/physical
+> departure with current-gate revalidation. Preserve unrelated invalidation,
+> original operational-day expiry, Flota ownership, CHOFER/AVAL, returns and
+> independent loops. Historical body follows; new contract details are Proposed.
+
 ## Status
 
 Accepted — owner D01/D02/D05/D06/D10/D11/D14, 2026-10-01. Detalles de contratos entregados para revisión; implementación pendiente.

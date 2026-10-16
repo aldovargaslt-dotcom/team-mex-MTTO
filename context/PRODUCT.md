@@ -1,5 +1,14 @@
 # Product Context
 
+> Current target extension, 2026-10-15: [product intent](../docs/prds/abc-utilization-v1.md)
+> and [ADR025](../docs/adr/025-abc-utilization-downtime.md) define opening-driven
+> downtime, shared Maintenance/Logistics reasons, focused verification, correlated
+> departure and fleet/unit utilization. Bounded external-service cost capture is
+> an explicit exception to the general costing non-goal; it does not add accounting,
+> procurement or parts costing. Older baseline/non-goals below remain historical
+> except for named amendments. Product decisions are confirmed, technical policy/
+> contracts remain pending, and deployment is unverified.
+
 Authoritative **product** description for Team Mex MTTO. Operational how-to (run, seed, deploy) stays in [README.md](../README.md). Do not treat this file as a deploy runbook.
 
 Legend for statements below:

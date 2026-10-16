@@ -1,5 +1,14 @@
 # Mantenimiento / Visita — routing card
 
+## Current target vocabulary — 2026-10-15
+
+Abrir orden means withdrawal now; borrador means preparation. Downtime has active
+reasons; order completion removes its reason, not unrelated reasons or safety
+holds. Focused recheck means personal verification of named repairs while retaining
+the original ABC. Retenida para verificación is distinct from available yard time.
+These meanings supersede historical opening/PSI vocabulary below as specified by
+[ADR025](../../docs/adr/025-abc-utilization-downtime.md); see its related artifacts.
+
 **DDD status:** provisional / unvalidated. Technical evidence: `api/src/visitas`, `public` visit tables, Supervisor wizard UI. ADR-000: Mantenimiento owns Visita (datos, trabajos, observaciones, fotos, firmas, **piezas as consumption lines**).
 
 ## Purpose

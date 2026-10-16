@@ -1,5 +1,13 @@
 # Flota — routing card
 
+## Current target vocabulary — 2026-10-15
+
+Physical custody remains distinct from journey, downtime and readiness. An opened
+maintenance order means withdrawal from operation, not arrival at a workshop.
+Physical departure is linked to Logistics authorization while preserving its own
+signatures and current safety requirements. Definitions and artifact routing:
+[ADR025](../../docs/adr/025-abc-utilization-downtime.md).
+
 **DDD status:** provisional / unvalidated. ADR-008 **names** Flota a bounded context; still re-validate when a change crosses Kernel ops or Logística UI. Technical evidence: schema `flota`, `api/src/flota`.
 
 ## Purpose

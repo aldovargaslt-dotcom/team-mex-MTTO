@@ -1,5 +1,15 @@
 # CHK-001 — Implementation contract (Slice 0)
 
+> **Current target amendment — 2026-10-15:** [ADR025](../adr/025-abc-utilization-downtime.md)
+> controls explicit supersession. Future daily ABC has no PSI prerequisite;
+> effective approval includes scoped signed rechecks and required active work;
+> opened maintenance contributes downtime; physical departure correlates with
+> Logistics authorization and revalidates current gates. See the
+> [Proposed contract](ABC-UTIL-001-contract.md) for unresolved engineering detail.
+> Historical Approved text below applies only where unchanged. Existing source
+> support must be characterized separately; this overlay does not assert deployment
+> or authorize code, migrations, permission changes or old/new EWOs.
+
 ## Status and authority
 
 Approved Slice0 technical contract — owner 2026-10-01, D01–D14 y R01–R05 adoptadas. EWO015 implementation-ready técnicamente, sin permiso para ejecutar código. [SPEC](../specs/SPEC-CHK-001.md) owns acceptance criteria; ADR-016–020 own decisions. Existing code remains as-is until approved EWOs execute. [Slice 0 review](../engineering-work-orders/CHK-001-slice-0-review.md) registra decisiones resueltas e inputs técnicos de ejecución.

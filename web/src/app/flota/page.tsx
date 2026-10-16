@@ -1,5 +1,8 @@
 'use client';
 
+import { submitJourney } from "@/lib/journey-commands";
+import { useJourneyContext } from "@/lib/use-journey-context";
+
 import { FormEvent, Suspense, useEffect, useMemo, useState } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
@@ -134,6 +137,15 @@ function FlotaVisual() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [role]);
 
+  useEffect(() => {
+    const updated = () => { void cargar().catch(() => setError('No se pudo actualizar la flota.')); };
+    const failed = (event: Event) => setError((event as CustomEvent<string>).detail);
+    window.addEventListener('team-mex-journey-updated', updated);
+    window.addEventListener('team-mex-journey-error', failed);
+    return () => { window.removeEventListener('team-mex-journey-updated', updated); window.removeEventListener('team-mex-journey-error', failed); };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [role, userId]);
+
   function setParams(next: {
     chip?: ChipLogisticaUnidad;
     q?: string;
@@ -202,6 +214,8 @@ function FlotaVisual() {
   const enRuta = items.filter((row) => row.opsEstado === 'EN_RUTA');
   const sheetRow = enRuta.find((row) => row.unidadId === selectedId) ?? null;
 
+  const regresoContext = useJourneyContext(sheetOpen ? sheetRow ?? undefined : undefined, role, userId);
+
   function abrirCta() {
     setError(null);
     setSelectedId(null);
@@ -218,15 +232,12 @@ function FlotaVisual() {
     router.push(`/flota/unidades/${row.unidadId}`);
   }
 
-  async function registrar(unidadId: string) {
+  async function registrar() {
     setSaving(true);
     setError(null);
     try {
-      await api(`/logistica/regresos/${unidadId}`, {
-        role: role!,
-        userId,
-        method: 'POST',
-      });
+      if (!regresoContext.context) throw new Error(regresoContext.error ?? 'Verifica el viaje antes de confirmar.');
+      await submitJourney('regresos', regresoContext.context, null, role!, userId);
       setSheetOpen(false);
       setSelectedId(null);
       await cargar();
@@ -244,7 +255,7 @@ function FlotaVisual() {
   async function onSheetSubmit(event: FormEvent) {
     event.preventDefault();
     if (!sheetRow) return;
-    await registrar(sheetRow.unidadId);
+    await registrar();
   }
 
   const columns: ColumnDef<LogisticaUnidadRow, unknown>[] = useMemo(
@@ -539,7 +550,7 @@ function FlotaVisual() {
               ) : (
                 <p className="muted">Seleccione la unidad. El regreso no elige solo.</p>
               )}
-              <FormAlert>{sheetOpen ? error : null}</FormAlert>
+              <FormAlert>{sheetOpen ? error ?? regresoContext.error : null}</FormAlert>
             </div>
             <SheetFooter>
               <Button
@@ -552,7 +563,7 @@ function FlotaVisual() {
               >
                 Cancelar
               </Button>
-              <Button type="submit" disabled={saving || !sheetRow}>
+              <Button type="submit" disabled={saving || !sheetRow || !regresoContext.context}>
                 {saving ? 'Registrando…' : 'Registrar regreso'}
               </Button>
             </SheetFooter>

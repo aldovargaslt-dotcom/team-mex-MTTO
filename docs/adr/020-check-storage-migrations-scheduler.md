@@ -1,5 +1,10 @@
 # ADR-020 — Storage privado, migraciones TypeORM y scheduler CHECK
 
+> Target amendment [ADR025](025-abc-utilization-downtime.md), 2026-10-15: remove PSI
+> provisioning as a future daily ABC prerequisite. Preserve historical signed PSI
+> records and unchanged storage, scheduler/calendar and migration safeguards.
+> Combined ABC/recheck manifest signing is Proposed, not delivered by this body.
+
 ## Status
 
 Accepted — owner D13, 2026-10-01. Decisión arquitectónica; scripts/configuración exactos se entregan en plan para revisión, no ejecución.

@@ -66,6 +66,9 @@ jobs:
               -c "GRANT ALL ON SCHEMA salud TO team_mex;"
           done
       - run: npm ci
+      - name: Install web runtime for browser/BFF integration tests
+        working-directory: web
+        run: npm ci
       - run: npm test
       - run: npm run build
       - run: npm run test:e2e
