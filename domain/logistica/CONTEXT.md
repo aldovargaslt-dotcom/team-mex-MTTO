@@ -1,6 +1,6 @@
 # Logística — routing card
 
-## EWO-038 source implementation — not deployment evidence
+## EWO-041 source implementation — not deployment evidence
 
 Durable operational journeys now live at the existing Logistics/Kernel seam:
 public.logistica_journeys, logistica_journey_commands and logistica_journey_capture.
@@ -8,9 +8,9 @@ Departure retains its exact audit; return records trusted actor/facility and
 effective/registered times before clearing the current-state pointer. Durable
 command receipts and unit/journey revisions bind retries to the original trip.
 Legacy missing history remains explicit; no Flota movement is inferred.
-[ADR026](../../docs/adr/026-logistica-durable-journeys.md),
+[ADR027](../../docs/adr/027-logistica-durable-journeys.md),
 [contract](../../docs/contracts/LOG-JOURNEY-001-contract.md),
-[EWO/evidence](../../docs/engineering-work-orders/EWO-038.md).
+[EWO/evidence](../../docs/engineering-work-orders/EWO-041.md).
 Migration is isolated and controlled; GET /health/ready reports missing capture
 configuration. This does not approve or assert production activation.
 

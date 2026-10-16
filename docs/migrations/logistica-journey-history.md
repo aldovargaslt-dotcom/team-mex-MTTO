@@ -1,10 +1,10 @@
-# EWO-038 — Run and verify the Logistics journey implementation
+# EWO-041 — Run and verify the Logistics journey implementation
 
 Owner approved implementation in this chat: “okay go ahead with the plan”.
 No deployment or external migration was authorized. This guide does not change
-that boundary. [EWO](../engineering-work-orders/EWO-038.md),
+that boundary. [EWO](../engineering-work-orders/EWO-041.md),
 [contract](../contracts/LOG-JOURNEY-001-contract.md),
-[evidence](../evidence/EWO-038.md).
+[evidence](../evidence/EWO-041.md).
 
 ## Verify the implementation in this workspace
 
@@ -102,3 +102,7 @@ Conflicts suspend automatic resumption and require review.
 Automated browser-storage/BFF/API/PostgreSQL coverage is in the evidence.
 Interactive React click-through was not available in this environment and remains
 a manual handoff check. No deployment, pilot or production readiness is claimed.
+
+## Integration with PR96
+
+PR95 now also contains current inventory/unit main. The integration does not add Logistics to the inventory release guard or create capture automatically. Preserve the inventory cost migration ledger and health metadata. Before merging into an auto-deployed main, apply this isolated Logistics migration with the real old writers drained and source commit verified; the new Unidad ORM fields require the schema to exist before startup. Inventory ADR026/EWO038 are retained; this Logistics slice is renumbered ADR027/EWO041. Updated verification and rollout boundary: [combined evidence](../evidence/PR-095-096-integration.md).

@@ -8,7 +8,7 @@ const OPS = [
   { href: '/inventario/stock', label: 'Existencias' },
   { href: '/inventario/movimientos', label: 'Movimientos' },
   { href: '/inventario/consumo', label: 'Consumo' },
-  { href: '/inventario/pendientes', label: 'Por recibir' },
+  { href: '/inventario/pendientes', label: 'Comprobantes' },
 ] as const;
 
 const CATALOGO = [

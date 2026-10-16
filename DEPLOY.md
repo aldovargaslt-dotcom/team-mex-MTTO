@@ -63,8 +63,7 @@ capturas muestran también `https://team-mex-mtto-production.up.railway.app`.
 Confirmar dominio y conexión del servicio efectivo antes de fijar API_URL.
 Railway puede desplegar automáticamente la rama configurada; confirmar Source
 antes de actualizar main. No habilitar un migrador general/destructivo en startup.
-El guard acotado de ADR024 comprueba únicamente las dos migraciones aditivas de
-Inicio/Órdenes antes de inicializar Nest; los ledgers evitan volver a aplicarlas.
+El guard acotado de ADR024, extendido por el release autorizado de ADR026, comprueba las migraciones aditivas de Inicio/Órdenes y costos de inventario antes de inicializar Nest; los ledgers evitan volver a aplicarlas.
 
 Inicio/Órdenes usa un paso **pre-deploy**, separado de startup: ver
 [release de Inicio y Órdenes](docs/migrations/railway-inicio-ordenes-release.md).
@@ -100,3 +99,7 @@ Proveedor sintético y proofs en auth-web-staging no requieren cuentas externas.
 La guía histórica de #60 describía main `12f0704`, header X-Role, URLs viejas y
 fallback API. Esas instrucciones quedan sustituidas por OIDC y migración
 controlada. No se afirma que sus checks históricos validen el release actual.
+
+## Release de costos de inventario y ficha de unidad
+
+[Procedimiento y activación](docs/migrations/railway-inventory-cost-release.md). El guard de producción incluye el ledger financiero aprobado, conserva cantidades e histórico y habilita costos por defecto; un `INVENTORY_COSTS_ENABLED=false` explícito conserva el apagado del operador. No habilitar synchronize ni ejecutar seed/down.

@@ -1,3 +1,5 @@
+import { InventoryCostsService } from './inventory-costs.service';
+import { CostOperation, DocumentAttachment } from './entities/cost.entity';
 import {
   BadRequestException,
   Inject,
@@ -102,6 +104,7 @@ export class InventarioService implements OnModuleInit {
     @Optional()
     @Inject(ALERT_TYPE_ACTIVE_PORT)
     private readonly alertTypes?: AlertTypeActivePort,
+    @Optional() private readonly costs?: InventoryCostsService,
   ) {}
 
   onModuleInit() {
@@ -543,21 +546,40 @@ export class InventarioService implements OnModuleInit {
     return rows.map((row) => this.toPendienteDto(row));
   }
 
-  async adjuntarTicket(id: string, dto: TicketDto) {
-    const row = await this.pendientes.findOne({ where: { id } });
-    if (!row) {
-      throw new NotFoundException(
-        'No se encontró el pendiente de comprobante.',
+  async adjuntarTicket(
+    id: string,
+    dto: TicketDto,
+    actor: string | null = null,
+  ) {
+    return this.pendientes.manager.transaction(async (manager) => {
+      await manager.query(
+        'SELECT id FROM inventario.pendientes_comprobante WHERE id=$1 FOR UPDATE',
+        [id],
       );
-    }
-    if (row.estado !== EstadoPendiente.PENDIENTE) {
-      throw new BadRequestException(
-        'Solo se puede adjuntar ticket a un pendiente abierto.',
-      );
-    }
-    row.ticketDataUrl = dto.dataUrl;
-    await this.pendientes.save(row);
-    return this.toPendienteDto(row);
+      const row = await manager.findOneBy(PendienteComprobante, { id });
+      if (!row) throw new NotFoundException('No se encontró el comprobante.');
+      if (this.costs?.enabled && row.ticketDataUrl !== dto.dataUrl) {
+        if (
+          row.ticketDataUrl &&
+          !(await manager.countBy(DocumentAttachment, { pendingId: id }))
+        )
+          await manager.save(DocumentAttachment, {
+            id: randomUUID(),
+            pendingId: id,
+            dataUrl: row.ticketDataUrl,
+            actor: null,
+          });
+        await manager.save(DocumentAttachment, {
+          id: randomUUID(),
+          pendingId: id,
+          dataUrl: dto.dataUrl,
+          actor,
+        });
+      }
+      row.ticketDataUrl = dto.dataUrl;
+      await manager.save(PendienteComprobante, row);
+      return this.toPendienteDto(row);
+    });
   }
 
   async marcarRecibida(id: string) {
@@ -655,7 +677,27 @@ export class InventarioService implements OnModuleInit {
     manager: EntityManager,
   ) {
     const crossings: StockCrossing[] = [];
-    for (const line of payload.consumos) {
+    if (this.costs?.enabled) {
+      await manager.query('SELECT pg_advisory_xact_lock(hashtext($1))', [
+        'cost-close:' + payload.visitaId,
+      ]);
+      if (await manager.findOneBy(CostOperation, { sourceId: payload.eventId }))
+        return;
+      if (
+        (await manager.findOneBy(CostOperation, {
+          visitaId: payload.visitaId,
+          kind: 'CONSUMPTION',
+        })) ||
+        (await manager.findOneBy(CostOperation, {
+          visitaId: payload.visitaId,
+          kind: 'EXTERNAL',
+        }))
+      )
+        return;
+    }
+    for (const line of [...payload.consumos].sort((a, b) =>
+      a.itemId.localeCompare(b.itemId),
+    )) {
       if (line.qty < 1) {
         throw new BadRequestException(
           'La cantidad de cada pieza debe ser al menos 1.',
@@ -667,12 +709,26 @@ export class InventarioService implements OnModuleInit {
             line.itemId,
             -line.qty,
             TipoMovimiento.SALIDA_OT,
-            { visitaId: payload.visitaId },
+            {
+              visitaId: payload.visitaId,
+              unidadId: payload.unidadId,
+              eventId: payload.eventId,
+              at: new Date(payload.cerradoAt),
+            },
             manager,
           ),
         );
       } else if (line.origen === OrigenConsumo.COMPRA_EXTERNA) {
         await this.requireItemEntity(line.itemId, manager);
+        if (this.costs?.enabled)
+          await this.costs.recordExternal(manager, {
+            itemId: line.itemId,
+            qty: line.qty,
+            visitaId: payload.visitaId,
+            unidadId: payload.unidadId,
+            eventId: payload.eventId,
+            at: new Date(payload.cerradoAt),
+          });
         const pendientes = manager.getRepository(PendienteComprobante);
         await pendientes.save(
           pendientes.create({
@@ -701,6 +757,9 @@ export class InventarioService implements OnModuleInit {
       visitaId?: string | null;
       nota?: string | null;
       createdBy?: string | null;
+      unidadId?: string;
+      eventId?: string;
+      at?: Date;
     },
     manager: EntityManager,
   ): Promise<StockCrossing> {
@@ -747,6 +806,19 @@ export class InventarioService implements OnModuleInit {
         createdBy: extra.createdBy ?? null,
       }),
     );
+    if (this.costs?.enabled)
+      await this.costs.recordDelta(manager, {
+        itemId,
+        before: prevQty,
+        delta,
+        visitaId: extra.visitaId,
+        unidadId: extra.unidadId,
+        eventId: extra.eventId,
+        at: extra.at,
+        actor: extra.createdBy ?? undefined,
+        reason: extra.nota ?? undefined,
+        kind: tipo === TipoMovimiento.ENTRADA ? 'RECEIPT' : 'ADJUSTMENT',
+      });
     const min = stock.minQty ?? null;
     return {
       item,

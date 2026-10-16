@@ -27,14 +27,14 @@ application implementation or newly approved product decisions.
 
 ## New slice review artifacts
 
-- [Proposed ADR026](../adr/026-logistica-durable-journeys.md)
+- [Proposed ADR027](../adr/027-logistica-durable-journeys.md)
 - [Proposed contract](../contracts/LOG-JOURNEY-001-contract.md)
 - [Canonical Proposed UTIL-J01–J10](../specs/SPEC-UTIL-INPUTS-001.md#bounded-journey-slice--ac)
 - [Unnumbered execution brief and AC/test map](../engineering-work-orders/LOG-JOURNEY-001-execution-brief.md)
 
 The schema decision and bounded AC are Proposed. Approval reference is PENDING.
 No numbered EWO was allocated because the handoff step 6 and WORKFLOW require
-bounded design/spec approval first. Next unused local ID is currently EWO-038;
+bounded design/spec approval first. Next unused local ID is currently EWO-041;
 recheck at allocation. EWO037 and earlier authorizations are unchanged.
 
 ## Checks
@@ -50,7 +50,7 @@ Local Git blob hashing matched all 23 unextended imported documents.
 
 PASS — Python inspection resolved all 24 relative links in the five primary
 review documents, found UTIL-J01–J10 exactly once in the canonical spec and each
-in the work-order test map, and confirmed EWO-038.md does not exist.
+in the work-order test map, and confirmed EWO-041.md does not exist.
 
 PASS — `git diff --check` from repository root.
 

@@ -2,7 +2,7 @@
 
 ## Status
 
-Accepted for EWO-038 implementation, 2026-10-15. Approval reference: owner in this chat,
+Accepted for EWO-041 implementation, 2026-10-15. Approval reference: owner in this chat,
 “okay go ahead with the plan”. No external migration or deployment authorization. This is the bounded persistence amendment to ADR011/ADR025; it
 does not approve ABC-UTIL-001 as a whole.
 
@@ -43,7 +43,7 @@ commit if the original send never arrived. Reuse the exact saved key/body/subjec
 expectations; current gates still apply to any first commit. Identity/scope/state
 conflicts suspend replay. This behavior decision is confirmed; overall ADR/design/
 execution approval was subsequently granted by “okay go ahead with the plan”,
-recorded in EWO-038. No external migration/deployment approval.
+recorded in EWO-041. No external migration/deployment approval.
 
 Legacy open journeys are explicitly incomplete. Unknown departure actor, driver,
 effective time and authorization stay unknown. Current assignment is not proof of
@@ -55,7 +55,7 @@ Existing departure-affecting status/assignment writers share unit coordination.
 Startup seed preserves existing lifecycle fields and captured units, cannot
 reset trips on restart or create new unaudited EN_RUTA after capture, and guards
 placeholder cleanup. This is lifecycle preservation, not a general seed/catalog
-redesign. The expanded protection was included in the subsequent EWO-038 approval.
+redesign. The expanded protection was included in the subsequent EWO-041 approval.
 
 ## Alternatives considered
 
@@ -83,4 +83,4 @@ Logistics/Kernel engineering owns implementation after bounded approval.
 and [execution brief](../engineering-work-orders/LOG-JOURNEY-001-execution-brief.md).
 Accept this proposal only with the contract/spec; preserve accepted ADR bodies.
 Date: 2026-10-15. Decision approver/reference: owner, this chat,
-“okay go ahead with the plan”; execution/evidence: EWO-038.
+“okay go ahead with the plan”; execution/evidence: EWO-041.

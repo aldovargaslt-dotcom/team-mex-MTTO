@@ -26,7 +26,8 @@
     "check:migration:apply": "node dist/db/run-controlled-check-migrations.js apply",
     "test:migrations": "jest --config ./test/jest-migrations.json --runInBand",
     "alerts:migration:up": "node dist/db/run-alert-migrations.js",
-    "orders:migration:up": "node dist/db/run-orders-migrations.js"
+    "orders:migration:up": "node dist/db/run-orders-migrations.js",
+    "inventory:migration:up": "node dist/db/run-inventory-migrations.js"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",

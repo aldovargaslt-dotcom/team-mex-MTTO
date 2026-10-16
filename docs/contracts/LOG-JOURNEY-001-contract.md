@@ -1,9 +1,9 @@
 # LOG-JOURNEY-001 — Durable Logistics journey/return contract
 
-Status: Approved for EWO-038 implementation, 2026-10-15. Approval reference: owner in this chat, “okay go ahead with the plan”.
-Owner approved bounded code and disposable migration rehearsal through EWO-038.
+Status: Approved for EWO-041 implementation, 2026-10-15. Approval reference: owner in this chat, “okay go ahead with the plan”.
+Owner approved bounded code and disposable migration rehearsal through EWO-041.
 External migration, push and deployment remain unauthorized.
-[ADR026](../adr/026-logistica-durable-journeys.md) owns the proposed schema choice;
+[ADR027](../adr/027-logistica-durable-journeys.md) owns the proposed schema choice;
 [UTIL journey AC](../specs/SPEC-UTIL-INPUTS-001.md#bounded-journey-slice--ac)
 own behavior. The broad ABC-UTIL contract remains Proposed.
 
@@ -336,11 +336,11 @@ Backups/restores and external migrations require separately authorized operation
 
 ## Approval boundary
 
-Owner approved ADR026, this contract, UTIL-J01–J12 and the expanded execution
-brief in this chat: “okay go ahead with the plan”. [EWO-038](../engineering-work-orders/EWO-038.md)
+Owner approved ADR027, this contract, UTIL-J01–J12 and the expanded execution
+brief in this chat: “okay go ahead with the plan”. [EWO-041](../engineering-work-orders/EWO-041.md)
 records the actual approval reference and execution. Earlier Q1 approved automatic
 resumption only; the earlier conditional approval was not used.
 
 The broad ABC-UTIL contract and later slices remain Proposed. No production
-readiness, external migration or deployment approval follows from EWO-038.
-See [implementation evidence](../evidence/EWO-038.md) for actual verification and limits.
+readiness, external migration or deployment approval follows from EWO-041.
+See [implementation evidence](../evidence/EWO-041.md) for actual verification and limits.

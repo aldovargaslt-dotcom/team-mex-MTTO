@@ -2,7 +2,7 @@
 
 Date: 2026-10-15. Initial review verdict: revise before bounded approval.
 No application code, migration or deployment performed. The follow-up below records
-document revisions; proposed contract/ADR026/work order remain unapproved.
+document revisions; proposed contract/ADR027/work order remain unapproved.
 
 Workflow: GrillMe entry -> grill-with-docs -> grilling + domain-modeling.
 Repository fact-checking was delegated to a read-only reviewer as required by
@@ -66,7 +66,7 @@ whole slice.
 
 ## Follow-up disposition
 
-Contract, ADR026, canonical UTIL-J03/J06/J07/J09 and execution brief revised:
+Contract, ADR027, canonical UTIL-J03/J06/J07/J09 and execution brief revised:
 
 - Finding 1: explicit BFF header allowlist scope and full browser/BFF/API verification.
 - Finding 2: frozen Expected-Subject equality precondition enforced by the API;
@@ -89,7 +89,7 @@ review result, not implementation approval or runtime evidence.
 Documentation checks: PASS — git diff --check; PASS —
 git diff --name-only -- api web (empty). Python inspection: PASS — relative links,
 five binding headers, UTIL-J01–J10 defined once and mapped to tests, pending overall
-approval and no allocated EWO-038. Runtime tests/migrations remain SKIPPED because
+approval and no allocated EWO-041. Runtime tests/migrations remain SKIPPED because
 this work only revises the proposed documents.
 
 ## Whole-slice follow-up after conditional approval
@@ -116,7 +116,7 @@ approval was recorded and no numbered EWO or code was created.
    unit rows by legacy plate key; captured/open units require protection there.
 
 Proposed corrections are now in the contract's collateral-writer protection
-section, ADR026, canonical UTIL-J11/J12 and the brief's LJ-11/LJ-12:
+section, ADR027, canonical UTIL-J11/J12 and the brief's LJ-11/LJ-12:
 
 - Explicit catalog/status/assignment field patches exclude lifecycle fields.
   Existing departure-affecting status/assignment validation shares coordination.
@@ -146,9 +146,9 @@ follows from this review or the Q1 answer.
 ## Explicit approval and implementation closure
 
 Owner subsequently approved the expanded package: “okay go ahead with the plan”.
-[EWO-038](../engineering-work-orders/EWO-038.md) records that actual approval;
+[EWO-041](../engineering-work-orders/EWO-041.md) records that actual approval;
 the earlier conditional approval was not reused. Source implementation and actual
-verification are in [EWO-038 evidence](EWO-038.md).
+verification are in [EWO-041 evidence](EWO-041.md).
 
 Read-only implementation review found and closed three P2 issues: original versus
 active capture epoch, verified migration no-op/retry consistency, and readiness

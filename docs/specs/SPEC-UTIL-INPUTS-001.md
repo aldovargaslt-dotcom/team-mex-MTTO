@@ -184,13 +184,13 @@ product choices; no technical readiness is implied.
 
 ## Bounded journey slice — AC
 
-Status: Approved for EWO-038, 2026-10-15. Approval reference: owner in this chat,
+Status: Approved for EWO-041, 2026-10-15. Approval reference: owner in this chat,
 “okay go ahead with the plan”. These criteria bound durable Logistics journey/return capture only.
 [Contract](../contracts/LOG-JOURNEY-001-contract.md),
-[ADR026](../adr/026-logistica-durable-journeys.md) and
+[ADR027](../adr/027-logistica-durable-journeys.md) and
 [execution brief/test mapping](../engineering-work-orders/LOG-JOURNEY-001-execution-brief.md)
 form the approved bounded package. Owner authorized implementation in this chat:
-“okay go ahead with the plan”. Results belong to [EWO-038 evidence](../evidence/EWO-038.md);
+“okay go ahead with the plan”. Results belong to [EWO-041 evidence](../evidence/EWO-041.md);
 these criteria do not approve the global ABC/UTIL feature.
 
 | ID | Given / when / then |
@@ -211,12 +211,12 @@ these criteria do not approve the global ABC/UTIL feature.
 UTIL-05/11/12/13/17/18 remain broader related constraints. This slice does not
 complete historical correction, downtime overlap/reporting, safety or the global
 UTIL feature. Bounded execution is approved; verification results are recorded
-in EWO-038 evidence.
+in EWO-041 evidence.
 
 Owner decision reference for automatic resumption: this chat, 2026-10-15,
 reply “1. Yes” to GrillMe Q1. That answer resolves retry behavior only; bounded
 design/spec/ADR and implementation were subsequently approved by “okay go ahead
-with the plan”, recorded in [EWO-038](../engineering-work-orders/EWO-038.md).
+with the plan”, recorded in [EWO-041](../engineering-work-orders/EWO-041.md).
 
 ## Constraints, non-goals and verification
 
@@ -227,7 +227,7 @@ ABC step, GPS or general costing. Existing safety gates stay enforced during pil
 Planned: UTIL-01–10/14–18 domain+API integration; UTIL-11–13 real PostgreSQL
 correction/concurrency/auth tests; desktop/mobile role walkthroughs and separate
 visual review for UX states. The bounded journey subset has separate
-[EWO-038 evidence](../evidence/EWO-038.md); other new AC remain unimplemented.
+[EWO-041 evidence](../evidence/EWO-041.md); other new AC remain unimplemented.
 All affected data/migration/endpoint designs remain [Proposed](../contracts/ABC-UTIL-001-contract.md).
 Approve technical handoff/cost contracts and safety policy, then bounded EWOs.
 Product: [PRD](../prds/abc-utilization-v1.md); plan:

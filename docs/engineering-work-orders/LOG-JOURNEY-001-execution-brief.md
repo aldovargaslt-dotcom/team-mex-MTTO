@@ -1,8 +1,8 @@
 # LOG-JOURNEY-001 — Bounded execution brief awaiting approval
 
-Status: Historical approval brief, superseded for execution by [EWO-038](EWO-038.md).
+Status: Historical approval brief, superseded for execution by [EWO-041](EWO-041.md).
 Owner approved the expanded plan in this chat: “okay go ahead with the plan”.
-The draft below preserves the package presented for approval; use EWO-038 for
+The draft below preserves the package presented for approval; use EWO-041 for
 current implementation state and verification evidence.
 This is the approval-ready work order content, not a numbered/approved EWO.
 Approval by/reference: PENDING. No coding, migration execution or deployment.
@@ -16,7 +16,7 @@ Persist one stable Logistics journey per successful new departure and one
 attributed, safely retryable matching return, preserving current gates/audit/custody.
 
 - [Contract](../contracts/LOG-JOURNEY-001-contract.md)
-- [Proposed ADR026](../adr/026-logistica-durable-journeys.md)
+- [Proposed ADR027](../adr/027-logistica-durable-journeys.md)
 - [Canonical UTIL-J01–J12](../specs/SPEC-UTIL-INPUTS-001.md#bounded-journey-slice--ac)
 - [Handoff](../../workspace/shaping/abc-utilization-builder-handoff.md)
 - ADR000/002/008/011/017/018/019/020/025, domain/logistica/CONTEXT.md,

@@ -1,3 +1,11 @@
+import { InventoryCostsService } from './inventory-costs.service';
+import { InventoryCostsController } from './inventory-costs.controller';
+import {
+  CostOperation,
+  ValuationState,
+  OperationReceipt,
+  DocumentAttachment,
+} from './entities/cost.entity';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { InventarioInboxAdapter } from '../notifications/inventario-inbox.adapter';
@@ -16,6 +24,10 @@ import { InventarioService } from './inventario.service';
 import { STOCK_ALERT_PORT } from './ports';
 
 export const INVENTARIO_ENTITIES = [
+  CostOperation,
+  ValuationState,
+  OperationReceipt,
+  DocumentAttachment,
   Familia,
   Item,
   Proveedor,
@@ -32,9 +44,10 @@ export const INVENTARIO_ENTITIES = [
     UnidadesModule,
     NotificationsModule,
   ],
-  controllers: [InventarioController],
+  controllers: [InventarioController, InventoryCostsController],
   providers: [
     InventarioService,
+    InventoryCostsService,
     {
       provide: STOCK_ALERT_PORT,
       useExisting: InventarioInboxAdapter,

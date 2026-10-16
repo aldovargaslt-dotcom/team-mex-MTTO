@@ -19,6 +19,8 @@ Do not add speculative EWOs. An EWO is created when there is approved work to ex
 
 | ID | Title | Status |
 |----|-------|--------|
+| [EWO-038](EWO-038.md) | Inventario A: flujo y distribución responsive | Verification — implementación autorizada; evidencia EWO-040 |
+| [EWO-039](EWO-039.md) | Unidades A: ficha operativa responsive | Verification — implementación autorizada; evidencia EWO-040 |
 | [EWO-001](EWO-001.md) | Alert Catalog registry + API façade + role swimlane | Ready |
 | [EWO-002](EWO-002.md) | Configuración → Alertas UI + absorb `/flota/alertas` | Ready |
 | [EWO-003](EWO-003.md) | Threshold editors + active-gate on emit | Ready |
@@ -35,7 +37,7 @@ Do not add speculative EWOs. An EWO is created when there is approved work to ex
 | [EWO-035](EWO-035.md) | Ubicación y navegación visual de mantenimiento | Verification |
 | [EWO-036](EWO-036.md) | Tipos Correctivo/Preventivo/Revisión y consulta Supervisor | Verification |
 | [EWO-037](EWO-037.md) | Abiertas primero, borradores e historial para Mecánico | Verification |
-| [EWO-038](EWO-038.md) | Historial durable de viajes/regresos Logística, retries y protección de writers/seed | Verification |
+| [EWO-041](EWO-041.md) | Historial durable de viajes/regresos Logística, retries y protección de writers/seed | Verification |
 | [EWO-014](EWO-014.md) | Feedback de incompletitud y estados de carga | Proposed |
 
 
@@ -53,3 +55,5 @@ Owner autorizó crear estos artefactos de planificación (2026-10-01) y después
 | [EWO-020](EWO-020.md) | 6 — review/sign/immutable completion/invalidation | Verification |
 | [EWO-021](EWO-021.md) | 7 — documents/Tower/readiness | Verification |
 | [EWO-022](EWO-022.md) | 8 — departure/return/hardening | Verification |
+
+| [EWO-040](EWO-040.md) | Costos de inventario e histórico por unidad | Verification |

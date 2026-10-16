@@ -140,7 +140,7 @@ exact endpoint names and payload codes remain design work, not invented runtime 
 
 The candidate first foundation slice has its own
 [Proposed journey contract](LOG-JOURNEY-001-contract.md),
-[ADR026](../adr/026-logistica-durable-journeys.md) and
+[ADR027](../adr/027-logistica-durable-journeys.md) and
 [execution brief](../engineering-work-orders/LOG-JOURNEY-001-execution-brief.md).
 Review it independently; it does not approve this broader contract, alter safety
 policy or settle later physical-departure correlation.
