@@ -1,35 +1,35 @@
-'use client';
+"use client";
 
-import { FormEvent, useEffect, useMemo, useState } from 'react';
-import { ColumnDef } from '@tanstack/react-table';
-import { api, HttpError } from '@/lib/api';
-import { etiquetaUom } from '@/lib/format';
-import { useRole } from '@/lib/role';
+import { FormEvent, useEffect, useMemo, useState } from "react";
+import { ColumnDef } from "@tanstack/react-table";
+import { api, HttpError } from "@/lib/api";
+import { etiquetaUom } from "@/lib/format";
+import { useRole } from "@/lib/role";
 import type {
   Familia,
   ItemInventario,
   Proveedor,
   TipoVehiculo,
-} from '@/lib/types';
+} from "@/lib/types";
 import {
   InventarioMovimientoSheet,
   type MovimientoSheetMode,
-} from '@/components/InventarioMovimientoSheet';
-import { RefaccionFicha } from '@/components/RefaccionFicha';
-import { Badge } from '@/components/ui/badge';
-import { StockAlertaBadge } from '@/components/StatusBadge';
-import { Button } from '@/components/ui/button';
-import { DataTable } from '@/components/ui/data-table';
+} from "@/components/InventarioMovimientoSheet";
+import { RefaccionFicha } from "@/components/RefaccionFicha";
+import { Badge } from "@/components/ui/badge";
+import { StockAlertaBadge } from "@/components/StatusBadge";
+import { Button } from "@/components/ui/button";
+import { DataTable } from "@/components/ui/data-table";
 import {
   Dialog,
   DialogContent,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import { Field, FormAlert, Note, PageHeader } from '@/components/ui/field';
-import { Hint } from '@/components/ui/hint';
-import { Input, NativeSelect } from '@/components/ui/input';
+} from "@/components/ui/dialog";
+import { Field, FormAlert, Note, PageHeader } from "@/components/ui/field";
+import { Hint } from "@/components/ui/hint";
+import { Input, NativeSelect } from "@/components/ui/input";
 
 export default function ItemsPage() {
   const { role, userId } = useRole();
@@ -38,29 +38,45 @@ export default function ItemsPage() {
   const [tipos, setTipos] = useState<TipoVehiculo[]>([]);
   const [proveedores, setProveedores] = useState<Proveedor[]>([]);
   const [error, setError] = useState<string | null>(null);
-  const [q, setQ] = useState('');
+  const [q, setQ] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [created, setCreated] = useState<ItemInventario | null>(null);
+  const [activeFilter, setActiveFilter] = useState("active");
+  const [categoryFilter, setCategoryFilter] = useState("");
   const [openNuevo, setOpenNuevo] = useState(false);
-  const [sku, setSku] = useState('');
-  const [nombre, setNombre] = useState('');
-  const [familiaId, setFamiliaId] = useState('');
-  const [oem, setOem] = useState('');
+  const [sku, setSku] = useState("");
+  const [nombre, setNombre] = useState("");
+  const [familiaId, setFamiliaId] = useState("");
+  const [oem, setOem] = useState("");
   const [tipoIds, setTipoIds] = useState<Set<string>>(new Set());
   const [ficha, setFicha] = useState<ItemInventario | null>(null);
-  const [itemId, setItemId] = useState('');
+  const [itemId, setItemId] = useState("");
   const [mode, setMode] = useState<MovimientoSheetMode | null>(null);
 
   async function cargar() {
-    const [lista, fams, tps, provs] = await Promise.all([
-      api<ItemInventario[]>('/inventario/items', { role: role!, userId }),
-      api<Familia[]>('/inventario/familias', { role: role!, userId }),
-      api<TipoVehiculo[]>('/unidades/tipos', { role: role!, userId }),
-      api<Proveedor[]>('/inventario/proveedores', { role: role!, userId }),
+    setLoading(true);
+    setError(null);
+    const [lista, fams, tps, provs] = await Promise.allSettled([
+      api<ItemInventario[]>("/inventario/items", { role: role!, userId }),
+      api<Familia[]>("/inventario/familias", { role: role!, userId }),
+      api<TipoVehiculo[]>("/unidades/tipos", { role: role!, userId }),
+      api<Proveedor[]>("/inventario/proveedores", { role: role!, userId }),
     ]);
-    setItems(lista);
-    setFamilias(fams.filter((f) => f.activa));
-    setTipos(tps);
-    setProveedores(provs.filter((p) => p.activo));
-    if (!familiaId && fams[0]) setFamiliaId(fams[0].id);
+    if (lista.status === "fulfilled") setItems(lista.value);
+    else setError("No se pudieron cargar las refacciones.");
+    if (fams.status === "fulfilled") {
+      setFamilias(fams.value.filter((f) => f.activa));
+      if (!familiaId) setFamiliaId(fams.value.find((f) => f.activa)?.id ?? "");
+    }
+    if (tps.status === "fulfilled") setTipos(tps.value);
+    if (provs.status === "fulfilled")
+      setProveedores(provs.value.filter((p) => p.activo));
+    if ([fams, tps, provs].some((r) => r.status === "rejected"))
+      setError(
+        "Algunos catálogos no se pudieron cargar. Los datos disponibles se conservaron. Reintenta para completar la información.",
+      );
+    setLoading(false);
   }
 
   useEffect(() => {
@@ -69,7 +85,7 @@ export default function ItemsPage() {
       setError(
         err instanceof HttpError
           ? err.message
-          : 'No se pudieron cargar las refacciones.',
+          : "No se pudieron cargar las refacciones.",
       );
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -86,12 +102,14 @@ export default function ItemsPage() {
 
   async function crear(event: FormEvent) {
     event.preventDefault();
+    if (saving) return;
+    setSaving(true);
     setError(null);
     try {
-      await api('/inventario/items', {
+      const newItem = await api<ItemInventario>("/inventario/items", {
         role: role!,
         userId,
-        method: 'POST',
+        method: "POST",
         body: JSON.stringify({
           sku: sku.trim(),
           nombre: nombre.trim(),
@@ -100,9 +118,10 @@ export default function ItemsPage() {
           tipoVehiculoIds: [...tipoIds],
         }),
       });
-      setSku('');
-      setNombre('');
-      setOem('');
+      setCreated(newItem);
+      setSku("");
+      setNombre("");
+      setOem("");
       setTipoIds(new Set());
       setOpenNuevo(false);
       await cargar();
@@ -110,46 +129,39 @@ export default function ItemsPage() {
       setError(
         err instanceof HttpError
           ? err.message
-          : 'No se pudo crear la refacción.',
+          : "No se pudo crear la refacción.",
       );
-    }
-  }
-
-  async function toggleActivo(item: ItemInventario) {
-    setError(null);
-    try {
-      await api(`/inventario/items/${item.id}`, {
-        role: role!,
-        userId,
-        method: 'PATCH',
-        body: JSON.stringify({ activo: !item.activo }),
-      });
-      await cargar();
-    } catch (err) {
-      setError(err instanceof HttpError ? err.message : 'No se pudo actualizar.');
+    } finally {
+      setSaving(false);
     }
   }
 
   const filtered = useMemo(() => {
     const needle = q.trim().toLowerCase();
-    if (!needle) return items;
-    return items.filter((item) =>
-      [item.sku, item.nombre, item.oem ?? '', item.familiaNombre ?? '']
-        .join(' ')
+    const visible = items.filter(
+      (item) =>
+        (activeFilter === "all" ||
+          item.activo === (activeFilter === "active")) &&
+        (!categoryFilter || item.familiaId === categoryFilter),
+    );
+    if (!needle) return visible;
+    return visible.filter((item) =>
+      [item.sku, item.nombre, item.oem ?? "", item.familiaNombre ?? ""]
+        .join(" ")
         .toLowerCase()
         .includes(needle),
     );
-  }, [items, q]);
+  }, [items, q, activeFilter, categoryFilter]);
 
   const columns: ColumnDef<ItemInventario, unknown>[] = [
     {
-      accessorKey: 'sku',
-      header: 'SKU',
+      accessorKey: "sku",
+      header: "SKU",
       cell: ({ row }) => <span className="mono">{row.original.sku}</span>,
     },
     {
-      accessorKey: 'nombre',
-      header: 'Nombre',
+      accessorKey: "nombre",
+      header: "Nombre",
       cell: ({ row }) => (
         <div>
           {row.original.nombre}
@@ -162,12 +174,12 @@ export default function ItemsPage() {
       ),
     },
     {
-      accessorKey: 'familiaNombre',
-      header: 'Categoría',
+      accessorKey: "familiaNombre",
+      header: "Categoría",
     },
     {
-      accessorKey: 'stock',
-      header: 'Stock',
+      accessorKey: "stock",
+      header: "Stock",
       cell: ({ row }) => (
         <div className="flex items-center gap-2">
           <span className="mono">
@@ -178,28 +190,12 @@ export default function ItemsPage() {
       ),
     },
     {
-      accessorKey: 'activo',
-      header: 'Estado',
+      accessorKey: "activo",
+      header: "Estado",
       cell: ({ row }) => (
-        <Badge variant={row.original.activo ? 'success' : 'muted'}>
-          {row.original.activo ? 'Activo' : 'Inactivo'}
+        <Badge variant={row.original.activo ? "success" : "muted"}>
+          {row.original.activo ? "Activo" : "Inactivo"}
         </Badge>
-      ),
-    },
-    {
-      id: 'acciones',
-      header: '',
-      cell: ({ row }) => (
-        <div className="row-actions" onClick={(e) => e.stopPropagation()}>
-          <Button
-            type="button"
-            variant={row.original.activo ? 'dangerSoft' : 'outline'}
-            size="compact"
-            onClick={() => void toggleActivo(row.original)}
-          >
-            {row.original.activo ? 'Inactivar' : 'Activar'}
-          </Button>
-        </div>
       ),
     },
   ];
@@ -208,6 +204,7 @@ export default function ItemsPage() {
     <>
       <PageHeader
         title="Refacciones"
+        lede="Identifica cada refacción antes de registrar entradas o consumos."
         actions={
           <Button type="button" onClick={() => setOpenNuevo(true)}>
             Nueva refacción
@@ -226,9 +223,69 @@ export default function ItemsPage() {
         </Field>
       </div>
 
+      <div className="inventory-toolbar">
+        <div
+          className="list-filter"
+          role="group"
+          aria-label="Estado de refacción"
+        >
+          {[
+            ["active", "Activas"],
+            ["all", "Todas"],
+            ["inactive", "Inactivas"],
+          ].map(([value, label]) => (
+            <button
+              key={value}
+              type="button"
+              className={activeFilter === value ? "active" : ""}
+              aria-pressed={activeFilter === value}
+              onClick={() => setActiveFilter(value)}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+        <NativeSelect
+          aria-label="Categoría"
+          value={categoryFilter}
+          onChange={(e) => setCategoryFilter(e.target.value)}
+        >
+          <option value="">Todas las categorías</option>
+          {familias.map((f) => (
+            <option key={f.id} value={f.id}>
+              {f.nombre}
+            </option>
+          ))}
+        </NativeSelect>
+      </div>
+      {created ? (
+        <Note>
+          Refacción creada con existencias en cero.{" "}
+          <Button
+            variant="outline"
+            onClick={() => {
+              setItemId(created.id);
+              setMode("entrada");
+              setCreated(null);
+            }}
+          >
+            Registrar primera entrada
+          </Button>
+        </Note>
+      ) : null}
       <FormAlert>{error}</FormAlert>
+      {error ? (
+        <Button variant="outline" onClick={() => void cargar()}>
+          Reintentar catálogos
+        </Button>
+      ) : null}
+      {loading ? (
+        <p className="muted" role="status">
+          Cargando refacciones…
+        </p>
+      ) : null}
 
-      {items.length > 0 || !error ? (
+      {!loading && (items.length > 0 || !error) ? (
         <>
           <div className="inventario-refacciones-table">
             <DataTable
@@ -266,10 +323,12 @@ export default function ItemsPage() {
                       onClick={() => setFicha(item)}
                     >
                       <span className="inventory-mobile-copy">
-                        <span className="font-medium text-navy">{item.nombre}</span>
+                        <span className="font-medium text-navy">
+                          {item.nombre}
+                        </span>
                         <span className="text-xs text-muted-foreground">
                           <span className="mono">{item.sku}</span>
-                          {item.familiaNombre ? ` · ${item.familiaNombre}` : ''}
+                          {item.familiaNombre ? ` · ${item.familiaNombre}` : ""}
                         </span>
                       </span>
                       <span className="inventory-mobile-meta">
@@ -280,17 +339,9 @@ export default function ItemsPage() {
                       </span>
                     </button>
                     <div className="inventory-mobile-actions">
-                      <Badge variant={item.activo ? 'success' : 'muted'}>
-                        {item.activo ? 'Activo' : 'Inactivo'}
+                      <Badge variant={item.activo ? "success" : "muted"}>
+                        {item.activo ? "Activo" : "Inactivo"}
                       </Badge>
-                      <Button
-                        type="button"
-                        variant={item.activo ? 'dangerSoft' : 'outline'}
-                        size="compact"
-                        onClick={() => void toggleActivo(item)}
-                      >
-                        {item.activo ? 'Inactivar' : 'Activar'}
-                      </Button>
                     </div>
                   </li>
                 ))}
@@ -299,13 +350,13 @@ export default function ItemsPage() {
               <div className="empty-state">
                 <span className="block font-medium text-navy">
                   {items.length === 0
-                    ? 'Aún no hay refacciones.'
-                    : 'Nada que coincida.'}
+                    ? "Aún no hay refacciones."
+                    : "Nada que coincida."}
                 </span>
                 <span>
                   {items.length === 0
-                    ? 'Agregue la primera con Nueva refacción.'
-                    : 'Ajuste la búsqueda.'}
+                    ? "Agregue la primera con Nueva refacción."
+                    : "Ajuste la búsqueda."}
                 </span>
               </div>
             )}
@@ -317,17 +368,22 @@ export default function ItemsPage() {
         item={ficha}
         tipos={tipos}
         proveedores={proveedores}
-        role={role ?? ''}
+        role={role ?? ""}
         userId={userId}
         onClose={() => setFicha(null)}
         onChanged={(updated) => {
           if (updated) setFicha(updated);
           void cargar();
         }}
+        onEntrada={(item) => {
+          setFicha(null);
+          setItemId(item.id);
+          setMode("entrada");
+        }}
         onAjuste={(item) => {
           setFicha(null);
           setItemId(item.id);
-          setMode('ajuste');
+          setMode("ajuste");
         }}
       />
 
@@ -342,11 +398,11 @@ export default function ItemsPage() {
           uom: item.uom,
         }))}
         lockItem
-        role={role ?? ''}
+        role={role ?? ""}
         userId={userId}
         onClose={() => {
           setMode(null);
-          setItemId('');
+          setItemId("");
         }}
         onApplied={() => cargar()}
         onError={setError}

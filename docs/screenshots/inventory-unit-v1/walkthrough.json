@@ -1,0 +1,28 @@
+{
+  "recordedAt": "2026-10-16T03:50:17.713626+00:00",
+  "mode": "local development fixtures; CDP role-picker and clicks; no Playwright",
+  "screenshots": [
+    "document-detail-d1440.png",
+    "document-detail-m390.png",
+    "documents-d1440.png",
+    "inventory-detail-d1440.png",
+    "inventory-list-d1440.png",
+    "inventory-list-m390.png",
+    "receipt-iva-d1440.png",
+    "receipt-iva-m390.png",
+    "receipt-pending-d1440.png",
+    "receipt-review-m390.png",
+    "receipt-saved-m390.png",
+    "unit-costs-d1440.png",
+    "unit-costs-detail-m390.png",
+    "unit-costs-m390.png",
+    "unit-history-d1440.png",
+    "unit-maintenance-d1440.png",
+    "unit-summary-d1440.png",
+    "unit-summary-m390.png",
+    "unit-technical-d1440.png",
+    "unit-technical-m390.png"
+  ],
+  "receipt": "Submitted 10 pieces, 1392 MXN IVA included; net1200 tax192; initialstock10 final20.",
+  "unit": "FOTON fixture: existing closed preventive history, synthetic financial snapshots1600net; no production data."
+}

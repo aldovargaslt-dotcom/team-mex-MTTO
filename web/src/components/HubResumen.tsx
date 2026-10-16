@@ -1,23 +1,22 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { useState } from 'react';
-import { AndonHubCard } from '@/components/AndonHubCard';
-import { Note } from '@/components/ui/field';
+import Link from "next/link";
+import { AndonHubCard } from "@/components/AndonHubCard";
+import { Note } from "@/components/ui/field";
 import {
   etiquetaEstadoVisita,
   etiquetaTipoVisita,
   formatFechaCorta,
   formatFechaHoraCorta,
   formatKm,
-} from '@/lib/format';
-import { withUnidadesReturnTo } from '@/lib/unidades-return';
-import type { AvisoAndon, UnidadHealth, UnidadHub } from '@/lib/types';
+} from "@/lib/format";
+import { withUnidadesReturnTo } from "@/lib/unidades-return";
+import type { UnidadHealth, UnidadHub } from "@/lib/types";
 
 const MENSAJE_PUEDE_REGISTRAR =
-  'Puede registrar una nueva visita de mantenimiento.';
+  "Puede registrar una nueva visita de mantenimiento.";
 const MENSAJE_ADMIN_SIN_VISITA =
-  'El administrador directivo no puede crear visitas de mantenimiento.';
+  "El administrador directivo no puede crear visitas de mantenimiento.";
 
 type ActivityItem = {
   key: string;
@@ -27,25 +26,13 @@ type ActivityItem = {
   href?: string;
 };
 
-function activityItems(
-  hub: UnidadHub,
-  aviso: AvisoAndon | null,
-): ActivityItem[] {
+function activityItems(hub: UnidadHub): ActivityItem[] {
   const items: ActivityItem[] = [];
-  if (aviso) {
-    items.push({
-      key: `aviso-${aviso.id}`,
-      at: aviso.abiertaAt,
-      title: 'Alerta de mantenimiento',
-      detail: 'Mantenimiento atrasado',
-      href: '/andon',
-    });
-  }
   for (const visita of hub.historialCerrado) {
     items.push({
       key: `cerrada-${visita.id}`,
       at: visita.cerradoAt ?? visita.updatedAt,
-      title: 'Visita de mantenimiento',
+      title: "Visita de mantenimiento",
       detail: `${etiquetaTipoVisita(visita.tipo)} · ${etiquetaEstadoVisita(visita.estado)}`,
       href: `/unidades/${hub.fichaCorta.id}/visitas/${visita.id}`,
     });
@@ -54,7 +41,7 @@ function activityItems(
     items.push({
       key: `borrador-${visita.id}`,
       at: visita.updatedAt,
-      title: 'Visita de mantenimiento',
+      title: "Visita de mantenimiento",
       detail: `Borrador · ${etiquetaTipoVisita(visita.tipo)}`,
       href: `/unidades/${hub.fichaCorta.id}/visitas/${visita.id}`,
     });
@@ -73,49 +60,47 @@ export function HubResumen({
   health: UnidadHealth | null;
   returnTo: string;
 }) {
-  const [aviso, setAviso] = useState<AvisoAndon | null>(null);
   const ficha = hub.fichaCorta;
   const ultimoServicioAt = hub.historialCerrado[0]?.cerradoAt ?? null;
   const mensajes = hub.mensajes.filter(
     (m) => m !== MENSAJE_PUEDE_REGISTRAR && m !== MENSAJE_ADMIN_SIN_VISITA,
   );
-  const warn = mensajes.some(
-    (m) => /inactiva/i.test(m) || /choferes/i.test(m),
-  );
-  const recent = activityItems(hub, aviso);
+  const warn = mensajes.some((m) => /inactiva/i.test(m) || /choferes/i.test(m));
+  const recent = activityItems(hub);
 
   return (
     <>
       <AndonHubCard
         unidadId={ficha.id}
         tipoId={ficha.tipoId}
-        onAvisoChange={setAviso}
         ultimoServicioAt={ultimoServicioAt}
         ultimoServicioKm={ficha.ultimoKm}
         health={health}
       />
 
       <section className="card panel" style={{ marginBottom: 12 }}>
-        <h2>Estado y operación</h2>
+        <h2>Estado y última lectura</h2>
         <div className="hub-facts">
           <div>
             <p className="hub-facts__kicker">Estado</p>
             <p className="hub-facts__value">
-              {ficha.estado === 'ACTIVA' ? 'Activa' : 'Inactiva'}
+              {ficha.estado === "ACTIVA" ? "Activa" : "Inactiva"}
             </p>
-            {ficha.motivoInactivacion === 'ENVIO_ESPECIAL' ? (
+            {ficha.motivoInactivacion === "ENVIO_ESPECIAL" ? (
               <p className="hub-facts__meta">Envío especial</p>
             ) : null}
           </div>
           <div>
-            <p className="hub-facts__kicker">Último kilometraje</p>
+            <p className="hub-facts__kicker">Última lectura registrada</p>
             <p className="hub-facts__value">
-              {ficha.ultimoKm != null ? formatKm(ficha.ultimoKm) : 'Sin registro'}
+              {ficha.ultimoKm != null
+                ? formatKm(ficha.ultimoKm)
+                : "Sin registro"}
             </p>
             <p className="hub-facts__meta">
               {ultimoServicioAt
-                ? `Registrado: ${formatFechaCorta(ultimoServicioAt)}`
-                : 'Sin visita cerrada'}
+                ? `Registrado en orden cerrada el ${formatFechaCorta(ultimoServicioAt)}`
+                : "Sin visita cerrada"}
             </p>
           </div>
         </div>
@@ -126,9 +111,9 @@ export function HubResumen({
           <h2>Información técnica</h2>
           <dl className="dl">
             <dt>Marca / modelo</dt>
-            <dd>{ficha.marcaModelo || 'Sin marca / modelo'}</dd>
+            <dd>{ficha.marcaModelo || "Sin dato"}</dd>
             <dt>Año</dt>
-            <dd>{ficha.anio ?? 'Sin año registrado'}</dd>
+            <dd>{ficha.anio ?? "Sin dato"}</dd>
             <dt>Tipo</dt>
             <dd>{ficha.tipoNombre}</dd>
           </dl>
@@ -138,7 +123,7 @@ export function HubResumen({
             <h2>Actividad reciente</h2>
             <Link
               href={`/unidades/${ficha.id}?${new URLSearchParams({
-                vista: 'historial',
+                vista: "historial",
                 returnTo,
               }).toString()}`}
               className="hub-ops-go text-[12px] font-medium"
@@ -155,7 +140,7 @@ export function HubResumen({
                   {item.href ? (
                     <Link
                       href={
-                        item.href.startsWith('/unidades/')
+                        item.href.startsWith("/unidades/")
                           ? withUnidadesReturnTo(item.href, returnTo)
                           : item.href
                       }
@@ -163,7 +148,7 @@ export function HubResumen({
                       <strong>{item.title}</strong>
                       <div className="muted">
                         {formatFechaHoraCorta(item.at)}
-                        {' · '}
+                        {" · "}
                         {item.detail}
                       </div>
                     </Link>
@@ -172,7 +157,7 @@ export function HubResumen({
                       <strong>{item.title}</strong>
                       <div className="muted">
                         {formatFechaHoraCorta(item.at)}
-                        {' · '}
+                        {" · "}
                         {item.detail}
                       </div>
                     </>
@@ -185,7 +170,7 @@ export function HubResumen({
       </div>
 
       {mensajes.map((mensaje) => (
-        <Note key={mensaje} variant={warn ? 'warn' : 'default'}>
+        <Note key={mensaje} variant={warn ? "warn" : "default"}>
           {mensaje}
         </Note>
       ))}

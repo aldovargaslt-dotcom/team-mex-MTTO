@@ -1,0 +1,20 @@
+flowchart TB
+    buscar["Buscar refacción"] --> existe{"¿Ya existe?"}
+    existe -->|No| alta["Crear ficha: stock inicial cero"]
+    existe -->|Sí| elegir["Seleccionar refacción"]
+    alta --> elegir
+    elegir --> destino{"¿Qué operación necesitas?"}
+    destino -->|Recibir en almacén| entrada["Cantidad + costo + IVA"]
+    entrada --> revisar["Revisar y confirmar entrada"]
+    revisar --> stock["Actualizar existencias y promedio ponderado"]
+    stock --> orden["Seleccionar piezas desde stock en una orden"]
+    orden --> cerrar{"¿Cierre válido y stock suficiente?"}
+    cerrar -->|No| corregir["Corregir sin descontar piezas ni aplicar costo"]
+    corregir --> orden
+    cerrar -->|Sí| consumo["Descontar piezas y conservar costo histórico conocido"]
+    destino -->|Compra directa para una orden| externa["Registrar cantidad y vincular costo o pendiente"]
+    externa --> cierreExterno["Al cierre: pendiente de comprobante, sin afectar stock"]
+    cierreExterno --> documento["Recibir comprobante: sin modificar existencias"]
+    consumo --> consulta["Consultar consumo y costo de refacciones por orden y unidad"]
+    cierreExterno --> consulta
+    stock --> ajuste["Ajuste físico con motivo; política de costo pendiente"]

@@ -78,7 +78,10 @@ export class InventarioController {
   }
 
   @Get('items')
-  @ApiOperation({ summary: 'Listar ítems / SKUs. `ids` filtra por IDs opacos (lectura para Piezas).' })
+  @ApiOperation({
+    summary:
+      'Listar ítems / SKUs. `ids` filtra por IDs opacos (lectura para Piezas).',
+  })
   listItems(@Query('ids') ids?: string) {
     return this.service.listItems(ids);
   }
@@ -194,8 +197,9 @@ export class InventarioController {
   adjuntarTicket(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() dto: TicketDto,
+    @CurrentUserParam() user: CurrentUser,
   ) {
-    return this.service.adjuntarTicket(id, dto);
+    return this.service.adjuntarTicket(id, dto, user.userId);
   }
 
   @Post('pendientes-comprobante/:id/recibir')

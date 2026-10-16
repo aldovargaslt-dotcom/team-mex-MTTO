@@ -19,6 +19,8 @@ Do not add speculative EWOs. An EWO is created when there is approved work to ex
 
 | ID | Title | Status |
 |----|-------|--------|
+| [EWO-038](EWO-038.md) | Inventario A: flujo y distribución responsive | Verification — implementación autorizada; evidencia EWO-040 |
+| [EWO-039](EWO-039.md) | Unidades A: ficha operativa responsive | Verification — implementación autorizada; evidencia EWO-040 |
 | [EWO-001](EWO-001.md) | Alert Catalog registry + API façade + role swimlane | Ready |
 | [EWO-002](EWO-002.md) | Configuración → Alertas UI + absorb `/flota/alertas` | Ready |
 | [EWO-003](EWO-003.md) | Threshold editors + active-gate on emit | Ready |
@@ -52,3 +54,5 @@ Owner autorizó crear estos artefactos de planificación (2026-10-01) y después
 | [EWO-020](EWO-020.md) | 6 — review/sign/immutable completion/invalidation | Verification |
 | [EWO-021](EWO-021.md) | 7 — documents/Tower/readiness | Verification |
 | [EWO-022](EWO-022.md) | 8 — departure/return/hardening | Verification |
+
+| [EWO-040](EWO-040.md) | Costos de inventario e histórico por unidad | Verification |
