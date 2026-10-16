@@ -1,23 +1,18 @@
-'use client';
-
-import Link from 'next/link';
-import { useEffect, useState } from 'react';
-import { Check, ChevronRight, TriangleAlert } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { FormAlert, Note } from '@/components/ui/field';
-import { api, HttpError } from '@/lib/api';
+"use client";
+import Link from "next/link";
+import { useCallback, useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { FormAlert, Note } from "@/components/ui/field";
+import { api } from "@/lib/api";
 import {
   explicacionAlertaAndon,
   formatFechaCorta,
   formatFechaHoraCorta,
   formatKm,
-  fraseCuenta,
   etiquetaIntervaloMantenimiento,
-} from '@/lib/format';
-import { useRole } from '@/lib/role';
-import { cn } from '@/lib/utils';
-import type { AvisoAndon, UmbralAndon, UnidadHealth } from '@/lib/types';
-
+} from "@/lib/format";
+import { useRole } from "@/lib/role";
+import type { AvisoAndon, UmbralAndon, UnidadHealth } from "@/lib/types";
 export function AndonHubCard({
   unidadId,
   tipoId,
@@ -34,209 +29,145 @@ export function AndonHubCard({
   health?: UnidadHealth | null;
 }) {
   const { role, userId, isAdmin } = useRole();
-  const [aviso, setAviso] = useState<AvisoAndon | null | undefined>(undefined);
-  const [umbral, setUmbral] = useState<UmbralAndon | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [busy, setBusy] = useState(false);
-
-  async function cargar() {
-    const list = await api<AvisoAndon[]>(
-      `/andon/avisos?unidadId=${encodeURIComponent(unidadId)}`,
-      { role: role!, userId },
-    );
-    const next = list[0] ?? null;
-    setAviso(next);
-    onAvisoChange?.(next);
-  }
-
+  const [aviso, setAviso] = useState<AvisoAndon | null>(null),
+    [umbral, setUmbral] = useState<UmbralAndon | null>(null),
+    [error, setError] = useState(""),
+    [busy, setBusy] = useState(false),
+    [loading, setLoading] = useState(true);
+  const cargar = useCallback(
+    async (signal?: AbortSignal) => {
+      setLoading(true);
+      setError("");
+      const [alerts, thresholds] = await Promise.allSettled([
+        api<AvisoAndon[]>(
+          `/andon/avisos?unidadId=${encodeURIComponent(unidadId)}`,
+          { role: role!, userId, signal },
+        ),
+        api<UmbralAndon[]>("/andon/umbrales", { role: role!, userId, signal }),
+      ]);
+      if (signal?.aborted) return;
+      if (alerts.status === "fulfilled") {
+        const next = alerts.value.find((a) => a.estado !== "RESUELTO") ?? null;
+        setAviso(next);
+        onAvisoChange?.(next);
+      }
+      if (thresholds.status === "fulfilled")
+        setUmbral(
+          thresholds.value.find((t) => t.tipoVehiculoId === tipoId) ?? null,
+        );
+      if (alerts.status === "rejected" || thresholds.status === "rejected")
+        setError(
+          "No se pudo completar la evaluación preventiva. Los datos disponibles se conservaron.",
+        );
+      setLoading(false);
+    },
+    [role, userId, unidadId, tipoId, onAvisoChange],
+  );
   useEffect(() => {
-    if (!role || !unidadId) return;
-    void cargar().catch((err) => {
-      setError(
-        err instanceof HttpError
-          ? err.message
-          : 'No se pudo cargar la alerta.',
-      );
-      setAviso(null);
-      onAvisoChange?.(null);
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [role, userId, unidadId]);
-
-  useEffect(() => {
-    if (!role || !tipoId) return;
-    void api<UmbralAndon[]>('/andon/umbrales', { role, userId })
-      .then((list) => {
-        setUmbral(list.find((item) => item.tipoVehiculoId === tipoId) ?? null);
-      })
-      .catch(() => {
-        setUmbral(null);
-      });
-  }, [role, userId, tipoId]);
-
+    const controller = new AbortController();
+    setAviso(null);
+    setUmbral(null);
+    if (role) void cargar(controller.signal);
+    return () => controller.abort();
+  }, [cargar, role]);
   async function enterado() {
-    if (!aviso) return;
+    if (!aviso || busy) return;
     setBusy(true);
-    setError(null);
     try {
       await api(`/andon/avisos/${aviso.id}/enterado`, {
         role: role!,
         userId,
-        method: 'POST',
+        method: "POST",
       });
       await cargar();
-    } catch (err) {
-      setError(
-        err instanceof HttpError ? err.message : 'No se pudo marcar enterado.',
-      );
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "No se pudo marcar enterado.");
     } finally {
       setBusy(false);
     }
   }
-
-  const servicioAt = aviso?.lastClosedAt ?? ultimoServicioAt ?? null;
-  const servicioKm =
-    aviso?.lastClosedKm != null ? aviso.lastClosedKm : ultimoServicioKm;
-  const vencido = Boolean(aviso);
-  const explicacion = aviso ? explicacionAlertaAndon(aviso) : null;
-  const dueDriver = health?.drivers.find(
-    (d) => d.type === 'MAINTENANCE_DUE' || d.type === 'MAINTENANCE_OVERDUE',
+  const explanation = aviso ? explicacionAlertaAndon(aviso) : null;
+  const due = health?.drivers.find(
+    (d) => d.type === "MAINTENANCE_OVERDUE" || d.type === "MAINTENANCE_DUE",
   );
-  const hayHistorial = Boolean(servicioAt || servicioKm != null);
-  const mttoTone = vencido || dueDriver?.type === 'MAINTENANCE_OVERDUE'
-    ? 'is-overdue'
-    : dueDriver?.type === 'MAINTENANCE_DUE'
-      ? 'is-due'
-      : hayHistorial
-        ? 'is-ok'
-        : '';
-  const intervalo =
-    umbral != null
-      ? etiquetaIntervaloMantenimiento(umbral.tKm, umbral.tDias)
-      : aviso
-        ? etiquetaIntervaloMantenimiento(aviso.umbralKm, aviso.umbralDias)
-        : null;
-  const mttoHref = `/unidades/${unidadId}?vista=mantenimiento`;
-
+  const at = aviso?.lastClosedAt ?? ultimoServicioAt;
+  const km = aviso?.lastClosedKm ?? ultimoServicioKm;
+  const interval = umbral
+    ? etiquetaIntervaloMantenimiento(umbral.tKm, umbral.tDias)
+    : aviso
+      ? etiquetaIntervaloMantenimiento(aviso.umbralKm, aviso.umbralDias)
+      : null;
   return (
-    <div className="hub-ops-grid">
-      <section className={cn('card panel hub-ops-card', mttoTone)}>
-        <div className="hub-ops-card__head">
-          <h2>Próximo mantenimiento</h2>
-          <Link
-            href={mttoHref}
-            className="hub-ops-go"
-            aria-label="Ver mantenimiento"
-          >
-            <ChevronRight className="size-4" aria-hidden />
-          </Link>
-        </div>
-        <p className="hub-ops-title">Servicio preventivo</p>
-        {aviso === undefined ? (
-          <p className="muted">Cargando…</p>
-        ) : !hayHistorial && !vencido ? (
-          <p className="hub-ops-status">Sin mantenimiento programado</p>
-        ) : vencido ? (
-          <p className="hub-ops-status">{explicacion?.vencidoHace}</p>
-        ) : (
-          <p className="hub-ops-status">
-            {dueDriver?.message ?? 'Al corriente'}
+    <section
+      className={`card panel hub-preventive ${aviso ? "is-overdue" : ""}`}
+    >
+      <div className="hub-ops-card__head">
+        <h2>Mantenimiento preventivo</h2>
+        <Link href={`/unidades/${unidadId}?vista=mantenimiento`}>
+          Ver mantenimiento
+        </Link>
+      </div>
+      {loading ? (
+        <p className="muted" role="status">
+          Consultando mantenimiento…
+        </p>
+      ) : aviso ? (
+        <>
+          <p className="hub-ops-status text-destructive">
+            {explanation?.titulo}
           </p>
-        )}
-        {intervalo ? (
-          <p className="muted">Intervalo: {intervalo}</p>
-        ) : null}
-        {aviso && aviso.kmAlAbrir > 0 && aviso.umbralKm > 0 ? (
-          <p className="hub-ops-progress">
-            <span className="mono">
-              {formatKm(aviso.kmAlAbrir)} / {formatKm(aviso.umbralKm)}
-            </span>
-            <span className="hub-ops-bar" aria-hidden>
-              <span
-                className="hub-ops-bar__fill"
-                style={{
-                  width: `${Math.min(100, Math.round((aviso.kmAlAbrir / aviso.umbralKm) * 100))}%`,
-                }}
-              />
-            </span>
-          </p>
-        ) : null}
-        <dl className="hub-ops-dl">
-          <dt>Último servicio</dt>
-          <dd>
-            {formatFechaCorta(servicioAt)}
-            {servicioKm != null ? ` · ${formatKm(servicioKm)}` : ''}
-          </dd>
-        </dl>
-      </section>
-
-      <section className="card panel hub-ops-card">
-        <div className="hub-ops-card__head">
-          <h2>Últimas alertas</h2>
-          {aviso ? (
-            <span className="hub-ops-count">
-              {fraseCuenta(1, 'alerta activa', 'alertas activas')}
-            </span>
-          ) : null}
-          <Link href="/andon" className="hub-ops-go" aria-label="Ver alertas">
-            <ChevronRight className="size-4" aria-hidden />
-          </Link>
-        </div>
-        {aviso === undefined ? (
-          <p className="muted">Cargando alerta…</p>
-        ) : aviso == null ? (
-          <div className="hub-ops-empty">
-            <p className="hub-ops-empty__title">
-              <Check className="size-4" aria-hidden />
-              Sin alertas activas
-            </p>
-            <p className="muted">
-              La unidad no requiere atención actualmente.
-            </p>
-          </div>
-        ) : (
-          <>
-            <p className="hub-ops-title">
-              <TriangleAlert className="size-3.5" aria-hidden />
-              {explicacion?.titulo}
-            </p>
-            <div className="mt-1.5 grid gap-0.5 text-[13px]">
-              {explicacion?.pasados.map((linea) => (
-                <p key={linea}>{linea}</p>
-              ))}
-              {explicacion?.intervalos.map((linea) => (
-                <p key={linea} className="muted">
-                  {linea}
-                </p>
-              ))}
-            </div>
-            {aviso.estado === 'ABIERTO' && !isAdmin ? (
-              <div className="hub-actions">
-                <Button
-                  type="button"
-                  variant="outline"
-                  disabled={busy}
-                  onClick={() => void enterado()}
-                >
-                  {busy ? 'Marcando…' : 'Marcar como enterado'}
-                </Button>
-              </div>
-            ) : null}
-            {aviso.estado === 'ENTERADO' ? (
-              <Note>
-                Enterado
-                {aviso.enteradoAt
-                  ? ` · ${formatFechaHoraCorta(aviso.enteradoAt)}`
-                  : ''}
-                . La alerta sigue activa; la visita cerrada resuelve.
-              </Note>
-            ) : null}
-          </>
-        )}
-        {error ? (
+          <p className="hub-ops-title">{explanation?.vencidoHace}</p>
+          {explanation?.pasados.map((line) => (
+            <p key={line}>{line}</p>
+          ))}
+        </>
+      ) : due ? (
+        <p className="hub-ops-status">{due.message}</p>
+      ) : (
+        <p>
+          {error
+            ? "Estado preventivo no confirmado"
+            : !at
+              ? "No hay información suficiente para calcular el próximo servicio"
+              : "Sin avisos preventivos activos"}
+        </p>
+      )}
+      <dl className="dl mt-3">
+        <dt>Último servicio cerrado</dt>
+        <dd>
+          {at ? formatFechaCorta(at) : "Sin registro"}
+          {km != null ? ` · ${formatKm(km)}` : ""}
+        </dd>
+        <dt>Intervalo configurado</dt>
+        <dd>{interval ?? "Sin información disponible"}</dd>
+      </dl>
+      {error ? (
+        <>
           <FormAlert>{error}</FormAlert>
-        ) : null}
-      </section>
-    </div>
+          <Button variant="outline" onClick={() => void cargar()}>
+            Reintentar evaluación
+          </Button>
+        </>
+      ) : null}
+      {aviso?.estado === "ABIERTO" && !isAdmin ? (
+        <Button
+          className="mt-3"
+          variant="outline"
+          disabled={busy}
+          onClick={() => void enterado()}
+        >
+          {busy ? "Marcando…" : "Marcar como enterado"}
+        </Button>
+      ) : null}
+      {aviso?.estado === "ENTERADO" ? (
+        <Note>
+          Enterado
+          {aviso.enteradoAt
+            ? ` · ${formatFechaHoraCorta(aviso.enteradoAt)}`
+            : ""}
+          . El reconocimiento no resuelve la condición del aviso.
+        </Note>
+      ) : null}
+    </section>
   );
 }

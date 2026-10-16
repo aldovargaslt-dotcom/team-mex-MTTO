@@ -15,7 +15,7 @@ export type HubVista = 'resumen' | 'tecnica' | 'mantenimiento' | 'historial';
 
 const VISTAS: { id: HubVista; label: string; icon: LucideIcon }[] = [
   { id: 'resumen', label: 'Resumen', icon: LayoutDashboard },
-  { id: 'tecnica', label: 'Datos de unidad', icon: ClipboardList },
+  { id: 'tecnica', label: 'Ficha técnica', icon: ClipboardList },
   { id: 'mantenimiento', label: 'Mantenimiento', icon: Wrench },
   { id: 'historial', label: 'Historial', icon: History },
 ];
@@ -38,7 +38,10 @@ export function HubFichaNav({
 }) {
   const activeRef = useRef<HTMLAnchorElement>(null);
   useEffect(() => {
-    activeRef.current?.scrollIntoView({ block: 'nearest', inline: 'center' });
+    const reveal = () => activeRef.current?.scrollIntoView({ block: 'nearest', inline: 'center' });
+    reveal();
+    window.addEventListener('resize', reveal);
+    return () => window.removeEventListener('resize', reveal);
   }, [vista]);
   return (
     <nav className="hub-side" aria-label="Secciones de la unidad">

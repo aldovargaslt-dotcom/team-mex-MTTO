@@ -1,5 +1,6 @@
 'use client';
 
+import { InventoryCostPanel } from '@/components/InventoryCostPanel';
 import { FormEvent, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { api, HttpError } from '@/lib/api';
@@ -28,6 +29,7 @@ export function RefaccionFicha({
   onClose,
   onChanged,
   onAjuste,
+  onEntrada,
 }: {
   item: ItemInventario | null;
   tipos: TipoVehiculo[];
@@ -37,6 +39,7 @@ export function RefaccionFicha({
   onClose: () => void;
   onChanged: (item?: ItemInventario) => void;
   onAjuste: (item: ItemInventario) => void;
+  onEntrada?: (item:ItemInventario)=>void;
 }) {
   const [minQty, setMinQty] = useState('');
   const [provId, setProvId] = useState('');
@@ -169,7 +172,7 @@ export function RefaccionFicha({
     >
       <SheetContent
         side="right"
-        className="overflow-y-auto sm:max-w-md"
+        className="overflow-y-auto inventory-detail-sheet"
         aria-describedby={undefined}
       >
         <SheetHeader>
@@ -188,6 +191,8 @@ export function RefaccionFicha({
               </p>
               <StockAlertaBadge alerta={detalle.alerta} />
             </div>
+            <div className="flex gap-2 flex-wrap">{onEntrada?<Button variant="outline" onClick={()=>onEntrada(detalle)}>Registrar entrada</Button>:null}<Button variant="secondary" onClick={()=>onAjuste(detalle)}>Ajustar existencias</Button></div>
+            <InventoryCostPanel key={detalle.id} itemId={detalle.id} role={role} userId={userId} onChanged={()=>void refresh()}/>
             <FormAlert>{error}</FormAlert>
             <form
               className="flex flex-wrap items-end gap-2"

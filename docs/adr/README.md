@@ -58,3 +58,5 @@ records user-confirmed target decisions consolidated 2026-10-15. Explicit partia
 supersession of ADR016/017/020/023 and extension of ADR011; historical bodies are
 preserved. Safety validation and the new proposed technical contract remain gates,
 not implementation or deployment approval.
+
+[ADR026 — Costos históricos y valoración de refacciones](026-inventario-costos-historicos.md): Accepted for the authorized implementation; Inventario owns valuation and historical snapshots. Manual migration and coordinated feature activation remain explicit release steps.

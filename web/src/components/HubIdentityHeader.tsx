@@ -130,7 +130,7 @@ export function HubIdentityHeader({
           ) : health ? (
             <UnitHealth
               health={health}
-              variant="header"
+              variant="compact"
               onOpen={onOpenHealth}
             />
           ) : null}
