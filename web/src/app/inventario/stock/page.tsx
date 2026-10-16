@@ -21,6 +21,7 @@ import {
   InventarioMovimientoSheet,
   type MovimientoSheetMode,
 } from '@/components/InventarioMovimientoSheet';
+import { InventoryResultCount } from '@/components/inventario/InventoryResultCount';
 import { ListFilter } from '@/components/ListFilter';
 import { RefaccionFicha } from '@/components/RefaccionFicha';
 import { StockAlertaBadge } from '@/components/StatusBadge';
@@ -226,6 +227,7 @@ function StockContent() {
     <div className="existencias-page">
       <PageHeader
         title="Existencias"
+        lede="Revisa faltantes y registra las piezas que llegan al almacén."
         actions={
           <>
             <Button
@@ -255,6 +257,7 @@ function StockContent() {
       <Field label="Buscar refacción" htmlFor="stock-search" className="inventory-search">
         <Input id="stock-search" type="search" placeholder="Nombre o código de la refacción" value={q} onChange={(event) => setSearch(event.target.value)} />
       </Field>
+      <div className="inventory-filter-field"><span className="inventory-filter-label">Estado de existencias</span>
       <ListFilter
         label="Filtro de existencias"
         value={filtro}
@@ -268,9 +271,11 @@ function StockContent() {
         }}
       />
       </div>
+      </div>
       <FormAlert>{error}</FormAlert>
       <ReadStatus loading={read.loading} error={read.error} loadingText="Cargando existencias…" errorText="No se pudieron cargar las existencias." retry={read.retry} />
       <ReadStatus loading={tipoRead.loading || provRead.loading} error={tipoRead.error || provRead.error} loadingText="Cargando catálogos de refacciones…" errorText="Catálogos de refacciones no disponibles; las existencias cargadas se conservan." retry={() => { if (tipoRead.error) tipoRead.retry(); if (provRead.error) provRead.retry(); }} />
+      {read.data !== null ? <InventoryResultCount count={filtered.length} total={rows.length} singular="refacción" plural="refacciones" /> : null}
       {read.data !== null ? (
         <DataTable
           columns={columns}
@@ -359,7 +364,7 @@ function StockContent() {
           setAlertasOpen(next);
         }}
       >
-        <DialogContent className="max-h-[90vh] overflow-hidden">
+        <DialogContent className="inventory-alert-dialog max-h-[90vh] overflow-hidden">
           <form
             className="grid max-h-[calc(90vh-2rem)] grid-rows-[auto_minmax(0,1fr)_auto]"
             onSubmit={guardarAlertas}
@@ -367,32 +372,28 @@ function StockContent() {
             <DialogHeader>
               <DialogTitle className="text-[16px]">Alertas de inventario</DialogTitle>
               <DialogDescription>
-                Te avisamos en la campanita cuando un producto se esté acabando.
+                Te avisamos al llegar al mínimo configurado. Déjalo vacío para no avisar.
               </DialogDescription>
             </DialogHeader>
-            <div className="min-h-0 space-y-3 overflow-y-auto py-3">
+            <div className="inventory-alert-list min-h-0 overflow-y-auto py-3">
               {rows.map((row) => (
                 <div
                   key={row.itemId}
-                  className="rounded-md border border-border p-3"
+                  className="inventory-alert-row"
                 >
-                  <p className="text-sm font-semibold text-navy">{row.nombre}</p>
+                  <div className="inventory-identity"><p className="text-sm font-medium text-navy">{row.nombre}</p>
                   <p className="mb-2 text-xs text-muted-foreground">
                     <span className="mono">{row.sku}</span>
                     {' · '}
-                    {row.qty} {etiquetaUom(row.uom)}
-                  </p>
+                    Existencia: {row.qty} {etiquetaUom(row.uom)}
+                  </p></div>
                   <Field
-                    label="Avisar cuando queden"
+                    label="Mínimo"
                     htmlFor={`alertaMin-${row.itemId}`}
-                    hint={
-                      <p className="text-[12px] text-muted-foreground">
-                        Piezas o menos. Vacío = no avisar de este producto.
-                      </p>
-                    }
                   >
                     <Input
                       id={`alertaMin-${row.itemId}`}
+                      aria-label={`Mínimo de ${row.nombre}`}
                       type="number"
                       min={0}
                       step={1}

@@ -4,6 +4,7 @@ import { useState, type FormEvent } from 'react';
 import { api, HttpError } from '@/lib/api';
 import { useRole } from '@/lib/role';
 import { useReadResource } from '@/lib/use-read-resource';
+import { InventoryResultCount } from '@/components/inventario/InventoryResultCount';
 import { ReadStatus } from '@/components/ReadStatus';
 import { Button } from '@/components/ui/button';
 import { Field, FormAlert, PageHeader } from '@/components/ui/field';
@@ -51,20 +52,24 @@ export function InventarioCatalogo({ kind }: { kind: keyof typeof CONFIG }) {
     } finally { setBusy(null); }
   }
   return <>
-    <PageHeader title={config.title} />
+    <PageHeader title={config.title} lede={kind === 'categorias' ? 'Organiza las refacciones para encontrarlas con facilidad.' : 'Administra los proveedores disponibles al registrar entradas.'} />
+    <section className="inventory-catalog-add" aria-labelledby="catalog-create-title">
+    <h2 id="catalog-create-title">{kind === 'categorias' ? 'Nueva categoría' : 'Nuevo proveedor'}</h2>
     <form onSubmit={crear} className="inventory-catalog-create" aria-busy={busy === 'create'}>
-      <Field label={kind === 'categorias' ? 'Nombre de la nueva categoría' : 'Nombre del nuevo proveedor'} htmlFor={`${kind}-nombre`} className="inventory-search">
+      <Field label="Nombre" htmlFor={`${kind}-nombre`} className="inventory-search">
         <Input id={`${kind}-nombre`} required value={nombre} disabled={busy !== null} onChange={(event) => setNombre(event.target.value)} placeholder={config.example} />
       </Field>
       <Button type="submit" disabled={busy !== null || !nombre.trim() || !role}>{busy === 'create' ? 'Guardando…' : `Agregar ${config.singular}`}</Button>
     </form>
+    </section>
     <FormAlert>{error}</FormAlert>
-    <p role="status" className="text-xs text-muted-foreground">{notice}</p>
+    {notice ? <p role="status" className="mb-3 text-xs text-muted-foreground">{notice}</p> : null}
     <ReadStatus loading={read.loading} error={read.error} loadingText={`Cargando ${config.title.toLowerCase()}…`} errorText={`No se pudieron cargar ${kind === 'categorias' ? 'las categorías' : 'los proveedores'}.`} retry={read.retry} />
     {read.data !== null ? <>
       {read.data.length > 0 ? <div className="inventory-toolbar">
         <Field label={`Buscar ${config.singular}`} htmlFor={`${kind}-search`} className="inventory-search"><Input id={`${kind}-search`} type="search" value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Buscar por nombre" /></Field>
       </div> : null}
+      <InventoryResultCount count={rows?.length ?? 0} total={read.data.length} singular={config.singular} plural={config.title.toLocaleLowerCase('es')} />
       <ul className="inventory-catalog-list" aria-label={config.title}>
         {rows?.length ? rows.map((row) => <li key={row.id}>
           <div className="inventory-identity"><strong className="font-medium text-navy">{row.nombre}</strong><span className="inventory-secondary">{row[config.state] ? (kind === 'categorias' ? 'Activa' : 'Activo') : (kind === 'categorias' ? 'Inactiva' : 'Inactivo')}</span></div>

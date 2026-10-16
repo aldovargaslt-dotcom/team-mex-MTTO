@@ -58,3 +58,6 @@ Owner autorizó crear estos artefactos de planificación (2026-10-01) y después
 
 | [EWO-040](EWO-040.md) | Costos de inventario e histórico por unidad | Verification |
 | [EWO-042](EWO-042.md) | Inventario operativo: entradas, faltantes y lectura por nombre | Verification |
+| [EWO-043](EWO-043.md) | Análisis de Inventario: consumo y movimientos con contexto compartido | Verification — implementación local; evidencia con fixtures |
+| [EWO-044](EWO-044.md) | Gráficas de comportamiento: evolución y ranking de consumo por unidad | Verification — implementación local; evidencia con fixtures |
+| [EWO-045](EWO-045.md) | Pulido integral de Inventario: navegación, filtros, listas y formularios | Verification — implementación local; evidencia con fixtures |

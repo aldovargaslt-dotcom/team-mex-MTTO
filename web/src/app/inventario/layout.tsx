@@ -10,8 +10,10 @@ export default function InventarioLayout({
 }) {
   return (
     <RoleGate allow={['SUPERVISOR', 'ADMIN_DIRECTIVO']}>
-      <InventarioNav />
-      {children}
+      <div className="inventory-workspace">
+        <InventarioNav />
+        {children}
+      </div>
     </RoleGate>
   );
 }

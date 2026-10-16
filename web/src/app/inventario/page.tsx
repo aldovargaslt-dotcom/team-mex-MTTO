@@ -27,6 +27,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { InventoryResultCount } from "@/components/inventario/InventoryResultCount";
 import { Field, FormAlert, Note, PageHeader } from "@/components/ui/field";
 import { Hint } from "@/components/ui/hint";
 import { Input, NativeSelect } from "@/components/ui/input";
@@ -170,9 +171,9 @@ export default function ItemsPage() {
     },
     {
       accessorKey: "stock",
-      header: "Stock",
+      header: "Existencias",
       cell: ({ row }) => (
-        <div className="flex items-center gap-2">
+        <div className="flex items-center justify-end gap-2">
           <span className="mono">
             {row.original.stock} {etiquetaUom(row.original.uom)}
           </span>
@@ -201,7 +202,7 @@ export default function ItemsPage() {
         }
       />
 
-      <div className="inventory-toolbar">
+      <div className="inventory-toolbar inventory-refacciones-toolbar">
         <Field label="Buscar refacción" htmlFor="itemSearch" className="inventory-search">
           <Input
             id="itemSearch"
@@ -211,6 +212,7 @@ export default function ItemsPage() {
             placeholder="Nombre, código o categoría"
           />
         </Field>
+        <div className="inventory-filter-field"><span className="inventory-filter-label">Estado</span>
         <div
           className="list-filter"
           role="group"
@@ -232,7 +234,10 @@ export default function ItemsPage() {
             </button>
           ))}
         </div>
+        </div>
+        <Field label="Categoría" htmlFor="item-category">
         <NativeSelect
+          id="item-category"
           aria-label="Categoría"
           value={categoryFilter}
           onChange={(e) => setCategoryFilter(e.target.value)}
@@ -244,6 +249,7 @@ export default function ItemsPage() {
             </option>
           ))}
         </NativeSelect>
+        </Field>
       </div>
       {created ? (
         <Note>
@@ -274,6 +280,7 @@ export default function ItemsPage() {
 
       {!loading && (items.length > 0 || !error) ? (
         <>
+          <InventoryResultCount count={filtered.length} total={items.length} singular="refacción" plural="refacciones" />
           <div className="inventario-refacciones-table">
             <DataTable
               columns={columns}
@@ -297,7 +304,7 @@ export default function ItemsPage() {
               }
               rowActionColumn="nombre"
               rowActionLabel={(item) => `Abrir ${item.nombre}`}
-              columnClassNames={{ stock: 'whitespace-nowrap' }}
+              columnClassNames={{ stock: 'text-right whitespace-nowrap' }}
               onRowClick={(item) => setFicha(item)}
             />
           </div>
@@ -399,13 +406,13 @@ export default function ItemsPage() {
       />
 
       <Dialog open={openNuevo} onOpenChange={(open) => { if (!saving) setOpenNuevo(open); }}>
-        <DialogContent>
+        <DialogContent className="inventory-create-dialog">
           <DialogHeader>
             <DialogTitle>Nueva refacción</DialogTitle>
           </DialogHeader>
           <form className="grid gap-3" onSubmit={crear} aria-busy={saving}>
             <FormAlert>{error}</FormAlert>
-            <fieldset disabled={saving} className="grid gap-3">
+            <fieldset disabled={saving} className="inventory-create-fields">
             <Field label="SKU" htmlFor="sku">
               <Input
                 id="sku"

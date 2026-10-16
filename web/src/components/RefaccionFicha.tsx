@@ -177,18 +177,17 @@ export function RefaccionFicha({
       >
         <SheetHeader>
           <SheetTitle>
-            {detalle ? `${detalle.nombre} · ${detalle.sku}` : 'Refacción'}
+            {detalle?.nombre ?? 'Refacción'}
           </SheetTitle>
           <SheetDescription>
+            <span className="inventory-secondary">{detalle?.sku}</span>
             Consulta existencias, configura el mínimo o registra una entrada.
           </SheetDescription>
         </SheetHeader>
         {detalle ? (
           <div className="grid gap-3 px-4 pb-6">
-            <div className="flex flex-wrap items-center gap-2">
-              <p className="muted">
-                Stock {detalle.stock} {etiquetaUom(detalle.uom)}
-              </p>
+            <div className="inventory-ficha-stock">
+              <p><span className="text-xs text-muted-foreground">Existencias </span><strong className="mono">{detalle.stock} {etiquetaUom(detalle.uom)}</strong></p>
               <StockAlertaBadge alerta={detalle.alerta} />
             </div>
             <div className="flex gap-2 flex-wrap">{onEntrada?<Button variant="outline" onClick={()=>onEntrada(detalle)}>Registrar entrada</Button>:null}<Button variant="secondary" onClick={()=>onAjuste(detalle)}>Ajustar existencias</Button></div>

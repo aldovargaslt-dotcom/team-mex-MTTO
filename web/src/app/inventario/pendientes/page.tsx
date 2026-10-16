@@ -1,6 +1,8 @@
 "use client";
 
 import { Suspense, useEffect, useMemo, useState } from "react";
+import Link from "next/link";
+import { analysisReturn } from "@/lib/inventory-analysis";
 import { useRouter, useSearchParams } from "next/navigation";
 import { inPeriodoIso } from "@/lib/consumo-totales";
 import { Input } from "@/components/ui/input";
@@ -27,6 +29,7 @@ import { ImageDropzone } from "@/components/ImageDropzone";
 import { OtLink, useOtLabels } from "@/components/OtLink";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { InventoryResultCount } from "@/components/inventario/InventoryResultCount";
 import { Field, FormAlert, PageHeader } from "@/components/ui/field";
 
 function readFile(file: File): Promise<string> {
@@ -45,6 +48,7 @@ function PendientesContent() {
   const params = useSearchParams();
   const router = useRouter();
   const item = params.get('item');
+  const returnToAnalysis = analysisReturn(params.get('analisis'));
   const from = params.get('from');
   const to = params.get('to');
   const { role, userId } = useRole();
@@ -68,7 +72,7 @@ function PendientesContent() {
   const [costAttempt, setCostAttempt] = useState(0);
   const [costLoading, setCostLoading] = useState(false);
   const scopedRows = useMemo(() => rows.filter((row) =>
-    (!item || row.itemId === item) && (!from || !to || inPeriodoIso(row.createdAt, from, to)),
+    (!item || row.itemId === item) && (!(from || to) || inPeriodoIso(row.createdAt, from ?? '0001-01-01', to ?? '9999-12-31')),
   ), [rows, item, from, to]);
   const visibleRows = useMemo(() => scopedRows.filter((row) =>
     (filter === "ALL" || row.estado === filter) && `${row.nombre} ${row.sku}`.toLocaleLowerCase('es').includes(search.trim().toLocaleLowerCase('es')),
@@ -164,12 +168,14 @@ function PendientesContent() {
     <>
       <PageHeader
         title="Comprobantes"
-        lede="Revisa por separado la recepción documental, el archivo adjunto y el costo de cada compra externa."
+        lede="Gestiona documentos, archivos y costos de las compras externas."
       />
-      <div className="inventory-toolbar">
+      {returnToAnalysis ? <div className="mb-3"><Button asChild variant="outline"><Link href={returnToAnalysis}>Volver a Análisis</Link></Button></div> : null}
+      <div className="inventory-toolbar inventory-comprobantes-toolbar">
         <Field label="Buscar compra externa" htmlFor="comprobante-search" className="inventory-search">
           <Input id="comprobante-search" type="search" placeholder="Nombre o SKU" value={search} onChange={(event) => setSearch(event.target.value)} />
         </Field>
+        <div className="inventory-filter-field"><span className="inventory-filter-label">Estado documental</span>
         <div
           className="list-filter"
           role="group"
@@ -191,8 +197,9 @@ function PendientesContent() {
             </button>
           ))}
         </div>
+        </div>
       </div>
-      {item || from || to ? <div className="inventory-scope-note"><span>{item ? (rows.find((row) => row.itemId === item)?.nombre ?? 'Refacción seleccionada') : 'Compras externas'}{from && to ? ` · ${from} al ${to}` : ''}</span><Button variant="secondary" onClick={() => { setFilter('ALL'); router.replace('/inventario/pendientes'); }}>Quitar filtro de origen</Button></div> : null}
+      {item || from || to ? <div className="inventory-scope-note"><span>{item ? (rows.find((row) => row.itemId === item)?.nombre ?? 'Refacción seleccionada') : 'Compras externas'}{from && to ? ` · ${from} al ${to}` : from ? ` · Desde ${from}` : to ? ` · Hasta ${to}` : ''}</span><Button variant="secondary" onClick={() => { setFilter('ALL'); router.replace('/inventario/pendientes'); }}>Quitar filtro de origen</Button></div> : null}
       <FormAlert>{selected ? null : error}</FormAlert>
       <ReadStatus
         loading={read.loading}
@@ -201,6 +208,7 @@ function PendientesContent() {
         errorText="No se pudieron cargar los comprobantes."
         retry={read.retry}
       />
+      {read.data !== null ? <InventoryResultCount count={visibleRows.length} total={scopedRows.length} singular="compra externa" plural="compras externas" /> : null}
       {read.data === null ? null : rows.length > 0 ? (
         <div className="card inventory-doc-list">
           <div className="inventory-doc-head" aria-hidden="true"><span>Compra externa</span><span>Documento</span><span>Archivo</span><span>Costo</span><span>Acción</span></div>
