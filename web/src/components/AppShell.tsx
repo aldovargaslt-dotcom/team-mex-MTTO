@@ -116,7 +116,7 @@ export function AppShell({ children }: { children: ReactNode }) {
               {items.map((item) => (
                 <NavLink
                   key={item.href}
-                  href={item.href}
+                  href={item.href === '/inventario' ? '/inventario/stock' : item.href}
                   active={Boolean(pathname?.startsWith(item.href))}
                 >
                   {item.label}
@@ -205,7 +205,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                 return (
                   <Link
                     key={item.href}
-                    href={item.href}
+                    href={item.href === '/inventario' ? '/inventario/stock' : item.href}
                     aria-current={active ? 'page' : undefined}
                     className={cn('shell-menu-link', active && 'active')}
                     onClick={() => setMenuOpen(false)}
@@ -250,7 +250,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             return (
               <Link
                 key={item.href}
-                href={item.href}
+                href={item.href === '/inventario' ? '/inventario/stock' : item.href}
                 aria-current={active ? 'page' : undefined}
                 className={cn('supervisor-bottom-nav__item', active && 'active')}
               >

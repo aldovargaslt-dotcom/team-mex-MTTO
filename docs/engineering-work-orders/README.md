@@ -57,3 +57,4 @@ Owner autorizó crear estos artefactos de planificación (2026-10-01) y después
 | [EWO-022](EWO-022.md) | 8 — departure/return/hardening | Verification |
 
 | [EWO-040](EWO-040.md) | Costos de inventario e histórico por unidad | Verification |
+| [EWO-042](EWO-042.md) | Inventario operativo: entradas, faltantes y lectura por nombre | Verification |

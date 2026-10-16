@@ -55,7 +55,7 @@ export function useOtLabels(visitaIds: Array<string | null | undefined>, opts: {
     retry: (id) => setRetry((current) => ({ key, id, attempt: (current?.attempt ?? 0) + 1 })) };
 }
 
-export function OtLink({ visitaId, labels }: { visitaId: string | null | undefined; labels: OtLabels }) {
+export function OtLink({ visitaId, labels, compact = false }: { visitaId: string | null | undefined; labels: OtLabels; compact?: boolean }) {
   const [retried, setRetried] = useState(false);
   if (!visitaId) return <span className="text-muted-foreground">—</span>;
   const state = labels.entries[visitaId];
@@ -69,9 +69,9 @@ export function OtLink({ visitaId, labels }: { visitaId: string | null | undefin
   return (
     <span className="ot-reference" aria-busy={loading}>
       <span role="status">{loading ? 'Cargando referencia…' : state.status === 'unavailable'
-        ? 'Referencia de visita no disponible para este acceso.' : state.status === 'forbidden'
-          ? 'No tienes acceso a esta visita.' : 'No se pudo consultar la referencia de visita.'}</span>{' '}
-      <span className="ot-reference-id">ID: {visitaId}</span>{' '}
+        ? (compact ? 'Orden no disponible' : 'Referencia de visita no disponible para este acceso.') : state.status === 'forbidden'
+          ? (compact ? 'Orden sin acceso' : 'No tienes acceso a esta visita.') : (compact ? 'Referencia no disponible' : 'No se pudo consultar la referencia de visita.')}</span>{' '}
+      {!compact ? <span className="ot-reference-id">ID: {visitaId}</span> : null}{' '}
       {retried || state?.status === 'error' ? retryButton : null}
     </span>
   );

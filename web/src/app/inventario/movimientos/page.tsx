@@ -3,11 +3,10 @@
 import { Suspense, useEffect, useMemo, useState } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { ColumnDef } from '@tanstack/react-table';
-import { ListFilter } from '@/components/ListFilter';
 import { OtLink, useOtLabels } from '@/components/OtLink';
 import { DataTable } from '@/components/ui/data-table';
 import { Field, PageHeader } from '@/components/ui/field';
-import { Input } from '@/components/ui/input';
+import { Input, NativeSelect } from '@/components/ui/input';
 import {
   Sheet,
   SheetContent,
@@ -115,7 +114,7 @@ function MovimientosContent() {
   const to = searchParams.get('to');
   const item = searchParams.get('item');
   const tipo = parseTipo(searchParams.get('tipo'));
-  const periodo = inferPeriodo(from, to);
+  const periodo = searchParams.get('periodo') === 'CUSTOM' ? 'CUSTOM' : inferPeriodo(from, to);
   const read = useReadResource(role ? JSON.stringify([role, userId, item, tipo, from, to]) : null, () => {
     const params = new URLSearchParams();
     if (item && UUID_RE.test(item)) params.set('itemId', item);
@@ -178,9 +177,9 @@ function MovimientosContent() {
         cell: ({ row }) => etiquetaMovimiento(row.original.tipo),
       },
       {
-        accessorKey: 'sku',
-        header: 'SKU',
-        cell: ({ row }) => <span className="mono">{row.original.sku}</span>,
+        accessorKey: 'nombre',
+        header: 'Refacción',
+        cell: ({ row }) => <span className="inventory-identity"><span>{row.original.nombre}</span><span className="inventory-secondary">{row.original.sku}</span></span>,
       },
       {
         accessorKey: 'qty',
@@ -206,13 +205,13 @@ function MovimientosContent() {
         accessorKey: 'visitaId',
         header: 'Visita',
         cell: ({ row }) => (
-          <OtLink visitaId={row.original.visitaId} labels={labels} />
+          <OtLink visitaId={row.original.visitaId} labels={labels} compact />
         ),
       },
       {
         accessorKey: 'nota',
         header: 'Nota',
-        cell: ({ row }) => row.original.nota || '—',
+        cell: ({ row }) => <span className="inventory-note-preview">{row.original.nota || '—'}</span>,
       },
     ],
     [labels],
@@ -235,7 +234,7 @@ function MovimientosContent() {
     chips.push({
       key: 'periodo',
       label: periodo === 'CUSTOM' ? rango : PERIODOS.find((p) => p.id === periodo)!.label,
-      clear: { from: null, to: null },
+      clear: { from: null, to: null, periodo: null },
     });
   }
   if (tipo) {
@@ -257,42 +256,24 @@ function MovimientosContent() {
     <>
       <PageHeader
         title="Movimientos"
-        lede="Entradas, salidas de visita y ajustes. Sin saldos inventados."
+        lede="Consulta qué cambió, cuándo y en qué orden se utilizó."
       />
 
-      <div className="mb-3">
-        <Field label="Buscar" htmlFor="movQ">
-          <Input
-            id="movQ"
-            value={q}
-            onChange={(e) => setParams({ q: e.target.value || null })}
-            placeholder="SKU, nombre o nota…"
-          />
+      <div className="inventory-toolbar">
+        <Field label="Buscar movimiento" htmlFor="movQ" className="inventory-search">
+          <Input id="movQ" type="search" value={q} onChange={(event) => setParams({ q: event.target.value || null })} placeholder="Nombre, SKU o nota" />
+        </Field>
+        <Field label="Periodo" htmlFor="movPeriod">
+          <NativeSelect id="movPeriod" value={periodo} onChange={(event) => {
+            const next = event.target.value as Periodo;
+            const dates = next === 'CUSTOM' ? (from || to ? { from, to } : datesForPeriod('HOY')) : datesForPeriod(next);
+            setParams({ from: dates.from, to: dates.to, periodo: next === 'CUSTOM' ? 'CUSTOM' : null });
+          }}>{PERIODOS.map((option) => <option key={option.id} value={option.id}>{option.label}</option>)}</NativeSelect>
+        </Field>
+        <Field label="Tipo" htmlFor="movType">
+          <NativeSelect id="movType" value={tipo ?? 'TODOS'} onChange={(event) => setParams({ tipo: event.target.value === 'TODOS' ? null : event.target.value })}>{TIPOS.map((option) => <option key={option.id} value={option.id}>{option.label}</option>)}</NativeSelect>
         </Field>
       </div>
-
-      <ListFilter
-        label="Periodo"
-        value={periodo}
-        options={PERIODOS}
-        onChange={(next) => {
-          if (next === 'CUSTOM') {
-            const dates = from || to ? { from, to } : datesForPeriod('HOY');
-            setParams({ from: dates.from, to: dates.to });
-            return;
-          }
-          const dates = datesForPeriod(next);
-          setParams({ from: dates.from, to: dates.to });
-        }}
-      />
-      <ListFilter
-        label="Tipo de movimiento"
-        value={tipo ?? 'TODOS'}
-        options={TIPOS}
-        onChange={(next) =>
-          setParams({ tipo: next === 'TODOS' ? null : next })
-        }
-      />
 
       {periodo === 'CUSTOM' ? (
         <div className="filters mb-3">
@@ -337,6 +318,10 @@ function MovimientosContent() {
         <DataTable
           columns={columns}
           data={filtered}
+          className="inventory-movements-table"
+          rowActionColumn="nombre"
+          rowActionLabel={(row) => `Abrir movimiento de ${row.nombre}`}
+          columnClassNames={{ qty: 'text-right whitespace-nowrap', delta: 'text-right whitespace-nowrap', tipo: 'whitespace-nowrap' }}
           onRowClick={setDetalle}
           empty={
             hayFiltros ? (
@@ -352,6 +337,16 @@ function MovimientosContent() {
           }
         />
       )}
+
+      {read.data !== null && filtered.length > 0 ? <ul className="inventory-operation-mobile" aria-label="Movimientos">
+        {filtered.map((row) => <li key={row.id}>
+          <button type="button" className="inventory-mobile-main" onClick={() => setDetalle(row)} aria-label={`Abrir movimiento de ${row.nombre}`}>
+            <span className="inventory-mobile-copy"><span className="font-medium text-navy">{row.nombre}</span><span className="inventory-secondary">{row.sku}</span></span>
+            <span className="inventory-mobile-meta"><span className="text-xs">{etiquetaMovimiento(row.tipo)}</span><span className="mono whitespace-nowrap">{row.delta > 0 ? '+' : ''}{row.delta} {etiquetaUom('pieza')}</span></span>
+          </button>
+          <div className="inventory-operation-context"><span>{formatFecha(row.createdAt)}</span><OtLink visitaId={row.visitaId} labels={labels} compact /></div>
+        </li>)}
+      </ul> : null}
 
       <Sheet
         open={detalle != null}

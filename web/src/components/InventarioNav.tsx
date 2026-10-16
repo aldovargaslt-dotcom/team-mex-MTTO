@@ -4,8 +4,8 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
 const OPS = [
-  { href: '/inventario', label: 'Refacciones', exact: true },
   { href: '/inventario/stock', label: 'Existencias' },
+  { href: '/inventario', label: 'Refacciones', exact: true },
   { href: '/inventario/movimientos', label: 'Movimientos' },
   { href: '/inventario/consumo', label: 'Consumo' },
   { href: '/inventario/pendientes', label: 'Comprobantes' },

@@ -177,10 +177,10 @@ export function RefaccionFicha({
       >
         <SheetHeader>
           <SheetTitle>
-            {detalle ? `${detalle.sku} · ${detalle.nombre}` : 'Refacción'}
+            {detalle ? `${detalle.nombre} · ${detalle.sku}` : 'Refacción'}
           </SheetTitle>
           <SheetDescription>
-            Stock, mínimo y compatibilidad. La lista queda de consulta.
+            Consulta existencias, configura el mínimo o registra una entrada.
           </SheetDescription>
         </SheetHeader>
         {detalle ? (
@@ -292,14 +292,6 @@ export function RefaccionFicha({
                 onClick={() => void toggleActivo()}
               >
                 {detalle.activo ? 'Inactivar' : 'Activar'}
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                size="compact"
-                onClick={() => onAjuste(detalle)}
-              >
-                Ajuste
               </Button>
               <Button asChild variant="outline" size="compact">
                 <Link href={`/inventario/movimientos?item=${detalle.id}`}>

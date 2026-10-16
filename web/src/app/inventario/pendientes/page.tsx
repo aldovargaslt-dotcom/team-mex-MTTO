@@ -1,6 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { inPeriodoIso } from "@/lib/consumo-totales";
+import { Input } from "@/components/ui/input";
 import { ReadStatus } from "@/components/ReadStatus";
 import { useReadResource } from "@/lib/use-read-resource";
 import { api, HttpError } from "@/lib/api";
@@ -24,7 +27,7 @@ import { ImageDropzone } from "@/components/ImageDropzone";
 import { OtLink, useOtLabels } from "@/components/OtLink";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { FormAlert, PageHeader } from "@/components/ui/field";
+import { Field, FormAlert, PageHeader } from "@/components/ui/field";
 
 function readFile(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -36,6 +39,14 @@ function readFile(file: File): Promise<string> {
 }
 
 export default function PendientesPage() {
+  return <Suspense fallback={<p role="status" className="muted">Cargando comprobantes…</p>}><PendientesContent /></Suspense>;
+}
+function PendientesContent() {
+  const params = useSearchParams();
+  const router = useRouter();
+  const item = params.get('item');
+  const from = params.get('from');
+  const to = params.get('to');
   const { role, userId } = useRole();
   const read = useReadResource(
     role ? JSON.stringify([role, userId, "pendientes"]) : null,
@@ -45,42 +56,46 @@ export default function PendientesPage() {
         userId,
       }),
   );
-  const rows = read.data ?? [];
+  const rows = useMemo(() => read.data ?? [], [read.data]);
   const setRows = read.setData;
   const [error, setError] = useState<string | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
-  const [filter, setFilter] = useState("PENDIENTE");
+  const [filter, setFilter] = useState(item ? "ALL" : "PENDIENTE");
   const [search, setSearch] = useState("");
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const selected = rows.find((row) => row.id === selectedId);
   const [costRows, setCostRows] = useState<Record<string, CostOperation[]>>({});
   const [costAttempt, setCostAttempt] = useState(0);
+  const [costLoading, setCostLoading] = useState(false);
+  const scopedRows = useMemo(() => rows.filter((row) =>
+    (!item || row.itemId === item) && (!from || !to || inPeriodoIso(row.createdAt, from, to)),
+  ), [rows, item, from, to]);
+  const visibleRows = useMemo(() => scopedRows.filter((row) =>
+    (filter === "ALL" || row.estado === filter) && `${row.nombre} ${row.sku}`.toLocaleLowerCase('es').includes(search.trim().toLocaleLowerCase('es')),
+  ), [scopedRows, filter, search]);
+  const costIds = [...new Set(visibleRows.map((row) => row.visitaId))].sort().join(',');
   useEffect(() => {
     let active = true;
     setCostRows({});
-    if (!read.data || !role) return;
-    const ids = [...new Set(read.data.map((row) => row.visitaId))];
-    void Promise.allSettled(
-      ids.map(async (id) => {
-        const result = await api<{ operations: CostOperation[] }>(
-          `/inventario/costos/consumos?visitaId=${id}`,
-          { role, userId },
-        );
-        return [id, result.operations] as const;
-      }),
-    ).then((results) => {
-      if (active)
-        setCostRows(
-          Object.fromEntries(
-            results.flatMap((r) => (r.status === "fulfilled" ? [r.value] : [])),
-          ),
-        );
+    if (!role || !costIds) { setCostLoading(false); return; }
+    setCostLoading(true);
+    const ids = costIds.split(',');
+    const entries: Array<readonly [string, CostOperation[]]> = [];
+    async function worker() {
+      while (ids.length) {
+        const id = ids.shift()!;
+        try {
+          const result = await api<{ operations: CostOperation[] }>(`/inventario/costos/consumos?visitaId=${id}`, { role: role!, userId });
+          if (!active) return;
+          entries.push([id, result.operations]);
+        } catch { if (!active) return; }
+      }
+    }
+    void Promise.all(Array.from({ length: Math.min(4, ids.length) }, worker)).then(() => {
+      if (active) { setCostRows(Object.fromEntries(entries)); setCostLoading(false); }
     });
-    return () => {
-      active = false;
-    };
-  }, [read.data, role, userId, costAttempt]);
-  const [ticketFor, setTicketFor] = useState<string | null>(null);
+    return () => { active = false; };
+  }, [costIds, role, userId, costAttempt, read.data]);
   const labels = useOtLabels(
     rows.map((row) => row.visitaId),
     { role, userId },
@@ -112,7 +127,6 @@ export default function PendientesPage() {
       setRows((current) =>
         (current ?? []).map((row) => (row.id === id ? updated : row)),
       );
-      setTicketFor(null);
     } catch (err) {
       setError(
         err instanceof HttpError
@@ -150,9 +164,12 @@ export default function PendientesPage() {
     <>
       <PageHeader
         title="Comprobantes"
-        lede="Documenta las compras externas utilizadas en órdenes. Recibir un comprobante no modifica existencias."
+        lede="Revisa por separado la recepción documental, el archivo adjunto y el costo de cada compra externa."
       />
       <div className="inventory-toolbar">
+        <Field label="Buscar compra externa" htmlFor="comprobante-search" className="inventory-search">
+          <Input id="comprobante-search" type="search" placeholder="Nombre o SKU" value={search} onChange={(event) => setSearch(event.target.value)} />
+        </Field>
         <div
           className="list-filter"
           role="group"
@@ -170,19 +187,13 @@ export default function PendientesPage() {
               className={filter === value ? "active" : ""}
               onClick={() => setFilter(value)}
             >
-              {label}
+              {label}{read.data !== null ? ` (${value === 'ALL' ? scopedRows.length : scopedRows.filter((row) => row.estado === value).length})` : ''}
             </button>
           ))}
         </div>
-        <input
-          className="control"
-          aria-label="Buscar comprobante"
-          placeholder="Refacción o código"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
       </div>
-      <FormAlert>{error}</FormAlert>
+      {item || from || to ? <div className="inventory-scope-note"><span>{item ? (rows.find((row) => row.itemId === item)?.nombre ?? 'Refacción seleccionada') : 'Compras externas'}{from && to ? ` · ${from} al ${to}` : ''}</span><Button variant="secondary" onClick={() => { setFilter('ALL'); router.replace('/inventario/pendientes'); }}>Quitar filtro de origen</Button></div> : null}
+      <FormAlert>{selected ? null : error}</FormAlert>
       <ReadStatus
         loading={read.loading}
         error={read.error}
@@ -191,122 +202,24 @@ export default function PendientesPage() {
         retry={read.retry}
       />
       {read.data === null ? null : rows.length > 0 ? (
-        <div className="card overflow-hidden">
-          {!rows.some(
-            (row) =>
-              (filter === "ALL" || row.estado === filter) &&
-              `${row.sku} ${row.nombre}`
-                .toLowerCase()
-                .includes(search.toLowerCase()),
-          ) ? (
-            <div className="empty-state">
-              No hay comprobantes con estos filtros.{" "}
-              <Button
-                variant="outline"
-                onClick={() => {
-                  setFilter("ALL");
-                  setSearch("");
-                }}
-              >
-                Quitar filtros
-              </Button>
-            </div>
-          ) : null}
-          {rows
-            .filter(
-              (row) =>
-                (filter === "ALL" || row.estado === filter) &&
-                `${row.sku} ${row.nombre}`
-                  .toLowerCase()
-                  .includes(search.toLowerCase()),
-            )
-            .map((row) => {
-              const abierto = row.estado === "PENDIENTE";
-              const operations = costRows[row.visitaId]?.filter(
-                (op) => op.itemId === row.itemId && op.kind === "EXTERNAL",
-              );
-              const costStatus = !operations
-                ? "Costo no disponible"
-                : !operations.length ||
-                    operations.some((op) => op.netCents == null)
-                  ? "Costo pendiente"
-                  : "Costo registrado";
-              return (
-                <div
-                  key={row.id}
-                  id={`pendiente-${row.id}`}
-                  tabIndex={-1}
-                  className="queue-row scroll-mt-20 target:bg-[#fff4e8]"
-                >
-                  <div>
-                    <p>
-                      <span className="mono">{row.sku}</span> {row.nombre} ·{" "}
-                      {row.qty} {etiquetaUom("pieza")}
-                    </p>
-                    <p className="muted">
-                      {formatFecha(row.createdAt)} ·{" "}
-                      <OtLink visitaId={row.visitaId} labels={labels} />
-                    </p>
-                    {row.ticketDataUrl ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
-                        src={row.ticketDataUrl}
-                        alt={`Ticket ${row.sku}`}
-                        className="mt-1 max-h-16 rounded-md border border-border"
-                      />
-                    ) : null}
-                    {ticketFor === row.id ? (
-                      <div className="mt-2">
-                        <ImageDropzone
-                          label="Tomar o subir"
-                          hint="Foto del ticket"
-                          disabled={busyId === row.id}
-                          onFile={(file) => void adjuntar(row.id, file)}
-                        />
-                      </div>
-                    ) : null}
-                  </div>
-                  <div className="row-actions">
-                    <span className="muted">{costStatus}</span>
-                    <Button
-                      variant="outline"
-                      onClick={() => setSelectedId(row.id)}
-                    >
-                      Ver detalle
-                    </Button>
-                    <Badge variant={abierto ? "warning" : "success"}>
-                      {etiquetaEstadoPendiente(row.estado)}
-                    </Badge>
-                    <>
-                      <Button
-                        type="button"
-                        size="compact"
-                        variant="secondary"
-                        disabled={busyId === row.id}
-                        onClick={() =>
-                          setTicketFor(ticketFor === row.id ? null : row.id)
-                        }
-                      >
-                        {row.ticketDataUrl
-                          ? "Agregar comprobante"
-                          : "Adjuntar comprobante"}
-                      </Button>
-                      {abierto ? (
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="compact"
-                          disabled={busyId === row.id}
-                          onClick={() => void recibir(row.id)}
-                        >
-                          Marcar comprobante recibido
-                        </Button>
-                      ) : null}
-                    </>
-                  </div>
-                </div>
-              );
-            })}
+        <div className="card inventory-doc-list">
+          <div className="inventory-doc-head" aria-hidden="true"><span>Compra externa</span><span>Documento</span><span>Archivo</span><span>Costo</span><span>Acción</span></div>
+          {visibleRows.length === 0 ? <div className="empty-state">No hay compras externas con estos filtros. <Button variant="outline" onClick={() => { setFilter('ALL'); setSearch(''); router.replace('/inventario/pendientes'); }}>Quitar filtros</Button></div> : null}
+          {visibleRows.map((row) => {
+            const operations = costRows[row.visitaId]?.filter((op) => op.itemId === row.itemId && op.kind === 'EXTERNAL');
+            const costStatus = costLoading ? 'Consultando…' : !operations ? 'No disponible' : !operations.length || operations.some((op) => op.netCents == null) ? 'Pendiente' : 'Registrado';
+            return <div key={row.id} id={`pendiente-${row.id}`} tabIndex={-1} className="inventory-doc-row scroll-mt-20">
+              <div className="inventory-identity">
+                <button type="button" className="inventory-object-link" onClick={() => { setError(null); setSelectedId(row.id); }} aria-label={`Revisar compra externa de ${row.nombre}`}>{row.nombre}</button>
+                <span className="inventory-secondary">{row.sku} · <span className="whitespace-nowrap">{row.qty} {etiquetaUom('pieza')}</span></span>
+                <span className="inventory-secondary">{formatFecha(row.createdAt)} · <OtLink visitaId={row.visitaId} labels={labels} compact /></span>
+              </div>
+              <div className="inventory-doc-fact"><span className="inventory-doc-label">Documento</span><Badge variant={row.estado === 'PENDIENTE' ? 'warning' : 'success'}>{etiquetaEstadoPendiente(row.estado)}</Badge></div>
+              <div className="inventory-doc-fact"><span className="inventory-doc-label">Archivo</span><span className="text-xs">{row.ticketDataUrl ? 'Adjunto' : 'Sin archivo'}</span></div>
+              <div className="inventory-doc-fact"><span className="inventory-doc-label">Costo</span><span className="text-xs text-muted-foreground">{costStatus}</span></div>
+              <Button type="button" size="compact" variant="secondary" onClick={() => { setError(null); setSelectedId(row.id); }} aria-label={`${row.ticketDataUrl ? 'Revisar comprobante' : 'Adjuntar comprobante'} de ${row.nombre}`}>{row.ticketDataUrl ? 'Revisar' : 'Adjuntar'}</Button>
+            </div>;
+          })}
         </div>
       ) : !read.error ? (
         <div className="empty-state">
@@ -344,20 +257,24 @@ export default function PendientesPage() {
                 {etiquetaEstadoPendiente(selected.estado)}
               </Badge>
               {selected.ticketDataUrl ? (
+                <div>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={selected.ticketDataUrl} alt={`Comprobante de ${selected.nombre}`} className="max-h-64 max-w-full rounded-md border border-border object-contain" />
                 <a
+                  className="inventory-source-link block"
                   href={selected.ticketDataUrl}
-                  target="_blank"
-                  rel="noreferrer"
+                  download={`${selected.sku}-comprobante`}
                 >
-                  Ver comprobante adjunto
+                  Descargar comprobante
                 </a>
+                </div>
               ) : (
                 <p className="muted">Sin comprobante adjunto.</p>
               )}
               <ImageDropzone
                 label="Tomar o subir"
                 hint="Foto del comprobante"
-                disabled={busyId === selected.id}
+                disabled={Boolean(busyId)}
                 onFile={(file) => void adjuntar(selected.id, file)}
               />
               {selected.estado === "PENDIENTE" ? (

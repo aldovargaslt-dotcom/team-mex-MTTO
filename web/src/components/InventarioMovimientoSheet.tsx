@@ -51,6 +51,7 @@ export function InventarioMovimientoSheet({
   onApplied: () => Promise<void> | void;
   onError: (message: string) => void;
 }) {
+  const [itemSearch, setItemSearch] = useState("");
   const [qty, setQty] = useState("1"),
     [nota, setNota] = useState(""),
     [currentId, setCurrentId] = useState(itemId),
@@ -66,7 +67,8 @@ export function InventarioMovimientoSheet({
   const [busy, setBusy] = useState(false),
     [error, setError] = useState(""),
     [uncertain, setUncertain] = useState(false),
-    [providerError, setProviderError] = useState(false);
+    [providerError, setProviderError] = useState(false),
+    [providerLoading, setProviderLoading] = useState(true);
   const request = useRef<{ key: string; body: string; path: string } | null>(
     null,
   );
@@ -79,6 +81,7 @@ export function InventarioMovimientoSheet({
   useEffect(() => {
     if (!mode) return;
     setCurrentId(itemId);
+    setItemSearch("");
     setQty(mode === "ajuste" ? "-1" : "1");
     setNota("");
     setSupplier("");
@@ -90,6 +93,7 @@ export function InventarioMovimientoSheet({
   }, [mode, itemId]);
   const loadProviders = useCallback(async () => {
     setProviderError(false);
+    setProviderLoading(true);
     try {
       setProviders(
         (
@@ -98,6 +102,8 @@ export function InventarioMovimientoSheet({
       );
     } catch {
       setProviderError(true);
+    } finally {
+      setProviderLoading(false);
     }
   }, [role, userId]);
   useEffect(() => {
@@ -208,7 +214,10 @@ export function InventarioMovimientoSheet({
         <form className="grid gap-4 px-4 pb-4" onSubmit={aplicar}>
           <FormAlert>{error}</FormAlert>
           <fieldset disabled={busy || uncertain} className="grid gap-3">
-            <Field label="Refacción" htmlFor="movItem">
+            {!lockItem ? <Field label="Buscar refacción" htmlFor="movItemSearch">
+              <Input id="movItemSearch" type="search" placeholder="Nombre o SKU" value={itemSearch} onChange={(event) => { setItemSearch(event.target.value); setCurrentId(""); }} />
+            </Field> : null}
+            <Field label={lockItem ? "Refacción" : "Seleccionar refacción"} htmlFor="movItem">
               <NativeSelect
                 id="movItem"
                 required
@@ -217,9 +226,9 @@ export function InventarioMovimientoSheet({
                 onChange={(e) => setCurrentId(e.target.value)}
               >
                 <option value="">Selecciona refacción</option>
-                {rows.map((row) => (
+                {rows.filter((row) => `${row.nombre} ${row.sku}`.toLocaleLowerCase('es').includes(itemSearch.trim().toLocaleLowerCase('es'))).sort((a, b) => a.nombre.localeCompare(b.nombre, 'es')).map((row) => (
                   <option key={row.itemId} value={row.itemId}>
-                    {row.sku} · {row.nombre} ({row.qty} {etiquetaUom(row.uom)})
+                    {row.nombre} · {row.sku} ({row.qty} {etiquetaUom(row.uom)})
                   </option>
                 ))}
               </NativeSelect>
@@ -250,6 +259,7 @@ export function InventarioMovimientoSheet({
                 <Field label="Proveedor" htmlFor="movSupplier">
                   <NativeSelect
                     id="movSupplier"
+                    disabled={providerLoading}
                     value={supplier}
                     required
                     onChange={(e) => setSupplier(e.target.value)}
@@ -262,7 +272,7 @@ export function InventarioMovimientoSheet({
                     ))}
                   </NativeSelect>
                 </Field>
-                {providerError ? (
+                {providerLoading ? <p className="muted" role="status">Cargando proveedores…</p> : providerError ? (
                   <div>
                     <p className="muted">
                       No se pudieron cargar los proveedores.
@@ -348,7 +358,7 @@ export function InventarioMovimientoSheet({
           <SheetFooter className="p-0">
             <Button
               type="submit"
-              disabled={busy || invalid || (mode === "entrada" && !supplier)}
+              disabled={busy || !currentId || invalid || (mode === "entrada" && !supplier)}
             >
               {busy
                 ? "Confirmando…"

@@ -155,22 +155,13 @@ export default function ItemsPage() {
 
   const columns: ColumnDef<ItemInventario, unknown>[] = [
     {
-      accessorKey: "sku",
-      header: "SKU",
-      cell: ({ row }) => <span className="mono">{row.original.sku}</span>,
-    },
-    {
       accessorKey: "nombre",
       header: "Nombre",
       cell: ({ row }) => (
-        <div>
-          {row.original.nombre}
-          {row.original.oem ? (
-            <div className="text-xs text-muted-foreground">
-              OEM {row.original.oem}
-            </div>
-          ) : null}
-        </div>
+        <span className="inventory-identity">
+          <span>{row.original.nombre}</span>
+          <span className="inventory-secondary">{row.original.sku}{row.original.oem ? ` · OEM ${row.original.oem}` : ''}</span>
+        </span>
       ),
     },
     {
@@ -191,11 +182,9 @@ export default function ItemsPage() {
     },
     {
       accessorKey: "activo",
-      header: "Estado",
+      header: "Registro",
       cell: ({ row }) => (
-        <Badge variant={row.original.activo ? "success" : "muted"}>
-          {row.original.activo ? "Activo" : "Inactivo"}
-        </Badge>
+        <span className="text-xs text-muted-foreground">{row.original.activo ? "Activo" : "Inactivo"}</span>
       ),
     },
   ];
@@ -204,26 +193,24 @@ export default function ItemsPage() {
     <>
       <PageHeader
         title="Refacciones"
-        lede="Identifica cada refacción antes de registrar entradas o consumos."
+        lede="Consulta los datos, códigos y compatibilidad de cada pieza."
         actions={
-          <Button type="button" onClick={() => setOpenNuevo(true)}>
+          <Button type="button" onClick={() => { setError(null); setOpenNuevo(true); }}>
             Nueva refacción
           </Button>
         }
       />
 
-      <div className="mb-3">
-        <Field label="Buscar" htmlFor="itemSearch">
+      <div className="inventory-toolbar">
+        <Field label="Buscar refacción" htmlFor="itemSearch" className="inventory-search">
           <Input
             id="itemSearch"
+            type="search"
             value={q}
             onChange={(e) => setQ(e.target.value)}
             placeholder="Nombre, código o categoría"
           />
         </Field>
-      </div>
-
-      <div className="inventory-toolbar">
         <div
           className="list-filter"
           role="group"
@@ -273,7 +260,7 @@ export default function ItemsPage() {
           </Button>
         </Note>
       ) : null}
-      <FormAlert>{error}</FormAlert>
+      <FormAlert>{openNuevo ? null : error}</FormAlert>
       {error ? (
         <Button variant="outline" onClick={() => void cargar()}>
           Reintentar catálogos
@@ -308,6 +295,9 @@ export default function ItemsPage() {
                   </>
                 )
               }
+              rowActionColumn="nombre"
+              rowActionLabel={(item) => `Abrir ${item.nombre}`}
+              columnClassNames={{ stock: 'whitespace-nowrap' }}
               onRowClick={(item) => setFicha(item)}
             />
           </div>
@@ -408,12 +398,14 @@ export default function ItemsPage() {
         onError={setError}
       />
 
-      <Dialog open={openNuevo} onOpenChange={setOpenNuevo}>
+      <Dialog open={openNuevo} onOpenChange={(open) => { if (!saving) setOpenNuevo(open); }}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Nueva refacción</DialogTitle>
           </DialogHeader>
-          <form className="grid gap-3" onSubmit={crear}>
+          <form className="grid gap-3" onSubmit={crear} aria-busy={saving}>
+            <FormAlert>{error}</FormAlert>
+            <fieldset disabled={saving} className="grid gap-3">
             <Field label="SKU" htmlFor="sku">
               <Input
                 id="sku"
@@ -479,16 +471,18 @@ export default function ItemsPage() {
                 <Note variant="warn">Elija al menos un tipo de vehículo.</Note>
               ) : null}
             </div>
+            </fieldset>
             <DialogFooter>
               <Button
                 type="button"
                 variant="secondary"
+                disabled={saving}
                 onClick={() => setOpenNuevo(false)}
               >
                 Cancelar
               </Button>
-              <Button type="submit" disabled={!familiaId}>
-                Guardar
+              <Button type="submit" disabled={saving || !familiaId}>
+                {saving ? 'Guardando…' : 'Guardar refacción'}
               </Button>
             </DialogFooter>
           </form>

@@ -1,6 +1,9 @@
 'use client';
 
-import { Suspense, useMemo } from 'react';
+import { Suspense, useMemo, useState } from 'react';
+import Link from 'next/link';
+import { Field } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { ColumnDef } from '@tanstack/react-table';
 import { ListFilter } from '@/components/ListFilter';
@@ -32,6 +35,7 @@ export default function ConsumoPage() {
 function ConsumoContent() {
   const { role, userId } = useRole();
   const router = useRouter();
+  const [search, setSearch] = useState('');
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const periodo = parsePeriodoConsumo(searchParams.get('periodo'));
@@ -56,31 +60,23 @@ function ConsumoContent() {
     [movimientos, pendientes, rango.from, rango.to],
   );
   const origen = useMemo(() => totalesOrigen(rows), [rows]);
+  const filtered = rows.filter((row) => `${row.nombre} ${row.sku}`.toLocaleLowerCase('es').includes(search.trim().toLocaleLowerCase('es')));
 
   const columns: ColumnDef<ConsumoSku, unknown>[] = useMemo(
     () => [
-      {
-        accessorKey: 'sku',
-        header: 'SKU',
-        cell: ({ row }) => <span className="mono">{row.original.sku}</span>,
-      },
-      { accessorKey: 'nombre', header: 'Refacción' },
+      { accessorKey: 'nombre', header: 'Refacción', cell: ({ row }) => <span className="inventory-identity"><span className="font-medium text-navy">{row.original.nombre}</span><span className="inventory-secondary">{row.original.sku}</span></span> },
       {
         accessorKey: 'salidaOt',
-        header: 'Salida OT',
+        header: 'Desde almacén',
         cell: ({ row }) => (
-          <span className="mono">
-            {movimientos === null ? 'No disponible' : `${row.original.salidaOt} ${etiquetaUom('pieza')}`}
-          </span>
+          movimientos === null ? 'No disponible' : <Link className="inventory-source-link mono" href={`/inventario/movimientos?item=${row.original.itemId}&tipo=SALIDA_OT&from=${rango.from}&to=${rango.to}`} aria-label={`Ver salidas de almacén de ${row.original.nombre}`}>{row.original.salidaOt} {etiquetaUom('pieza')}</Link>
         ),
       },
       {
         accessorKey: 'compraExterna',
         header: 'Compra externa',
         cell: ({ row }) => (
-          <span className="mono">
-            {pendientes === null ? 'No disponible' : `${row.original.compraExterna} ${etiquetaUom('pieza')}`}
-          </span>
+          pendientes === null ? 'No disponible' : <Link className="inventory-source-link mono" href={`/inventario/pendientes?item=${row.original.itemId}&from=${rango.from}&to=${rango.to}`} aria-label={`Ver compras externas de ${row.original.nombre}`}>{row.original.compraExterna} {etiquetaUom('pieza')}</Link>
         ),
       },
       {
@@ -102,22 +98,25 @@ function ConsumoContent() {
         ),
       },
     ],
-    [movimientos, pendientes],
+    [movimientos, pendientes, rango.from, rango.to],
   );
 
   return (
     <>
       <PageHeader
         title="Consumo"
-        lede="Totales del periodo por refacción. El libro de movimientos no cambia."
+        lede="Compara el uso desde almacén y las compras externas. Selecciona una cantidad para consultar su origen."
       />
 
+      <div className="inventory-toolbar">
+      <Field label="Buscar refacción" htmlFor="consumo-search" className="inventory-search"><Input id="consumo-search" type="search" value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Nombre o SKU" /></Field>
       <ListFilter
         label="Periodo"
         value={periodo}
         options={PERIODOS_CONSUMO}
         onChange={setPeriodo}
       />
+      </div>
 
       <p className="mb-3 text-xs text-muted-foreground">
         {movimientos === null ? 'Desde stock: no disponible' : `${origen.desdeStock.toLocaleString('es-MX')} ${etiquetaUom('pieza')} desde stock`} · {' '}
@@ -128,15 +127,12 @@ function ConsumoContent() {
       {movimientos === null && pendientes === null ? null : (
         <DataTable
           columns={columns}
-          data={rows}
-          onRowClick={(row) =>
-            router.push(
-              `/inventario/movimientos?item=${row.itemId}&from=${rango.from}&to=${rango.to}`,
-            )
-          }
+          data={filtered}
+          className="inventory-consumption-table"
+          columnClassNames={{ salidaOt: 'text-right whitespace-nowrap', compraExterna: 'text-right whitespace-nowrap', entrada: 'text-right whitespace-nowrap', ajuste: 'text-right whitespace-nowrap' }}
           empty={
             <>
-              {movimientos === null || pendientes === null ? 'La consulta está incompleta; faltan fuentes por cargar.' : 'No hay consumo en este periodo.'}
+              {movimientos === null || pendientes === null ? 'La consulta está incompleta; faltan fuentes por cargar.' : search.trim() ? 'No hay refacciones que coincidan con la búsqueda.' : 'No hay consumo en este periodo.'}
               <span className="mt-1 block text-muted-foreground">
                 Las salidas de visita y las compras externas aparecen aquí.
               </span>
@@ -144,6 +140,16 @@ function ConsumoContent() {
           }
         />
       )}
+      {filtered.length > 0 ? <ul className="inventory-operation-mobile" aria-label="Consumo por refacción">
+        {filtered.map((row) => <li key={row.itemId} className="inventory-consumption-item">
+          <div className="inventory-identity"><span className="font-medium text-navy">{row.nombre}</span><span className="inventory-secondary">{row.sku}</span></div>
+          <dl className="inventory-origin-grid">
+            <div><dt>Desde almacén</dt><dd>{movimientos === null ? 'No disponible' : <Link className="inventory-source-link mono" href={`/inventario/movimientos?item=${row.itemId}&tipo=SALIDA_OT&from=${rango.from}&to=${rango.to}`} aria-label={`Ver salidas de almacén de ${row.nombre}`}>{row.salidaOt} {etiquetaUom('pieza')}</Link>}</dd></div>
+            <div><dt>Compra externa</dt><dd>{pendientes === null ? 'No disponible' : <Link className="inventory-source-link mono" href={`/inventario/pendientes?item=${row.itemId}&from=${rango.from}&to=${rango.to}`} aria-label={`Ver compras externas de ${row.nombre}`}>{row.compraExterna} {etiquetaUom('pieza')}</Link>}</dd></div>
+          </dl>
+          <p className="inventory-secondary">Entradas: {movimientos === null ? 'No disponible' : `${row.entrada} ${etiquetaUom('pieza')}`} · Ajustes: {movimientos === null ? 'No disponible' : `${row.ajuste} ${etiquetaUom('pieza')}`}</p>
+        </li>)}
+      </ul> : null}
     </>
   );
 }

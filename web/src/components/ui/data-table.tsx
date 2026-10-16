@@ -23,12 +23,20 @@ export function DataTable<TData>({
   empty,
   getRowClassName,
   onRowClick,
+  rowActionColumn,
+  rowActionLabel,
+  columnClassNames,
+  className,
 }: {
   columns: ColumnDef<TData, unknown>[];
   data: TData[];
   empty?: ReactNode;
   getRowClassName?: (row: TData) => string | undefined;
   onRowClick?: (row: TData) => void;
+  rowActionColumn?: string;
+  rowActionLabel?: (row: TData) => string;
+  columnClassNames?: Record<string, string>;
+  className?: string;
 }) {
   const table = useReactTable({
     data,
@@ -37,13 +45,13 @@ export function DataTable<TData>({
   });
 
   return (
-    <div className="card overflow-x-auto">
+    <div className={cn('card overflow-x-auto', className)}>
       <Table>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id} className="hover:bg-[#fafafb]">
               {headerGroup.headers.map((header) => (
-                <TableHead key={header.id}>
+                <TableHead key={header.id} className={columnClassNames?.[header.column.id]}>
                   {header.isPlaceholder
                     ? null
                     : flexRender(
@@ -69,8 +77,20 @@ export function DataTable<TData>({
                 }
               >
                 {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  <TableCell key={cell.id} className={columnClassNames?.[cell.column.id]}>
+                    {onRowClick && cell.column.id === rowActionColumn ? (
+                      <button
+                        type="button"
+                        className="inventory-object-link"
+                        aria-label={rowActionLabel?.(row.original)}
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          onRowClick(row.original);
+                        }}
+                      >
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      </button>
+                    ) : flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
                 ))}
               </TableRow>

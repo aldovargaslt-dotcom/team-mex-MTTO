@@ -7,7 +7,7 @@ import { ColumnDef } from '@tanstack/react-table';
 import { ReadStatus } from '@/components/ReadStatus';
 import { useReadResource } from '@/lib/use-read-resource';
 import { api, HttpError } from '@/lib/api';
-import { etiquetaMinimo, etiquetaUom, magnitudExistencia } from '@/lib/format';
+import { etiquetaMinimo, etiquetaUom } from '@/lib/format';
 import { notifyInboxChanged } from '@/lib/inbox';
 import { useRole } from '@/lib/role';
 import type {
@@ -88,6 +88,12 @@ function StockContent() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const filtro = parseAlerta(searchParams.get('alerta'));
+  const q = searchParams.get('q') ?? '';
+  function setSearch(value: string) {
+    const params = new URLSearchParams(searchParams.toString());
+    if (value) params.set('q', value); else params.delete('q');
+    router.replace(`${pathname}${params.size ? `?${params}` : ''}`, { scroll: false });
+  }
   const read = useReadResource(role ? JSON.stringify([role, userId, 'stock']) : null,
     () => api<StockRow[]>('/inventario/stock', { role: role!, userId }));
   const rows = useMemo(() => read.data ?? [], [read.data]);
@@ -123,7 +129,7 @@ function StockContent() {
 
   function abrirEntrada() {
     setLockItem(false);
-    setItemId(rows[0]?.itemId ?? '');
+    setItemId('');
     setMode('entrada');
     setError(null);
   }
@@ -192,39 +198,29 @@ function StockContent() {
   }
 
   const filtered = useMemo(() => {
-    if (filtro === 'TODOS') return rows;
-    return rows.filter((row) => row.alerta === filtro);
-  }, [rows, filtro]);
-
-  const columns: ColumnDef<StockRow, unknown>[] = useMemo(
-    () => [
-      {
-        accessorKey: 'sku',
-        header: 'SKU',
-        cell: ({ row }) => <span className="mono">{row.original.sku}</span>,
-      },
-      { accessorKey: 'nombre', header: 'Nombre' },
-      { accessorKey: 'familia', header: 'Categoría' },
-      {
-        accessorKey: 'qty',
-        header: 'Cant.',
-        cell: ({ row }) => (
-          <span className="mono">{magnitudExistencia(row.original)}</span>
-        ),
-      },
-      {
-        id: 'min',
-        header: 'Mínimo',
-        cell: ({ row }) => etiquetaMinimo(row.original.minQty),
-      },
-      {
-        id: 'alerta',
-        header: 'Estado',
-        cell: ({ row }) => <StockAlertaBadge alerta={row.original.alerta} />,
-      },
-    ],
-    [],
-  );
+    const term = q.trim().toLocaleLowerCase('es');
+    return rows.filter((row) =>
+      (filtro === 'TODOS' || row.alerta === filtro) &&
+      `${row.nombre} ${row.sku} ${row.familia ?? ''}`.toLocaleLowerCase('es').includes(term),
+    ).sort((a, b) => {
+      const priority = (row: StockRow) => row.alerta === 'AGOTADO' ? 0 : row.alerta === 'BAJO' ? 1 : 2;
+      return priority(a) - priority(b) || a.nombre.localeCompare(b.nombre, 'es');
+    });
+  }, [rows, filtro, q]);
+  const filterOptions = FILTROS.map((option) => ({
+    ...option,
+    label: read.data === null ? option.label : `${option.label} (${option.id === 'TODOS' ? rows.length : rows.filter((row) => row.alerta === option.id).length})`,
+  }));
+  const columns: ColumnDef<StockRow, unknown>[] = [
+    {
+      accessorKey: 'nombre', header: 'Refacción',
+      cell: ({ row }) => <span className="inventory-identity"><span>{row.original.nombre}</span><span className="inventory-secondary">{row.original.sku}{row.original.familia ? ` · ${row.original.familia}` : ''}</span></span>,
+    },
+    { accessorKey: 'qty', header: 'Existencia', cell: ({ row }) => <span className="mono whitespace-nowrap">{row.original.qty} {etiquetaUom(row.original.uom)}</span> },
+    { id: 'min', header: 'Mínimo', cell: ({ row }) => etiquetaMinimo(row.original.minQty) },
+    { id: 'faltante', header: 'Faltante', cell: ({ row }) => row.original.minQty == null ? '—' : <span className="mono whitespace-nowrap">{Math.max(0, row.original.minQty - row.original.qty)} {etiquetaUom(row.original.uom)}</span> },
+    { id: 'alerta', header: 'Estado', cell: ({ row }) => row.original.alerta ? <StockAlertaBadge alerta={row.original.alerta} /> : <span className="text-xs text-muted-foreground">Sin alerta configurada</span> },
+  ];
 
   return (
     <div className="existencias-page">
@@ -255,10 +251,14 @@ function StockContent() {
           </>
         }
       />
+      <div className="inventory-toolbar inventory-stock-toolbar">
+      <Field label="Buscar refacción" htmlFor="stock-search" className="inventory-search">
+        <Input id="stock-search" type="search" placeholder="Nombre o código de la refacción" value={q} onChange={(event) => setSearch(event.target.value)} />
+      </Field>
       <ListFilter
         label="Filtro de existencias"
         value={filtro}
-        options={FILTROS}
+        options={filterOptions}
         onChange={(next) => {
           const params = new URLSearchParams(searchParams.toString());
           if (next === 'TODOS') params.delete('alerta');
@@ -267,6 +267,7 @@ function StockContent() {
           router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
         }}
       />
+      </div>
       <FormAlert>{error}</FormAlert>
       <ReadStatus loading={read.loading} error={read.error} loadingText="Cargando existencias…" errorText="No se pudieron cargar las existencias." retry={read.retry} />
       <ReadStatus loading={tipoRead.loading || provRead.loading} error={tipoRead.error || provRead.error} loadingText="Cargando catálogos de refacciones…" errorText="Catálogos de refacciones no disponibles; las existencias cargadas se conservan." retry={() => { if (tipoRead.error) tipoRead.retry(); if (provRead.error) provRead.retry(); }} />
@@ -274,10 +275,25 @@ function StockContent() {
         <DataTable
           columns={columns}
           data={filtered}
-          empty={emptyExistencias(filtro)}
+          className="inventory-stock-table"
+          rowActionColumn="nombre"
+          rowActionLabel={(row) => `Abrir ${row.nombre}`}
+          columnClassNames={{ qty: 'text-right whitespace-nowrap', min: 'text-right whitespace-nowrap', faltante: 'text-right whitespace-nowrap' }}
+          getRowClassName={(row) => row.alerta === 'AGOTADO' ? 'inventory-row-critical' : row.alerta === 'BAJO' ? 'inventory-row-warning' : undefined}
+          empty={q.trim() ? 'No hay refacciones que coincidan. Ajusta la búsqueda o los filtros.' : emptyExistencias(filtro)}
           onRowClick={(row) => void abrirFicha(row)}
         />
       ) : null}
+
+      {read.data !== null && filtered.length > 0 ? <ul className="inventory-stock-mobile" aria-label="Existencias">
+        {filtered.map((row) => <li key={row.itemId} className={row.alerta === 'AGOTADO' ? 'inventory-row-critical' : row.alerta === 'BAJO' ? 'inventory-row-warning' : ''}>
+          <button type="button" className="inventory-mobile-main" onClick={() => void abrirFicha(row)} aria-label={`Abrir ${row.nombre}`}>
+            <span className="inventory-mobile-copy"><span className="font-medium text-navy">{row.nombre}</span><span className="inventory-secondary">{row.sku}</span></span>
+            <span className="inventory-mobile-meta"><span className="mono whitespace-nowrap">{row.qty} {etiquetaUom(row.uom)}</span>{row.alerta ? <StockAlertaBadge alerta={row.alerta} /> : null}</span>
+          </button>
+          <p className="inventory-stock-mobile-context">{row.minQty == null ? 'Sin mínimo configurado' : row.qty === row.minQty ? `Mínimo: ${row.minQty} · En el mínimo` : `Mínimo: ${row.minQty} · Faltan ${Math.max(0, row.minQty - row.qty)} ${etiquetaUom(row.uom)}`}</p>
+        </li>)}
+      </ul> : null}
 
       <RefaccionFicha
         item={ficha}
@@ -294,6 +310,13 @@ function StockContent() {
         onChanged={(updated) => {
           if (updated) setFicha(updated);
           void cargar();
+        }}
+        onEntrada={(item) => {
+          setFicha(null);
+          setItemId(item.id);
+          setLockItem(true);
+          setMode('entrada');
+          setError(null);
         }}
         onAjuste={abrirAjuste}
       />
