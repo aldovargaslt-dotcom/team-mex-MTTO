@@ -210,7 +210,8 @@ these criteria do not approve the global ABC/UTIL feature.
 
 UTIL-05/11/12/13/17/18 remain broader related constraints. This slice does not
 complete historical correction, downtime overlap/reporting, safety or the global
-UTIL feature. Runtime verification is pending bounded execution approval.
+UTIL feature. Bounded execution is approved; verification results are recorded
+in EWO-038 evidence.
 
 Owner decision reference for automatic resumption: this chat, 2026-10-15,
 reply “1. Yes” to GrillMe Q1. That answer resolves retry behavior only; bounded

@@ -5,14 +5,14 @@
    ▲ Next.js 15.5.25 (Turbopack)
 
    Creating an optimized production build ...
- ✓ Finished writing to disk in 54ms
- ✓ Compiled successfully in 8.7s
+ ✓ Finished writing to disk in 96ms
+ ✓ Compiled successfully in 20.1s
    Linting and checking validity of types ...
    Collecting page data ...
    Generating static pages (0/32) ...
-   Generating static pages (8/32) 
-   Generating static pages (16/32) 
-   Generating static pages (24/32) 
+   Generating static pages (8/32)
+   Generating static pages (16/32)
+   Generating static pages (24/32)
  ✓ Generating static pages (32/32)
    Finalizing page optimization ...
    Collecting build traces ...

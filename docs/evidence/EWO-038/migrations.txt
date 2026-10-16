@@ -1,0 +1,74 @@
+
+> api@0.0.1 test:migrations
+> jest --config ./test/jest-migrations.json --runInBand
+
+  console.log
+    Migration "ControlTowerReadiness1790899200012" failed, error: column "current" does not exist
+
+      at PlatformTools.log (../src/platform/PlatformTools.ts:222:17)
+
+  console.log
+    Migration "AuditBackfillVisita1790899200002" failed, error: LEGACY_AUDIT_FAILED: [{"id":"22222222-2222-4222-8222-222222222222","issue":"invalid_visita"}]
+
+      at PlatformTools.log (../src/platform/PlatformTools.ts:222:17)
+
+  console.log
+    Migration "AuditBackfillVisita1790899200002" failed, error: LEGACY_AUDIT_FAILED: [{"id":"22222222-2222-4222-8222-222222222222","issue":"invalid_visita"}]
+
+      at PlatformTools.log (../src/platform/PlatformTools.ts:222:17)
+
+  console.log
+    Migration "AuditBackfillVisita1790899200002" failed, error: LEGACY_AUDIT_FAILED: [{"id":"22222222-2222-4222-8222-222222222222","issue":"invalid_visita"}]
+
+      at PlatformTools.log (../src/platform/PlatformTools.ts:222:17)
+
+  console.log
+    Migration "AuditBackfillVisita1790899200002" failed, error: LEGACY_AUDIT_FAILED: [{"id":"22222222-2222-4222-8222-222222222222","issue":"invalid_visita"}]
+
+      at PlatformTools.log (../src/platform/PlatformTools.ts:222:17)
+
+  console.log
+    Migration "AuditBackfillVisita1790899200002" failed, error: LEGACY_AUDIT_FAILED: [{"id":"22222222-2222-4222-8222-222222222222","issue":"invalid_visita"}]
+
+      at PlatformTools.log (../src/platform/PlatformTools.ts:222:17)
+
+  console.log
+    Migration "AuditBackfillVisita1790899200002" failed, error: LEGACY_AUDIT_FAILED: [{"unidad_id":"11111111-1111-4111-8111-111111111111","ids":["22222222-2222-4222-8222-222222222222","33333333-3333-4333-8333-333333333333"],"issue":"duplicate_draft"}]
+
+      at PlatformTools.log (../src/platform/PlatformTools.ts:222:17)
+
+  console.log
+    Migration "AuditBackfillVisita1790899200002" failed, error: LEGACY_AUDIT_FAILED: [{"id":"33333333-3333-4333-8333-333333333333","issue":"invalid_visita"}]
+
+      at PlatformTools.log (../src/platform/PlatformTools.ts:222:17)
+
+  console.log
+    Migration "AuditBackfillVisita1790899200002" failed, error: LEGACY_AUDIT_FAILED: [{"id":"66666666-6666-4666-8666-666666666666","issue":"visita_trabajos_orphan"}]
+
+      at PlatformTools.log (../src/platform/PlatformTools.ts:222:17)
+
+  console.log
+    Migration "AuditBackfillVisita1790899200002" failed, error: LEGACY_AUDIT_FAILED: [{"id":"22222222-2222-4222-8222-222222222222","issue":"invalid_visita"},{"id":"33333333-3333-4333-8333-333333333333","issue":"invalid_visita"}]
+
+      at PlatformTools.log (../src/platform/PlatformTools.ts:222:17)
+
+  console.log
+    Migration "AuditBackfillVisita1790899200002" failed, error: LEGACY_AUDIT_FAILED: [{"id":"eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee","issue":"invalid_outbox_envelope"}]
+
+      at PlatformTools.log (../src/platform/PlatformTools.ts:222:17)
+
+  console.log
+    Migration "DrainLegacyWriters1790899200004" failed, error: WRITERS_NOT_DRAINED: stop all legacy writers/bootstrap before proceeding.
+
+      at PlatformTools.log (../src/platform/PlatformTools.ts:222:17)
+
+Test Suites: 1 passed, 1 total
+Tests:       23 passed, 23 total
+Snapshots:   0 total
+Time:        7.936 s
+Ran all test suites.
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice
