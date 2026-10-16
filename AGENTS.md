@@ -88,7 +88,7 @@ README / [PRODUCT.md](context/PRODUCT.md): multi-almacén, lotes, costeo, OC for
 ## Verificación
 
 - API: skill [`verify-api`](.cursor/skills/verify-api/SKILL.md) o [`script/verify.sh`](script/verify.sh) (`cd api` / `cd web`; no hay `package.json` raíz).
-- UI: skill [`ui-implementer`](.cursor/skills/ui-implementer/SKILL.md) → skill [`proof-ui`](.cursor/skills/proof-ui/SKILL.md) (click-through + screenshots; **sin** Playwright) → subagente `ux-auditor` (Visual QA; **otro pase**).
+- UI: [Impeccable Operate](docs/design/EXTERNAL_SKILLS.md#impeccable-operate--estándar-antes-de-generar-ui) (dirección antes de JSX) → skill [`ui-implementer`](.cursor/skills/ui-implementer/SKILL.md) → revisión/pulido [`better-ui`](.agents/skills/better-ui/SKILL.md) ([alcance y precedencia](docs/design/EXTERNAL_SKILLS.md#better-ui--gate-estándar-de-pulido)) → skill [`proof-ui`](.cursor/skills/proof-ui/SKILL.md) (click-through + screenshots; **sin** Playwright) → subagente `ux-auditor` (Visual QA; **otro pase**).
 - CI: [`.github/workflows/verify.yml`](.github/workflows/verify.yml) — Jest unit+e2e y web lint+build. No correr `api` `lint --fix`.
 - Humanos: Postgres con `docker compose` (README). Cloud Agents: [`.cursor/environment.json`](.cursor/environment.json) (Postgres nativo). No inventar un tercer camino.
 
@@ -106,7 +106,7 @@ Flujo local y significado de PRD / SPEC / AC / EWO / ADR / evidencia: [WORKFLOW]
 - Registrar supuestos, riesgos y comandos con `PASS / FAIL / SKIPPED` en evidencia. E2E omitido nunca equivale a verificación completa.
 - Cerrar sesión con estado, archivos, evidencia y siguiente paso en el EWO; actualizar contexto solo por cambios duraderos.
 
-Skills externas opcionales de UI/UX: [selección, alcance y precedencia](docs/design/EXTERNAL_SKILLS.md). No sustituyen ADRs ni Visual QA.
+Impeccable Operate estándar para generar UI de tarea, gate `better-ui` y skills externas opcionales de UI/UX: [selección, alcance y precedencia](docs/design/EXTERNAL_SKILLS.md). No sustituyen ADRs ni Visual QA.
 
 
 ## CHECK — approved target overlay (Slice0)

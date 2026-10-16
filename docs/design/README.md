@@ -19,7 +19,11 @@ Spec funcional (ADR / corte / Must del PR)
         ↓
 Spec UX   UX_SPEC_TEMPLATE.md  (+ patrón y hermano a clonar)
         ↓
-Primer pase   ui-implementer: 8 puntos antes de JSX
+Dirección     Impeccable Operate: tarea, jerarquía, patrón y estados
+        ↓
+Primer pase   ui-implementer: construir con primitivas existentes
+        ↓
+Pulido        better-ui: revisar y corregir; prevalece el sistema local
         ↓
 Screenshot    skill proof-ui
         ↓
@@ -63,4 +67,4 @@ Un mismo razonamiento no implementa y aprueba.
 - No pide rediseñar pantallas existentes en el mismo PR que las toca por lógica.
 - “WO” = wizard de visita. El artefacto de ingeniería **histórico** es el brief / spec UX / PR, no una carpeta `work-orders/`. Ejecución no trivial nueva: **Engineering Work Order** `EWO-xxx` en [`docs/engineering-work-orders/`](../engineering-work-orders/) (nunca acrónimo WO).
 
-Skills externas opcionales: [Impeccable, UX Heuristics, Refactoring UI y Taste](EXTERNAL_SKILLS.md). Consultar alcance y restricciones antes de usarlas.
+Generación estándar de UI de tarea: [Impeccable Operate](EXTERNAL_SKILLS.md#impeccable-operate--estándar-antes-de-generar-ui). Gate estándar de pulido: [better-ui](EXTERNAL_SKILLS.md#better-ui--gate-estándar-de-pulido). Skills externas opcionales: [UX Heuristics, Refactoring UI y Taste](EXTERNAL_SKILLS.md). Consultar alcance y restricciones antes de usarlas.

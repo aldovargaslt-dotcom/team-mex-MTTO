@@ -62,14 +62,14 @@ El producto carga a una tarea; el usuario no espera a que “entre” la página
 
 ---
 
-## 4. Skills de UI de terceros — no instalar
+## 4. Skills de UI de terceros — alcance
 
 Este repo ya tiene DS, briefs de corte, `ui-implementer`, `proof-ui` y `ux-auditor`. Un skill always-on de landing **compite** con ADR-003.
 
 | Repo | Qué es | En Team Mex |
 |------|--------|-------------|
 | [ui-ux-pro-max-skill](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill) | Catálogo landing/SaaS (estilos, paletas, patterns de hero) | No. Propondría paleta/tipo nuevos y dashboards/GPS que v0 rechaza |
-| [impeccable](https://github.com/pbakaus/impeccable) | Director de craft + detector + `DESIGN.md` | No como always-on ni hooks. Este archivo ya recorta Operate. No `bolder` / `delight` / `overdrive` / `typeset` |
+| [impeccable](https://github.com/pbakaus/impeccable) | Director de craft + detector + `DESIGN.md` | Operate estándar antes de generar UI de tarea ([protocolo](EXTERNAL_SKILLS.md#impeccable-operate--estándar-antes-de-generar-ui)). Este archivo fija las reglas locales. Sin hooks ni always-on fuera de UI operativa. No `bolder` / `delight` / `overdrive` / `typeset` |
 | [taste-skill](https://github.com/leonxlnx/taste-skill) | Landing/portafolio; **se autoexcluye** de dashboards, tablas y UI multi-paso | No. El wizard WO y `DataTable` son exactamente eso |
 
 Referencias de pantallas reales: **Mobbin** (field service, Salesforce listados, ServiceTitan / Fleetio densos). No galerías de spa/SaaS.

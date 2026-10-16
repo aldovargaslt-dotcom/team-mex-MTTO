@@ -7,7 +7,11 @@ description: Implement Team Mex UI from an approved UX spec using existing primi
 
 Implementas UI. **No** apruebas el look: eso es `ux-auditor` en otro pase.
 
-## Primer pase (antes de JSX)
+## Dirección estándar (antes de JSX)
+
+Usar [Impeccable Operate](docs/design/EXTERNAL_SKILLS.md#impeccable-operate--estándar-antes-de-generar-ui) para generar UI de tarea. Abrir `.agents/skills/impeccable/SKILL.md`, `reference/operate.md` y, justo antes de editar UI, `reference/craft-floor.md` dentro de esa skill. Registrar tarea/acción, jerarquía, patrón/hermano, componentes, responsive y estados aplicables antes del primer paint. Prevalecen spec, ADR-003 y Operate craft; no hooks ni fuentes de contexto paralelas. Copy aislado sin impacto visual/interactivo: no aplicable.
+
+## Implementación y cierre
 
 Si saltas uno, rehacer el paint **antes** de QA.
 
@@ -17,8 +21,9 @@ Si saltas uno, rehacer el paint **antes** de QA.
 4. Un fill naranja por vista (cero en Inicio).
 5. Una excepción: no dos cards con el mismo hecho (causa Andon, km, alerta).
 6. Card solo con justificación de sección. Visita cerrada = un documento (`.doc-section`), no un Card por H2. Wizard borrador = un Card por paso.
-7. Skill `proof-ui` + [SCREENSHOT_WORKFLOW.md](docs/design/SCREENSHOT_WORKFLOW.md) (`d1440`; `m390` si WO/mobile).
-8. No auto-aprobar. Pedir `ux-auditor` con los PNG.
+7. Tras implementar y comprobar interacciones, ejecutar el gate `better-ui` y corregir según [alcance y precedencia](docs/design/EXTERNAL_SKILLS.md#better-ui--gate-estándar-de-pulido). Abrir `.agents/skills/better-ui/SKILL.md`; no generar pantallas con ella ni sobreescribir tokens/motion locales.
+8. Skill `proof-ui` + [SCREENSHOT_WORKFLOW.md](docs/design/SCREENSHOT_WORKFLOW.md) (`d1440`; `m390` si WO/mobile).
+9. No auto-aprobar. Pedir `ux-auditor` con los PNG.
 
 ## Leer (abrir; no recitar)
 
