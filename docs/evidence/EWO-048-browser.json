@@ -1,0 +1,175 @@
+{
+  "environment": "Chromium CDP; real role picker and disposable fixture. Unit action verifies destination only, not maintenance completion.",
+  "checks": [
+    {
+      "name": "AC02 supervisor 1440 maintenance remains in active alerts",
+      "result": "PASS"
+    },
+    {
+      "name": "AC01 supervisor sidebar no standalone Andon",
+      "result": "PASS"
+    },
+    {
+      "name": "AC03 supervisor work areas and configuration retained",
+      "result": "PASS"
+    },
+    {
+      "name": "AC01 supervisor collapsed rail has no Andon",
+      "result": "PASS"
+    },
+    {
+      "name": "AC03 supervisor 1440 bell preserved",
+      "result": "PASS"
+    },
+    {
+      "name": "AC02 supervisor 1440 filter preserves contextual action",
+      "result": "PASS"
+    },
+    {
+      "name": "AC03 supervisor 1440 no overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "AC02 supervisor 390 maintenance remains in active alerts",
+      "result": "PASS"
+    },
+    {
+      "name": "AC01 supervisor 390 menu has no Andon",
+      "result": "PASS"
+    },
+    {
+      "name": "AC03 supervisor 390 menu retains work areas/config",
+      "result": "PASS"
+    },
+    {
+      "name": "AC03 supervisor 390 bell preserved",
+      "result": "PASS"
+    },
+    {
+      "name": "AC02 supervisor 390 filter preserves contextual action",
+      "result": "PASS"
+    },
+    {
+      "name": "AC03 supervisor 390 no overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "AC02 supervisor 800 maintenance remains in active alerts",
+      "result": "PASS"
+    },
+    {
+      "name": "AC01 supervisor 800 menu has no Andon",
+      "result": "PASS"
+    },
+    {
+      "name": "AC03 supervisor 800 menu retains work areas/config",
+      "result": "PASS"
+    },
+    {
+      "name": "AC03 supervisor 800 bell preserved",
+      "result": "PASS"
+    },
+    {
+      "name": "AC02 supervisor 800 filter preserves contextual action",
+      "result": "PASS"
+    },
+    {
+      "name": "AC03 supervisor 800 no overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "AC02 admin 1440 maintenance remains in active alerts",
+      "result": "PASS"
+    },
+    {
+      "name": "AC01 admin sidebar no standalone Andon",
+      "result": "PASS"
+    },
+    {
+      "name": "AC03 admin work areas and configuration retained",
+      "result": "PASS"
+    },
+    {
+      "name": "AC03 Admin-only destinations retained",
+      "result": "PASS"
+    },
+    {
+      "name": "AC01 admin collapsed rail has no Andon",
+      "result": "PASS"
+    },
+    {
+      "name": "AC03 admin 1440 bell preserved",
+      "result": "PASS"
+    },
+    {
+      "name": "AC02 admin 1440 filter preserves contextual action",
+      "result": "PASS"
+    },
+    {
+      "name": "AC03 admin 1440 no overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "AC02 admin 390 maintenance remains in active alerts",
+      "result": "PASS"
+    },
+    {
+      "name": "AC01 admin 390 menu has no Andon",
+      "result": "PASS"
+    },
+    {
+      "name": "AC03 admin 390 menu retains work areas/config",
+      "result": "PASS"
+    },
+    {
+      "name": "AC03 admin 390 bell preserved",
+      "result": "PASS"
+    },
+    {
+      "name": "AC02 admin 390 filter preserves contextual action",
+      "result": "PASS"
+    },
+    {
+      "name": "AC03 admin 390 no overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "AC02 admin 800 maintenance remains in active alerts",
+      "result": "PASS"
+    },
+    {
+      "name": "AC01 admin 800 menu has no Andon",
+      "result": "PASS"
+    },
+    {
+      "name": "AC03 admin 800 menu retains work areas/config",
+      "result": "PASS"
+    },
+    {
+      "name": "AC03 admin 800 bell preserved",
+      "result": "PASS"
+    },
+    {
+      "name": "AC02 admin 800 filter preserves contextual action",
+      "result": "PASS"
+    },
+    {
+      "name": "AC03 admin 800 no overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "AC02 alert action routes to its unit maintenance context",
+      "result": "PASS"
+    },
+    {
+      "name": "AC02 legacy route preserved",
+      "result": "PASS"
+    }
+  ],
+  "screenshots": [
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo048_supervisor_inicio_d1440.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo048_supervisor_menu_m390.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo048_admin_inicio_d1440.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo048_admin_menu_m390.png"
+  ]
+}

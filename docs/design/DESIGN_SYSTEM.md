@@ -188,3 +188,10 @@ Por viewport visible:
 - Cero gradientes, cero sombras suaves, cero cards vacías.
 
 Detalle: [VISUAL_HIERARCHY.md](VISUAL_HIERARCHY.md).
+
+
+## Navegación de módulos — estándar aprobado 2026-10-17
+
+[Subnavegación de módulo](../design-system/ux-sidebar-module-navigation-v1.md): desktop con sidebar muestra secciones anidadas dentro del módulo, sin duplicarlas arriba de la vista. Teléfono adopta el patrón Inventario: acceso al módulo desde barra inferior; el botón del módulo activo abre sus secciones encima de la barra, con foco visual, enlaces reales y cierre accesible. Módulos sin subsecciones siguen como enlaces directos. Filtros, steppers y navegación de una ficha permanecen en contexto.
+
+Aplicado ahora solo a Inventario de Supervisor/Admin en desktop; móvil Inventario ya conserva su patrón actual (Admin mantiene selector superior por no tener bottom nav). Esto fija dirección para futuros cortes, no declara migrados otros módulos/roles ni cambia permisos. Configuración y navegación de fichas conservan implementación actual. Sidebar desktop comienza a1024; transición800 conserva navegación previa. EWO-050 documenta alcance y evidencia.

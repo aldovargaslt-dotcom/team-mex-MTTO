@@ -87,8 +87,11 @@ export function InventorySectionMenu({ placement = 'top' }: { placement?: 'top' 
           if (closeReason.current === 'cancel') return;
           event.preventDefault();
           if (closeReason.current === 'resize') {
-            const destination = document.querySelector<HTMLAnchorElement>('.inventory-primary-nav a[aria-current]')
-              ?? document.querySelector<HTMLAnchorElement>('.inventory-primary-nav a');
+            const destination = window.matchMedia('(min-width: 1024px)').matches
+              ? document.querySelector<HTMLElement>('.workspace-sidebar__sublink[aria-current="page"]')
+                ?? document.querySelector<HTMLElement>('.workspace-sidebar__module button')
+              : document.querySelector<HTMLElement>('.inventory-primary-nav a[aria-current]')
+                ?? document.querySelector<HTMLElement>('.inventory-primary-nav a');
             destination?.focus();
           }
         }}>

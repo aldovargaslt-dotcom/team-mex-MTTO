@@ -35,7 +35,6 @@ const NAV_ITEMS: {
   { href: '/logistica', label: 'Inicio', roles: ['LOGISTICA'] },
   { href: '/flota', label: 'Movimientos', roles: ['LOGISTICA', 'ADMIN_DIRECTIVO'] },
   { href: '/unidades', label: 'Unidades', roles: ['SUPERVISOR', 'ADMIN_DIRECTIVO'] },
-  { href: '/andon', label: 'Mantenimiento vencido', roles: ['SUPERVISOR', 'ADMIN_DIRECTIVO'] },
   {
     href: '/inventario',
     label: 'Inventario',

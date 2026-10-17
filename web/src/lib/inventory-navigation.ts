@@ -2,12 +2,12 @@ export type InventoryDestination = { href: string; label: string; exact?: boolea
 
 export const INVENTORY_OPS: readonly InventoryDestination[] = [
   { href: '/inventario/stock', label: 'Existencias' },
-  { href: '/inventario', label: 'Refacciones', exact: true },
   { href: '/inventario/analisis', label: 'Análisis' },
   { href: '/inventario/pendientes', label: 'Comprobantes' },
 ];
 
 export const INVENTORY_CATALOG: readonly InventoryDestination[] = [
+  { href: '/inventario', label: 'Refacciones', exact: true },
   { href: '/inventario/familias', label: 'Categorías' },
   { href: '/inventario/proveedores', label: 'Proveedores' },
 ];

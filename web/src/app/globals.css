@@ -4392,3 +4392,22 @@ body:has(.app--workspace) [data-slot='sheet-content'], body:has(.app--workspace)
     pointer-events: none;
   }
 }
+
+/* EWO-050: section navigation belongs to its desktop sidebar module. */
+@media (min-width: 1024px) {
+  .app--workspace .inventory-primary-nav,
+  .app--workspace .inventory-catalog-nav { display: none; }
+  .workspace-sidebar__chevron { margin-left: auto; flex-shrink: 0; }
+  .workspace-sidebar__chevron.is-open { transform: rotate(180deg); }
+  .workspace-sidebar__subnav { margin: 4px 0 6px 22px; padding-left: 10px; border-left: 1px solid var(--workspace-border); }
+  .workspace-sidebar__subnav[hidden] { display: none; }
+  .workspace-sidebar__sublink { display: flex; align-items: center; min-height: 44px; padding: 8px 10px; border-radius: 6px; color: var(--workspace-muted); font-size: 13px; }
+  .workspace-sidebar__sublink.active { color: var(--workspace-ink); background: var(--workspace-selected); font-weight: 600; }
+  .workspace-sidebar__sublink:focus-visible { outline: 2px solid var(--navy); outline-offset: -2px; }
+  .workspace-sidebar__subheading { margin: 8px 0 0; padding: 8px 10px 4px; color: var(--workspace-muted); font-size: 12px; font-weight: 500; }
+  .workspace-sidebar__catalog { padding-left: 10px; }
+}
+
+@media (min-width: 1024px) and (hover: hover) {
+  .workspace-sidebar__sublink:hover { color: var(--workspace-ink); background: var(--workspace-selected); }
+}

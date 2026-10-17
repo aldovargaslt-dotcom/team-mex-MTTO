@@ -10,7 +10,7 @@ import { INVENTORY_OPS as OPS, INVENTORY_CATALOG as CATALOGO, isInventoryDestina
 export function InventarioNav() {
   const pathname = usePathname();
   const { role } = useRole();
-  const catalogOpen = CATALOGO.some((link) => isActive(pathname, link.href));
+  const catalogOpen = CATALOGO.some((link) => isActive(pathname, link.href, link.exact));
   const primaryNav = useRef<HTMLElement>(null);
   useEffect(() => {
     const nav = primaryNav.current;
@@ -40,7 +40,7 @@ export function InventarioNav() {
           );
         })}
         <Link
-          href="/inventario/familias"
+          href="/inventario"
           className={catalogOpen ? 'active' : ''}
           aria-current={catalogOpen ? 'location' : undefined}
         >
@@ -50,7 +50,7 @@ export function InventarioNav() {
       {catalogOpen ? (
         <nav className="subnav inventory-catalog-nav" aria-label="Catálogo">
           {CATALOGO.map((link) => {
-            const active = isActive(pathname, link.href);
+            const active = isActive(pathname, link.href, link.exact);
             return (
               <Link
                 key={link.href}
