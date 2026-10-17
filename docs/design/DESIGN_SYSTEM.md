@@ -92,6 +92,16 @@ Borde 1px `--border`. Outline de botón terciario: 1.5px navy. Foco de botones/c
 
 ---
 
+## Evolución del shell — piloto EWO-047
+
+[UX sidebar v1](../design-system/ux-supervisor-identidad-sidebar-v1.md) enmienda
+la disposición desktop anterior para Supervisor/Admin: sidebar clara plegable
+≥1024 px, menú adaptable 768–1023 y bottom nav Supervisor conservada <768.
+El ancho de contenido 1040 px se aplica al espacio restante. Los demás roles
+conservan el shell anterior. Se mantienen Roboto, marca, filtros neutros y reglas
+semánticas; no se habilita dark mode. Véase [SPEC](../specs/SPEC-UI-SUPERVISOR-001.md).
+Las referencias a nav desktop ≥768 abajo describen el shell legado.
+
 ## Ancho y grid
 
 - Contenido: **1040px** centrado (`.main`, `.shell-header__bar`).

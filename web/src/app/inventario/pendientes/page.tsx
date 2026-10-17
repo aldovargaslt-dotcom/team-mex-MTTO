@@ -165,7 +165,7 @@ function PendientesContent() {
   }
 
   return (
-    <>
+    <div className="supervisor-visual-pilot comprobantes-pilot">
       <PageHeader
         title="Comprobantes"
         lede="Gestiona documentos, archivos y costos de las compras externas."
@@ -307,6 +307,6 @@ function PendientesContent() {
           ) : null}
         </SheetContent>
       </Sheet>
-    </>
+    </div>
   );
 }

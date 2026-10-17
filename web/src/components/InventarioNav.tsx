@@ -3,31 +3,13 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useRef } from 'react';
-
-const OPS = [
-  { href: '/inventario/stock', label: 'Existencias' },
-  { href: '/inventario', label: 'Refacciones', exact: true },
-  { href: '/inventario/analisis', label: 'Análisis' },
-  { href: '/inventario/pendientes', label: 'Comprobantes' },
-] as const;
-
-const CATALOGO = [
-  { href: '/inventario/familias', label: 'Categorías' },
-  { href: '/inventario/proveedores', label: 'Proveedores' },
-] as const;
-
-function isActive(
-  pathname: string | null,
-  href: string,
-  exact?: boolean,
-) {
-  if (!pathname) return false;
-  if (exact) return pathname === href;
-  return pathname === href || pathname.startsWith(`${href}/`);
-}
+import { InventorySectionMenu } from '@/components/InventorySectionMenu';
+import { useRole } from '@/lib/role';
+import { INVENTORY_OPS as OPS, INVENTORY_CATALOG as CATALOGO, isInventoryDestination as isActive } from '@/lib/inventory-navigation';
 
 export function InventarioNav() {
   const pathname = usePathname();
+  const { role } = useRole();
   const catalogOpen = CATALOGO.some((link) => isActive(pathname, link.href));
   const primaryNav = useRef<HTMLElement>(null);
   useEffect(() => {
@@ -42,9 +24,10 @@ export function InventarioNav() {
 
   return (
     <>
+      {role === 'ADMIN_DIRECTIVO' ? <div className="inventory-mobile-nav"><InventorySectionMenu /></div> : null}
       <nav ref={primaryNav} className="subnav inventory-primary-nav" aria-label="Inventario">
         {OPS.map((link) => {
-          const active = isActive(pathname, link.href, 'exact' in link && link.exact);
+          const active = isActive(pathname, link.href, link.exact);
           return (
             <Link
               key={link.href}

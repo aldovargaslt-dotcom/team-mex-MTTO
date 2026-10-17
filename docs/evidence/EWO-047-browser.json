@@ -1,0 +1,495 @@
+{
+  "environment": "Chromium CDP; real role picker + local disposable HTTP fixture, not live API",
+  "checks": [
+    {
+      "name": "AC01/04 supervisor d1440 page width",
+      "result": "PASS"
+    },
+    {
+      "name": "AC01/04 supervisor d1440 sidebar breakpoint",
+      "result": "PASS"
+    },
+    {
+      "name": "AC03 supervisor d1440 neutral filter",
+      "result": "PASS"
+    },
+    {
+      "name": "AC01 supervisor secondary destinations",
+      "result": "PASS"
+    },
+    {
+      "name": "AC03 supervisor active inventory",
+      "result": "PASS"
+    },
+    {
+      "name": "AC05 supervisor d1440 search empty",
+      "result": "PASS"
+    },
+    {
+      "name": "AC05/07 supervisor d1440 portaled sheet",
+      "result": "PASS"
+    },
+    {
+      "name": "AC07 supervisor d1440 sheet duration",
+      "result": "PASS"
+    },
+    {
+      "name": "AC02 supervisor d1440 icon rail",
+      "result": "PASS"
+    },
+    {
+      "name": "AC02 supervisor d1440 expand state",
+      "result": "PASS"
+    },
+    {
+      "name": "AC02 supervisor d1440 keyboard tooltip",
+      "result": "PASS"
+    },
+    {
+      "name": "AC02 tooltip dismissible",
+      "result": "PASS"
+    },
+    {
+      "name": "AC02 keyboard advances to secondary destination",
+      "result": "PASS"
+    },
+    {
+      "name": "AC01/04 supervisor d1024 page width",
+      "result": "PASS"
+    },
+    {
+      "name": "AC01/04 supervisor d1024 sidebar breakpoint",
+      "result": "PASS"
+    },
+    {
+      "name": "AC03 supervisor d1024 neutral filter",
+      "result": "PASS"
+    },
+    {
+      "name": "AC05 supervisor d1024 search empty",
+      "result": "PASS"
+    },
+    {
+      "name": "AC05/07 supervisor d1024 portaled sheet",
+      "result": "PASS"
+    },
+    {
+      "name": "AC07 supervisor d1024 sheet duration",
+      "result": "PASS"
+    },
+    {
+      "name": "AC02 supervisor d1024 icon rail",
+      "result": "PASS"
+    },
+    {
+      "name": "AC02 supervisor d1024 expand state",
+      "result": "PASS"
+    },
+    {
+      "name": "AC02 supervisor d1024 keyboard tooltip",
+      "result": "PASS"
+    },
+    {
+      "name": "AC01/04 supervisor t800 page width",
+      "result": "PASS"
+    },
+    {
+      "name": "AC01/04 supervisor t800 sidebar breakpoint",
+      "result": "PASS"
+    },
+    {
+      "name": "AC03 supervisor t800 neutral filter",
+      "result": "PASS"
+    },
+    {
+      "name": "AC05 supervisor t800 search empty",
+      "result": "PASS"
+    },
+    {
+      "name": "AC05/07 supervisor t800 portaled sheet",
+      "result": "PASS"
+    },
+    {
+      "name": "AC07 supervisor t800 sheet duration",
+      "result": "PASS"
+    },
+    {
+      "name": "AC04 supervisor t800 full menu",
+      "result": "PASS"
+    },
+    {
+      "name": "AC01/04 supervisor m390 page width",
+      "result": "PASS"
+    },
+    {
+      "name": "AC01/04 supervisor m390 sidebar breakpoint",
+      "result": "PASS"
+    },
+    {
+      "name": "AC03 supervisor m390 neutral filter",
+      "result": "PASS"
+    },
+    {
+      "name": "AC05 supervisor m390 search empty",
+      "result": "PASS"
+    },
+    {
+      "name": "AC05/07 supervisor m390 portaled sheet",
+      "result": "PASS"
+    },
+    {
+      "name": "AC07 supervisor m390 sheet duration",
+      "result": "PASS"
+    },
+    {
+      "name": "AC04 supervisor m390 full menu",
+      "result": "PASS"
+    },
+    {
+      "name": "AC01/04 admin d1440 page width",
+      "result": "PASS"
+    },
+    {
+      "name": "AC01/04 admin d1440 sidebar breakpoint",
+      "result": "PASS"
+    },
+    {
+      "name": "AC03 admin d1440 neutral filter",
+      "result": "PASS"
+    },
+    {
+      "name": "AC01 admin secondary destinations",
+      "result": "PASS"
+    },
+    {
+      "name": "AC08 Admin Usuarios preserved",
+      "result": "PASS"
+    },
+    {
+      "name": "AC03 admin active inventory",
+      "result": "PASS"
+    },
+    {
+      "name": "AC05 admin d1440 search empty",
+      "result": "PASS"
+    },
+    {
+      "name": "AC05/07 admin d1440 portaled sheet",
+      "result": "PASS"
+    },
+    {
+      "name": "AC07 admin d1440 sheet duration",
+      "result": "PASS"
+    },
+    {
+      "name": "AC02 admin d1440 icon rail",
+      "result": "PASS"
+    },
+    {
+      "name": "AC02 admin d1440 expand state",
+      "result": "PASS"
+    },
+    {
+      "name": "AC02 admin d1440 keyboard tooltip",
+      "result": "PASS"
+    },
+    {
+      "name": "AC01/04 admin d1024 page width",
+      "result": "PASS"
+    },
+    {
+      "name": "AC01/04 admin d1024 sidebar breakpoint",
+      "result": "PASS"
+    },
+    {
+      "name": "AC03 admin d1024 neutral filter",
+      "result": "PASS"
+    },
+    {
+      "name": "AC05 admin d1024 search empty",
+      "result": "PASS"
+    },
+    {
+      "name": "AC05/07 admin d1024 portaled sheet",
+      "result": "PASS"
+    },
+    {
+      "name": "AC07 admin d1024 sheet duration",
+      "result": "PASS"
+    },
+    {
+      "name": "AC02 admin d1024 icon rail",
+      "result": "PASS"
+    },
+    {
+      "name": "AC02 admin d1024 expand state",
+      "result": "PASS"
+    },
+    {
+      "name": "AC02 admin d1024 keyboard tooltip",
+      "result": "PASS"
+    },
+    {
+      "name": "AC01/04 admin t800 page width",
+      "result": "PASS"
+    },
+    {
+      "name": "AC01/04 admin t800 sidebar breakpoint",
+      "result": "PASS"
+    },
+    {
+      "name": "AC03 admin t800 neutral filter",
+      "result": "PASS"
+    },
+    {
+      "name": "AC05 admin t800 search empty",
+      "result": "PASS"
+    },
+    {
+      "name": "AC05/07 admin t800 portaled sheet",
+      "result": "PASS"
+    },
+    {
+      "name": "AC07 admin t800 sheet duration",
+      "result": "PASS"
+    },
+    {
+      "name": "AC04 admin t800 full menu",
+      "result": "PASS"
+    },
+    {
+      "name": "AC01/04 admin m390 page width",
+      "result": "PASS"
+    },
+    {
+      "name": "AC01/04 admin m390 sidebar breakpoint",
+      "result": "PASS"
+    },
+    {
+      "name": "AC03 admin m390 neutral filter",
+      "result": "PASS"
+    },
+    {
+      "name": "AC05 admin m390 search empty",
+      "result": "PASS"
+    },
+    {
+      "name": "AC05/07 admin m390 portaled sheet",
+      "result": "PASS"
+    },
+    {
+      "name": "AC07 admin m390 sheet duration",
+      "result": "PASS"
+    },
+    {
+      "name": "AC04 admin m390 full menu",
+      "result": "PASS"
+    },
+    {
+      "name": "AC05 d1440 insufficient stock disables Continue",
+      "result": "PASS"
+    },
+    {
+      "name": "AC05 d1440 external purchase enables Continue",
+      "result": "PASS"
+    },
+    {
+      "name": "AC04 d1440 wizard page fits",
+      "result": "PASS"
+    },
+    {
+      "name": "AC05 d1440 Continue saves and advances to Firmas",
+      "result": "PASS"
+    },
+    {
+      "name": "AC05 m390 insufficient stock disables Continue",
+      "result": "PASS"
+    },
+    {
+      "name": "AC05 m390 external purchase enables Continue",
+      "result": "PASS"
+    },
+    {
+      "name": "AC04 m390 wizard page fits",
+      "result": "PASS"
+    },
+    {
+      "name": "AC05 m390 Continue saves and advances to Firmas",
+      "result": "PASS"
+    },
+    {
+      "name": "AC05 read error is visible",
+      "result": "PASS"
+    },
+    {
+      "name": "AC05 retry and empty state",
+      "result": "PASS"
+    },
+    {
+      "name": "AC07 real sidebar interpolation",
+      "result": "PASS",
+      "samples": [
+        215.90625,
+        166.890625,
+        134.890625,
+        114.890625,
+        101.25,
+        91.546875,
+        84.5,
+        79.453125,
+        75.90625,
+        73.640625,
+        72.390625,
+        72,
+        72,
+        72,
+        72
+      ]
+    },
+    {
+      "name": "AC07 reduced motion sidebar",
+      "result": "PASS"
+    },
+    {
+      "name": "AC07 reduced motion sheet",
+      "result": "PASS"
+    },
+    {
+      "name": "AC08 logística old shell",
+      "result": "PASS"
+    },
+    {
+      "name": "AC08 mecánico old shell",
+      "result": "PASS"
+    },
+    {
+      "name": "AC08 focused checks no sidebar",
+      "result": "PASS"
+    },
+    {
+      "name": "AC02 supervisor actual keyboard focus visible",
+      "result": "PASS"
+    },
+    {
+      "name": "AC02 supervisor keyboard focus ring",
+      "result": "PASS"
+    },
+    {
+      "name": "AC02 supervisor Escape dismisses label",
+      "result": "PASS"
+    },
+    {
+      "name": "AC02 supervisor short height nav scrolls",
+      "result": "PASS"
+    },
+    {
+      "name": "AC02 supervisor secondary reachable in short height",
+      "result": "PASS"
+    },
+    {
+      "name": "AC04 supervisor 200 percent equivalent reflow",
+      "result": "PASS"
+    },
+    {
+      "name": "AC02 admin actual keyboard focus visible",
+      "result": "PASS"
+    },
+    {
+      "name": "AC02 admin keyboard focus ring",
+      "result": "PASS"
+    },
+    {
+      "name": "AC02 admin Escape dismisses label",
+      "result": "PASS"
+    },
+    {
+      "name": "AC03 Admin Usuarios single current destination",
+      "result": "PASS"
+    },
+    {
+      "name": "AC02 admin short height nav scrolls",
+      "result": "PASS"
+    },
+    {
+      "name": "AC02 admin secondary reachable in short height",
+      "result": "PASS"
+    },
+    {
+      "name": "AC04 admin 200 percent equivalent reflow",
+      "result": "PASS"
+    },
+    {
+      "name": "AC06 contrast secondary text",
+      "result": "PASS",
+      "ratio": 5.765417688604711
+    },
+    {
+      "name": "AC06 contrast active text",
+      "result": "PASS",
+      "ratio": 12.435542042801702
+    },
+    {
+      "name": "AC06 contrast active icon",
+      "result": "PASS",
+      "ratio": 4.684124340904958
+    },
+    {
+      "name": "AC06 contrast tooltip",
+      "result": "PASS",
+      "ratio": 13.227578942607575
+    },
+    {
+      "name": "AC06 contrast primary",
+      "result": "PASS",
+      "ratio": 4.747832442224698
+    },
+    {
+      "name": "AC07 pointer can reverse sidebar while moving",
+      "result": "PASS"
+    },
+    {
+      "name": "AC07 reversal intermediate width",
+      "result": "PASS",
+      "width": 134.84375
+    },
+    {
+      "name": "AC02 pointer tooltip globally dismissible with Escape",
+      "result": "PASS"
+    }
+  ],
+  "screenshots": [
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo047_supervisor_comprobantes_d1440.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo047_supervisor_comprobante_sheet_d1440.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo047_supervisor_plegada_foco_d1440.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo047_supervisor_comprobantes_d1024.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo047_supervisor_comprobante_sheet_d1024.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo047_supervisor_plegada_foco_d1024.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo047_supervisor_comprobantes_t800.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo047_supervisor_comprobante_sheet_t800.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo047_supervisor_menu_t800.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo047_supervisor_comprobantes_m390.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo047_supervisor_comprobante_sheet_m390.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo047_supervisor_menu_m390.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo047_admin_comprobantes_d1440.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo047_admin_comprobante_sheet_d1440.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo047_admin_plegada_foco_d1440.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo047_admin_comprobantes_d1024.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo047_admin_comprobante_sheet_d1024.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo047_admin_plegada_foco_d1024.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo047_admin_comprobantes_t800.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo047_admin_comprobante_sheet_t800.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo047_admin_menu_t800.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo047_admin_comprobantes_m390.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo047_admin_comprobante_sheet_m390.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo047_admin_menu_m390.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo047_supervisor_piezas_insuficiente_d1440.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo047_supervisor_piezas_externa_d1440.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo047_supervisor_piezas_insuficiente_m390.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo047_supervisor_piezas_externa_m390.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo047_supervisor_error_d1440.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo047_supervisor_vacio_d1440.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo047_supervisor_cargando_d1440.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo047_supervisor_reduced_motion_d1440.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo047_admin_usuarios_d1440.png"
+  ]
+}

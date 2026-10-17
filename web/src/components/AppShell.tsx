@@ -5,6 +5,8 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { Boxes, ClipboardList, Home, Menu, Settings, Truck } from 'lucide-react';
 import { BrandPlate } from '@/components/BrandPlate';
+import { WorkspaceSidebar, isWorkspaceDestination } from '@/components/WorkspaceSidebar';
+import { InventorySectionMenu } from '@/components/InventorySectionMenu';
 import { Campanita } from '@/components/Campanita';
 import { Button } from '@/components/ui/button';
 import {
@@ -70,6 +72,8 @@ export function AppShell({ children }: { children: ReactNode }) {
   const isCheckWorkflow = pathname?.startsWith('/checks/');
   const showChrome = Boolean(!isHome && ready && role);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const workspaceChrome = Boolean(showChrome && !isCheckWorkflow && (role === 'SUPERVISOR' || role === 'ADMIN_DIRECTIVO'));
   const [logoutError, setLogoutError] = useState('');
   useEffect(() => {
     if (ready && !role && !isHome) router.replace('/');
@@ -88,6 +92,12 @@ export function AppShell({ children }: { children: ReactNode }) {
         : allItems;
   const homeHref = isLogistica ? '/logistica' : role === 'MECANICO' ? '/mi-trabajo' : '/inicio';
 
+  const sidebarItems = role === 'ADMIN_DIRECTIVO'
+    ? [...allItems, { href: '/configuracion/usuarios', label: 'Usuarios' }]
+    : allItems;
+  const sheetItems = workspaceChrome ? sidebarItems : menuItems;
+  const currentDestination = sidebarItems.find((item) => isWorkspaceDestination(pathname, item.href));
+
   async function cambiarRol() {
     setLogoutError('');
     try {
@@ -100,19 +110,22 @@ export function AppShell({ children }: { children: ReactNode }) {
   }
 
   return (
-    <div className="app">
+    <div className={cn('app', workspaceChrome && 'app--workspace', workspaceChrome && sidebarCollapsed && 'app--sidebar-collapsed')}>
+      {workspaceChrome ? <WorkspaceSidebar items={sidebarItems} pathname={pathname} collapsed={sidebarCollapsed}
+        onToggle={() => setSidebarCollapsed((value) => !value)} homeHref={homeHref} /> : null}
       {!isCheckWorkflow ? <header className="shell-header">
         <div className="shell-header__bar">
           <Link href={role ? homeHref : '/'} className="shell-header__brand">
             <BrandPlate />
           </Link>
+          {workspaceChrome ? <span className="workspace-header__context">{currentDestination?.label ?? 'Área de trabajo'}</span> : null}
           {role === 'MECANICO' && pathname === '/mi-trabajo' ? (
             <span className="flex min-w-0 flex-col leading-tight md:hidden">
               <span className="truncate text-sm font-semibold text-white">TEAM MEX MTTO</span>
             </span>
           ) : null}
           {showChrome ? (
-            <nav className="shell-header__nav hidden md:flex" aria-label="Principal">
+            <nav className={cn('shell-header__nav hidden md:flex', workspaceChrome && 'workspace-header__old-nav')} aria-label="Principal">
               {items.map((item) => (
                 <NavLink
                   key={item.href}
@@ -163,7 +176,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                   size="icon"
                   className={cn(
                     'shell-header__menu',
-                    role === 'SUPERVISOR' ? '' : 'md:hidden',
+                    workspaceChrome ? 'workspace-header__menu' : 'md:hidden',
                   )}
                   aria-label="Abrir menú"
                   aria-expanded={menuOpen}
@@ -200,7 +213,7 @@ export function AppShell({ children }: { children: ReactNode }) {
               <SheetDescription>{etiquetaRol(role!)}</SheetDescription>
             </SheetHeader>
             <nav className="shell-menu-nav" aria-label="Principal">
-              {menuItems.map((item) => {
+              {sheetItems.map((item) => {
                 const active = Boolean(pathname?.startsWith(item.href));
                 return (
                   <Link
@@ -247,6 +260,9 @@ export function AppShell({ children }: { children: ReactNode }) {
               item.href === '/inicio'
                 ? pathname === item.href
                 : pathname?.startsWith(item.href);
+            if (active && item.href === '/inventario' && !isCheckWorkflow) {
+              return <InventorySectionMenu key={item.href} placement="bottom-nav" />;
+            }
             return (
               <Link
                 key={item.href}
