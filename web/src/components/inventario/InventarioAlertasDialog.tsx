@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { api } from '@/lib/api';
 import { notifyInboxChanged } from '@/lib/inbox';
 import { etiquetaUom } from '@/lib/format';
@@ -10,10 +10,12 @@ import {
   monthlyExits, parseMinimum, pendingRows, previousMonth, reconcileEditor, saveEditor,
   toggleVisible, visibleRows, type AlertFilter, type EditorRow, type ThresholdResponse,
 } from '@/lib/inventario-alertas-modal';
+import { getCoreRowModel, useReactTable, type ColumnDef } from '@tanstack/react-table';
+import { Table, TableHeader, TableBody, TableHead, TableCell, TableRow } from '@/components/ui/table';
 import { ListFilter } from '@/components/ListFilter';
 import { Button } from '@/components/ui/button';
 import { Field, FormAlert } from '@/components/ui/field';
-import { Input } from '@/components/ui/input';
+import { Input, NativeSelect } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
 export function InventarioAlertasDialog({ role, userId, onClose, onStock }: {
@@ -70,11 +72,13 @@ export function InventarioAlertasDialog({ role, userId, onClose, onStock }: {
     return () => controller.abort();
   }, [role, userId, period, referenceAttempt]);
 
-  const all = rows ?? [];
-  const pending = pendingRows(all);
+  const all = useMemo(() => rows ?? [], [rows]);
+  const pending = useMemo(() => pendingRows(all), [all]);
   const uncertain = all.some((row) => row.status === 'uncertain');
   const invalid = pending.filter((row) => !parseMinimum(row.draft).valid);
-  const visible = onlyPending ? pending : visibleRows(all, query, filter);
+  const visible = useMemo(() => onlyPending ? pending : visibleRows(all, query, filter), [all, onlyPending, pending, query, filter]);
+  const columns = useMemo<ColumnDef<EditorRow>[]>(() => ['select', 'product', 'stock', 'history', 'minimum'].map((id) => ({ id })), []);
+  const table = useReactTable({ data: visible, columns, getCoreRowModel: getCoreRowModel(), getRowId: (row) => row.itemId });
   const selectedVisible = visible.filter((row) => selected.has(row.itemId)).length;
   const hiddenSelected = selected.size - selectedVisible;
   const units = [...new Set(all.filter((row) => selected.has(row.itemId)).map((row) => row.uom))];
@@ -123,7 +127,13 @@ export function InventarioAlertasDialog({ role, userId, onClose, onStock }: {
         return api<ThresholdResponse>(`/inventario/items/${encodeURIComponent(id)}`, { role, userId, method: 'PATCH', body: JSON.stringify(body) });
       },
       read: readStock,
-    }, (progress) => { if (mounted.current) setRows(progress); });
+    }, (progress) => {
+      if (mounted.current) {
+        setRows(progress);
+        // Baseline fields reflect only confirmed writes; drafts remain editor-local.
+        onStockRef.current(progress);
+      }
+    });
     if (!mounted.current) return;
     setRows(result.rows);
     const successes = result.rows.filter((row) => row.status === 'saved');
@@ -169,7 +179,7 @@ export function InventarioAlertasDialog({ role, userId, onClose, onStock }: {
         <DialogTitle>Configurar alertas de inventario</DialogTitle>
         <DialogDescription>Define el mínimo de existencias para recibir una alerta</DialogDescription>
       </DialogHeader>
-      <fieldset disabled={busy || rows === null} className="inventory-alert-tools">
+      <fieldset disabled={busy} className="inventory-alert-tools">
         <Field label="Buscar producto" htmlFor="alert-search"><Input ref={searchRef} id="alert-search" type="search" placeholder="Buscar por producto o SKU…" value={query} onChange={(e) => { setQuery(e.target.value); setOnlyPending(false); }} /></Field>
         <ListFilter label="Productos con mínimo configurado" value={filter} onChange={(value) => { if (!busy) { setFilter(value); setOnlyPending(false); } }}
           options={[{ id: 'TODOS', label: `Todos (${all.length})` }, { id: 'CON', label: `Con alerta (${all.filter((r) => r.minQty !== null).length})` }, { id: 'SIN', label: `Sin alerta (${all.filter((r) => r.minQty === null).length})` }]} />
@@ -183,7 +193,7 @@ export function InventarioAlertasDialog({ role, userId, onClose, onStock }: {
         </div> : null}
         {batch ? <div className="inventory-alert-batch" role="group" aria-label={batch === 'remove' ? 'Quitar alertas en lote' : 'Establecer mínimo en lote'}>
           {batch === 'minimum' ? <>
-            {units.length > 1 ? <Field label="Grupo de unidad" htmlFor="alert-batch-unit"><select id="alert-batch-unit" className="native-select" value={batchUnit} onChange={(e) => setBatchUnit(e.target.value)}><option value="">Elige un grupo…</option>{units.map((uom) => <option key={uom} value={uom}>{etiquetaUom(uom)} ({all.filter((r) => selected.has(r.itemId) && r.uom === uom).length})</option>)}</select></Field> : null}
+            {units.length > 1 ? <Field label="Grupo de unidad" htmlFor="alert-batch-unit"><NativeSelect id="alert-batch-unit" value={batchUnit} onChange={(e) => setBatchUnit(e.target.value)}><option value="">Elige un grupo…</option>{units.map((uom) => <option key={uom} value={uom}>{etiquetaUom(uom)} ({all.filter((r) => selected.has(r.itemId) && r.uom === uom).length})</option>)}</NativeSelect></Field> : null}
             <Field label={`Mínimo${unit ? ` (${etiquetaUom(unit)})` : ''}`} htmlFor="alert-batch-value"><Input id="alert-batch-value" inputMode="numeric" value={batchValue} onChange={(e) => setBatchValue(e.target.value)} /></Field>
           </> : null}
           <p>{batch === 'remove' ? `Quitar alertas de ${preview.count} productos` : batchUnit || units.length === 1 ? `Afecta a ${preview.count} productos; ${preview.replacements} tenían otro mínimo` : 'Elige una unidad para ver los productos afectados'}. Solo cambia borradores.</p>
@@ -194,25 +204,25 @@ export function InventarioAlertasDialog({ role, userId, onClose, onStock }: {
       <div className="inventory-alert-scroll">
         {rows === null ? <div className="py-6" role="status">{stockError ? <><FormAlert>No se pudieron cargar los productos</FormAlert><Button type="button" variant="outline" onClick={() => setStockAttempt((n) => n + 1)}>Reintentar productos</Button></> : 'Cargando productos…'}</div> : all.length === 0 ? <div className="py-6"><p>No hay productos para configurar</p><p className="muted">Agrega refacciones al inventario para configurar sus alertas</p></div> : <>
           {onlyPending ? <p className="py-2">Mostrando pendientes <Button type="button" variant="quiet" disabled={busy} onClick={() => setOnlyPending(false)}>Volver a la vista</Button></p> : null}
-          {visible.length === 0 ? <div className="py-6"><p>No hay productos que coincidan</p><p className="muted">Ajusta la búsqueda o los filtros</p><Button type="button" variant="quiet" disabled={busy} onClick={() => { setQuery(''); setFilter('TODOS'); setOnlyPending(false); }}>Limpiar filtros</Button></div> : <table className="inventory-alert-table">
-            <thead><tr><th><label className="inventory-alert-check"><input ref={headerCheck} type="checkbox" aria-label="Seleccionar productos visibles" checked={visible.length > 0 && selectedVisible === visible.length} disabled={busy} onChange={(e) => setSelected(toggleVisible(selected, visible.map((r) => r.itemId), e.target.checked))} /></label></th><th>Producto</th><th>Existencias</th><th>Salidas mes anterior<span className="block font-normal">{period.label}</span></th><th>Avisar al llegar a</th></tr></thead>
-            <tbody>{visible.map((row) => {
+          {visible.length === 0 ? <div className="py-6"><p>No hay productos que coincidan</p><p className="muted">Ajusta la búsqueda o los filtros</p><Button type="button" variant="quiet" disabled={busy} onClick={() => { setQuery(''); setFilter('TODOS'); setOnlyPending(false); }}>Limpiar filtros</Button></div> : <Table className="inventory-alert-table">
+            <TableHeader><TableRow><TableHead><label className="inventory-alert-check"><input ref={headerCheck} type="checkbox" aria-label="Seleccionar productos visibles" checked={visible.length > 0 && selectedVisible === visible.length} disabled={busy} onChange={(e) => setSelected(toggleVisible(selected, visible.map((r) => r.itemId), e.target.checked))} /></label></TableHead><TableHead>Producto</TableHead><TableHead>Existencias</TableHead><TableHead>Salidas mes anterior<span className="block font-normal">{period.label}</span></TableHead><TableHead>Avisar al llegar a</TableHead></TableRow></TableHeader>
+            <TableBody>{table.getRowModel().rows.map(({ original: row }) => {
               const notice = criticalNotice(row);
               const changed = isPending(row);
               const error = row.error;
-              const status = row.status === 'uncertain' ? 'No confirmado' : row.status === 'saved' && !changed ? 'Guardado' : row.status === 'error' || row.status === 'unsent' && submitted ? 'Pendiente' : changed ? 'Modificado' : null;
-              return <tr key={row.itemId} data-selected={selected.has(row.itemId) || undefined}>
-                <td className="inventory-alert-select-cell"><label className="inventory-alert-check"><input type="checkbox" aria-label={`Seleccionar ${row.nombre}`} checked={selected.has(row.itemId)} disabled={busy} onChange={(e) => setSelected(toggleVisible(selected, [row.itemId], e.target.checked))} /></label></td>
-                <td className="inventory-alert-product"><span className="font-medium text-navy">{row.nombre}</span><span className="inventory-secondary">{row.sku}{!row.activo ? ' · Inactivo' : ''}</span>{status ? <span className="inventory-alert-row-status">{status}</span> : null}</td>
-                <td className="inventory-alert-qty"><span className="inventory-alert-mobile-label">Existencias: </span>{row.qty} {etiquetaUom(row.uom)}</td>
-                <td className="inventory-alert-history"><span className="inventory-alert-mobile-label">Salidas: </span>{referenceState === 'loading' ? 'Cargando…' : referenceState === 'error' ? 'No disponible' : `${reference?.[row.itemId] ?? 0} ${etiquetaUom(row.uom)}`}</td>
-                <td className="inventory-alert-minimum"><label className="inventory-alert-mobile-label" htmlFor={`alertaMin-${row.itemId}`}>Avisar al llegar a</label><div className="flex items-center gap-2"><Input id={`alertaMin-${row.itemId}`} aria-label={`Mínimo de ${row.nombre} (${etiquetaUom(row.uom)})`} aria-invalid={Boolean(error)} aria-describedby={[error ? `alert-error-${row.itemId}` : '', notice ? `alert-critical-${row.itemId}` : ''].filter(Boolean).join(' ') || undefined} inputMode="numeric" placeholder="Sin mínimo" value={row.draft} disabled={busy || row.status === 'uncertain'} onChange={(e) => setRows((old) => old!.map((value) => value.itemId === row.itemId ? { ...value, draft: e.target.value, status: 'clean', error: undefined } : value))} /><span className="text-xs text-muted-foreground">{etiquetaUom(row.uom)}</span></div>
+              const status = row.status === 'uncertain' ? 'No confirmado' : row.status === 'saved' && !changed ? 'Guardado' : row.status === 'unsent' ? 'No enviado' : row.status === 'error' ? 'Pendiente' : changed ? 'Modificado' : null;
+              return <TableRow key={row.itemId} data-selected={selected.has(row.itemId) || undefined}>
+                <TableCell className="inventory-alert-select-cell"><label className="inventory-alert-check"><input type="checkbox" aria-label={`Seleccionar ${row.nombre}`} checked={selected.has(row.itemId)} disabled={busy} onChange={(e) => setSelected(toggleVisible(selected, [row.itemId], e.target.checked))} /></label></TableCell>
+                <TableCell className="inventory-alert-product"><span className="font-medium text-navy">{row.nombre}</span><span className="inventory-secondary">{row.sku}{!row.activo ? ' · Inactivo' : ''}</span>{status ? <span className="inventory-alert-row-status">{status}</span> : null}</TableCell>
+                <TableCell className="inventory-alert-qty"><span className="inventory-alert-mobile-label">Existencias: </span>{row.qty} {etiquetaUom(row.uom)}</TableCell>
+                <TableCell className="inventory-alert-history"><span className="inventory-alert-mobile-label">Salidas: </span>{referenceState === 'loading' ? 'Cargando…' : referenceState === 'error' ? 'No disponible' : `${reference?.[row.itemId] ?? 0} ${etiquetaUom(row.uom)}`}</TableCell>
+                <TableCell className="inventory-alert-minimum"><label className="inventory-alert-mobile-label" htmlFor={`alertaMin-${row.itemId}`}>Avisar al llegar a</label><div className="flex items-center gap-2"><Input id={`alertaMin-${row.itemId}`} aria-label={`Mínimo de ${row.nombre} (${etiquetaUom(row.uom)})`} aria-invalid={Boolean(error)} aria-describedby={[error ? `alert-error-${row.itemId}` : '', notice ? `alert-critical-${row.itemId}` : ''].filter(Boolean).join(' ') || undefined} inputMode="numeric" placeholder="Sin mínimo" value={row.draft} disabled={busy || row.status === 'uncertain'} onChange={(e) => setRows((old) => old!.map((value) => value.itemId === row.itemId ? { ...value, draft: e.target.value, status: 'clean', error: undefined } : value))} /><span className="text-xs text-muted-foreground">{etiquetaUom(row.uom)}</span></div>
                   {notice ? <p id={`alert-critical-${row.itemId}`} className="inventory-alert-critical">{notice}</p> : null}
                   {error ? <p id={`alert-error-${row.itemId}`} className="text-xs text-destructive">{error}</p> : null}
-                </td>
-              </tr>;
-            })}</tbody>
-          </table>}
+                </TableCell>
+              </TableRow>;
+            })}</TableBody>
+          </Table>}
           <p className="py-3 text-xs text-muted-foreground">Deja el mínimo vacío para desactivar la alerta</p>
         </>}
       </div>

@@ -4180,15 +4180,17 @@ a.inventory-time-bucket:hover { background: var(--muted-bg); }
 .inventory-alert-tools { display: grid; gap: 8px; min-width: 0; border: 0; margin: 0; padding: 0; }
 .inventory-alert-tools .list-filter { flex-wrap: wrap; }
 .inventory-alert-selection, .inventory-alert-batch { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 13px; }
-.inventory-alert-batch { padding: 8px 12px; border: 1px solid var(--border); border-radius: 6px; background: var(--muted); }
+.inventory-alert-batch { padding: 8px 12px; border: 1px solid var(--border); border-radius: 6px; background: var(--muted-bg); }
 .inventory-alert-batch input { max-width: 130px; }
 .inventory-alert-scroll { overflow-y: auto; overscroll-behavior: contain; min-height: 0; flex: 1 1 auto; scroll-padding: 48px; }
+.inventory-alert-scroll > [data-slot="table-wrap"] { overflow: visible; }
+.inventory-alert-table th { text-transform: none; letter-spacing: normal; }
 .inventory-alert-table { width: 100%; border-collapse: separate; border-spacing: 0; text-align: left; font-size: 13px; }
 .inventory-alert-table thead { position: sticky; top: 0; z-index: 1; background: var(--card); }
 .inventory-alert-table th { font-size: 12px; font-weight: 500; color: var(--muted-foreground); border-bottom: 1px solid var(--border); }
 .inventory-alert-table th, .inventory-alert-table td { padding: 8px; vertical-align: middle; }
 .inventory-alert-table td { border-bottom: 1px solid var(--border); }
-.inventory-alert-table tr[data-selected] td { background: var(--muted); }
+.inventory-alert-table tr[data-selected] td { background: var(--muted-bg); }
 .inventory-alert-table th:first-child, .inventory-alert-select-cell { width: 48px; padding: 0; }
 .inventory-alert-check { width: 44px; height: 44px; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; }
 .inventory-alert-check input { width: 18px; height: 18px; accent-color: var(--navy); }
@@ -4219,7 +4221,8 @@ a.inventory-time-bucket:hover { background: var(--muted-bg); }
   .inventory-alert-table thead .inventory-alert-check { width: 100%; justify-content: flex-start; gap: 12px; padding-left: 13px; }
   .inventory-alert-table thead .inventory-alert-check::after { content: 'Seleccionar visibles'; font-size: 12px; }
   .inventory-alert-table tbody tr { display: grid; grid-template-columns: 44px minmax(0, 1fr) minmax(0, 1fr); border-bottom: 1px solid var(--border); padding: 4px 0; }
-  .inventory-alert-table td { display: block; width: auto; border: 0; padding: 4px; }
+  .inventory-alert-table td { display: block; width: auto; height: auto; border: 0; padding: 4px; }
+  .inventory-alert-table th { height: auto; }
   .inventory-alert-select-cell { grid-column: 1; grid-row: 1; }
   .inventory-alert-product { grid-column: 2 / 4; }
   .inventory-alert-qty { grid-column: 2; }
@@ -4234,4 +4237,5 @@ a.inventory-time-bucket:hover { background: var(--muted-bg); }
 }
 @media (prefers-reduced-motion: reduce) {
   .inventory-alert-editor, .inventory-alert-editor * { animation-duration: 0s !important; transition-duration: 0s !important; }
+  body:has(.inventory-alert-editor) [data-slot="dialog-overlay"] { animation-duration: 0s !important; transition-duration: 0s !important; }
 }

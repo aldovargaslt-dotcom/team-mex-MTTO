@@ -61,3 +61,5 @@ Owner autorizó crear estos artefactos de planificación (2026-10-01) y después
 | [EWO-043](EWO-043.md) | Análisis de Inventario: consumo y movimientos con contexto compartido | Verification — implementación local; evidencia con fixtures |
 | [EWO-044](EWO-044.md) | Gráficas de comportamiento: evolución y ranking de consumo por unidad | Verification — implementación local; evidencia con fixtures |
 | [EWO-045](EWO-045.md) | Pulido integral de Inventario: navegación, filtros, listas y formularios | Verification — implementación local; evidencia con fixtures |
+
+| [EWO-046](EWO-046.md) | Modal optimizado de alertas de inventario — SPEC-INV-ALERT-001 | Closed — pruebas y Visual QA completas |

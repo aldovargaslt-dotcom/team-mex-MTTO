@@ -64,7 +64,7 @@ function DialogContent({
         {...props}
       >
         {children}
-        <DialogPrimitive.Close disabled={closeDisabled} className="absolute top-3 right-3 rounded-sm opacity-70 transition-opacity hover:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+        <DialogPrimitive.Close data-slot="dialog-close" disabled={closeDisabled} className="absolute top-3 right-3 rounded-sm opacity-70 transition-opacity hover:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
           <XIcon className="size-4" />
           <span className="sr-only">{closeLabel}</span>
         </DialogPrimitive.Close>

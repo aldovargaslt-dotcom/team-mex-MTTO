@@ -1,0 +1,296 @@
+{
+  "environment": "Chromium CDP, web development :3002, disposable HTTP fixture :3001, real role picker",
+  "checks": [
+    {
+      "name": "supervisor/d1440: 100 products, no page overflow and footer in viewport",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor/d1440: initial focus and save disabled",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor/d1440: SKU lookup and historical decimals",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor/d1440: inactive item retained",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor/d1440: last input scroll preserves footer",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor/d1024: 100 products, no page overflow and footer in viewport",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor/d1024: initial focus and save disabled",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor/d1024: SKU lookup and historical decimals",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor/d1024: inactive item retained",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor/d1024: last input scroll preserves footer",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor/m390: 100 products, no page overflow and footer in viewport",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor/m390: initial focus and save disabled",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor/m390: SKU lookup and historical decimals",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor/m390: inactive item retained",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor/m390: last input scroll preserves footer",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor: touch controls >=44",
+      "result": "PASS"
+    },
+    {
+      "name": "admin/d1440: 100 products, no page overflow and footer in viewport",
+      "result": "PASS"
+    },
+    {
+      "name": "admin/d1440: initial focus and save disabled",
+      "result": "PASS"
+    },
+    {
+      "name": "admin/d1440: SKU lookup and historical decimals",
+      "result": "PASS"
+    },
+    {
+      "name": "admin/d1440: inactive item retained",
+      "result": "PASS"
+    },
+    {
+      "name": "admin/d1440: last input scroll preserves footer",
+      "result": "PASS"
+    },
+    {
+      "name": "admin/d1024: 100 products, no page overflow and footer in viewport",
+      "result": "PASS"
+    },
+    {
+      "name": "admin/d1024: initial focus and save disabled",
+      "result": "PASS"
+    },
+    {
+      "name": "admin/d1024: SKU lookup and historical decimals",
+      "result": "PASS"
+    },
+    {
+      "name": "admin/d1024: inactive item retained",
+      "result": "PASS"
+    },
+    {
+      "name": "admin/d1024: last input scroll preserves footer",
+      "result": "PASS"
+    },
+    {
+      "name": "admin/m390: 100 products, no page overflow and footer in viewport",
+      "result": "PASS"
+    },
+    {
+      "name": "admin/m390: initial focus and save disabled",
+      "result": "PASS"
+    },
+    {
+      "name": "admin/m390: SKU lookup and historical decimals",
+      "result": "PASS"
+    },
+    {
+      "name": "admin/m390: inactive item retained",
+      "result": "PASS"
+    },
+    {
+      "name": "admin/m390: last input scroll preserves footer",
+      "result": "PASS"
+    },
+    {
+      "name": "admin: touch controls >=44",
+      "result": "PASS"
+    },
+    {
+      "name": "AC-08 critical notice before write",
+      "result": "PASS"
+    },
+    {
+      "name": "AC-02 hidden selection persists",
+      "result": "PASS"
+    },
+    {
+      "name": "AC-02 header only toggles visible",
+      "result": "PASS"
+    },
+    {
+      "name": "AC-03 preview counts replacements",
+      "result": "PASS"
+    },
+    {
+      "name": "AC-03 batch only drafts",
+      "result": "PASS"
+    },
+    {
+      "name": "AC-03 hidden drafts updated",
+      "result": "PASS"
+    },
+    {
+      "name": "AC-04 mixed requires explicit unit group",
+      "result": "PASS"
+    },
+    {
+      "name": "AC-04 no silent mixed batch",
+      "result": "PASS"
+    },
+    {
+      "name": "AC-04 mixed removal writes null drafts",
+      "result": "PASS"
+    },
+    {
+      "name": "AC-05 hidden invalid prevents every PATCH",
+      "result": "PASS"
+    },
+    {
+      "name": "AC-05 error access reveals hidden input",
+      "result": "PASS"
+    },
+    {
+      "name": "AC-12 cancel guard",
+      "result": "PASS"
+    },
+    {
+      "name": "AC-15 focus restored",
+      "result": "PASS"
+    },
+    {
+      "name": "AC-12 save freezes close and edits",
+      "result": "PASS"
+    },
+    {
+      "name": "AC-12 Escape cannot close while saving",
+      "result": "PASS"
+    },
+    {
+      "name": "AC-10/13 persisted successes and retries exclude them",
+      "result": "PASS"
+    },
+    {
+      "name": "AC-11 ambiguous row locked until read",
+      "result": "PASS"
+    },
+    {
+      "name": "AC-11 lost persisted response reconciled without repeating write",
+      "result": "PASS"
+    },
+    {
+      "name": "AC-11 reload failure retries read only",
+      "result": "PASS"
+    },
+    {
+      "name": "AC-07/14 catalogs/reference do not block changes",
+      "result": "PASS"
+    },
+    {
+      "name": "better-ui reduced motion uses local zero duration",
+      "result": "PASS"
+    },
+    {
+      "name": "better-ui scroll contained",
+      "result": "PASS"
+    },
+    {
+      "name": "AC-12 overlay click uses discard guard without losing drafts",
+      "result": "PASS"
+    },
+    {
+      "name": "Mobile mixed batch requires and previews selected group",
+      "result": "PASS"
+    },
+    {
+      "name": "Mobile batch preserves scroll area and footer",
+      "result": "PASS"
+    },
+    {
+      "name": "Mobile group only changes same unit",
+      "result": "PASS"
+    },
+    {
+      "name": "Mobile save freezes fields and close",
+      "result": "PASS"
+    },
+    {
+      "name": "Mobile partial recovery controls visible",
+      "result": "PASS"
+    },
+    {
+      "name": "X uses same discard guard",
+      "result": "PASS"
+    },
+    {
+      "name": "Keyboard focus trapped at end of dialog",
+      "result": "PASS"
+    },
+    {
+      "name": "Reduced-motion overlay and content both static",
+      "result": "PASS"
+    },
+    {
+      "name": "Mobile partial retry only resends failed row",
+      "result": "PASS"
+    }
+  ],
+  "screenshots": [
+    "docs/screenshots/ewo046_alertas_supervisor_normal_d1440.png",
+    "docs/screenshots/ewo046_alertas_supervisor_normal_d1024.png",
+    "docs/screenshots/ewo046_alertas_supervisor_normal_m390.png",
+    "docs/screenshots/ewo046_alertas_supervisor_ultimo_input_m390.png",
+    "docs/screenshots/ewo046_alertas_admin_normal_d1440.png",
+    "docs/screenshots/ewo046_alertas_admin_normal_d1024.png",
+    "docs/screenshots/ewo046_alertas_admin_normal_m390.png",
+    "docs/screenshots/ewo046_alertas_admin_ultimo_input_m390.png",
+    "docs/screenshots/ewo046_alertas_supervisor_seleccion_oculta_d1440.png",
+    "docs/screenshots/ewo046_alertas_supervisor_lote_d1440.png",
+    "docs/screenshots/ewo046_alertas_supervisor_lote_mixto_d1440.png",
+    "docs/screenshots/ewo046_alertas_supervisor_quitar_alertas_d1440.png",
+    "docs/screenshots/ewo046_alertas_supervisor_invalido_oculto_d1440.png",
+    "docs/screenshots/ewo046_alertas_supervisor_descarte_d1440.png",
+    "docs/screenshots/ewo046_alertas_supervisor_parcial_d1440.png",
+    "docs/screenshots/ewo046_alertas_admin_no_confirmado_d1440.png",
+    "docs/screenshots/ewo046_alertas_supervisor_recarga_error_d1440.png",
+    "docs/screenshots/ewo046_alertas_supervisor_referencia_error_m390.png",
+    "docs/screenshots/ewo046_alertas_supervisor_busqueda_vacia_m390.png",
+    "docs/screenshots/ewo046_alertas_supervisor_stock_error_m390.png",
+    "docs/screenshots/ewo046_alertas_supervisor_catalogo_vacio_m390.png",
+    "docs/screenshots/ewo046_alertas_supervisor_cargando_d1440.png",
+    "docs/screenshots/ewo046_alertas_supervisor_referencia_cargando_d1440.png",
+    "docs/screenshots/ewo046_alertas_supervisor_critico_d1440.png",
+    "docs/screenshots/ewo046_alertas_admin_lote_mixto_m390.png",
+    "docs/screenshots/ewo046_alertas_admin_guardando_m390.png",
+    "docs/screenshots/ewo046_alertas_admin_parcial_m390.png",
+    "docs/screenshots/ewo046_alertas_admin_descarte_parcial_m390.png"
+  ],
+  "limitations": [
+    "Browser uses HTTP fixtures; persistence and role authorization verified separately by PostgreSQL/API E2E.",
+    "No physical-device or screen-reader verification; static captures do not prove motion.",
+    "Next development portal hidden only for screenshots; no product configuration changed."
+  ]
+}

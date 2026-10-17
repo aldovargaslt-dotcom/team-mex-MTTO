@@ -619,6 +619,103 @@ describe('Inventario v0 + piezas en visita (e2e)', () => {
     expect(Array.isArray(avisosAntes.body)).toBe(true);
   });
 
+  it('INV-ALERT AC-05/08/14: item PATCH preserves null/zero and server critical adjustment for both roles', async () => {
+    const familias = await request(server)
+      .get('/inventario/familias')
+      .set(ADMIN)
+      .expect(200);
+    const created = await request(server)
+      .post('/inventario/items')
+      .set(ADMIN)
+      .send({
+        sku: 'INV-ALERT-REGRESSION',
+        nombre: 'Mínimo de prueba',
+        familiaId: familias.body[0].id,
+        minQty: 8,
+      })
+      .expect(201);
+    const path = `/inventario/items/${created.body.id}`;
+    await request(server)
+      .patch(path)
+      .set(ADMIN)
+      .send({ criticalQty: 5 })
+      .expect(200);
+    const clamped = await request(server)
+      .patch(path)
+      .set(SUPERVISOR)
+      .send({ minQty: 3 })
+      .expect(200);
+    expect(clamped.body).toMatchObject({ minQty: 3, criticalQty: 3 });
+    const disabled = await request(server)
+      .patch(path)
+      .set(ADMIN)
+      .send({ minQty: null })
+      .expect(200);
+    expect(disabled.body).toMatchObject({ minQty: null, criticalQty: 3 });
+    const zero = await request(server)
+      .patch(path)
+      .set(SUPERVISOR)
+      .send({ minQty: 0 })
+      .expect(200);
+    expect(zero.body).toMatchObject({ minQty: 0, criticalQty: 0 });
+    for (const minQty of [-1, 1.5, 'bad'])
+      await request(server)
+        .patch(path)
+        .set(SUPERVISOR)
+        .send({ minQty })
+        .expect(400);
+    await request(server)
+      .patch(path)
+      .set({ 'X-Role': 'LOGISTICA' })
+      .send({ minQty: 9 })
+      .expect(403);
+    const persisted = await request(server)
+      .get('/inventario/stock')
+      .set(ADMIN)
+      .expect(200);
+    expect(
+      persisted.body.find(
+        (r: { itemId: string }) => r.itemId === created.body.id,
+      ),
+    ).toMatchObject({ minQty: 0, criticalQty: 0 });
+  });
+
+  it('INV-ALERT AC-06: shared movements query includes UTC edges and all monthly rows', async () => {
+    const item = await itemPorSku('FIL-ACEITE-01');
+    const ds = app.get(DataSource);
+    for (const [time, qty, tipo] of [
+      ['2026-09-01T00:00:00.000Z', 1, 'SALIDA_OT'],
+      ['2026-09-30T23:59:59.999Z', 2, 'SALIDA_OT'],
+      ['2026-10-01T00:00:00.000Z', 10, 'SALIDA_OT'],
+      ['2026-08-31T23:59:59.999Z', 10, 'SALIDA_OT'],
+      ['2026-09-15T00:00:00.000Z', 10, 'AJUSTE'],
+    ]) {
+      await ds.query(
+        `INSERT INTO inventario.movimientos (id,item_id,tipo,qty,delta,created_at) VALUES (gen_random_uuid(),$1,$2,$3,$4,$5)`,
+        [item.id, tipo, qty, tipo === 'SALIDA_OT' ? -Number(qty) : qty, time],
+      );
+    }
+    await ds.query(
+      `INSERT INTO inventario.movimientos (id,item_id,tipo,qty,delta,created_at)
+      SELECT gen_random_uuid(),$1,'SALIDA_OT',1,-1,'2026-09-15T00:00:00Z'::timestamptz FROM generate_series(1,120)`,
+      [item.id],
+    );
+    const response = await request(server)
+      .get('/inventario/movimientos')
+      .set(SUPERVISOR)
+      .query({
+        itemId: item.id,
+        tipo: 'SALIDA_OT',
+        from: '2026-09-01',
+        to: '2026-09-30',
+      })
+      .expect(200);
+    expect(response.body).toHaveLength(122);
+    expect(
+      response.body.reduce((sum: number, r: { qty: number }) => sum + r.qty, 0),
+    ).toBe(123);
+  });
+
   it('GET movimientos filtra por itemId/tipo/fecha; ajuste sin nota es 400', async () => {
     const filtro = await itemPorSku('FIL-ACEITE-01');
     const pastillas = await itemPorSku('PAST-FR-01');

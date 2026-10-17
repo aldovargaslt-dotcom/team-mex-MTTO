@@ -89,7 +89,7 @@ export function criticalNotice(row: EditorRow): string | null {
     ? `El límite crítico también bajará de ${row.criticalQty} a ${next.value}` : null;
 }
 
-export type ThresholdResponse = { minQty: number | null; criticalQty: number; stock?: number };
+export type ThresholdResponse = { minQty: number | null; criticalQty: number; stock?: number; alerta?: StockRow['alerta'] };
 export type EditorTransport = {
   patch: (id: string, body: { minQty: number | null }) => Promise<ThresholdResponse>;
   read: () => Promise<StockRow[]>;
@@ -131,7 +131,8 @@ export async function saveEditor(initial: EditorRow[], transport: EditorTranspor
       const response = await transport.patch(id, { minQty: parsed.value });
       if (response.minQty !== parsed.value || !Number.isFinite(response.criticalQty)) throw new Error('Respuesta no confirmada');
       rows = rows.map((value) => value.itemId === id ? { ...value, minQty: response.minQty, criticalQty: response.criticalQty,
-        qty: response.stock ?? value.qty, status: 'saved', error: undefined } : value);
+        qty: response.stock ?? value.qty, alerta: response.alerta === undefined ? value.alerta : response.alerta,
+        status: 'saved', error: undefined } : value);
     } catch (error) {
       const info = errorInfo(error);
       const rowFailure = info.status !== undefined && [400, 404, 409, 422].includes(info.status);
