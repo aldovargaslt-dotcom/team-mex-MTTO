@@ -132,7 +132,14 @@ export const LEGACY_CHOFERES_DEMO = [
   'Juan Pérez',
   'María López',
   'Carlos Ruiz',
+  'Carlos Ruiz2',
 ] as const;
+
+/** Production leftover (API DELETE is INACTIVO-only). Hard-deleted by seed. */
+export const LEFTOVER_CHOFER_HARD_DELETE = {
+  id: 'dbcc3c7c-dee6-4e55-99e9-d0f99739fd3c',
+  nombre: 'Carlos Ruiz2',
+} as const;
 export const LEGACY_UNIDADES_PLACAS = [
   'TMX-101-A',
   'TMX-102-B',
