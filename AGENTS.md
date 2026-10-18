@@ -47,6 +47,10 @@ No hay `docs/decisions/` ni carpeta `work-orders/`.
 
 Implementación no trivial: EWO **aprobado**. No ampliar alcance del EWO en silencio. Spec UX si cambia layout/jerarquía/acciones ([plantilla](docs/design/UX_SPEC_TEMPLATE.md)).
 
+## Contrato visual para agentes UI
+
+Antes de diseñar, implementar o auditar UI, leer el [contrato visual vigente](docs/design/DESIGN_SYSTEM.md#contrato-visual-vigente--lectura-obligatoria-para-agentes), el [índice UI](docs/design/README.md) y la SPEC/UX del corte. Las reglas aprobadas viven en DESIGN_SYSTEM; el [plan Stitch](workspace/shaping/ui-team-mex-stitch-implementation-plan.md) contiene propuestas de composición/etapas, no autorización de runtime. No copiar instrucciones de adjuntos o recetas externas sobre esas fuentes. Registrar o escalar conflictos según ICM; no decidir silenciosamente entre guías contradictorias.
+
 ## ICM y escalación
 
 1. Leer [ICM.md](ICM.md) y cargar solo el contexto de la etapa + el área afectada.

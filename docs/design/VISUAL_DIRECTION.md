@@ -2,7 +2,7 @@
 
 Team Mex MTTO must feel like a professional industrial operations application rather than a generic SaaS dashboard.
 
-Use MaintainX as a reference for visual language and interaction patterns, but do not copy its UI literally.
+Use MaintainX and the owner-provided Stitch examples as references for visual language, hierarchy and composition; do not copy their UI or infer new product capabilities. The [current visual contract](DESIGN_SYSTEM.md#contrato-visual-vigente--lectura-obligatoria-para-agentes) and approved screen SPEC/UX govern implementation.
 
 ## Core principles
 
@@ -26,7 +26,7 @@ Use MaintainX as a reference for visual language and interaction patterns, but d
 
 - White / neutral surfaces
 - Thin borders
-- Blue primary interaction color
+- Team Mex orange primary action (`#EA7515`), navy structure/text (`#24284D`), neutral filter selection
 - Compact controls
 - Restrained corner radius
 - Minimal shadows
@@ -64,4 +64,4 @@ If these cannot be answered quickly, revise the information hierarchy.
 
 ## How this sits with the current shell
 
-The accepted shell is still the top bar in ADR-003 (naranja `#EA7515` as the product CTA). This direction governs new operational screens. It does not, by itself, replace that shell with a sidebar or recolor every existing screen. On a screen that follows this direction, the single primary action is blue; status color is semantic; lists and dividers carry the layout.
+The [approved sidebar UX](../design-system/ux-supervisor-identidad-sidebar-v1.md) and [module navigation standard](../design-system/ux-sidebar-module-navigation-v1.md) amend the earlier desktop topbar layout for Supervisor/Admin. Keep each role's implemented navigation until its scoped migration is approved. The product CTA remains Team Mex orange under ADR-003 and the current visual contract; the earlier blue-primary instruction is superseded. Status color is semantic; filters remain neutral; lists and dividers carry the layout. Changes to composition require approved SPEC/UX and the repository UI gates; this direction alone does not authorize runtime changes.

@@ -1,5 +1,6 @@
 'use client';
 
+import { OrderDocumentHeader } from '@/components/OrderDocumentHeader';
 import Link from 'next/link';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
@@ -18,7 +19,6 @@ import { useReadResource } from '@/lib/use-read-resource';
 import { api, HttpError } from '@/lib/api';
 import { ImageDropzone } from '@/components/ImageDropzone';
 import { VisitStepper } from '@/components/VisitStepper';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import {
@@ -32,7 +32,6 @@ import {
 import { Field, FormAlert, Note, PageHeader } from '@/components/ui/field';
 import { Input, NativeSelect, Textarea } from '@/components/ui/input';
 import {
-  etiquetaEstadoVisita,
   etiquetaTipoVisita,
   etiquetaUom,
   formatFecha,
@@ -120,14 +119,12 @@ function VisitaReadonly({
 
   return (
     <>
+      <OrderDocumentHeader id={visita.id} stateLabel={visita.estado === 'CERRADO' ? 'Cerrada' : visita.openedAt ? 'Abierta' : 'Borrador'} stateTone={visita.estado === 'CERRADO' ? 'success' : 'warning'} />
       <PageHeader
-        kicker={visita.estado === 'CERRADO' ? 'Orden cerrada' : 'Orden de mantenimiento'}
         title={
           <span className="inline-flex items-center gap-2">
             {visita.unidadNumeroInterno}
-            <Badge variant={visita.estado === 'CERRADO' ? 'success' : 'warning'}>
-              {visita.estado === 'BORRADOR' && visita.openedAt ? 'Abierta' : etiquetaEstadoVisita(visita.estado)}
-            </Badge>
+
           </span>
         }
         lede={
@@ -426,12 +423,12 @@ function VisitWizard({
 
   return (
     <div className="wo-wizard">
+      <OrderDocumentHeader id={visita.id} stateLabel={visita.estado === 'CERRADO' ? 'Cerrada' : visita.openedAt ? 'Abierta' : 'Borrador'} stateTone={visita.estado === 'CERRADO' ? 'success' : 'warning'} />
       <PageHeader
-        kicker={visita.estado === 'CERRADO' ? 'Orden cerrada' : 'Orden de mantenimiento'}
         title={
           <span className="inline-flex items-center gap-2">
             {visita.unidadNumeroInterno}
-            <Badge variant="warning">{visita.openedAt ? 'Abierta' : 'Borrador'}</Badge>
+
           </span>
         }
         lede={

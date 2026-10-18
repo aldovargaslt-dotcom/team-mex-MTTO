@@ -1,0 +1,231 @@
+{
+  "environment": "Next real + role picker + CDP; disposable HTTP fixture. No backend authorization or persistence proof.",
+  "checks": [
+    {
+      "name": "supervisor bottom bar on home",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor no top selector",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor six section links /inventario/analisis",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor blur preserves focus",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor Escape returns focus",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor current location /inventario/analisis",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor six section links /inventario/pendientes",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor current location /inventario/pendientes",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor six section links /inventario",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor current location /inventario",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor six section links /inventario/familias",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor current location /inventario/familias",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor six section links /inventario/proveedores",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor current location /inventario/proveedores",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor six section links /inventario/stock",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor current location /inventario/stock",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor toggle from same bottom button",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor global menu extras remain",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor bottom nav persists /ordenes",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor bottom nav persists /unidades",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor content reserves bar height",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor320 no overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor320 panel above bar",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor 800 bottom nav hidden",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor 800 section navigation retained",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor 1440 bottom nav hidden",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor 1440 section navigation retained",
+      "result": "PASS"
+    },
+    {
+      "name": "admin bottom bar on home",
+      "result": "PASS"
+    },
+    {
+      "name": "admin no top selector",
+      "result": "PASS"
+    },
+    {
+      "name": "admin six section links /inventario/analisis",
+      "result": "PASS"
+    },
+    {
+      "name": "admin blur preserves focus",
+      "result": "PASS"
+    },
+    {
+      "name": "admin Escape returns focus",
+      "result": "PASS"
+    },
+    {
+      "name": "admin current location /inventario/analisis",
+      "result": "PASS"
+    },
+    {
+      "name": "admin six section links /inventario/pendientes",
+      "result": "PASS"
+    },
+    {
+      "name": "admin current location /inventario/pendientes",
+      "result": "PASS"
+    },
+    {
+      "name": "admin six section links /inventario",
+      "result": "PASS"
+    },
+    {
+      "name": "admin current location /inventario",
+      "result": "PASS"
+    },
+    {
+      "name": "admin six section links /inventario/familias",
+      "result": "PASS"
+    },
+    {
+      "name": "admin current location /inventario/familias",
+      "result": "PASS"
+    },
+    {
+      "name": "admin six section links /inventario/proveedores",
+      "result": "PASS"
+    },
+    {
+      "name": "admin current location /inventario/proveedores",
+      "result": "PASS"
+    },
+    {
+      "name": "admin six section links /inventario/stock",
+      "result": "PASS"
+    },
+    {
+      "name": "admin current location /inventario/stock",
+      "result": "PASS"
+    },
+    {
+      "name": "admin toggle from same bottom button",
+      "result": "PASS"
+    },
+    {
+      "name": "admin global menu extras remain",
+      "result": "PASS"
+    },
+    {
+      "name": "admin bottom nav persists /ordenes",
+      "result": "PASS"
+    },
+    {
+      "name": "admin bottom nav persists /unidades",
+      "result": "PASS"
+    },
+    {
+      "name": "admin content reserves bar height",
+      "result": "PASS"
+    },
+    {
+      "name": "admin320 no overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "admin320 panel above bar",
+      "result": "PASS"
+    },
+    {
+      "name": "admin 800 bottom nav hidden",
+      "result": "PASS"
+    },
+    {
+      "name": "admin 800 section navigation retained",
+      "result": "PASS"
+    },
+    {
+      "name": "admin 1440 bottom nav hidden",
+      "result": "PASS"
+    },
+    {
+      "name": "admin 1440 section navigation retained",
+      "result": "PASS"
+    }
+  ],
+  "screenshots": [
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo055_supervisor_stock_m390.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo055_supervisor_panel_m390.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo055_supervisor_panel_m320.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo055_supervisor_stock_d1440.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo055_admin_stock_m390.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo055_admin_panel_m390.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo055_admin_panel_m320.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo055_admin_stock_d1440.png"
+  ]
+}

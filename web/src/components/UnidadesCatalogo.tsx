@@ -23,9 +23,9 @@ import { UnidadMarca, UnidadTipoIcon } from '@/components/UnidadTipoMark';
 import { UnidadesTipoMenu } from '@/components/UnidadesTipoMenu';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
+import { OperationalToolbar } from '@/components/OperationalToolbar';
 import { DataTable } from '@/components/ui/data-table';
-import { Field } from '@/components/ui/field';
+import { Field, PageHeader } from '@/components/ui/field';
 import { Input, NativeSelect } from '@/components/ui/input';
 import {
   Sheet,
@@ -300,7 +300,7 @@ export function UnidadesCatalogo({
             <Button
               size="compact"
               variant="outline"
-              className="border-navy bg-navy text-white hover:bg-[#1c2040] hover:text-white"
+              className="border-border bg-card text-navy hover:bg-muted"
               onClick={(event) => {
                 event.stopPropagation();
                 onOpenUnidad(row.original);
@@ -321,26 +321,7 @@ export function UnidadesCatalogo({
 
   return (
     <div className="unidades-page">
-      <div className="unidades-hero">
-        <div className="min-w-0 flex-1">
-          <h1>Unidades</h1>
-          <p className="lede">
-            Busque y abra la ficha de la unidad.
-          </p>
-          {actions ? (
-            <div className="mt-2 flex flex-wrap gap-2">{actions}</div>
-          ) : null}
-        </div>
-        <aside className="unidades-hero-aside" aria-label="Flota de mantenimiento">
-          <span className="unidades-hero-aside__icon" aria-hidden>
-            <Truck className="size-4" strokeWidth={1.75} />
-          </span>
-          <span>
-            <strong>Flota de mantenimiento</strong>
-            <span>Abra una ficha para visitas y alertas.</span>
-          </span>
-        </aside>
-      </div>
+      <PageHeader title="Unidades" lede="Busca una unidad y abre su ficha para consultar mantenimiento y alertas." actions={actions} />
 
       <div className="unidades-kpis">
         <button
@@ -425,7 +406,7 @@ export function UnidadesCatalogo({
       </div>
 
       <form onSubmit={onSearch}>
-        <Card className="unidades-filters">
+        <OperationalToolbar className="unidades-filters" label="Filtros de unidades">
           <Field label="Buscar unidad" htmlFor="unidadQ">
             <div className="unidades-search">
               <Search
@@ -464,7 +445,7 @@ export function UnidadesCatalogo({
             <Button
               type="submit"
               variant="outline"
-              className="border-navy bg-navy text-white hover:bg-[#1c2040] hover:text-white"
+              className="border-border bg-card text-navy hover:bg-muted"
             >
               Buscar
             </Button>
@@ -481,7 +462,7 @@ export function UnidadesCatalogo({
               {filtrosOcultos > 0 ? `Filtros (${filtrosOcultos})` : 'Filtros'}
             </Button>
           </div>
-        </Card>
+        </OperationalToolbar>
       </form>
 
       <Sheet open={filtrosOpen} onOpenChange={setFiltrosOpen}>

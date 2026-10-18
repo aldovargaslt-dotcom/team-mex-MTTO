@@ -1,0 +1,218 @@
+{
+  "environment": "Chromium CDP; real role picker and Next app, disposable HTTP fixture. Navigation/read/overlay checks; no real writes or backend permission proof.",
+  "checks": [
+    {
+      "name": "supervisor 1440 grouped tools and honest loaded count",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor 1440 list no overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor 1440 document and unit distinct",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor 1440 detail no overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor 1440 correct writing visibility",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor 1440 empty search recovery",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor 1440 type filter URL",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor 1440 draft maintained",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor 1440 closed read only",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor 1440 overlay retains identity",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor 1440 creation close restores focus",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor 390 grouped tools and honest loaded count",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor 390 list no overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor 390 document and unit distinct",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor 390 detail no overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor 390 correct writing visibility",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor 390 empty search recovery",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor 390 type filter URL",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor 390 draft maintained",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor 390 closed read only",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor 390 overlay retains identity",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor 390 creation close restores focus",
+      "result": "PASS"
+    },
+    {
+      "name": "admin 1440 grouped tools and honest loaded count",
+      "result": "PASS"
+    },
+    {
+      "name": "admin 1440 list no overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "admin 1440 document and unit distinct",
+      "result": "PASS"
+    },
+    {
+      "name": "admin 1440 detail no overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "admin 1440 correct writing visibility",
+      "result": "PASS"
+    },
+    {
+      "name": "admin 1440 empty search recovery",
+      "result": "PASS"
+    },
+    {
+      "name": "admin 390 grouped tools and honest loaded count",
+      "result": "PASS"
+    },
+    {
+      "name": "admin 390 list no overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "admin 390 document and unit distinct",
+      "result": "PASS"
+    },
+    {
+      "name": "admin 390 detail no overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "admin 390 correct writing visibility",
+      "result": "PASS"
+    },
+    {
+      "name": "admin 390 empty search recovery",
+      "result": "PASS"
+    },
+    {
+      "name": "Responsive 1024 toolbar no overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor mobile object H1 and white document",
+      "result": "PASS"
+    },
+    {
+      "name": "administrador directivo mobile object H1 and white document",
+      "result": "PASS"
+    },
+    {
+      "name": "Responsive 1024 toolbar no overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "Responsive 800 toolbar no overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "Responsive 320 toolbar no overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "Mobile filter and search hits44",
+      "result": "PASS"
+    },
+    {
+      "name": "CHECK remains inspection read view",
+      "result": "PASS"
+    },
+    {
+      "name": "Initial empty differs from query empty",
+      "result": "PASS"
+    },
+    {
+      "name": "Partial read honest status",
+      "result": "PASS"
+    },
+    {
+      "name": "Retry restores loaded row",
+      "result": "PASS"
+    },
+    {
+      "name": "Reduced motion zero",
+      "result": "PASS"
+    },
+    {
+      "name": "Keyboard visible focus",
+      "result": "PASS"
+    },
+    {
+      "name": "Calculated title, label, meta, badge, selection and CTA contrast >=4.5; focus outline >=3",
+      "result": "PASS",
+      "ratios": {
+        "title": 13.087122729714851,
+        "label": 5.765417688604711,
+        "cta": 4.747832442224698,
+        "focus": 14.13480164663372,
+        "meta": 5.765417688604711,
+        "badge": 5.780556823326334,
+        "selection": 14.743660930756823
+      }
+    }
+  ],
+  "screenshots": [
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo052_supervisor_detail_d1440.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo052_supervisor_new_order_d1440.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo052_supervisor_list_m390.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo052_supervisor_detail_m390.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo052_supervisor_new_order_m390.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo052_admin_detail_d1440.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo052_admin_list_m390.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo052_admin_detail_m390.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo052_supervisor_list_m320.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo052_supervisor_partial_d1440.png"
+  ]
+}

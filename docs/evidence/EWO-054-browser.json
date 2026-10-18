@@ -1,0 +1,542 @@
+{
+  "environment": "Real Next frontend, role picker and CDP physical click-through; disposable HTTP fixture. No real backend permissions, stock persistence, cost or CRUD validation; no save/close operations.",
+  "checks": [
+    {
+      "name": "supervisor_1440 stock overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor_1440 stock shared toolbar",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor_1440 stock search filters data and URL",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor_1440 alert initial focus",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor_1440 hidden selection retained",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor_1440 unit batch selector preserved",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor_1440 alert return focus",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor_1440 entry overlay overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor_1440 analysis overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor_1440 documents overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor_1440 document overlay overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor_1440 items overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor_1440 new item overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor_1440 categories overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor_1440 categories form disabled without name",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor_1440 providers overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor_1440 providers form disabled without name",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor_390 stock overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor_390 stock shared toolbar",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor_390 stock search filters data and URL",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor_390 alert initial focus",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor_390 hidden selection retained",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor_390 unit batch selector preserved",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor_390 alert return focus",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor_390 entry overlay overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor_390 analysis overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor_390 documents overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor_390 document overlay overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor_390 items overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor_390 new item overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor_390 categories overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor_390 categories form disabled without name",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor_390 providers overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor_390 providers form disabled without name",
+      "result": "PASS"
+    },
+    {
+      "name": "admin_1440 stock overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "admin_1440 stock shared toolbar",
+      "result": "PASS"
+    },
+    {
+      "name": "admin_1440 stock search filters data and URL",
+      "result": "PASS"
+    },
+    {
+      "name": "admin_1440 alert initial focus",
+      "result": "PASS"
+    },
+    {
+      "name": "admin_1440 hidden selection retained",
+      "result": "PASS"
+    },
+    {
+      "name": "admin_1440 unit batch selector preserved",
+      "result": "PASS"
+    },
+    {
+      "name": "admin_1440 alert return focus",
+      "result": "PASS"
+    },
+    {
+      "name": "admin_1440 entry overlay overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "admin_1440 analysis overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "admin_1440 documents overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "admin_1440 document overlay overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "admin_1440 items overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "admin_1440 new item overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "admin_1440 categories overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "admin_1440 categories form disabled without name",
+      "result": "PASS"
+    },
+    {
+      "name": "admin_1440 providers overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "admin_1440 providers form disabled without name",
+      "result": "PASS"
+    },
+    {
+      "name": "admin_390 stock overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "admin_390 stock shared toolbar",
+      "result": "PASS"
+    },
+    {
+      "name": "admin_390 stock search filters data and URL",
+      "result": "PASS"
+    },
+    {
+      "name": "admin_390 alert initial focus",
+      "result": "PASS"
+    },
+    {
+      "name": "admin_390 hidden selection retained",
+      "result": "PASS"
+    },
+    {
+      "name": "admin_390 unit batch selector preserved",
+      "result": "PASS"
+    },
+    {
+      "name": "admin_390 alert return focus",
+      "result": "PASS"
+    },
+    {
+      "name": "admin_390 entry overlay overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "admin_390 analysis overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "admin_390 documents overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "admin_390 document overlay overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "admin_390 items overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "admin_390 new item overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "admin_390 categories overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "admin_390 categories form disabled without name",
+      "result": "PASS"
+    },
+    {
+      "name": "admin_390 providers overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "admin_390 providers form disabled without name",
+      "result": "PASS"
+    },
+    {
+      "name": "1024 /inventario/stock overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "1024 /inventario/analisis overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "1024 /inventario/pendientes overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "1024 /inventario overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "1024 /inventario/familias overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "1024 /inventario/proveedores overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "800 /inventario/stock overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "800 /inventario/analisis overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "800 /inventario/pendientes overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "800 /inventario overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "800 /inventario/familias overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "800 /inventario/proveedores overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "320 /inventario/stock overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "320 /inventario/analisis overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "320 /inventario/pendientes overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "320 /inventario overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "320 /inventario/familias overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "320 /inventario/proveedores overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "Reduced motion overlay duration zero",
+      "result": "PASS"
+    },
+    {
+      "name": "Harness empty-copy mismatch resolved by follow-up",
+      "result": "RESOLVED",
+      "error": "Error: Timeout: document.body.innerText.includes(\"No hay\")\n    at wait (file:///tmp/ewo054-cdp.mjs:7:172)\n    at async file:///tmp/ewo054-proof.mjs:24:104",
+      "note": "Expected No hay but existing copy is Aún no hay existencias. Product unchanged; follow-up verifies actual empty state and retry."
+    },
+    {
+      "name": "Empty stock disables entry",
+      "result": "PASS"
+    },
+    {
+      "name": "Stock error/retry recovers rows",
+      "result": "PASS"
+    },
+    {
+      "name": "Analysis movement type stays contextual",
+      "result": "PASS"
+    },
+    {
+      "name": "Analysis custom dates exposed",
+      "result": "PASS"
+    },
+    {
+      "name": "Analysis type persists URL",
+      "result": "PASS"
+    },
+    {
+      "name": "Category search filters rows",
+      "result": "PASS"
+    },
+    {
+      "name": "Category name enables existing action without submission",
+      "result": "PASS"
+    },
+    {
+      "name": "Category mobile action44",
+      "result": "PASS"
+    },
+    {
+      "name": "Stock state filter 1440",
+      "result": "PASS"
+    },
+    {
+      "name": "Keyboard focus has outline 1440",
+      "result": "PASS"
+    },
+    {
+      "name": "Stock state filter 390",
+      "result": "PASS"
+    },
+    {
+      "name": "Keyboard focus has outline 390",
+      "result": "PASS"
+    },
+    {
+      "name": "Mobile query controls44",
+      "result": "PASS"
+    },
+    {
+      "name": "Computed contrast h1",
+      "result": "PASS",
+      "ratio": "13.09",
+      "sel": "h1",
+      "fg": "rgb(36, 40, 77)",
+      "bg": "rgb(247, 246, 244)"
+    },
+    {
+      "name": "Computed contrast .inventory-filter-label",
+      "result": "PASS",
+      "ratio": "5.77",
+      "sel": ".inventory-filter-label",
+      "fg": "rgb(98, 101, 118)",
+      "bg": "rgb(255, 255, 255)"
+    },
+    {
+      "name": "Computed contrast .inventory-result-count",
+      "result": "PASS",
+      "ratio": "5.34",
+      "sel": ".inventory-result-count",
+      "fg": "rgb(98, 101, 118)",
+      "bg": "rgb(247, 246, 244)"
+    },
+    {
+      "name": "Computed contrast #stock-search",
+      "result": "PASS",
+      "ratio": "16.76",
+      "sel": "#stock-search",
+      "fg": "rgb(28, 29, 38)",
+      "bg": "rgb(255, 255, 255)"
+    },
+    {
+      "name": "Mobile entry close visible and44",
+      "result": "PASS",
+      "metrics": {
+        "x": 342,
+        "y": 4,
+        "width": 44,
+        "height": 44,
+        "visible": true
+      }
+    },
+    {
+      "name": "Mobile entry Cancelar reachable by contained scroll",
+      "result": "PASS"
+    },
+    {
+      "name": "Mobile entry Cancelar closes safely",
+      "result": "PASS"
+    },
+    {
+      "name": "Fixture cost response shape corrected for final ficha proof",
+      "result": "RESOLVED",
+      "error": "Error: {\"exceptionId\":6,\"text\":\"Uncaught\",\"lineNumber\":0,\"columnNumber\":51,\"scriptId\":\"2721\",\"stackTrace\":{\"callFrames\":[{\"functionName\":\"\",\"scriptId\":\"2721\",\"url\":\"\",\"lineNumber\":0,\"columnNumber\":51}]},\"exception\":{\"type\":\"object\",\"subtype\":\"error\",\"className\":\"TypeError\",\"description\":\"TypeError: Cannot read properties of null (reading 'innerText')\\n    at <anonymous>:1:52\",\"objectId\":\"573790765316463738.81.3\"}}\n    at evaluate (file:///tmp/ewo054-cdp.mjs:6:161)\n    at async file:///tmp/ewo054-final-proof.mjs:2:447",
+      "note": "Generic fixture item route shadowed /costos. Added correct quantity/valuation/operations shape to disposable fixture; product unchanged."
+    },
+    {
+      "name": "Item ficha opens and fits 1440",
+      "result": "PASS"
+    },
+    {
+      "name": "Item ficha Escape closes 1440",
+      "result": "PASS"
+    },
+    {
+      "name": "Item ficha opens and fits 390",
+      "result": "PASS"
+    },
+    {
+      "name": "Item ficha Escape closes 390",
+      "result": "PASS"
+    },
+    {
+      "name": "Movement fixture corrected to existing SALIDA_OT enum",
+      "result": "PASS"
+    },
+    {
+      "name": "Legacy consumo redirect preserves query",
+      "result": "PASS"
+    },
+    {
+      "name": "Legacy movimientos redirect preserves query",
+      "result": "PASS"
+    }
+  ],
+  "screenshots": [
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo054_supervisor_1440_stock.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo054_supervisor_1440_alerts.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo054_supervisor_1440_entry.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo054_supervisor_1440_analysis.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo054_supervisor_1440_documents.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo054_supervisor_1440_document_detail.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo054_supervisor_1440_items.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo054_supervisor_1440_categories.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo054_supervisor_1440_providers.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo054_supervisor_390_stock.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo054_supervisor_390_alerts.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo054_supervisor_390_entry.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo054_supervisor_390_analysis.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo054_supervisor_390_documents.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo054_supervisor_390_document_detail.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo054_supervisor_390_items.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo054_supervisor_390_categories.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo054_supervisor_390_providers.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo054_admin_1440_stock.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo054_admin_1440_alerts.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo054_admin_1440_entry.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo054_admin_1440_analysis.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo054_admin_1440_documents.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo054_admin_1440_document_detail.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo054_admin_1440_items.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo054_admin_1440_categories.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo054_admin_1440_providers.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo054_admin_390_stock.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo054_admin_390_alerts.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo054_admin_390_entry.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo054_admin_390_analysis.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo054_admin_390_documents.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo054_admin_390_document_detail.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo054_admin_390_items.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo054_admin_390_categories.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo054_admin_390_providers.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo054_empty_stock.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo054_error_stock.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo054_analysis_custom_m390.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo054_entry_footer_m390.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo054_item_detail_1440.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo054_item_detail_390.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo054_new_item_1440.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo054_new_item_390.png"
+  ]
+}

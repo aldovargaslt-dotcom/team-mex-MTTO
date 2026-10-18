@@ -19,3 +19,7 @@ El propietario confirmó: «Solo inventario por ahora; Pero quiero que esto sea 
 
 ## Proof / exclusiones
 1440 y1024, Sup/Admin: abrir módulo desde Inicio, seis enlaces, Catálogo jerárquico, contraer/reabrir, rail→abrir módulo, historial y scroll altura corta. Regresión800/390 con navegación disponible; teclado Enter/Tab y reduced motion. Lint/build, better-ui, CDP sin Playwright, ux-auditor independiente. No API, permisos, rutas nuevas ni CRUD.
+
+
+## Corrección aprobada de navegación móvil — EWO-055
+La corrección explícita del propietario sustituye la excepción anterior de Admin: Supervisor y Admin usan barra inferior en teléfono (<768), con el botón Inventario activo desplegando sus seis secciones. Se retira el selector superior de Inventario para ambos. Los cuatro módulos reutilizan la barra existente; funciones adicionales Admin permanecen en menú global. Desktop/sidebar y tablet768–1023 no cambian. La evidencia054 describe el estado anterior y no acredita esta corrección; ver [EWO-055](../engineering-work-orders/EWO-055.md).

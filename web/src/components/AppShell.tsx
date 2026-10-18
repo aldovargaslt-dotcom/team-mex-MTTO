@@ -56,7 +56,7 @@ const SUPERVISOR_PRIMARY = new Set([
   '/inventario',
 ]);
 
-const SUPERVISOR_BOTTOM_NAV = [
+const WORKSPACE_BOTTOM_NAV = [
   { href: '/inicio', label: 'Inicio', icon: Home },
   { href: '/ordenes', label: 'Órdenes', icon: ClipboardList },
   { href: '/unidades', label: 'Unidades', icon: Truck },
@@ -73,6 +73,11 @@ export function AppShell({ children }: { children: ReactNode }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const workspaceChrome = Boolean(showChrome && !isCheckWorkflow && (role === 'SUPERVISOR' || role === 'ADMIN_DIRECTIVO'));
+  const maintenanceVisual = Boolean(showChrome && !isCheckWorkflow && (
+    ((role === 'SUPERVISOR' || role === 'ADMIN_DIRECTIVO') &&
+      (pathname?.startsWith('/ordenes') || pathname?.startsWith('/unidades'))) ||
+    (role === 'MECANICO' && pathname?.startsWith('/mi-trabajo'))
+  ));
   const [logoutError, setLogoutError] = useState('');
   useEffect(() => {
     if (ready && !role && !isHome) router.replace('/');
@@ -109,7 +114,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   }
 
   return (
-    <div className={cn('app', workspaceChrome && 'app--workspace', workspaceChrome && sidebarCollapsed && 'app--sidebar-collapsed')}>
+    <div className={cn('app', maintenanceVisual && 'app--maintenance', maintenanceVisual && role === 'MECANICO' && 'app--mechanic-visual', workspaceChrome && 'app--workspace', workspaceChrome && sidebarCollapsed && 'app--sidebar-collapsed')}>
       {workspaceChrome ? <WorkspaceSidebar items={sidebarItems} pathname={pathname} collapsed={sidebarCollapsed}
         onToggle={() => setSidebarCollapsed((value) => !value)} homeHref={homeHref} /> : null}
       {!isCheckWorkflow ? <header className="shell-header">
@@ -251,9 +256,9 @@ export function AppShell({ children }: { children: ReactNode }) {
           </Link>
         </nav>
       ) : null}
-      {showChrome && role === 'SUPERVISOR' ? (
-        <nav className="supervisor-bottom-nav md:hidden" aria-label="Navegación del Supervisor">
-          {SUPERVISOR_BOTTOM_NAV.map((item) => {
+      {showChrome && (role === 'SUPERVISOR' || (role === 'ADMIN_DIRECTIVO' && !isCheckWorkflow)) ? (
+        <nav className="supervisor-bottom-nav md:hidden" aria-label={role === 'SUPERVISOR' ? 'Navegación del Supervisor' : 'Navegación del Administrador'}>
+          {WORKSPACE_BOTTOM_NAV.map((item) => {
             const Icon = item.icon;
             const active =
               item.href === '/inicio'
@@ -282,7 +287,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             ? 'main main-home'
             : pathname?.startsWith('/ordenes')
               ? 'main main-ordenes'
-              : isLogistica || role === 'SUPERVISOR'
+              : isLogistica || role === 'SUPERVISOR' || (role === 'ADMIN_DIRECTIVO' && !isCheckWorkflow)
                 ? 'main pb-20 md:pb-4'
                 : 'main'
         }

@@ -53,7 +53,7 @@ export function HubIdentityHeader({
     : null;
 
   return (
-    <header className="hub-identity">
+    <header className="hub-identity" aria-label="Identidad de unidad">
       <div className="hub-identity__bar">
         <div className="hub-identity__nav">
           <Link href={backHref} className="hub-identity__back">

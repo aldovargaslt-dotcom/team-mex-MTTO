@@ -3,13 +3,10 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useRef } from 'react';
-import { InventorySectionMenu } from '@/components/InventorySectionMenu';
-import { useRole } from '@/lib/role';
 import { INVENTORY_OPS as OPS, INVENTORY_CATALOG as CATALOGO, isInventoryDestination as isActive } from '@/lib/inventory-navigation';
 
 export function InventarioNav() {
   const pathname = usePathname();
-  const { role } = useRole();
   const catalogOpen = CATALOGO.some((link) => isActive(pathname, link.href, link.exact));
   const primaryNav = useRef<HTMLElement>(null);
   useEffect(() => {
@@ -24,7 +21,6 @@ export function InventarioNav() {
 
   return (
     <>
-      {role === 'ADMIN_DIRECTIVO' ? <div className="inventory-mobile-nav"><InventorySectionMenu /></div> : null}
       <nav ref={primaryNav} className="subnav inventory-primary-nav" aria-label="Inventario">
         {OPS.map((link) => {
           const active = isActive(pathname, link.href, link.exact);
