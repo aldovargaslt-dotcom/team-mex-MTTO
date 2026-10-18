@@ -1,0 +1,84 @@
+{
+  "environment": "Chromium CDP; real role picker; Next3000 and disposable HTTP fixture",
+  "checks": [
+    {
+      "name": "AC11 closed page unaffected",
+      "result": "PASS"
+    },
+    {
+      "name": "AC11 main blurred and dimmed",
+      "result": "PASS"
+    },
+    {
+      "name": "AC11 header blurred and dimmed",
+      "result": "PASS"
+    },
+    {
+      "name": "AC11 panel and bar remain crisp",
+      "result": "PASS"
+    },
+    {
+      "name": "AC11 blurred content ignores pointer actions",
+      "result": "PASS"
+    },
+    {
+      "name": "AC11 page fits width390",
+      "result": "PASS"
+    },
+    {
+      "name": "AC11 background CTA tap only dismisses, no action",
+      "result": "PASS"
+    },
+    {
+      "name": "AC11 background tap restores page",
+      "result": "PASS"
+    },
+    {
+      "name": "AC11 Escape restores page and trigger focus",
+      "result": "PASS"
+    },
+    {
+      "name": "AC11 trigger toggle restores page",
+      "result": "PASS"
+    },
+    {
+      "name": "AC11 choosing section restores page",
+      "result": "PASS"
+    },
+    {
+      "name": "AC11 switching module restores page",
+      "result": "PASS"
+    },
+    {
+      "name": "AC11 reduced motion zero duration",
+      "result": "PASS"
+    },
+    {
+      "name": "AC11 reduced motion restored without delay",
+      "result": "PASS"
+    },
+    {
+      "name": "AC11 desktop resize restores all page styles",
+      "result": "PASS"
+    },
+    {
+      "name": "AC11 width320 remains clear on panel/bar",
+      "result": "PASS"
+    },
+    {
+      "name": "AC11 width320 restores page",
+      "result": "PASS"
+    },
+    {
+      "name": "AC11 Admin modal does not gain blur treatment",
+      "result": "PASS"
+    }
+  ],
+  "screenshots": [
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo047_nav_focus_supervisor_open_m390.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo047_nav_focus_supervisor_closed_m390.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo047_nav_focus_desktop_d1440.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo047_nav_focus_supervisor_open_m320.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo047_nav_focus_admin_m390.png"
+  ]
+}

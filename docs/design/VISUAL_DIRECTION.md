@@ -2,7 +2,7 @@
 
 Team Mex MTTO must feel like a professional industrial operations application rather than a generic SaaS dashboard.
 
-Use MaintainX as a reference for visual language and interaction patterns, but do not copy its UI literally.
+Use MaintainX and the owner-provided Stitch examples as references for visual language, hierarchy and composition; do not copy their UI or infer new product capabilities. The [current visual contract](DESIGN_SYSTEM.md#contrato-visual-vigente--lectura-obligatoria-para-agentes) and approved screen SPEC/UX govern implementation.
 
 ## Core principles
 
@@ -26,7 +26,7 @@ Use MaintainX as a reference for visual language and interaction patterns, but d
 
 - White / neutral surfaces
 - Thin borders
-- Blue primary interaction color
+- Team Mex orange primary action (`#EA7515`), navy structure/text (`#24284D`), neutral filter selection
 - Compact controls
 - Restrained corner radius
 - Minimal shadows
@@ -77,3 +77,8 @@ The owner approved the new sidebar as the shared standard across modules.
 [Application navigation](APPLICATION_NAVIGATION.md) is canonical; no per-feature
 sidebar variants. EWO061 removes the Unidades-only selected-state override and
 centralizes desktop/mobile/bottom-link identity in one catalog.
+
+Integration EWO062 preserves the inventory section catalog, Admin mobile access,
+maintenance composition and focus behavior added on main. Historical sidebar
+briefs are retained; the owner-confirmed shared navigation contract above governs
+the unified rail, without removing the supported destinations.

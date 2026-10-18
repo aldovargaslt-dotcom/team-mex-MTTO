@@ -1,0 +1,259 @@
+{
+  "environment": "Chromium CDP; real role picker, disposable HTTP fixture; navigation only, no CRUD or backend authorization proof.",
+  "checks": [
+    {
+      "name": "supervisor disclosure opens without navigating",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor sidebar selects /inventario/stock",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor desktop top nav hidden /inventario/stock",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor no overflow /inventario/stock",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor sidebar selects /inventario/analisis",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor desktop top nav hidden /inventario/analisis",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor no overflow /inventario/analisis",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor sidebar selects /inventario/pendientes",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor desktop top nav hidden /inventario/pendientes",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor no overflow /inventario/pendientes",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor sidebar selects /inventario",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor desktop top nav hidden /inventario",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor no overflow /inventario",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor sidebar selects /inventario/familias",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor desktop top nav hidden /inventario/familias",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor no overflow /inventario/familias",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor sidebar selects /inventario/proveedores",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor desktop top nav hidden /inventario/proveedores",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor no overflow /inventario/proveedores",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor keyboard closes sections",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor keyboard reopens sections",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor rail hides child links",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor rail module restores sections same route",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor history selects restored destination",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor short sidebar scrolls",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor configuration navigation untouched",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor tablet keeps top navigation",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor mobile preserves six destinations and catalog group",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor mobile navigates and closes",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor resize focuses visible sidebar destination",
+      "result": "PASS"
+    },
+    {
+      "name": "admin disclosure opens without navigating",
+      "result": "PASS"
+    },
+    {
+      "name": "admin sidebar selects /inventario/stock",
+      "result": "PASS"
+    },
+    {
+      "name": "admin desktop top nav hidden /inventario/stock",
+      "result": "PASS"
+    },
+    {
+      "name": "admin no overflow /inventario/stock",
+      "result": "PASS"
+    },
+    {
+      "name": "admin sidebar selects /inventario/analisis",
+      "result": "PASS"
+    },
+    {
+      "name": "admin desktop top nav hidden /inventario/analisis",
+      "result": "PASS"
+    },
+    {
+      "name": "admin no overflow /inventario/analisis",
+      "result": "PASS"
+    },
+    {
+      "name": "admin sidebar selects /inventario/pendientes",
+      "result": "PASS"
+    },
+    {
+      "name": "admin desktop top nav hidden /inventario/pendientes",
+      "result": "PASS"
+    },
+    {
+      "name": "admin no overflow /inventario/pendientes",
+      "result": "PASS"
+    },
+    {
+      "name": "admin sidebar selects /inventario",
+      "result": "PASS"
+    },
+    {
+      "name": "admin desktop top nav hidden /inventario",
+      "result": "PASS"
+    },
+    {
+      "name": "admin no overflow /inventario",
+      "result": "PASS"
+    },
+    {
+      "name": "admin sidebar selects /inventario/familias",
+      "result": "PASS"
+    },
+    {
+      "name": "admin desktop top nav hidden /inventario/familias",
+      "result": "PASS"
+    },
+    {
+      "name": "admin no overflow /inventario/familias",
+      "result": "PASS"
+    },
+    {
+      "name": "admin sidebar selects /inventario/proveedores",
+      "result": "PASS"
+    },
+    {
+      "name": "admin desktop top nav hidden /inventario/proveedores",
+      "result": "PASS"
+    },
+    {
+      "name": "admin no overflow /inventario/proveedores",
+      "result": "PASS"
+    },
+    {
+      "name": "admin keyboard closes sections",
+      "result": "PASS"
+    },
+    {
+      "name": "admin keyboard reopens sections",
+      "result": "PASS"
+    },
+    {
+      "name": "admin rail hides child links",
+      "result": "PASS"
+    },
+    {
+      "name": "admin rail module restores sections same route",
+      "result": "PASS"
+    },
+    {
+      "name": "admin history selects restored destination",
+      "result": "PASS"
+    },
+    {
+      "name": "admin short sidebar scrolls",
+      "result": "PASS"
+    },
+    {
+      "name": "admin configuration navigation untouched",
+      "result": "PASS"
+    },
+    {
+      "name": "admin tablet keeps top navigation",
+      "result": "PASS"
+    },
+    {
+      "name": "admin mobile preserves six destinations and catalog group",
+      "result": "PASS"
+    },
+    {
+      "name": "admin mobile navigates and closes",
+      "result": "PASS"
+    },
+    {
+      "name": "admin resize focuses visible sidebar destination",
+      "result": "PASS"
+    },
+    {
+      "name": "reduced motion sidebar transition is zero",
+      "result": "PASS"
+    }
+  ],
+  "screenshots": [
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo050_supervisor_sidebar_catalog_d1440.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo050_supervisor_rail_d1440.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo050_supervisor_sidebar_d1024.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo050_supervisor_mobile_menu_m390.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo050_admin_sidebar_catalog_d1440.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo050_admin_rail_d1440.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo050_admin_sidebar_d1024.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo050_admin_mobile_menu_m390.png"
+  ]
+}

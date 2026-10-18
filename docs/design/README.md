@@ -8,9 +8,14 @@ Los briefs visuales ya aceptados (Must / Don’t de un corte) siguen en [`docs/d
 
 1. [ADR-003](../adr/003-shadcn-tailwind.md) — shadcn + Tailwind + tokens Team Mex.
 2. Briefs del corte: [`docs/design-system/`](../design-system/) y, si es Flota, [tablero viaje](../specs/fleet-tablero-viaje-v0.md).
-3. Este índice + la spec UX de la pantalla.
+3. [Contrato visual vigente de DESIGN_SYSTEM](DESIGN_SYSTEM.md#contrato-visual-vigente--lectura-obligatoria-para-agentes) y [VISUAL_DIRECTION](VISUAL_DIRECTION.md).
+4. Este índice + la SPEC/UX aprobada de la pantalla. El [plan de evolución Stitch](../../workspace/shaping/ui-team-mex-stitch-implementation-plan.md) contiene propuestas y etapas; no reemplaza las reglas aprobadas ni autoriza runtime.
 
 No copies ADRs ni briefs aquí. Ábrelos.
+
+Recomposición de mantenimiento con referencia Stitch: [SPEC canónica002](../specs/SPEC-UI-MANTENIMIENTO-002.md) + [UX concreta](../design-system/ux-mantenimiento-composicion-stitch-v1.md). Conservan el contrato visual; autorización y composiciones concretas de EWO052/053 registradas en esas fuentes, con aceptación visual humana separada. La primera pasada de estilo SPEC001/EWO051 no acredita este rediseño.
+
+Inventario con el mismo contrato: [SPEC-UI-INVENTARIO-001](../specs/SPEC-UI-INVENTARIO-001.md) + [UX concreta](../design-system/ux-inventario-identidad-clara-v1.md), implementado localmente en EWO-054; navegación, reglas y editores existentes conservados.
 
 ## Flujo (pantalla nueva o cambio visual no trivial)
 
@@ -40,7 +45,7 @@ Copy menor o un string: spec UX completa no es obligatoria. Sí lo es un corte q
 
 | Archivo | Uso |
 |---------|-----|
-| [VISUAL_DIRECTION.md](VISUAL_DIRECTION.md) | Dirección visual de producto (MaintainX como referencia, no como copia) |
+| [VISUAL_DIRECTION.md](VISUAL_DIRECTION.md) | Dirección visual; referencias MaintainX/Stitch subordinadas a marca y contrato vigente |
 | [APPLICATION_NAVIGATION.md](APPLICATION_NAVIGATION.md) | Estándar único de sidebar, catálogo y responsive |
 | [DESIGN_SYSTEM.md](DESIGN_SYSTEM.md) | Tokens y primitivas (fuente: `web/src/app/globals.css`) |
 | [UX_PRINCIPLES.md](UX_PRINCIPLES.md) | Principios operacionales |

@@ -111,7 +111,7 @@ export function PiezasStep({
   }
 
   return (
-    <Card className="p-3">
+    <Card className="p-3 supervisor-visual-pilot piezas-pilot">
       <h2 className="text-[13px] font-semibold">Piezas</h2>
       <p className="mt-1 text-xs text-muted-foreground">
         SKUs compatibles con {tipoVehiculoNombre ?? 'el tipo de la unidad'}. Opcional.
@@ -129,7 +129,7 @@ export function PiezasStep({
                 key={linea.itemId}
                 className={cn(
                   'grid gap-2 rounded-md border border-border p-2.5',
-                  insuficiente && 'border-[#ead0b3] bg-[#fff4e8]',
+                  insuficiente && 'piezas-pilot__insufficient',
                 )}
               >
                 <div className="flex flex-wrap items-start justify-between gap-2">

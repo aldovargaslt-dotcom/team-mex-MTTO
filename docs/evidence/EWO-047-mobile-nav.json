@@ -1,0 +1,247 @@
+{
+  "environment": "Chromium CDP, role picker, disposable HTTP fixture on3001, Next on3000",
+  "checks": [
+    {
+      "name": "AC09 supervisor_m390 tabs replaced",
+      "result": "PASS"
+    },
+    {
+      "name": "AC09 supervisor_m390 no page overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "AC09 supervisor_m390 all six links",
+      "result": "PASS"
+    },
+    {
+      "name": "AC09 supervisor_m390 touch targets",
+      "result": "PASS"
+    },
+    {
+      "name": "AC09 supervisor_m390 focus current section",
+      "result": "PASS"
+    },
+    {
+      "name": "AC09 supervisor_m390 expanded announced",
+      "result": "PASS"
+    },
+    {
+      "name": "AC09 supervisor_m390 contained scroll",
+      "result": "PASS"
+    },
+    {
+      "name": "AC09 supervisor_m390 Escape restores focus",
+      "result": "PASS"
+    },
+    {
+      "name": "AC09 supervisor_m390 selecting current section restores focus",
+      "result": "PASS"
+    },
+    {
+      "name": "AC09 supervisor_m390 navigate Refacciones",
+      "result": "PASS"
+    },
+    {
+      "name": "AC09 supervisor_m390 navigate Análisis",
+      "result": "PASS"
+    },
+    {
+      "name": "AC09 supervisor_m390 navigate Comprobantes",
+      "result": "PASS"
+    },
+    {
+      "name": "AC09 supervisor_m390 navigate Categorías",
+      "result": "PASS"
+    },
+    {
+      "name": "AC09 supervisor_m390 navigate Proveedores",
+      "result": "PASS"
+    },
+    {
+      "name": "AC09 supervisor_m390 navigate Existencias",
+      "result": "PASS"
+    },
+    {
+      "name": "AC09 supervisor_m390 back updates section",
+      "result": "PASS"
+    },
+    {
+      "name": "AC09 supervisor_m390 forward updates section",
+      "result": "PASS"
+    },
+    {
+      "name": "AC09 admin_m390 tabs replaced",
+      "result": "PASS"
+    },
+    {
+      "name": "AC09 admin_m390 no page overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "AC09 admin_m390 all six links",
+      "result": "PASS"
+    },
+    {
+      "name": "AC09 admin_m390 touch targets",
+      "result": "PASS"
+    },
+    {
+      "name": "AC09 admin_m390 focus current section",
+      "result": "PASS"
+    },
+    {
+      "name": "AC09 admin_m390 expanded announced",
+      "result": "PASS"
+    },
+    {
+      "name": "AC09 admin_m390 contained scroll",
+      "result": "PASS"
+    },
+    {
+      "name": "AC09 admin_m390 Escape restores focus",
+      "result": "PASS"
+    },
+    {
+      "name": "AC09 admin_m390 selecting current section restores focus",
+      "result": "PASS"
+    },
+    {
+      "name": "AC09 admin_m390 navigate Refacciones",
+      "result": "PASS"
+    },
+    {
+      "name": "AC09 admin_m390 navigate Análisis",
+      "result": "PASS"
+    },
+    {
+      "name": "AC09 admin_m390 navigate Comprobantes",
+      "result": "PASS"
+    },
+    {
+      "name": "AC09 admin_m390 navigate Categorías",
+      "result": "PASS"
+    },
+    {
+      "name": "AC09 admin_m390 navigate Proveedores",
+      "result": "PASS"
+    },
+    {
+      "name": "AC09 admin_m390 navigate Existencias",
+      "result": "PASS"
+    },
+    {
+      "name": "AC09 admin_m390 back updates section",
+      "result": "PASS"
+    },
+    {
+      "name": "AC09 admin_m390 forward updates section",
+      "result": "PASS"
+    },
+    {
+      "name": "AC09 supervisor_m320 tabs replaced",
+      "result": "PASS"
+    },
+    {
+      "name": "AC09 supervisor_m320 no page overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "AC09 supervisor_m320 all six links",
+      "result": "PASS"
+    },
+    {
+      "name": "AC09 supervisor_m320 touch targets",
+      "result": "PASS"
+    },
+    {
+      "name": "AC09 supervisor_m320 focus current section",
+      "result": "PASS"
+    },
+    {
+      "name": "AC09 supervisor_m320 expanded announced",
+      "result": "PASS"
+    },
+    {
+      "name": "AC09 supervisor_m320 contained scroll",
+      "result": "PASS"
+    },
+    {
+      "name": "AC09 supervisor_m320 Escape restores focus",
+      "result": "PASS"
+    },
+    {
+      "name": "AC09 supervisor_m320 selecting current section restores focus",
+      "result": "PASS"
+    },
+    {
+      "name": "AC09 supervisor_m320 navigate Refacciones",
+      "result": "PASS"
+    },
+    {
+      "name": "AC09 supervisor_m320 navigate Análisis",
+      "result": "PASS"
+    },
+    {
+      "name": "AC09 supervisor_m320 navigate Comprobantes",
+      "result": "PASS"
+    },
+    {
+      "name": "AC09 supervisor_m320 navigate Categorías",
+      "result": "PASS"
+    },
+    {
+      "name": "AC09 supervisor_m320 navigate Proveedores",
+      "result": "PASS"
+    },
+    {
+      "name": "AC09 supervisor_m320 navigate Existencias",
+      "result": "PASS"
+    },
+    {
+      "name": "AC09 supervisor_m320 back updates section",
+      "result": "PASS"
+    },
+    {
+      "name": "AC09 supervisor_m320 forward updates section",
+      "result": "PASS"
+    },
+    {
+      "name": "AC09 short height panel fits viewport",
+      "result": "PASS"
+    },
+    {
+      "name": "AC09 short height vertical scroll",
+      "result": "PASS"
+    },
+    {
+      "name": "AC09 keyboard focus trapped",
+      "result": "PASS"
+    },
+    {
+      "name": "AC09 reduced motion panel and chevron",
+      "result": "PASS"
+    },
+    {
+      "name": "AC09 resizing to desktop closes sheet and focuses tab",
+      "result": "PASS"
+    },
+    {
+      "name": "AC09 desktop tabs unchanged",
+      "result": "PASS"
+    }
+  ],
+  "screenshots": [
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo047_mobile_nav_supervisor_m390_existencias.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo047_mobile_nav_supervisor_m390_secciones.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo047_mobile_nav_supervisor_m390_comprobantes.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo047_mobile_nav_admin_m390_existencias.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo047_mobile_nav_admin_m390_secciones.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo047_mobile_nav_admin_m390_comprobantes.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo047_mobile_nav_supervisor_m320_existencias.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo047_mobile_nav_supervisor_m320_secciones.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo047_mobile_nav_supervisor_m320_comprobantes.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo047_mobile_nav_short_height_m390.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo047_mobile_nav_desktop_catalogo_d1440.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo047_mobile_nav_desktop_existencias_d1440.png"
+  ]
+}

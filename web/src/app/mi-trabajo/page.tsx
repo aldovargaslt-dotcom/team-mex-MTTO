@@ -12,6 +12,8 @@ import {
 } from "lucide-react";
 import { OrderSafetyControls } from '@/components/OrderSafetyControls';
 import { OrderIdentity } from "@/components/OrderIdentity";
+import { OrderDocumentHeader } from "@/components/OrderDocumentHeader";
+import { OperationalToolbar } from "@/components/OperationalToolbar";
 import { ListFilter } from "@/components/ListFilter";
 import { UnidadMarca } from "@/components/UnidadTipoMark";
 import { RoleGate } from "@/components/RoleGate";
@@ -88,6 +90,7 @@ function WorkQueue() {
       : "todos";
   const requestVersion = useRef(0);
   const detailVersion = useRef(0);
+  const detailTrigger = useRef<HTMLButtonElement | null>(null);
   const [orders, setOrders] = useState<Order[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
@@ -209,7 +212,8 @@ function WorkQueue() {
       setBusy(null);
     }
   }
-  async function view(o: Order) {
+  async function view(o: Order, trigger: HTMLButtonElement) {
+    detailTrigger.current = trigger;
     const version = ++detailVersion.current;
     setSelectedOrder(o);
     setOpeningError(null);
@@ -246,7 +250,6 @@ function WorkQueue() {
           onClick={() => navigate({ cola: cola === "cerradas" ? null : "cerradas" })}>
           <History className="size-4" aria-hidden />{cola === "cerradas" ? "Volver a abiertas" : "Historial"}
         </Button>}
-        kicker="Mi trabajo · Mecánico"
         lede={
           cola === "abiertas"
             ? "Trabajo listo para atender en tu patio."
@@ -256,26 +259,20 @@ function WorkQueue() {
         }
       />
       </div>
-      <div className="mb-3 inline-flex rounded-md border border-border bg-card p-1" aria-label="Cola de órdenes">
+      <OperationalToolbar label="Filtros de Mi trabajo" className="maintenance-work-tools">
+        <div><p className="operational-toolbar__label">Cola de órdenes</p>
+      <div className="maintenance-queue mb-3 inline-flex rounded-md border border-border bg-card p-1" aria-label="Cola de órdenes">
         {(["abiertas", "borradores"] as const).map((queue) => (
           <Button key={queue} variant="quiet" aria-pressed={cola === queue}
-            className={cola === queue ? "bg-navy text-white hover:bg-navy hover:text-white" : ""}
+            className={cola === queue ? "maintenance-queue__selected" : ""}
             onClick={() => navigate({ cola: queue === "abiertas" ? null : queue })}>
             {queue === "abiertas" ? "Abiertas" : "Borradores"}
             {orders && cola !== "cerradas" ? ` (${orders.filter((o) => phase(o) === queue).length})` : ""}
           </Button>
         ))}
       </div>
-      {error ? (
-        <div className="mb-3 flex flex-wrap items-center gap-2">
-          <p role="alert" className="text-sm text-destructive">
-            {error}
-          </p>
-          <Button variant="secondary" onClick={() => void load()}>
-            Reintentar
-          </Button>
         </div>
-      ) : null}
+        <div><p className="operational-toolbar__label">Tipo de orden</p>
       {orders ? (
         <ListFilter
           label="Tipo de orden"
@@ -289,6 +286,18 @@ function WorkQueue() {
       ) : (
         <p className="muted">Cargando órdenes…</p>
       )}
+        </div>
+      </OperationalToolbar>
+      {error ? (
+        <div className="mb-3 flex flex-wrap items-center gap-2">
+          <p role="alert" className="text-sm text-destructive">
+            {error}
+          </p>
+          <Button variant="secondary" onClick={() => void load()}>
+            Reintentar
+          </Button>
+        </div>
+      ) : null}
       {orders && !visible.length ? (
         <div className="empty-state">
           <h2>
@@ -327,7 +336,7 @@ function WorkQueue() {
           return (
             <li
               key={o.id}
-              className="rounded-md border border-border bg-card p-3"
+              className="maintenance-work-row rounded-md border border-border bg-card p-3"
             >
               {(() => {
                 const identity = <>
@@ -352,7 +361,7 @@ function WorkQueue() {
                 return o.type === "CHECK" ? (
                   <Link href={`/checks/${o.id}`} className={className}>{identity}</Link>
                 ) : (
-                  <button type="button" className={className} onClick={() => void view(o)}>{identity}</button>
+                  <button type="button" className={className} onClick={(event) => void view(o, event.currentTarget)}>{identity}</button>
                 );
               })()}
               {action && action !== "open" ? (
@@ -389,7 +398,12 @@ function WorkQueue() {
           setDetailOpen(open);
         }}
       >
-        <SheetContent>
+        <SheetContent onCloseAutoFocus={(event) => {
+          if (detailTrigger.current?.isConnected) {
+            event.preventDefault();
+            detailTrigger.current.focus();
+          }
+        }}>
           <SheetHeader>
             <SheetTitle>Orden de trabajo</SheetTitle>
             <SheetDescription>
@@ -405,7 +419,7 @@ function WorkQueue() {
             <p className="muted mt-4 px-4">Cargando orden…</p>
           ) : (
             <div className="mt-4 space-y-3 px-4">
-              <OrderIdentity id={detail.id} check={false} />
+              <OrderDocumentHeader id={detail.id} stateLabel={detail.estado === 'CERRADO' ? 'Cerrada' : detail.openedAt ? 'Abierta' : 'Borrador'} stateTone={detail.estado === 'CERRADO' ? 'success' : 'muted'} />
               <OrderSafetyControls key={detail.id} unitId={detail.unidadId} orderId={detail.id} closed={detail.estado === "CERRADO"} />
               {openingError ? <p role="alert" className="text-sm text-destructive">{openingError}</p> : null}
               {selectedOrder && phase(selectedOrder) === "borradores" && detail.estado === "BORRADOR" && !detail.openedAt ? (

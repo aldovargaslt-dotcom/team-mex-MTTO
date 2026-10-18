@@ -1,5 +1,6 @@
 'use client';
 
+import { OperationalToolbar } from '@/components/OperationalToolbar';
 import { AlertTriangle, List, PackageX, type LucideIcon } from 'lucide-react';
 import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
@@ -204,7 +205,7 @@ function StockContent() {
           </>
         }
       />
-      <div className="inventory-toolbar inventory-stock-toolbar">
+      <OperationalToolbar className="inventory-toolbar inventory-stock-toolbar" label="Filtros de existencias">
       <Field label="Buscar refacción" htmlFor="stock-search" className="inventory-search">
         <Input id="stock-search" type="search" placeholder="Nombre o código de la refacción" value={q} onChange={(event) => setSearch(event.target.value)} />
       </Field>
@@ -222,7 +223,7 @@ function StockContent() {
         }}
       />
       </div>
-      </div>
+      </OperationalToolbar>
       <FormAlert>{error}</FormAlert>
       <ReadStatus loading={read.loading} error={read.error} loadingText="Cargando existencias…" errorText="No se pudieron cargar las existencias." retry={read.retry} />
       <ReadStatus loading={tipoRead.loading || provRead.loading} error={tipoRead.error || provRead.error} loadingText="Cargando catálogos de refacciones…" errorText="Catálogos de refacciones no disponibles; las existencias cargadas se conservan." retry={() => { if (tipoRead.error) tipoRead.retry(); if (provRead.error) provRead.retry(); }} />

@@ -1,5 +1,6 @@
 "use client";
 
+import { OperationalToolbar } from '@/components/OperationalToolbar';
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import { ColumnDef } from "@tanstack/react-table";
 import { api, HttpError } from "@/lib/api";
@@ -202,7 +203,7 @@ export default function ItemsPage() {
         }
       />
 
-      <div className="inventory-toolbar inventory-refacciones-toolbar">
+      <OperationalToolbar className="inventory-toolbar inventory-refacciones-toolbar" label="Filtros de refacciones">
         <Field label="Buscar refacción" htmlFor="itemSearch" className="inventory-search">
           <Input
             id="itemSearch"
@@ -250,7 +251,7 @@ export default function ItemsPage() {
           ))}
         </NativeSelect>
         </Field>
-      </div>
+      </OperationalToolbar>
       {created ? (
         <Note>
           Refacción creada con existencias en cero.{" "}

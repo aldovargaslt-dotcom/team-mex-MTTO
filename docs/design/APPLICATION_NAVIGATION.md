@@ -28,7 +28,7 @@ se condiciona a `/unidades` u otro módulo. Subnav/tabs de objetos no son sideba
 - Activo: fondo navy `--navy`, texto/icono blanco `--white`, peso600; igual en
   Inicio, Unidades, Inventario, Configuración y demás rutas. No subrayado naranja
   o activo gris por feature. Hover activo conserva contraste; inactivo neutro.
-- Colapsado conserva aria-label/title. Navegar conserva estado de expansión
+- Colapsado conserva aria-label y tooltip accesible por foco/hover. Navegar conserva estado de expansión
   durante la sesión del shell; no se introduce persistencia entre recargas.
 - Topbar blanca contextual64px, contraer/expandir, campanita y rol; mismas fuentes.
 - Mobile<768: header existente, menú izquierdo por Sheet/portal, mismo catálogo,
@@ -50,3 +50,14 @@ Una nueva propuesta visual debe modificar este estándar antes de crear variante
 No tomar un screenshot antiguo de main como una segunda fuente de verdad. Integrar
 el shell aprobado preservando capacidades vigentes de esa rama; no borrar nuevas
 rutas o permisos para hacer coincidir una imagen.
+
+## Integración de main — EWO-062
+
+El estándar conserva las capacidades añadidas en main: Inventario desplegable en
+sidebar, seis destinos desde inventory-navigation.ts, tooltip accesible contraído,
+accesos inferiores Admin/Supervisor y selector de secciones desde Inventario móvil.
+ApplicationNavigation renderiza el grupo sin duplicar su catálogo de dominio;
+WorkspaceSidebar anterior se retira. Estado del módulo usa navy/blanco; hoja activa
+usa énfasis neutro secundario y aria-current=page. Desktop arranca768px como shell
+canónico; se ocultan tabs duplicadas cuando la sidebar contiene sus destinos.
+InventorySectionMenu conserva foco, panel y transición/ruta del flujo de main.

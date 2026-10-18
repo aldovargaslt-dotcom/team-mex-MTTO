@@ -4,6 +4,7 @@ import { useEffect, useState, useRef, type ReactNode } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { Menu, PanelLeftClose, PanelLeftOpen, LogOut, ChevronsUpDown } from 'lucide-react';
+import { InventorySectionMenu } from '@/components/InventorySectionMenu';
 import { BrandPlate } from '@/components/BrandPlate';
 import { Campanita } from '@/components/Campanita';
 import { Button } from '@/components/ui/button';
@@ -26,6 +27,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   const isHome = pathname === '/';
   const isCheckWorkflow = pathname?.startsWith('/checks/');
   const showChrome = Boolean(!isHome && ready && role);
+  const maintenanceVisual = Boolean(showChrome && !isCheckWorkflow && (((role === 'SUPERVISOR' || role === 'ADMIN_DIRECTIVO') && (pathname.startsWith('/ordenes') || pathname.startsWith('/unidades'))) || (role === 'MECANICO' && pathname.startsWith('/mi-trabajo'))));
   const [menuOpen, setMenuOpen] = useState(false);
   const menuTrigger = useRef<HTMLButtonElement>(null);
   const [logoutError, setLogoutError] = useState('');
@@ -51,12 +53,12 @@ export function AppShell({ children }: { children: ReactNode }) {
   }
 
   return (
-    <div className={cn('app', showChrome && !isCheckWorkflow && 'app-workspace', pathname?.startsWith('/unidades') && 'app-workspace--units', sidebarCollapsed && 'app-workspace--collapsed')}>
+    <div className={cn('app', maintenanceVisual && 'app--maintenance', maintenanceVisual && role === 'MECANICO' && 'app--mechanic-visual', showChrome && !isCheckWorkflow && 'app-workspace', pathname?.startsWith('/unidades') && 'app-workspace--units', sidebarCollapsed && 'app-workspace--collapsed')}>
       {showChrome && !isCheckWorkflow ? (
         <aside id="desktop-navigation" className="app-sidebar" aria-label="Navegación de la aplicación">
           <Link href={homeHref} className="app-sidebar__brand" aria-label="Team Mex, inicio"><BrandPlate /></Link>
           <div className="app-sidebar__caption">MANTENIMIENTO DE FLOTA</div>
-          <ApplicationNavigation items={menuItems} pathname={pathname} collapsed={sidebarCollapsed} />
+          <ApplicationNavigation items={menuItems} pathname={pathname} collapsed={sidebarCollapsed} onExpand={() => setSidebarCollapsed(false)} />
           <div className="app-sidebar__session">
             <span className="app-sidebar__avatar" aria-hidden>{role?.slice(0, 1)}</span>
             <div><strong>{etiquetaRol(role!)}</strong><span>{development ? 'Entorno de desarrollo' : 'Sesión activa'}</span></div>
@@ -163,10 +165,11 @@ export function AppShell({ children }: { children: ReactNode }) {
         </Sheet>
       ) : null}
       {showChrome && !isCheckWorkflow && bottomItems.length ? (
-        <nav className={cn('supervisor-bottom-nav md:hidden', isLogistica && 'application-bottom-nav--logistics')} aria-label={isLogistica ? 'Navegación de Logística' : 'Navegación del Supervisor'}>
+        <nav className={cn('supervisor-bottom-nav md:hidden', isLogistica && 'application-bottom-nav--logistics')} aria-label={isLogistica ? 'Navegación de Logística' : role === 'ADMIN_DIRECTIVO' ? 'Navegación del Administrador' : 'Navegación del Supervisor'}>
           {bottomItems.map((item) => {
             const Icon = item.icon;
             const active = navigationIsActive(pathname, item.href);
+            if (active && item.href === '/inventario') return <InventorySectionMenu key={item.href} placement="bottom-nav" />;
             return <Link key={item.href} href={item.href === '/inventario' ? '/inventario/stock' : item.href}
               aria-current={active ? 'page' : undefined} className={cn('supervisor-bottom-nav__item', active && 'active')}>
               <Icon className="size-5" aria-hidden />{item.label}
@@ -180,7 +183,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             ? 'main main-home'
             : pathname?.startsWith('/ordenes')
               ? 'main main-ordenes'
-              : isLogistica || role === 'SUPERVISOR'
+              : isLogistica || role === 'SUPERVISOR' || role === 'ADMIN_DIRECTIVO'
                 ? 'main pb-20 md:pb-4'
                 : 'main'
         }

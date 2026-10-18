@@ -1,5 +1,6 @@
 "use client";
 
+import { OperationalToolbar } from '@/components/OperationalToolbar';
 import { Suspense, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { analysisReturn } from "@/lib/inventory-analysis";
@@ -165,13 +166,13 @@ function PendientesContent() {
   }
 
   return (
-    <>
+    <div className="supervisor-visual-pilot comprobantes-pilot">
       <PageHeader
         title="Comprobantes"
         lede="Gestiona documentos, archivos y costos de las compras externas."
       />
       {returnToAnalysis ? <div className="mb-3"><Button asChild variant="outline"><Link href={returnToAnalysis}>Volver a Análisis</Link></Button></div> : null}
-      <div className="inventory-toolbar inventory-comprobantes-toolbar">
+      <OperationalToolbar className="inventory-toolbar inventory-comprobantes-toolbar" label="Filtros de comprobantes">
         <Field label="Buscar compra externa" htmlFor="comprobante-search" className="inventory-search">
           <Input id="comprobante-search" type="search" placeholder="Nombre o SKU" value={search} onChange={(event) => setSearch(event.target.value)} />
         </Field>
@@ -198,7 +199,7 @@ function PendientesContent() {
           ))}
         </div>
         </div>
-      </div>
+      </OperationalToolbar>
       {item || from || to ? <div className="inventory-scope-note"><span>{item ? (rows.find((row) => row.itemId === item)?.nombre ?? 'Refacción seleccionada') : 'Compras externas'}{from && to ? ` · ${from} al ${to}` : from ? ` · Desde ${from}` : to ? ` · Hasta ${to}` : ''}</span><Button variant="secondary" onClick={() => { setFilter('ALL'); router.replace('/inventario/pendientes'); }}>Quitar filtro de origen</Button></div> : null}
       <FormAlert>{selected ? null : error}</FormAlert>
       <ReadStatus
@@ -307,6 +308,6 @@ function PendientesContent() {
           ) : null}
         </SheetContent>
       </Sheet>
-    </>
+    </div>
   );
 }

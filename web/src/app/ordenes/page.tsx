@@ -8,6 +8,8 @@ import { ReadStatus } from '@/components/ReadStatus';
 import { useReadResource } from '@/lib/use-read-resource';
 import { OrderSafetyControls } from '@/components/OrderSafetyControls';
 import { OrderIdentity } from '@/components/OrderIdentity';
+import { OperationalToolbar } from '@/components/OperationalToolbar';
+import { OrderDocumentHeader } from '@/components/OrderDocumentHeader';
 import { Badge } from '@/components/ui/badge';
 import { ListFilter } from '@/components/ListFilter';
 import { CheckOrderReadOnly } from '@/components/CheckOrderReadOnly';
@@ -18,7 +20,7 @@ import { UnidadMarca } from '@/components/UnidadTipoMark';
 import { hydratePiezasFromInventario, lineasDesdeVisita, type PiezaLinea } from '@/components/PiezasStep';
 import { RoleGate } from '@/components/RoleGate';
 import { Button } from '@/components/ui/button';
-import { FormAlert } from '@/components/ui/field';
+import { Field, FormAlert, PageHeader } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import {
   Table,
@@ -35,7 +37,6 @@ import {
   etiquetaUom,
   formatFecha,
   formatTiempoCerrado,
-  numeroOrden,
 } from '@/lib/format';
 import { useRole } from '@/lib/role';
 import type { TipoVisita, Unidad, VisitaDetalle, VisitaResumen } from '@/lib/types';
@@ -252,45 +253,37 @@ function OrdenesContent() {
         </Button>
       ) : (
       <header className="ordenes-head">
-        <div className="flex items-center justify-between gap-2">
-          <h1>{cola === 'abiertas' ? 'Órdenes abiertas' : cola === 'borradores' ? 'Borradores' : 'Historial de cerradas'}</h1>
-          {!isAdmin ? <Button type="button" variant="secondary" aria-pressed={cola === 'cerradas'}
-            onClick={() => setParams({ cola: cola === 'cerradas' ? null : 'cerradas', orden: null })}>
-            <History className="size-4" aria-hidden />{cola === 'cerradas' ? 'Volver a abiertas' : 'Historial'}
-          </Button> : null}
-        </div>
-        <div className="ordenes-head__search">
-          <Search
-            className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground"
-            aria-hidden
-          />
-          <Input
-            ref={searchRef}
-            value={q}
-            onChange={(event) =>
-              setParams({ q: event.target.value.trim() ? event.target.value : null })
-            }
-            placeholder="Buscar órdenes"
-            aria-label="Buscar órdenes"
-            className="pl-9"
-          />
-        </div>
-        {isAdmin ? null : (
-          <Button
-            variant={borradorSeleccionado ? 'outline' : 'default'}
-            className={borradorSeleccionado ? undefined : 'ordenes-primary'}
-            type="button"
-            ref={nuevaOrdenTriggerRef}
-            onClick={() => setNuevaOrdenOpen(true)}
-          >
-            + Nueva orden
-          </Button>
-        )}
+        <PageHeader
+          title={cola === 'abiertas' ? 'Órdenes abiertas' : cola === 'borradores' ? 'Borradores' : 'Historial de cerradas'}
+          lede={isAdmin || cola === 'cerradas' ? 'Consulta el registro y la evidencia de cada orden.' : 'Localiza una orden y continúa su atención.'}
+          actions={<>
+            {!isAdmin ? <Button type="button" variant="secondary" aria-pressed={cola === 'cerradas'}
+              onClick={() => setParams({ cola: cola === 'cerradas' ? null : 'cerradas', orden: null })}>
+              <History className="size-4" aria-hidden />{cola === 'cerradas' ? 'Volver a abiertas' : 'Historial'}
+            </Button> : null}
+            {isAdmin ? null : <Button variant={borradorSeleccionado ? 'outline' : 'default'}
+              type="button" ref={nuevaOrdenTriggerRef} onClick={() => setNuevaOrdenOpen(true)}>
+              + Nueva orden
+            </Button>}
+          </>}
+        />
       </header>
       )}
-      {!soloDetalle ? <ListFilter label="Tipo de orden" value={tipo} options={typeOptions}
-        className="mb-3 grid grid-cols-2 sm:flex"
-        onChange={(next) => setParams({ tipo: next === 'todos' ? null : next, orden: null })} /> : null}
+      {!soloDetalle ? <OperationalToolbar className="ordenes-query" label="Filtros de órdenes">
+        <Field label="Buscar orden" htmlFor="ordenes-query">
+          <div className="ordenes-head__search">
+            <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" aria-hidden />
+            <Input id="ordenes-query" ref={searchRef} value={q}
+              onChange={(event) => setParams({ q: event.target.value.trim() ? event.target.value : null })}
+              placeholder="Unidad, placas o chofer…" aria-label="Buscar órdenes" className="pl-9" />
+          </div>
+        </Field>
+        <div className="ordenes-query__types">
+          <span className="ordenes-query__label" aria-hidden>Tipo de orden</span>
+          <ListFilter label="Tipo de orden" value={tipo} options={typeOptions}
+            onChange={(next) => setParams({ tipo: next === 'todos' ? null : next, orden: null })} />
+        </div>
+      </OperationalToolbar> : null}
       <FormAlert>{error}</FormAlert>
       <ReadStatus loading={list.loading} error={list.error || (list.data?.failed.length ? new Error('Consulta parcial') : null)}
         loadingText={list.data ? 'Actualizando órdenes; se muestran los datos de la consulta anterior…' : 'Cargando órdenes…'}
@@ -332,6 +325,7 @@ function OrdenesContent() {
                 </div>
               )}
             </div>
+            <p className="ordenes-list__summary"><span>{filtered.length} {filtered.length === 1 ? 'orden' : 'órdenes'}</span><span>En esta vista</span></p>
             {filtered.length === 0 ? (
               <div className="empty-state">
                 <h2>{list.data?.failed.length ? 'Consulta parcial sin coincidencias cargadas.' : emptyTitle}</h2>
@@ -354,8 +348,8 @@ function OrdenesContent() {
                       onClick={() => setParams({ orden: row.id })}
                     >
                       <OrderIdentity id={row.id} check={row.tipo === 'CHECK'} />
-                      <span className="mt-3 flex w-full items-center gap-3">
-                        <UnidadMarca foto={row.fotoDataUrl} nombre={row.tipoNombre} icono={row.tipoIcono} size="lg" className="shrink-0" />
+                      <span className="ordenes-row__object">
+                        <UnidadMarca foto={row.fotoDataUrl} nombre={row.tipoNombre} icono={row.tipoIcono} size="md" className="shrink-0" />
                         <span className="min-w-0 flex-1">
                           <span className="block text-sm font-semibold text-navy">{row.numeroInterno}</span>
                           <span className="mt-1 block text-xs text-muted-foreground">{row.placas}</span>
@@ -381,6 +375,7 @@ function OrdenesContent() {
               <CheckOrderReadOnly detail={checkDetail} mobile={mobileMode === true} />
             ) : detalle && detalle.id === ordenId ? (
               <OrdenDetalle
+                mobile={mobileMode === true}
                 detalle={detalle}
                 piezas={piezas}
                 piezaRead={piezaRead}
@@ -436,6 +431,7 @@ function MarcaUnidad({
 }
 
 function OrdenDetalle({
+  mobile,
   detalle,
   piezas,
   piezaRead,
@@ -445,6 +441,7 @@ function OrdenDetalle({
   userId,
   onVisita,
 }: {
+  mobile: boolean;
   detalle: VisitaDetalle;
   piezas: PiezaLinea[];
   piezaRead: { loading: boolean; error: unknown; retry: () => void };
@@ -456,8 +453,11 @@ function OrdenDetalle({
 }) {
   const [capturando, setCapturando] = useState(false);
   const editarPrimario = continuar && !capturando;
+  const Heading = mobile ? 'h1' : 'h2';
   return (
     <>
+      <OrderDocumentHeader id={detalle.id} className="ordenes-detail__document"
+        stateLabel={detalle.estado === 'BORRADOR' ? (detalle.openedAt ? 'Abierta' : 'Borrador') : 'Cerrada'} />
       <div className="ordenes-detail__head">
         <div className="ordenes-detail__identity">
           <MarcaUnidad
@@ -466,8 +466,8 @@ function OrdenDetalle({
             tipoIcono={marca?.tipoIcono ?? null}
           />
           <div>
-            <h2 className="ordenes-detail__title">{detalle.unidadNumeroInterno}</h2>
-            <p className="ordenes-folio">{numeroOrden(detalle.id)}</p>
+            <Heading className="ordenes-detail__title">{detalle.unidadNumeroInterno}</Heading>
+            <p className="ordenes-detail__meta">{marca?.placas || detalle.tipoVehiculoNombre || 'Unidad de mantenimiento'}</p>
           </div>
         </div>
         <div className="ordenes-actions">
@@ -496,11 +496,6 @@ function OrdenDetalle({
         onVisita={onVisita}
       />
       <OrderSafetyControls key={detalle.id} unitId={detalle.unidadId} orderId={detalle.id} closed={detalle.estado === 'CERRADO'} />
-      <div className="ordenes-status" aria-label="Estado de la orden">
-        <span className="is-on">
-          {detalle.estado === 'BORRADOR' ? (detalle.openedAt ? 'Abierta' : 'Borrador') : 'Cerrada'}
-        </span>
-      </div>
       <dl className="ordenes-facts">
         <div>
           <dt>Fecha de creación</dt>

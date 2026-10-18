@@ -3,32 +3,11 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useRef } from 'react';
-
-const OPS = [
-  { href: '/inventario/stock', label: 'Existencias' },
-  { href: '/inventario', label: 'Refacciones', exact: true },
-  { href: '/inventario/analisis', label: 'Análisis' },
-  { href: '/inventario/pendientes', label: 'Comprobantes' },
-] as const;
-
-const CATALOGO = [
-  { href: '/inventario/familias', label: 'Categorías' },
-  { href: '/inventario/proveedores', label: 'Proveedores' },
-] as const;
-
-function isActive(
-  pathname: string | null,
-  href: string,
-  exact?: boolean,
-) {
-  if (!pathname) return false;
-  if (exact) return pathname === href;
-  return pathname === href || pathname.startsWith(`${href}/`);
-}
+import { INVENTORY_OPS as OPS, INVENTORY_CATALOG as CATALOGO, isInventoryDestination as isActive } from '@/lib/inventory-navigation';
 
 export function InventarioNav() {
   const pathname = usePathname();
-  const catalogOpen = CATALOGO.some((link) => isActive(pathname, link.href));
+  const catalogOpen = CATALOGO.some((link) => isActive(pathname, link.href, link.exact));
   const primaryNav = useRef<HTMLElement>(null);
   useEffect(() => {
     const nav = primaryNav.current;
@@ -44,7 +23,7 @@ export function InventarioNav() {
     <>
       <nav ref={primaryNav} className="subnav inventory-primary-nav" aria-label="Inventario">
         {OPS.map((link) => {
-          const active = isActive(pathname, link.href, 'exact' in link && link.exact);
+          const active = isActive(pathname, link.href, link.exact);
           return (
             <Link
               key={link.href}
@@ -57,7 +36,7 @@ export function InventarioNav() {
           );
         })}
         <Link
-          href="/inventario/familias"
+          href="/inventario"
           className={catalogOpen ? 'active' : ''}
           aria-current={catalogOpen ? 'location' : undefined}
         >
@@ -67,7 +46,7 @@ export function InventarioNav() {
       {catalogOpen ? (
         <nav className="subnav inventory-catalog-nav" aria-label="Catálogo">
           {CATALOGO.map((link) => {
-            const active = isActive(pathname, link.href);
+            const active = isActive(pathname, link.href, link.exact);
             return (
               <Link
                 key={link.href}

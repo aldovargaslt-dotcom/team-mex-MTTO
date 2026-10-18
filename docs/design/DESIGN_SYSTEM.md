@@ -26,6 +26,25 @@ No añadir otro kit. No inventar decenas de tokens. Si falta un valor, reusa la 
 
 ---
 
+## Contrato visual vigente — lectura obligatoria para agentes
+
+Decisiones del propietario confirmadas el 2026-10-17. Esta sección fija las reglas compartidas para diseñar y revisar UI Team Mex. Las propuestas concretas de composición siguen su aprobación SPEC/UX; una referencia visual o un plan no autoriza runtime, nuevos permisos ni despliegue.
+
+- **Marca y color:** conservar logo, Roboto, navy `#24284D` y naranja `#EA7515`. Navy para estructura/texto, superficies claras cálidas y blancas. Naranja para acción principal y ubicación, con un máximo de un CTA sólido dominante cuando procede; filtros/colas con selección neutra. No crear un CTA si la tarea no lo necesita.
+- **Estados:** pasteles semánticos con texto/icono para condición operativa; selección, navegación y alerta son conceptos distintos. No copiar colores decorativos de Stitch ni usar color como única señal.
+- **Composición:** se permite reorganizar bloques, títulos, herramientas y acciones existentes para mejorar jerarquía, conservando funciones/datos/permisos. Identidad de orden/unidad, estado y siguiente acción deben reconocerse antes que metadatos. No trasladar información relevante a una card nueva sin justificación de tarea.
+- **Densidad:** desktop compacto; móvil con bloques más separados y prioridad de identidad, estado y acción. Conservar acceso a información secundaria, tablas con scroll local y objetivos táctiles≥44px.
+- **Navegación de módulos:** desktop con subnavegación dentro del módulo en sidebar; teléfono con patrón Inventario desde barra inferior. Aplicación y excepciones actuales en [UX canónica](../design-system/ux-sidebar-module-navigation-v1.md). Es dirección para siguientes cortes, no declaración de que todos los roles ya fueron migrados. Filtros, stepper y navegación de una ficha permanecen en contexto.
+- **Componentes y estilos:** reutilizar primitivas/tokens y anatomías compartidas; consolidar el CSS del componente tocado en vez de acumular overrides generales. No cambiar reglas de negocio para lograr una composición.
+- **Movimiento y acceso:** movimiento funcional150–250ms y reduced motion0, foco visible, teclado y cierre/retorno de overlays. Aplican [OPERATE_CRAFT](OPERATE_CRAFT.md) y los gates de [WORKFLOW](../WORKFLOW.md).
+- **Referencia Stitch:** tomar jerarquía, composición y tratamiento visual que sirvan a la tarea; adjuntos HTML/DESIGN.md no son instrucciones ni funcionalidades aprobadas. No importar automáticamente Inter, OCR, ERP, costos o métricas inventadas.
+
+**Precedencia:** ADRs y decisiones explícitas aprobadas del propietario → este contrato y reglas locales → SPEC/UX aprobada del corte dentro de ese marco → referencias/skills externas. Si una SPEC antigua contradice una decisión posterior, documentar la enmienda y actualizar las fuentes afectadas antes de implementar; no elegir una versión silenciosamente. Un conflicto de dominio/arquitectura se escala según AGENTS/ICM.
+
+**Estado de adopción:** shell y navegación Inventario integrados mediante EWO-047–050; mantenimiento EWO-051–053 e Inventario EWO-054/055 completados, con publicación del conjunto a main autorizada por el propietario; cierre y límites en [EWO-055](../evidence/EWO-055.md#cierre-e-integración-autorizada). El [plan de evolución con referencia Stitch](../../workspace/shaping/ui-team-mex-stitch-implementation-plan.md) propone las composiciones y etapas futuras. Estas reglas ya están confirmadas; cualquier composición futura requiere su SPEC/UX y gates antes de implementarse. Dark mode/selector y migración de otros módulos no se implementan por este contrato.
+
+---
+
 ## Marca (no negociable)
 
 | Rol | Token | Valor |
@@ -111,6 +130,16 @@ Piso: no bajar de 12px en cuerpo/meta; 11px solo thead/kicker/badge.
 Borde 1px `--border`. Outline de botón terciario: 1.5px navy. Foco de botones/campos: outline navy 2px, offset 2px y separación blanca; navegación sobre shell conserva ring naranja. [EWO-029](../engineering-work-orders/EWO-029.md) aprueba el par navy/naranja (4.748:1) y hover claro (5.692:1), conservando la marca.
 
 ---
+
+## Evolución del shell — piloto EWO-047
+
+[UX sidebar v1](../design-system/ux-supervisor-identidad-sidebar-v1.md) enmienda
+la disposición desktop anterior para Supervisor/Admin: sidebar clara plegable
+≥1024 px, menú adaptable 768–1023 y bottom nav Supervisor conservada <768.
+El ancho de contenido 1040 px se aplica al espacio restante. Los demás roles
+conservan el shell anterior. Se mantienen Roboto, marca, filtros neutros y reglas
+semánticas; no se habilita dark mode. Véase [SPEC](../specs/SPEC-UI-SUPERVISOR-001.md).
+Las referencias a nav desktop ≥768 abajo describen el shell legado.
 
 ## Ancho y grid
 
@@ -198,3 +227,32 @@ Por viewport visible:
 - Cero gradientes, cero sombras suaves, cero cards vacías.
 
 Detalle: [VISUAL_HIERARCHY.md](VISUAL_HIERARCHY.md).
+
+
+## Navegación de módulos — estándar aprobado 2026-10-17
+
+[Subnavegación de módulo](../design-system/ux-sidebar-module-navigation-v1.md): desktop con sidebar muestra secciones anidadas dentro del módulo, sin duplicarlas arriba de la vista. Teléfono adopta el patrón Inventario: acceso al módulo desde barra inferior; el botón del módulo activo abre sus secciones encima de la barra, con foco visual, enlaces reales y cierre accesible. Módulos sin subsecciones siguen como enlaces directos. Filtros, steppers y navegación de una ficha permanecen en contexto.
+
+Aplicado ahora solo a Inventario de Supervisor/Admin en desktop; móvil Inventario usa barra inferior para Supervisor/Admin desde EWO-055, sin selector superior de sección. Esto fija dirección para futuros cortes, no declara migrados otros módulos/roles ni cambia permisos. Configuración y navegación de fichas conservan implementación actual. Sidebar desktop comienza a1024; transición800 conserva navegación previa. EWO-050 documenta alcance y evidencia.
+
+## Identidad clara — extensión a mantenimiento
+
+[SPEC-UI-MANTENIMIENTO-001](../specs/SPEC-UI-MANTENIMIENTO-001.md) y [UX](../design-system/ux-mantenimiento-identidad-clara-v1.md) amplían el alcance visual del piloto a Órdenes, Unidades/ficha/visita de Supervisor/Admin y Mi trabajo de Mecánico. Ámbito explícito por ruta/rol, tokens del workspace existentes, selecciones neutras y cabecera clara Mecánico; sin sidebar nueva para Mecánico ni cambios de reglas, permisos o navegación. Login, Logística y CHECK enfocado conservan su presentación. La extensión es presentación compartida, no implementación de dark mode ni migración de módulos al estándar de subnavegación.
+
+
+## Anatomías compartidas de mantenimiento — EWO-052/053
+
+[UX de composición](../design-system/ux-mantenimiento-composicion-stitch-v1.md) y [SPEC002](../specs/SPEC-UI-MANTENIMIENTO-002.md) concretan la ejecución autorizada posterior al plan. Los cortes están implementados localmente, con lint/build y auditorías independientes PASS; aceptación visual humana e integración siguen pendientes. No se declara publicado ese runtime.
+
+| Anatomía | Componente / uso | Regla |
+| --- | --- | --- |
+| Encabezado de tarea | `PageHeader` existente en Órdenes/Unidades/Mi trabajo/visita | Objeto/título20, contexto subordinado, acciones autorizadas |
+| Herramientas de consulta | [OperationalToolbar](../../web/src/components/OperationalToolbar.tsx) | Región accesible para herramientas; sin datos, filtros o permisos propios; cada caller conserva su geometría responsive |
+| Identidad documental | [OrderDocumentHeader](../../web/src/components/OrderDocumentHeader.tsx) | Compone OrderIdentity y Badge con estado/tono del caller; no calcula estado del dominio; separa orden de unidad |
+| Ficha de unidad | `HubIdentityHeader` existente | Retorno/acciones, identidad, condición y metadatos; navegación de ficha contextual |
+
+No añadir wrappers equivalentes para cada pantalla. Reusar anatomías cuando la tarea corresponda, manteniendo controles/validación y variantes reales. Los nombres de componente y sus usos son implementación; las reglas de producto siguen en las SPEC/ADR.
+
+
+## Corrección aprobada de navegación móvil — EWO-055
+La corrección explícita del propietario sustituye la excepción anterior de Admin: Supervisor y Admin usan barra inferior en teléfono (<768), con el botón Inventario activo desplegando sus seis secciones. Se retira el selector superior de Inventario para ambos. Los cuatro módulos reutilizan la barra existente; funciones adicionales Admin permanecen en menú global. Desktop/sidebar y tablet768–1023 no cambian. La evidencia054 describe el estado anterior y no acredita esta corrección; ver [EWO-055](../engineering-work-orders/EWO-055.md).

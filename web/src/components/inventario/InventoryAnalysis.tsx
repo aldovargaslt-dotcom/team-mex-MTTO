@@ -1,5 +1,6 @@
 'use client';
 
+import { OperationalToolbar } from '@/components/OperationalToolbar';
 import { useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -120,7 +121,7 @@ export function InventoryAnalysis() {
           >{next === 'consumo' ? 'Consumo' : 'Movimientos'}</Link>
         ))}
       </nav>
-      <div className="inventory-toolbar inventory-analysis-toolbar">
+      <OperationalToolbar className="inventory-toolbar inventory-analysis-toolbar" label="Filtros de análisis">
         <Field label="Buscar refacción" htmlFor="analysis-search" className="inventory-search">
           <Input id="analysis-search" type="search" value={q} placeholder="Nombre, SKU u OEM" onChange={(event) => update({ q: event.target.value })} />
         </Field>
@@ -147,7 +148,7 @@ export function InventoryAnalysis() {
             </NativeSelect>
           </Field>
         ) : null}
-      </div>
+      </OperationalToolbar>
       {range.period === 'CUSTOM' ? (
         <div className="inventory-analysis-dates">
           <Field label="Desde" htmlFor="analysis-from"><Input id="analysis-from" type="date" value={range.from ?? ''} aria-invalid={Boolean(range.error)} onChange={(event) => update({ from: event.target.value })} /></Field>

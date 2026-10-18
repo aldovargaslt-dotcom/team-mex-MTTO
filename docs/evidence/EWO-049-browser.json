@@ -1,0 +1,267 @@
+{
+  "environment": "Chromium CDP, real role picker, disposable data fixture; navigation only, no CRUD integration.",
+  "checks": [
+    {
+      "name": "supervisor desktop operation excludes Refacciones",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor catalog opens Refacciones",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor 1440 unique selection /inventario/stock",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor 1440 no overflow /inventario/stock",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor 1440 unique selection /inventario/analisis",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor 1440 no overflow /inventario/analisis",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor 1440 unique selection /inventario/pendientes",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor 1440 no overflow /inventario/pendientes",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor 1440 unique selection /inventario",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor 1440 no overflow /inventario",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor 1440 unique selection /inventario/familias",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor 1440 no overflow /inventario/familias",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor 1440 unique selection /inventario/proveedores",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor 1440 no overflow /inventario/proveedores",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor mobile group /inventario/stock",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor 390 unique selection /inventario/stock",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor 390 no overflow /inventario/stock",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor mobile group /inventario/analisis",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor 390 unique selection /inventario/analisis",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor 390 no overflow /inventario/analisis",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor mobile group /inventario/pendientes",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor 390 unique selection /inventario/pendientes",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor 390 no overflow /inventario/pendientes",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor mobile group /inventario",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor 390 unique selection /inventario",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor 390 no overflow /inventario",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor mobile group /inventario/familias",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor 390 unique selection /inventario/familias",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor 390 no overflow /inventario/familias",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor mobile group /inventario/proveedores",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor 390 unique selection /inventario/proveedores",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor 390 no overflow /inventario/proveedores",
+      "result": "PASS"
+    },
+    {
+      "name": "admin desktop operation excludes Refacciones",
+      "result": "PASS"
+    },
+    {
+      "name": "admin catalog opens Refacciones",
+      "result": "PASS"
+    },
+    {
+      "name": "admin 1440 unique selection /inventario/stock",
+      "result": "PASS"
+    },
+    {
+      "name": "admin 1440 no overflow /inventario/stock",
+      "result": "PASS"
+    },
+    {
+      "name": "admin 1440 unique selection /inventario/analisis",
+      "result": "PASS"
+    },
+    {
+      "name": "admin 1440 no overflow /inventario/analisis",
+      "result": "PASS"
+    },
+    {
+      "name": "admin 1440 unique selection /inventario/pendientes",
+      "result": "PASS"
+    },
+    {
+      "name": "admin 1440 no overflow /inventario/pendientes",
+      "result": "PASS"
+    },
+    {
+      "name": "admin 1440 unique selection /inventario",
+      "result": "PASS"
+    },
+    {
+      "name": "admin 1440 no overflow /inventario",
+      "result": "PASS"
+    },
+    {
+      "name": "admin 1440 unique selection /inventario/familias",
+      "result": "PASS"
+    },
+    {
+      "name": "admin 1440 no overflow /inventario/familias",
+      "result": "PASS"
+    },
+    {
+      "name": "admin 1440 unique selection /inventario/proveedores",
+      "result": "PASS"
+    },
+    {
+      "name": "admin 1440 no overflow /inventario/proveedores",
+      "result": "PASS"
+    },
+    {
+      "name": "admin mobile group /inventario/stock",
+      "result": "PASS"
+    },
+    {
+      "name": "admin 390 unique selection /inventario/stock",
+      "result": "PASS"
+    },
+    {
+      "name": "admin 390 no overflow /inventario/stock",
+      "result": "PASS"
+    },
+    {
+      "name": "admin mobile group /inventario/analisis",
+      "result": "PASS"
+    },
+    {
+      "name": "admin 390 unique selection /inventario/analisis",
+      "result": "PASS"
+    },
+    {
+      "name": "admin 390 no overflow /inventario/analisis",
+      "result": "PASS"
+    },
+    {
+      "name": "admin mobile group /inventario/pendientes",
+      "result": "PASS"
+    },
+    {
+      "name": "admin 390 unique selection /inventario/pendientes",
+      "result": "PASS"
+    },
+    {
+      "name": "admin 390 no overflow /inventario/pendientes",
+      "result": "PASS"
+    },
+    {
+      "name": "admin mobile group /inventario",
+      "result": "PASS"
+    },
+    {
+      "name": "admin 390 unique selection /inventario",
+      "result": "PASS"
+    },
+    {
+      "name": "admin 390 no overflow /inventario",
+      "result": "PASS"
+    },
+    {
+      "name": "admin mobile group /inventario/familias",
+      "result": "PASS"
+    },
+    {
+      "name": "admin 390 unique selection /inventario/familias",
+      "result": "PASS"
+    },
+    {
+      "name": "admin 390 no overflow /inventario/familias",
+      "result": "PASS"
+    },
+    {
+      "name": "admin mobile group /inventario/proveedores",
+      "result": "PASS"
+    },
+    {
+      "name": "admin 390 unique selection /inventario/proveedores",
+      "result": "PASS"
+    },
+    {
+      "name": "admin 390 no overflow /inventario/proveedores",
+      "result": "PASS"
+    }
+  ],
+  "screenshots": [
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo049_supervisor_catalog_d1440.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo049_supervisor_catalog_menu_m390.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo049_admin_catalog_d1440.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo049_admin_catalog_menu_m390.png"
+  ]
+}

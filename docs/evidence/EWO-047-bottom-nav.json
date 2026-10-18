@@ -1,0 +1,274 @@
+{
+  "environment": "Chromium CDP, real role picker, disposable HTTP fixture and Next3000",
+  "checks": [
+    {
+      "name": "AC10 m390 Inventory starts as direct link",
+      "result": "PASS"
+    },
+    {
+      "name": "AC10 m390 first tap enters Stock",
+      "result": "PASS"
+    },
+    {
+      "name": "AC10 m390 top selector removed",
+      "result": "PASS"
+    },
+    {
+      "name": "AC10 m390 panel anchored above bar",
+      "result": "PASS"
+    },
+    {
+      "name": "AC10 m390 no backdrop or pointer blocking",
+      "result": "PASS"
+    },
+    {
+      "name": "AC10 m390 all destinations fit",
+      "result": "PASS"
+    },
+    {
+      "name": "AC10 m390 expanded and current focus",
+      "result": "PASS"
+    },
+    {
+      "name": "AC10 m390 same trigger toggles closed",
+      "result": "PASS"
+    },
+    {
+      "name": "AC10 m390 Escape restores focus",
+      "result": "PASS"
+    },
+    {
+      "name": "AC10 m390 navigate Refacciones",
+      "result": "PASS"
+    },
+    {
+      "name": "AC10 m390 navigate Análisis",
+      "result": "PASS"
+    },
+    {
+      "name": "AC10 m390 navigate Comprobantes",
+      "result": "PASS"
+    },
+    {
+      "name": "AC10 m390 navigate Categorías",
+      "result": "PASS"
+    },
+    {
+      "name": "AC10 m390 navigate Proveedores",
+      "result": "PASS"
+    },
+    {
+      "name": "AC10 m390 navigate Existencias",
+      "result": "PASS"
+    },
+    {
+      "name": "AC10 m390 current section does not redirect to Stock",
+      "result": "PASS"
+    },
+    {
+      "name": "AC10 m390 back updates active destination",
+      "result": "PASS"
+    },
+    {
+      "name": "AC10 m390 forward updates active destination",
+      "result": "PASS"
+    },
+    {
+      "name": "AC10 m390 outside click dismisses without navigation",
+      "result": "PASS"
+    },
+    {
+      "name": "AC10 m390 other module one tap from open panel",
+      "result": "PASS"
+    },
+    {
+      "name": "AC10 m390 Orders stays direct",
+      "result": "PASS"
+    },
+    {
+      "name": "AC10 m390 Inicio stays direct",
+      "result": "PASS"
+    },
+    {
+      "name": "AC10 m320 Inventory starts as direct link",
+      "result": "PASS"
+    },
+    {
+      "name": "AC10 m320 first tap enters Stock",
+      "result": "PASS"
+    },
+    {
+      "name": "AC10 m320 top selector removed",
+      "result": "PASS"
+    },
+    {
+      "name": "AC10 m320 panel anchored above bar",
+      "result": "PASS"
+    },
+    {
+      "name": "AC10 m320 no backdrop or pointer blocking",
+      "result": "PASS"
+    },
+    {
+      "name": "AC10 m320 all destinations fit",
+      "result": "PASS"
+    },
+    {
+      "name": "AC10 m320 expanded and current focus",
+      "result": "PASS"
+    },
+    {
+      "name": "AC10 m320 same trigger toggles closed",
+      "result": "PASS"
+    },
+    {
+      "name": "AC10 m320 Escape restores focus",
+      "result": "PASS"
+    },
+    {
+      "name": "AC10 m320 navigate Refacciones",
+      "result": "PASS"
+    },
+    {
+      "name": "AC10 m320 navigate Análisis",
+      "result": "PASS"
+    },
+    {
+      "name": "AC10 m320 navigate Comprobantes",
+      "result": "PASS"
+    },
+    {
+      "name": "AC10 m320 navigate Categorías",
+      "result": "PASS"
+    },
+    {
+      "name": "AC10 m320 navigate Proveedores",
+      "result": "PASS"
+    },
+    {
+      "name": "AC10 m320 navigate Existencias",
+      "result": "PASS"
+    },
+    {
+      "name": "AC10 m320 current section does not redirect to Stock",
+      "result": "PASS"
+    },
+    {
+      "name": "AC10 m320 back updates active destination",
+      "result": "PASS"
+    },
+    {
+      "name": "AC10 m320 forward updates active destination",
+      "result": "PASS"
+    },
+    {
+      "name": "AC10 m320 outside click dismisses without navigation",
+      "result": "PASS"
+    },
+    {
+      "name": "AC10 m320 other module one tap from open panel",
+      "result": "PASS"
+    },
+    {
+      "name": "AC10 m320 Orders stays direct",
+      "result": "PASS"
+    },
+    {
+      "name": "AC10 m320 Inicio stays direct",
+      "result": "PASS"
+    },
+    {
+      "name": "AC10 short viewport panel has own scroll",
+      "result": "PASS"
+    },
+    {
+      "name": "AC10 Tab can leave non-modal panel for bottom bar",
+      "result": "PASS"
+    },
+    {
+      "name": "AC10 reduced motion panel and arrow",
+      "result": "PASS"
+    },
+    {
+      "name": "AC10 desktop tabs and focus retained",
+      "result": "PASS"
+    },
+    {
+      "name": "AC10 Admin fallback retained",
+      "result": "PASS"
+    },
+    {
+      "name": "AC10 Admin modal semantics retained",
+      "result": "PASS"
+    },
+    {
+      "name": "AC10 Admin navigation retained",
+      "result": "PASS"
+    },
+    {
+      "name": "AC10 bar stays clear during panel entry",
+      "result": "PASS",
+      "samples": [
+        {
+          "bottom": 785,
+          "barTop": 785,
+          "opacity": "0.0174269",
+          "hit": true
+        },
+        {
+          "bottom": 785,
+          "barTop": 785,
+          "opacity": "0.0851346",
+          "hit": true
+        },
+        {
+          "bottom": 785,
+          "barTop": 785,
+          "opacity": "0.235845",
+          "hit": true
+        },
+        {
+          "bottom": 785,
+          "barTop": 785,
+          "opacity": "0.456876",
+          "hit": true
+        },
+        {
+          "bottom": 785,
+          "barTop": 785,
+          "opacity": "0.64629",
+          "hit": true
+        },
+        {
+          "bottom": 785,
+          "barTop": 785,
+          "opacity": "0.775801",
+          "hit": true
+        }
+      ]
+    },
+    {
+      "name": "AC10 panel explicit non-modal semantics",
+      "result": "PASS"
+    },
+    {
+      "name": "AC10 Shift Tab leaves panel to trigger",
+      "result": "PASS"
+    },
+    {
+      "name": "AC10 Enter activates bottom navigation",
+      "result": "PASS"
+    }
+  ],
+  "screenshots": [
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo047_bottom_nav_supervisor_existencias_m390.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo047_bottom_nav_supervisor_secciones_m390.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo047_bottom_nav_supervisor_comprobantes_m390.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo047_bottom_nav_supervisor_existencias_m320.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo047_bottom_nav_supervisor_secciones_m320.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo047_bottom_nav_supervisor_comprobantes_m320.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo047_bottom_nav_short_height_m390.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo047_bottom_nav_desktop_d1440.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo047_bottom_nav_admin_m390.png"
+  ]
+}

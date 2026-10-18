@@ -1,0 +1,161 @@
+{
+  "environment": "Chromium CDP; role picker, real Next app, disposable HTTP fixture; UI navigation not real persistence/domain validation.",
+  "checks": [
+    {
+      "name": "Supervisor 1440 scoped clear surface",
+      "result": "PASS"
+    },
+    {
+      "name": "Supervisor 1440 orders no overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "Search empty state preserves recovery",
+      "result": "PASS"
+    },
+    {
+      "name": "Order filter keeps semantic empty state",
+      "result": "PASS"
+    },
+    {
+      "name": "Supervisor 1440 units no overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "Supervisor 1440 unit identity loaded",
+      "result": "PASS"
+    },
+    {
+      "name": "Supervisor 1440 hub no overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "Supervisor 1440 wizard scope and current step preserved",
+      "result": "PASS"
+    },
+    {
+      "name": "Supervisor 1440 wizard no overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "Supervisor 390 scoped clear surface",
+      "result": "PASS"
+    },
+    {
+      "name": "Supervisor 390 orders no overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "Supervisor 390 units no overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "Supervisor 390 unit identity loaded",
+      "result": "PASS"
+    },
+    {
+      "name": "Supervisor 390 hub no overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "Supervisor 390 wizard scope and current step preserved",
+      "result": "PASS"
+    },
+    {
+      "name": "Supervisor 390 wizard no overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "Mechanic 1440 clear header without sidebar",
+      "result": "PASS"
+    },
+    {
+      "name": "Mechanic 1440 queue no overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "Mechanic 1440 read detail preserved",
+      "result": "PASS"
+    },
+    {
+      "name": "Mechanic 1440 sheet returns focus",
+      "result": "PASS"
+    },
+    {
+      "name": "Mechanic 1440 history remains usable",
+      "result": "PASS"
+    },
+    {
+      "name": "Mechanic 390 clear header without sidebar",
+      "result": "PASS"
+    },
+    {
+      "name": "Mechanic 390 queue no overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "Mechanic 390 read detail preserved",
+      "result": "PASS"
+    },
+    {
+      "name": "Mechanic 390 sheet returns focus",
+      "result": "PASS"
+    },
+    {
+      "name": "Mechanic 390 history remains usable",
+      "result": "PASS"
+    },
+    {
+      "name": "Admin closed order read preserved",
+      "result": "PASS"
+    },
+    {
+      "name": "1024 orders no global overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "Inventory scoped out and sidebar preserved",
+      "result": "PASS"
+    },
+    {
+      "name": "Logistics scope unchanged",
+      "result": "PASS"
+    },
+    {
+      "name": "Role picker scope unchanged",
+      "result": "PASS"
+    },
+    {
+      "name": "Reduced motion maintenance row zero",
+      "result": "PASS"
+    },
+    {
+      "name": "Mechanic controlled read error retains recovery",
+      "result": "PASS"
+    },
+    {
+      "name": "Mechanic retry recovers visible order",
+      "result": "PASS"
+    },
+    {
+      "name": "Focused checks excluded from maintenance aesthetic scope",
+      "result": "PASS"
+    }
+  ],
+  "screenshots": [
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo051_supervisor_orders_d1440.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo051_supervisor_units_d1440.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo051_supervisor_maintenance_d1440.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo051_supervisor_visit_d1440.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo051_supervisor_orders_d390.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo051_supervisor_units_d390.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo051_supervisor_maintenance_d390.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo051_supervisor_visit_d390.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo051_mechanic_queue_d1440.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo051_mechanic_detail_d1440.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo051_mechanic_queue_d390.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo051_mechanic_detail_d390.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo051_admin_orders_d1440.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo051_mechanic_read_error_d1440.png"
+  ]
+}

@@ -1,0 +1,273 @@
+{
+  "environment": "Real Next/role picker via CDP, disposable HTTP fixture. PATCH during wizard only mutates fixture memory; no real data/permission/domain validation. No close executed.",
+  "checks": [
+    {
+      "name": "supervisor 1440 units shared header/tools and four filters retained",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor 1440 units no overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor 1440 hub no overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor 1440 identity and contextual sections",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor 1440 history remains contextual",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor 1440 visit document identity",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor 1440 visit no overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor 1440 step 5 no overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor 1440 step 6 no overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor 1440 close invalid remains disabled",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor 390 units shared header/tools and four filters retained",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor 390 units no overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor 390 hub no overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor 390 identity and contextual sections",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor 390 history remains contextual",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor 390 visit document identity",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor 390 visit no overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor 390 step 5 no overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor 390 step 6 no overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "supervisor 390 close invalid remains disabled",
+      "result": "PASS"
+    },
+    {
+      "name": "admin 1440 units shared header/tools and four filters retained",
+      "result": "PASS"
+    },
+    {
+      "name": "admin 1440 units no overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "admin 1440 hub no overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "admin 1440 identity and contextual sections",
+      "result": "PASS"
+    },
+    {
+      "name": "admin 1440 history remains contextual",
+      "result": "PASS"
+    },
+    {
+      "name": "admin 1440 visit document identity",
+      "result": "PASS"
+    },
+    {
+      "name": "admin 1440 visit no overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "admin 1440 visit remains read only",
+      "result": "PASS"
+    },
+    {
+      "name": "admin 390 units shared header/tools and four filters retained",
+      "result": "PASS"
+    },
+    {
+      "name": "admin 390 units no overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "admin 390 hub no overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "admin 390 identity and contextual sections",
+      "result": "PASS"
+    },
+    {
+      "name": "admin 390 history remains contextual",
+      "result": "PASS"
+    },
+    {
+      "name": "admin 390 visit document identity",
+      "result": "PASS"
+    },
+    {
+      "name": "admin 390 visit no overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "admin 390 visit remains read only",
+      "result": "PASS"
+    },
+    {
+      "name": "Mechanic 1440 shared query scope",
+      "result": "PASS"
+    },
+    {
+      "name": "Mechanic 1440 queue no overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "Mechanic 1440 shared document detail",
+      "result": "PASS"
+    },
+    {
+      "name": "Mechanic 1440 focus restored",
+      "result": "PASS"
+    },
+    {
+      "name": "Mechanic 1440 draft opening still contextual",
+      "result": "PASS"
+    },
+    {
+      "name": "Mechanic 1440 history preserved",
+      "result": "PASS"
+    },
+    {
+      "name": "Mechanic 390 shared query scope",
+      "result": "PASS"
+    },
+    {
+      "name": "Mechanic 390 queue no overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "Mechanic 390 shared document detail",
+      "result": "PASS"
+    },
+    {
+      "name": "Mechanic 390 focus restored",
+      "result": "PASS"
+    },
+    {
+      "name": "Mechanic 390 draft opening still contextual",
+      "result": "PASS"
+    },
+    {
+      "name": "Mechanic 390 history preserved",
+      "result": "PASS"
+    },
+    {
+      "name": "Orders regression shared document/tools",
+      "result": "PASS"
+    },
+    {
+      "name": "Units 1024 no overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "Units 800 no overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "Units 320 no overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "Mechanic320 no overflow",
+      "result": "PASS"
+    },
+    {
+      "name": "Shared surfaces preserve reduced motion",
+      "result": "PASS"
+    },
+    {
+      "name": "Loaded visit 1440 identity and state",
+      "result": "PASS"
+    },
+    {
+      "name": "Loaded visit 390 identity and state",
+      "result": "PASS"
+    },
+    {
+      "name": "Units query preserved after return",
+      "result": "PASS"
+    },
+    {
+      "name": "Mechanic partial read recovery retained",
+      "result": "PASS"
+    },
+    {
+      "name": "Mechanic retry restores rows",
+      "result": "PASS"
+    },
+    {
+      "name": "Shared toolbar/title computed contrast >=4.5",
+      "result": "PASS",
+      "ratios": {
+        "title": 13.087122729714851,
+        "label": 5.765417688604711
+      }
+    }
+  ],
+  "screenshots": [
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo053_supervisor_units_d1440.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo053_supervisor_hub_d1440.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo053_supervisor_visit_d1440.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo053_supervisor_parts_d1440.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo053_supervisor_confirmation_d1440.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo053_supervisor_units_m390.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo053_supervisor_hub_m390.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo053_supervisor_visit_m390.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo053_supervisor_parts_m390.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo053_supervisor_confirmation_m390.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo053_admin_units_d1440.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo053_admin_hub_d1440.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo053_admin_visit_d1440.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo053_admin_units_m390.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo053_admin_hub_m390.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo053_admin_visit_m390.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo053_mechanic_queue_d1440.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo053_mechanic_detail_d1440.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo053_mechanic_queue_m390.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo053_mechanic_detail_m390.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo053_orders_shared_d1440.png",
+    "/workspace/team-mex-MTTO/docs/screenshots/ewo053_mechanic_partial_d1440.png"
+  ]
+}

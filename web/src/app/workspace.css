@@ -69,3 +69,23 @@
   .shell-menu-link.active:hover { background: var(--navy); color: var(--white); }
 }
 .application-bottom-nav--logistics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+/* Preserve the inventory sections and collapsed tooltips integrated from main. */
+.app-sidebar__tooltip { position: fixed; z-index: 60; max-width: 240px; padding: 8px 12px; border-radius: 6px; color: var(--white); background: var(--navy); font-size: 13px; pointer-events: auto; }
+.app-sidebar__chevron { margin-left: auto; }
+.app-sidebar__chevron.is-open { transform: rotate(180deg); }
+.app-sidebar__subnav { margin: 4px 0 8px 20px; padding-left: 8px; border-left: 1px solid var(--line); }
+.app-sidebar__subnav[hidden] { display: none; }
+.app-sidebar__subheading { margin: 8px 0 4px; color: var(--muted); font-size: 12px; }
+.app-sidebar__sublink { display: flex; align-items: center; min-height: 44px; padding: 8px; border-radius: 6px; color: var(--muted); font-size: 13px; }
+.app-sidebar__sublink.is-active { background: var(--muted-bg); color: var(--navy); font-weight: 600; }
+@media (min-width: 768px) {
+  .app-workspace .inventory-primary-nav, .app-workspace .inventory-catalog-nav { display: none; }
+}
+@media (hover: hover) {
+  .app-sidebar__sublink:hover { background: var(--surface); color: var(--navy); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-workspace > :is(.shell-header, .main) { transition-duration: 0s !important; }
+}
