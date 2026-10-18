@@ -1,5 +1,9 @@
 # ADRs
 
+[ADR028 — Vigencia ABC configurable](028-configurable-abc-validity.md): principio
+de producto aceptado 2026-10-17; sustituye vigencia diaria universal, sin aprobar
+calendario detallado, scheduler, migraciones ni ejecución.
+
 Fuente de arquitectura de Team Mex (**único SoT de decisiones**; no hay `docs/decisions/`). Estado: **aceptado (v0)** salvo que un ADR posterior lo sustituya.
 
 Baseline as-is para agentes: [context/ARCHITECTURE.md](../../context/ARCHITECTURE.md). Enrutado: [ICM.md](../../ICM.md). Plantilla para un ADR **nuevo**: [ADR-TEMPLATE.md](ADR-TEMPLATE.md).
@@ -62,3 +66,8 @@ not implementation or deployment approval.
 [ADR026 — Costos históricos y valoración de refacciones](026-inventario-costos-historicos.md): Accepted for the authorized implementation; Inventario owns valuation and historical snapshots. Manual migration and coordinated feature activation remain explicit release steps.
 
 [ADR027 — Durable Logistics journeys](027-logistica-durable-journeys.md): Logistics journey/return capture with trusted attribution and isolated controlled cutover; integrates PR95 without replacing inventory ADR026.
+
+[ADR028 — Vigencia configurable ABC](028-configurable-abc-validity.md): decisión
+histórica, sustituida en política efectiva por
+[ADR029 — Chequeo diario universal](029-daily-only-unit-checks.md) por instrucción
+usuario2026-10-18. Daily/Stock e intervalos ya no gobiernan operación.

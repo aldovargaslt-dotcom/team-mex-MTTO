@@ -8,6 +8,11 @@ Calculated, explainable **Health Score** (mantenimiento + source alerts + inspec
 
 ## Authoritative docs
 
+Prioridad de producto para el futuro rediseño de Unidades:
+[GrillMe 2026-10-17](../mantenimiento/unidades-readiness-grillme-2026-10-17.md).
+Salud permanece como referencia; cálculo más robusto diferido. No redefine el
+Health Score existente ni lo equipara a operabilidad.
+
 - [ADR-010](../../docs/adr/010-salud-unidad.md) — **this** is salud; not architecture ADR-010
 - [docs/specs/unit-health-v0.md](../../docs/specs/unit-health-v0.md)
 - [ADR-004](../../docs/adr/ADR-004-tdd-test-bar-andon-v0.md) H1–H15

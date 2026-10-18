@@ -42,6 +42,17 @@ export class UserAccessService
   private get issuer() {
     return this.config.get<string>('AUTH_OIDC_ISSUER', '').trim();
   }
+  async maintenanceAssignees(facilityId: string) {
+    if (this.config.get('AUTH_ACTOR_STORE') === 'DATABASE') {
+      this.enabled();
+      const users = await this.db.getRepository(UserAccess).find({ where: { issuer: this.issuer, active: true } });
+      return users.filter((u) => u.roles.includes(Rol.MECANICO) && u.facilityScopes.includes(facilityId)).map(({ subject, displayName }) => ({ subject, displayName }));
+    }
+    const actors: TrustedActor[] = this.config.get('AUTH_MODE') === 'DEVELOPMENT_STUB'
+      ? Object.values(JSON.parse(this.config.get<string>('AUTH_STUB_ACTORS', '{}')) as Record<string, TrustedActor>)
+      : Object.values(configuredOidcActors(this.config));
+    return actors.filter((a) => a.roles.includes(Rol.MECANICO) && a.facilityScopes.includes(facilityId)).map(({ subject, displayName }) => ({ subject, displayName }));
+  }
   private enabled() {
     if (
       this.config.get('AUTH_ACTOR_STORE') !== 'DATABASE' ||

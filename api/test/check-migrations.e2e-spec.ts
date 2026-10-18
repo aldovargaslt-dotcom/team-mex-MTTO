@@ -381,12 +381,14 @@ describe('S1-T05/T06/T07 isolated migration rehearsal (synchronize=false)', () =
       `UPDATE visitas SET cerrado_at=NULL WHERE id='${closed}'`,
     ],
     [
+      // Rebuild only this disposable fixture's FK as NOT VALID: no SUPERUSER
+      // or disabling all system triggers needed to exercise legacy orphan audit.
       'orphan child',
-      `ALTER TABLE visita_trabajos DISABLE TRIGGER ALL; UPDATE visita_trabajos SET visita_id='99999999-9999-4999-8999-999999999999'; ALTER TABLE visita_trabajos ENABLE TRIGGER ALL`,
+      `ALTER TABLE visita_trabajos DROP CONSTRAINT "FK_89ce3a607ba2648e27ddece67bc"; UPDATE visita_trabajos SET visita_id='99999999-9999-4999-8999-999999999999'; ALTER TABLE visita_trabajos ADD CONSTRAINT "FK_89ce3a607ba2648e27ddece67bc" FOREIGN KEY (visita_id) REFERENCES visitas(id) ON DELETE CASCADE NOT VALID`,
     ],
     [
       'orphan vehicle',
-      `ALTER TABLE visitas DISABLE TRIGGER ALL; UPDATE visitas SET unidad_id='99999999-9999-4999-8999-999999999999'; ALTER TABLE visitas ENABLE TRIGGER ALL`,
+      `ALTER TABLE visitas DROP CONSTRAINT "FK_50b4045419caa98ffaebfd2c9fc"; UPDATE visitas SET unidad_id='99999999-9999-4999-8999-999999999999'; ALTER TABLE visitas ADD CONSTRAINT "FK_50b4045419caa98ffaebfd2c9fc" FOREIGN KEY (unidad_id) REFERENCES unidades(id) ON DELETE RESTRICT NOT VALID`,
     ],
     [
       'invalid event envelope',

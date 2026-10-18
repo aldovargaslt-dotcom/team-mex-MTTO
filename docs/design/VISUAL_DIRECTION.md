@@ -64,4 +64,16 @@ If these cannot be answered quickly, revise the information hierarchy.
 
 ## How this sits with the current shell
 
-The accepted shell is still the top bar in ADR-003 (naranja `#EA7515` as the product CTA). This direction governs new operational screens. It does not, by itself, replace that shell with a sidebar or recolor every existing screen. On a screen that follows this direction, the single primary action is blue; status color is semantic; lists and dividers carry the layout.
+The owner explicitly requested the sidebar and updated design on 2026-10-18.
+[EWO-057](../engineering-work-orders/EWO-057.md) implements the shared persistent
+desktop sidebar, contextual topbar and mobile navigation Sheet. ADR-003 records
+the amendment. Primary actions use existing navy blue with white text; orange
+remains the brand/location accent. Shared primitives apply the same action color
+inside portals. Status remains semantic; lists and dividers carry the layout.
+
+## Navigation standard confirmed —2026-10-18
+
+The owner approved the new sidebar as the shared standard across modules.
+[Application navigation](APPLICATION_NAVIGATION.md) is canonical; no per-feature
+sidebar variants. EWO061 removes the Unidades-only selected-state override and
+centralizes desktop/mobile/bottom-link identity in one catalog.

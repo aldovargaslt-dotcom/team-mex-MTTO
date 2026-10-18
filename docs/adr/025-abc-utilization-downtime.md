@@ -1,5 +1,10 @@
 # ADR-025 — ABC, indisponibilidad por motivos y salidas correlacionadas
 
+> Enmienda acotada 2026-10-17: [ADR028](028-configurable-abc-validity.md) sustituye
+> el vencimiento diario universal de decisiones 8–9 por política configurable.
+> Recheck no renueva vigencia; otros gates, motivos y downtime se conservan.
+> Calendario detallado y ejecución siguen pendientes. Cuerpo histórico abajo.
+
 ## Status
 
 Accepted for the product/ownership decisions explicitly confirmed by the user in

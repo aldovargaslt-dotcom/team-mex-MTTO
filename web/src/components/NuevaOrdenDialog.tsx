@@ -24,15 +24,14 @@ import {
 } from '@/components/ui/sheet';
 import { UnidadMarca } from '@/components/UnidadTipoMark';
 import { api, HttpError } from '@/lib/api';
-import type { Chofer, TipoVisita, Unidad, VisitaDetalle, VisitaResumen } from '@/lib/types';
+import { type ReadinessSnapshot, orderTypeLabel, orderStatusLabel, readinessTime } from '@/lib/unit-readiness';
+import type { Chofer, TipoVisita, Unidad, VisitaDetalle } from '@/lib/types';
 
 export type CreateVisitaResult = VisitaDetalle & {
   outcome: 'CREATED' | 'EXISTING_DRAFT';
 };
 
-type OrdenContinuation = (CreateVisitaResult | VisitaResumen) & {
-  unidadId: string;
-};
+type OrdenContinuation = { id: string; unidadId: string };
 
 export function NuevaOrdenDialog({
   open,
@@ -59,6 +58,8 @@ export function NuevaOrdenDialog({
   const [tipo, setTipo] = useState<TipoVisita>('PREDICTIVO');
   const [q, setQ] = useState('');
   const [busy, setBusy] = useState(false);
+  const [acknowledged, setAcknowledged] = useState('');
+  const [request, setRequest] = useState<{ body: string; key: string } | null>(null);
   const [error, setError] = useState<string | null>(null);
   const opts = useMemo(() => ({ role, userId }), [role, userId]);
   const unitRead = useReadResource(open ? JSON.stringify([role, userId, 'units']) : null,
@@ -66,10 +67,12 @@ export function NuevaOrdenDialog({
   const driverRead = useReadResource(open ? JSON.stringify([role, userId, 'drivers']) : null,
     () => api<Chofer[]>('/choferes?estado=ACTIVO', opts));
   const checkRead = useReadResource(open && unitId ? JSON.stringify([role, userId, unitId]) : null,
-    () => api<VisitaResumen[]>(`/unidades/${unitId}/visitas`, opts));
+    () => api<ReadinessSnapshot>(`/unit-readiness/${unitId}`, opts));
   const units = unitRead.data ?? [];
   const drivers = driverRead.data ?? [];
-  const existing = checkRead.data?.find((v) => v.estado === 'BORRADOR') ?? null;
+  const existing = checkRead.data?.items[0]?.orders ?? [];
+  const gateIdentity = `${unitId}:${existing.map((o) => o.id).sort().join(',')}`;
+  const requiresGate = existing.length > 0 && acknowledged !== gateIdentity;
   const checking = checkRead.loading;
   function restoreFocus(event: Event) {
     if (returnFocusRef.current?.isConnected) {
@@ -79,6 +82,8 @@ export function NuevaOrdenDialog({
   }
 
 
+
+  useEffect(() => { if (open) { setAcknowledged(''); setRequest(null); } }, [open]);
 
   useEffect(() => {
     const mq = window.matchMedia('(max-width: 767px)');
@@ -97,15 +102,20 @@ export function NuevaOrdenDialog({
 
   async function submit() {
     if (!unitId || !driverId || km === '' || checkRead.data === null || unitRead.data === null || driverRead.data === null || checking) return;
+    if (requiresGate) return;
+    const payload = { choferId: driverId, km: Number(km), type: tipo === 'PREDICTIVO' ? 'PREVENTIVE' : 'CORRECTIVE', blocksOperation: false };
+    const body = JSON.stringify({ unitId, ...payload });
+    const key = request?.body === body ? request.key : crypto.randomUUID();
+    setRequest({ body, key });
     setBusy(true);
     setError(null);
     try {
-      const result = await api<CreateVisitaResult>(`/unidades/${unitId}/visitas`, {
+      const result = await api<{ id: string }>(`/unidades/${unitId}/mantenimiento-ordenes`, {
         ...opts,
         method: 'POST',
-        body: JSON.stringify({ choferId: driverId, km: Number(km), tipo }),
+        body: JSON.stringify({ ...payload, idempotencyKey: key }),
       });
-      onContinue(result, result.outcome === 'EXISTING_DRAFT');
+      onContinue({ ...result, unidadId: unitId }, false);
     } catch (err) {
       setError(err instanceof HttpError ? err.message : 'No pudimos crear la orden. Revisa tu conexión e inténtalo de nuevo.');
     } finally {
@@ -137,11 +147,13 @@ export function NuevaOrdenDialog({
         </div>
       ) : null}
       {unitId ? <ReadStatus key={unitId} loading={checking} error={checkRead.error} loadingText="Revisando órdenes abiertas…" errorText="No se pudieron revisar las órdenes abiertas." retry={checkRead.retry} /> : null}
-      {existing ? (
+      {requiresGate ? (
         <div className="nueva-orden-existing" role="status">
-          <strong>Esta unidad ya tiene una orden en borrador.</strong>
-          <p>Continúa la captura existente; no se creará otra.</p>
-          <Button type="button" onClick={() => onContinue({ ...existing, unidadId: unitId }, true)}>Continuar orden</Button>
+          <strong>Órdenes abiertas de esta unidad</strong>
+          <p>Revise el trabajo existente antes de crear otra orden.</p>
+          <ul className="readiness-orders">{existing.map((order) => <li key={order.id}><div><strong>{orderTypeLabel(order.type)} · {orderStatusLabel(order.status)}</strong><p>{order.problem || 'Consulte el detalle de esta orden.'}</p><small>{readinessTime(order.createdAt)}</small></div><Button variant="outline" asChild><a href={order.href}>Abrir orden</a></Button></li>)}</ul>
+          <p>Continúe si se trata de un problema diferente.</p>
+          <Button type="button" variant="outline" onClick={() => setAcknowledged(gateIdentity)}>Crear otra orden</Button>
         </div>
       ) : selected && checkRead.data !== null && driverRead.data !== null ? (
         <div className="nueva-orden-form">
@@ -167,7 +179,7 @@ export function NuevaOrdenDialog({
     </div>
   );
 
-  const footer = existing ? null : (
+  const footer = requiresGate ? <Button type="button" variant="secondary" onClick={() => onOpenChange(false)}>Cancelar</Button> : (
     <>
       <Button type="button" variant="secondary" onClick={() => onOpenChange(false)}>Cancelar</Button>
       <Button type="button" disabled={!selected || !driverId || km === '' || busy || drivers.length === 0 || checking || checkRead.data === null || unitRead.data === null || driverRead.data === null} onClick={() => void submit()}>

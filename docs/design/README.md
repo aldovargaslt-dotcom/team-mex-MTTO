@@ -41,6 +41,7 @@ Copy menor o un string: spec UX completa no es obligatoria. Sí lo es un corte q
 | Archivo | Uso |
 |---------|-----|
 | [VISUAL_DIRECTION.md](VISUAL_DIRECTION.md) | Dirección visual de producto (MaintainX como referencia, no como copia) |
+| [APPLICATION_NAVIGATION.md](APPLICATION_NAVIGATION.md) | Estándar único de sidebar, catálogo y responsive |
 | [DESIGN_SYSTEM.md](DESIGN_SYSTEM.md) | Tokens y primitivas (fuente: `web/src/app/globals.css`) |
 | [UX_PRINCIPLES.md](UX_PRINCIPLES.md) | Principios operacionales |
 | [OPERATE_CRAFT.md](OPERATE_CRAFT.md) | Task UI: estados de control, overlays, motion; **no** instalar skills de landing |

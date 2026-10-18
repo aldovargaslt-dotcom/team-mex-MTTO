@@ -256,3 +256,17 @@ npm run test:e2e
 CTA `#EA7515`, shell `#24284D`, superficies `#F3F3F3` / blanco, tipografía Roboto.
 
 UI nueva o cambio visual: [docs/design/README.md](docs/design/README.md). Briefs Must/Don’t de corte: [docs/design-system/](docs/design-system/).
+
+### Chequeo diario de unidades — ADR029
+
+Daily/Stock e intervalos personalizados están desactivados. La API genera CHECK
+PENDING por jornada America/Mexico_City para unidades ACTIVA/EN_PATIO con fuente
+física confiable, sin duplicar CHECK activo ni generación automática de la jornada.
+El worker revisa al arrancar y cada minuto (también al regresar una unidad).
+`CHECK_DAILY_ENABLED=false` lo apaga explícitamente; por defecto está activo.
+Los tests no arrancan el worker automáticamente. Crear CHECK no abre mantenimiento
+ni termina viajes. Firmas/configuración históricas se conservan, pero operación
+requiere revisión de la jornada; no hay vigencia semanal/mensual activa.
+Ver [ADR029](docs/adr/029-daily-only-unit-checks.md) y
+[EWO-060](docs/engineering-work-orders/EWO-060.md). No se ejecuta un deploy desde
+esta entrega; la API debe usar el proceso de migración existente antes de arrancar.

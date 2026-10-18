@@ -10,6 +10,20 @@ import { VisitaTrabajo } from './visita-trabajo.entity';
 import { VisitasController } from './visitas.controller';
 import { VisitasService } from './visitas.service';
 import { VisitasInvariantService } from './visitas-invariant.service';
+import { AndonModule } from '../andon/andon.module';
+import {
+  ReadinessAudit,
+  ReadinessGeneration,
+  ReadinessSettings,
+} from './checks/readiness-settings.entity';
+import {
+  ReadinessHold,
+  RepairVerification,
+} from './checks/readiness-hold.entity';
+import { ReadinessSettingsService } from './checks/readiness-settings.service';
+import { ReadinessHoldsService } from './checks/readiness-holds.service';
+import { UnitReadinessService } from './checks/unit-readiness.service';
+import { UnitReadinessController } from './checks/unit-readiness.controller';
 import { Facility, VehicleFacility } from './checks/facility.entity';
 import { CheckInspection } from './checks/check-inspection.entity';
 import { CheckGenerationLedger } from './checks/check-generation.entity';
@@ -63,16 +77,29 @@ import {
       CheckEvidence,
       CheckSignature,
       CheckInvalidation,
+      ReadinessSettings,
+      ReadinessGeneration,
+      ReadinessAudit,
+      ReadinessHold,
+      RepairVerification,
     ]),
     UnidadesModule,
     ChoferesModule,
+    AndonModule,
     forwardRef(() => FlotaModule),
   ],
-  controllers: [VisitasController, CanonicalOrdersController],
+  controllers: [
+    VisitasController,
+    CanonicalOrdersController,
+    UnitReadinessController,
+  ],
   providers: [
     VisitasService,
     VisitasInvariantService,
     CanonicalOrdersService,
+    ReadinessSettingsService,
+    ReadinessHoldsService,
+    UnitReadinessService,
     CheckDailyScheduler,
     CorrectiveFromCheckFactory,
     PrivateFilesystemStorageAdapter,

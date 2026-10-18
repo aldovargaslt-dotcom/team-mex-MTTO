@@ -21,6 +21,10 @@ Two independent loops (spec):
 
 ## Authoritative docs
 
+Referencia de producto relacionada: [GrillMe Unidades 2026-10-17](../mantenimiento/unidades-readiness-grillme-2026-10-17.md)
+(Daily/Stock, vigencia durante viaje y trazabilidad futura de chofer). Las
+diferencias con ADR025 se conservan pendientes; no cambia reglas de Flota.
+
 - [docs/specs/fleet-manager-v0.md](../../docs/specs/fleet-manager-v0.md)
 - [docs/specs/fleet-tablero-viaje-v0.md](../../docs/specs/fleet-tablero-viaje-v0.md) (status **propuesto**)
 - [ADR-008](../../docs/adr/008-flota-schema.md)

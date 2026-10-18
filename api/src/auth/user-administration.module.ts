@@ -1,7 +1,10 @@
 import { Global, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { FacilityDirectoryModule } from '../kernel/facility-directory.module';
-import { ActorDirectoryPort } from './actor-directory.port';
+import {
+  ActorDirectoryPort,
+  MaintenanceAssigneesPort,
+} from './actor-directory.port';
 import { UserAccess, UserAccessAudit } from './user-access.entity';
 import { UserAccessService } from './user-access.service';
 import { UsersController } from './users.controller';
@@ -16,7 +19,8 @@ import { UsersController } from './users.controller';
   providers: [
     UserAccessService,
     { provide: ActorDirectoryPort, useExisting: UserAccessService },
+    { provide: MaintenanceAssigneesPort, useExisting: UserAccessService },
   ],
-  exports: [ActorDirectoryPort, UserAccessService],
+  exports: [ActorDirectoryPort, MaintenanceAssigneesPort, UserAccessService],
 })
 export class UserAdministrationModule {}

@@ -26,6 +26,7 @@ La UI usa Next.js App Router, shadcn/ui y Tailwind, con tokens Team Mex. La deci
 | Necesidad | Fuente de verdad |
 |---|---|
 | Dirección visual del producto | [`docs/design/VISUAL_DIRECTION.md`](docs/design/VISUAL_DIRECTION.md) |
+| Sidebar / navegación compartida | [`docs/design/APPLICATION_NAVIGATION.md`](docs/design/APPLICATION_NAVIGATION.md) |
 | Tokens y primitivas | [`docs/design/DESIGN_SYSTEM.md`](docs/design/DESIGN_SYSTEM.md) y `web/src/app/globals.css` |
 | Patrones de páginas existentes | [`docs/design/PAGE_PATTERNS.md`](docs/design/PAGE_PATTERNS.md) |
 | Principios de experiencia | [`docs/design/UX_PRINCIPLES.md`](docs/design/UX_PRINCIPLES.md) |

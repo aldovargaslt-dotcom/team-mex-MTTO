@@ -23,6 +23,19 @@ Open, edit, and **close** a maintenance visit. Closing is the transaction that e
 
 ## Authoritative docs
 
+Referencia de producto futura (GrillMe confirmado 2026-10-17):
+[Unidades: readiness, ficha y acciones](unidades-readiness-grillme-2026-10-17.md).
+Conserva acuerdos y diferencias pendientes con ADR025; no sustituye SPEC/ADR
+ni autoriza implementación.
+
+Especificación posterior: [Unidades readiness](../../docs/specs/SPEC-UNIDADES-READINESS-001.md)
+y [UX](../../docs/design-system/unidades-readiness-v1.md), implementadas localmente
+por [EWO-056](../../docs/engineering-work-orders/EWO-056.md), con
+[evidencia](../../docs/evidence/EWO-056.md).
+[ADR028](../../docs/adr/028-configurable-abc-validity.md) y su
+[contrato](../../docs/contracts/UNIDADES-READINESS-001-contract.md) concretan
+vigencia ABC configurable frente a día universal. Sin despliegue ni ledger UTIL.
+
 - [ADR-000](../../docs/adr/000-thin-kernel.md)
 - [ADR-001](../../docs/adr/001-visita-cerrada-outbox.md)
 - [ADR-002](../../docs/adr/002-schema-per-module.md) (piezas / apply)
@@ -57,3 +70,11 @@ Revisión es CHECK operativo de la unidad; Preventivo y Correctivo son mantenimi
 Una revisión concluida conserva dictamen/aptitud como concepto distinto; no
 representa mantenimiento realizado. A–E son trabajos, no tipos de inspección.
 [Glosario](../../context/GLOSSARY.md), [filtro aprobado2026-10-12](../../docs/design/ux-orders-type-filter-v1.md).
+
+## Chequeo diario universal — decisión vigente2026-10-18
+
+**Chequeo diario**: revisión ABC requerida por jornada para todas las unidades.
+Daily/Stock dejan de ser clases operativas; no alteran frecuencia ni elegibilidad.
+Un chequeo pendiente se conserva, sin duplicarlo; crear CHECK no es abrir
+mantenimiento. Viajes activos se conservan. [ADR029](../../docs/adr/029-daily-only-unit-checks.md)
+sustituye política configurable de ADR028.

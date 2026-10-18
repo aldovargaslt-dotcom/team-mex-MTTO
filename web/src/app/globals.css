@@ -1,11 +1,14 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
+@import './readiness.css';
+@import './workspace.css';
+@import './fleet-overview.css';
 
 @custom-variant dark (&:is(.dark *));
 
 :root {
   --cta: #ea7515;
-  --cta-hover: #f28a32;
+  --cta-hover: #363b67;
   --shell: #24284d;
   --shell-ink: #f7f7fb;
   --surface: #f3f3f3;
@@ -30,8 +33,8 @@
   --card-foreground: #1c1d26;
   --popover: #ffffff;
   --popover-foreground: #1c1d26;
-  --primary: #ea7515;
-  --primary-foreground: #24284d;
+  --primary: #24284d;
+  --primary-foreground: #ffffff;
   --secondary: #ffffff;
   --secondary-foreground: #24284d;
   --muted-bg: #ececf3;
@@ -199,37 +202,6 @@
 
   .shell-header__menu {
     color: var(--shell-ink);
-  }
-
-  .shell-menu-nav {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    padding: 0 8px;
-  }
-
-  .shell-menu-link {
-    display: flex;
-    align-items: center;
-    min-height: var(--tap-mobile);
-    padding: 0 12px;
-    border-radius: 6px;
-    color: var(--navy);
-    font-size: 15px;
-  }
-
-  .shell-menu-link:hover {
-    background: var(--muted-bg);
-  }
-
-  .shell-menu-link.active {
-    background: var(--muted-bg);
-    font-weight: 500;
-  }
-
-  .shell-menu-link:focus-visible {
-    outline: 2px solid var(--ring);
-    outline-offset: 2px;
   }
 
   @media (min-width: 768px) {

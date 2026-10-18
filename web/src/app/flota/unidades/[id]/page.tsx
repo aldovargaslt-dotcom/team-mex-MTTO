@@ -3,6 +3,7 @@
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
+import { UnitSafetyDesk } from '@/components/UnitSafetyDesk';
 import { RoleGate } from "@/components/RoleGate";
 import { SignaturePad } from "@/components/SignaturePad";
 import { Button } from "@/components/ui/button";
@@ -197,6 +198,7 @@ function FlotaUnidad() {
     return (
       <div className="space-y-3">
         <FormAlert>{error}</FormAlert>
+      <UnitSafetyDesk unitId={params.id} />
         <p className="muted">Cargando unidad…</p>
       </div>
     );

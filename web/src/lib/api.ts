@@ -33,7 +33,7 @@ const DEPARTURE_REASON_LABELS: Record<string, string> = {
   PHYSICAL_STATE_NOT_READY: "La unidad debe estar EN PATIO.",
   INSURANCE_REQUIRED: "Carga una póliza de seguro vigente.",
   INSURANCE_EXPIRED: "Renueva la póliza de seguro.",
-  CHECK_REQUIRED: "Completa y firma el CHECK operativo de hoy.",
+  CHECK_REQUIRED: "Completa y firma una revisión ABC vigente.",
   CHECK_EXPIRED: "El CHECK venció; realiza uno nuevo.",
   CHECK_INVALIDATED: "El CHECK fue invalidado; realiza uno nuevo.",
   CHECK_UNSIGNED: "El CHECK debe estar firmado.",

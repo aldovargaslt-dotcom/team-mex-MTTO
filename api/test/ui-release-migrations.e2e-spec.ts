@@ -94,7 +94,7 @@ describe('UI production release pre-deploy', () => {
       prepareUiRelease(productionEnv),
       migrateUiRelease(connection, flags),
     ]);
-    expect(results.map((result) => result.length).sort()).toEqual([0, 3]);
+    expect(results.map((result) => result.length).sort()).toEqual([0, 4]);
     expect(await db.query('SELECT * FROM inventario.cost_operations')).toEqual(
       [],
     );

@@ -28,6 +28,7 @@ export function HubIdentityHeader({
   onOpenHealth,
   actions,
   backHref = '/unidades',
+  healthAsReference = false,
 }: {
   numeroInterno: string;
   pageLabel?: string;
@@ -47,6 +48,7 @@ export function HubIdentityHeader({
   onOpenHealth: () => void;
   actions: ReactNode;
   backHref?: string;
+  healthAsReference?: boolean;
 }) {
   const lineaMarca = marcaModelo
     ? `${marcaModelo}${anio ? ` · ${anio}` : ''}`
@@ -113,7 +115,7 @@ export function HubIdentityHeader({
           </div>
         </div>
         <div className="hub-identity__health">
-          {healthState === 'loading' && !health ? (
+          {healthAsReference ? <button type="button" className="readiness-health-reference" onClick={onOpenHealth}>Salud de la unidad · referencia<span>{healthState === 'error' ? 'Sin confirmar' : 'Consultar desglose'}</span></button> : healthState === 'loading' && !health ? (
             <div className="health-display header">
               <span className="health-copy">
                 <span className="health-kicker">Salud de la unidad</span>

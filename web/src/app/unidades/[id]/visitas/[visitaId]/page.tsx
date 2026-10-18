@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 import { RoleGate } from '@/components/RoleGate';
+import { OrderSafetyControls } from '@/components/OrderSafetyControls';
 import { SignaturePad } from '@/components/SignaturePad';
 import {
   PiezasReadonly,
@@ -67,7 +68,7 @@ type StepId = (typeof STEPS)[number]['id'];
 
 export default function VisitaPage() {
   return (
-    <RoleGate allow={['SUPERVISOR', 'ADMIN_DIRECTIVO']}>
+    <RoleGate allow={['SUPERVISOR', 'ADMIN_DIRECTIVO', 'MECANICO']}>
       <VisitaContent />
     </RoleGate>
   );
@@ -80,7 +81,7 @@ function VisitaContent() {
   const hubHref = withUnidadesReturnTo(`/unidades/${params.id}`, returnTo);
   const { role, userId, isAdmin } = useRole();
   const read = useReadResource(role ? JSON.stringify([role, userId, params.visitaId]) : null,
-    () => api<VisitaDetalle>(`/visitas/${params.visitaId}`, { role: role!, userId }));
+    () => api<VisitaDetalle>(role === 'MECANICO' || isAdmin ? `/mantenimiento-ordenes/${params.visitaId}` : `/visitas/${params.visitaId}`, { role: role!, userId }));
   const visita = read.data;
   const setVisita = read.setData;
   const unavailable = read.error instanceof HttpError && read.error.status === 404;
@@ -91,7 +92,7 @@ function VisitaContent() {
     <Button asChild variant="outline"><Link href={hubHref}>Volver al hub</Link></Button>
   </>;
 
-  if (visita.estado === 'CERRADO' || isAdmin) {
+  if (visita.estado === 'CERRADO' || isAdmin || role === 'MECANICO') {
     return <VisitaReadonly visita={visita} hubHref={hubHref} />;
   }
 
@@ -146,6 +147,7 @@ function VisitaReadonly({
         }
       />
 
+      <OrderSafetyControls unitId={visita.unidadId} orderId={visita.id} closed={visita.estado === 'CERRADO'} />
       <Card className="p-3">
         <section className="doc-section">
           <h2>Datos</h2>
@@ -383,7 +385,7 @@ function VisitWizard({
         method: 'POST',
       });
       onChange(closed);
-      router.push(hubHref);
+      // Stay on the order: closure and technical verification share this surface.
     } catch (err) {
       setError(
         err instanceof HttpError

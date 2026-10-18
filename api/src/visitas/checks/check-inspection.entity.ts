@@ -10,6 +10,7 @@ import {
 import { Visita } from '../visita.entity';
 import { CheckSource } from '../work-order';
 import { Facility } from './facility.entity';
+import type { ValidityPolicy } from './readiness-settings.entity';
 
 @Entity('check_inspections')
 @Check(
@@ -34,6 +35,7 @@ export class CheckInspection {
   @Column({ name: 'calendar_version', type: 'int' }) calendarVersion: number;
   @Column({ name: 'mapping_version', type: 'int' }) mappingVersion: number;
   @Column({ name: 'day_end_instant', type: 'timestamptz' }) dayEndInstant: Date;
+  @Column({ name: 'validity_policy', type: 'jsonb', nullable: true }) validityPolicy: ValidityPolicy | null;
   @Column({ type: 'varchar', length: 32, nullable: true }) result:
     | 'FIT'
     | 'FIT_WITH_OBSERVATION'

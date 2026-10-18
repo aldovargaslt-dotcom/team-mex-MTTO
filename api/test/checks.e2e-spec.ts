@@ -509,13 +509,8 @@ describe('EWO-015 canonical CHECK / maintenance APIs', () => {
     }
   });
 
-  it('S1-T02 manual/automatic prechecks pass on two PostgreSQL connections: one create, one conflict', async () => {
+  it('S1-T02 serializes manual/automatic creation on two PostgreSQL connections: one create, one conflict', async () => {
     const original = service.findActiveIn.bind(service);
-    let arrive = 0;
-    let release!: () => void;
-    const barrier = new Promise<void>((resolve) => {
-      release = resolve;
-    });
     const pids = new Set<number>();
     const transactionStates: boolean[] = [];
     const spy = jest
@@ -525,13 +520,10 @@ describe('EWO-015 canonical CHECK / maintenance APIs', () => {
         transactionStates.push(
           manager.queryRunner?.isTransactionActive ?? false,
         );
-        if (id === vehicle && arrive < 2) {
+        if (id === vehicle) {
           pids.add(
             (await manager.query('SELECT pg_backend_pid() AS pid'))[0].pid,
           );
-          arrive++;
-          if (arrive === 2) release();
-          await barrier;
         }
         return result;
       });
@@ -541,7 +533,7 @@ describe('EWO-015 canonical CHECK / maintenance APIs', () => {
         service.createCheck(vehicle, CheckSource.DAILY_AUTOMATIC, system),
       ]);
       expect(pids.size).toBe(2);
-      expect(transactionStates).toEqual([true, true, false]);
+      expect(transactionStates).toEqual([true, true]);
       expect(results.filter((r) => r.status === 'fulfilled')).toHaveLength(1);
       const loser = results.find(
         (r) => r.status === 'rejected',

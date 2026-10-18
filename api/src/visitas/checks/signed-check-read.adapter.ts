@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { dailyCheckDeadline } from './readiness-policy';
 import { EntityManager, In } from 'typeorm';
 import { Visita } from '../visita.entity';
 import {
@@ -9,6 +10,8 @@ import {
 } from '../work-order';
 import { CheckInspection } from './check-inspection.entity';
 import { CheckInvalidation } from './check-invalidation.entity';
+import { ReadinessHold } from './readiness-hold.entity';
+import { IsNull, Not } from 'typeorm';
 import {
   MaintenanceBlockReadPort,
   SignedCheckReadPort,
@@ -48,8 +51,9 @@ export class TypeOrmSignedCheckReadAdapter extends SignedCheckReadPort {
       inspections.map((row) => [row.visitaId, row]),
     );
     const invalidatedIds = new Set(invalidations.map((row) => row.checkId));
-    const dateByUnit = new Map(
-      requests.map((request) => [request.unidadId, request.operationalDate]),
+    checks.sort(
+      (a, b) =>
+        (b.completedAt?.getTime() ?? 0) - (a.completedAt?.getTime() ?? 0),
     );
     for (const check of checks) {
       const current = result.get(check.unidad.id)!;
@@ -72,9 +76,11 @@ export class TypeOrmSignedCheckReadAdapter extends SignedCheckReadPort {
       const inspection = inspectionById.get(check.id);
       if (!inspection?.result || !inspection.dayEndInstant) continue;
       const invalidated = invalidatedIds.has(check.id);
-      const expired =
-        inspection.operationalDate !== dateByUnit.get(check.unidad.id) ||
-        now >= inspection.dayEndInstant;
+      const reviewedAt = inspection.validityPolicy?.reviewedAt
+        ? new Date(inspection.validityPolicy.reviewedAt)
+        : check.completedAt ?? new Date(`${inspection.operationalDate}T12:00:00Z`);
+      const deadline = dailyCheckDeadline(inspection.dayEndInstant, reviewedAt);
+      const expired = now >= deadline;
       const unsigned = !inspection.snapshotHash;
       current.lastCompleted = {
         checkId: check.id,
@@ -89,7 +95,7 @@ export class TypeOrmSignedCheckReadAdapter extends SignedCheckReadPort {
               ? 'UNSIGNED'
               : null,
         version: check.version,
-        dayEndInstant: inspection.dayEndInstant,
+        dayEndInstant: deadline,
       };
     }
     return result;
@@ -103,13 +109,27 @@ export class TypeOrmMaintenanceBlockReadAdapter extends MaintenanceBlockReadPort
     const rows = await manager.find(Visita, {
       select: { id: true, unidad: { id: true } },
       relations: { unidad: true },
-      where: {
-        unidad: { id: In(unidadIds) },
-        workOrderType: In(maintenanceTypes),
-        workOrderStatus: In(activeStatuses),
-        blocksOperation: true,
-      },
+      where: [
+        {
+          unidad: { id: In(unidadIds) },
+          workOrderType: In(maintenanceTypes),
+          workOrderStatus: In(activeStatuses),
+          blocksOperation: true,
+        },
+        {
+          unidad: { id: In(unidadIds) },
+          workOrderType: In(maintenanceTypes),
+          workOrderStatus: In(activeStatuses),
+          openedAt: Not(IsNull()),
+        },
+      ],
     });
-    return new Set(rows.map((row) => row.unidad.id));
+    const holds = await manager.find(ReadinessHold, {
+      where: { unidadId: In(unidadIds), verificationId: IsNull() },
+    });
+    return new Set([
+      ...rows.map((row) => row.unidad.id),
+      ...holds.map((row) => row.unidadId),
+    ]);
   }
 }

@@ -26,3 +26,19 @@ El mismo shell, botones, inputs y tablas se comparten en Unidades, Visitas, Inve
 6. Andon list + hub card + umbrales por tipo
 
 Fuera: multi-almacén, OC formal, reabrir dominio.
+
+## Enmienda visual — 2026-10-18
+
+Solicitud explícita del usuario: sidebar y diseño actualizado. [EWO-057](../engineering-work-orders/EWO-057.md)
+autoriza navegación persistente compartida en escritorio y Sheet móvil, conservando
+rutas y permisos. La dirección operacional usa navy existente para acción azul;
+se conservan Roboto, superficies neutras, semántica de estado y primitivas. Este
+incremento sustituye el shell de navegación superior; no introduce un kit nuevo.
+
+## Cierre del estándar de sidebar — 2026-10-18
+
+Usuario aprueba sidebar nueva como estándar compartido para evitar retrabajos.
+[APPLICATION_NAVIGATION](../design/APPLICATION_NAVIGATION.md) fija composición,
+catálogo único, estados y responsive. EWO061 retira selección por módulo y mueve
+estados del menú a workspace.css. Cambios posteriores deben modificar ese contrato,
+no crear sidebars paralelas. Integración/main y deploy no se afirman desde un cambio local.

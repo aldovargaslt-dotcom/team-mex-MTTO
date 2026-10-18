@@ -7,6 +7,7 @@ import { RoleGate } from '@/components/RoleGate';
 import { HealthConfigDialog } from '@/components/HealthConfigDialog';
 import { UnidadesAdminMenu } from '@/components/UnidadesAdminMenu';
 import { UnidadesCatalogo } from '@/components/UnidadesCatalogo';
+import { FleetReadiness } from '@/components/FleetReadiness';
 import { TipoIconoPicker } from '@/components/TipoIconoPicker';
 import { Button } from '@/components/ui/button';
 import {
@@ -34,10 +35,16 @@ export default function UnidadesPage() {
   return (
     <RoleGate allow={['SUPERVISOR', 'ADMIN_DIRECTIVO']}>
       <Suspense fallback={<p className="muted">Cargando unidades…</p>}>
-        <UnidadesList />
+        <UnidadesRoute />
       </Suspense>
     </RoleGate>
   );
+}
+
+function UnidadesRoute() {
+  const { isAdmin } = useRole();
+  const params = useSearchParams();
+  return isAdmin && params.get('mode') === 'catalog' ? <><Button variant="secondary" asChild><Link href="/unidades">Volver a revisión de flota</Link></Button><UnidadesList /></> : <FleetReadiness />;
 }
 
 function UnidadesList() {

@@ -1,5 +1,11 @@
 # ABC daily release — revised specification and gap analysis
 
+> Enmienda 2026-10-17: [ADR028](../adr/028-configurable-abc-validity.md) y
+> [UR-06–08/17](SPEC-UNIDADES-READINESS-001.md) sustituyen solo vigencia diaria
+> universal/calendario y la condición de medianoche de ABC-09 por vencimiento de
+> política configurada. Recheck sigue sin renovar vigencia ni borrar holds.
+> Detalles de calendario/scheduler pendientes; texto y AC históricos abajo.
+
 ## Status and authority
 
 Revised 2026-10-15 from the supplied document of the same filename and the user's

@@ -8,7 +8,7 @@ import {
 } from '@nestjs/common';
 import { Optional } from '@nestjs/common';
 import { createHash, randomUUID } from 'crypto';
-import { DataSource, EntityManager, In } from 'typeorm';
+import { DataSource, EntityManager, In, Between } from 'typeorm';
 import { TrustedActor, validateActor } from '../../auth/trusted-actor';
 import { Rol } from '../../auth/roles.enum';
 import { Unidad } from '../../unidades/unidad.entity';
@@ -65,6 +65,9 @@ import {
   PreparedCorrective,
 } from './corrective-from-check.factory';
 import { UnitOperationCoordinator } from '../../kernel/unit-operation.module';
+import { ReadinessSettingsService } from './readiness-settings.service';
+import { checkDueAt, dailyCheckDeadline } from './readiness-policy';
+import { ReadinessGeneration } from './readiness-settings.entity';
 
 export const CHECK_CREATED = 'CHECK_CREATED';
 export const CHECK_COMPLETED = 'CHECK_COMPLETED';
@@ -81,6 +84,7 @@ export class CanonicalOrdersService {
     @Optional() private readonly physicalState?: PhysicalStateReadPort,
     @Optional() private readonly storage?: ObjectStoragePort,
     @Optional() private readonly correctiveFactory?: CorrectiveFromCheckFactory,
+    @Optional() private readonly readinessSettings?: ReadinessSettingsService,
   ) {}
   private authorize(actor: TrustedActor, roles: (Rol | 'SYSTEM')[]) {
     validateActor(actor, process.env.NODE_ENV);
@@ -166,6 +170,7 @@ export class CanonicalOrdersService {
       throw new BadRequestException('Origen CHECK inválido.');
     try {
       const id = await this.db.transaction(async (manager) => {
+        await this.unitOperations.lock(manager, unidadId);
         const { unidad, mapping, day } = await this.facility(
           manager,
           unidadId,
@@ -259,8 +264,15 @@ export class CanonicalOrdersService {
     actor: TrustedActor,
   ) {
     this.authorize(actor, ['SYSTEM']);
-    if (!/^\\d{4}-\\d{2}-\\d{2}$/.test(operationalDate) || !commandId.trim())
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(operationalDate) || !commandId.trim())
       throw new BadRequestException('Jornada o commandId inválido.');
+    if (this.readinessSettings)
+      return this.generateDailyChecksInTransaction(
+        facilityId,
+        operationalDate,
+        commandId,
+        actor,
+      );
     const mappings = await this.db.manager.find(VehicleFacility, {
       where: { facilityId },
       relations: { unidad: true, facility: true },
@@ -285,7 +297,39 @@ export class CanonicalOrdersService {
         });
         continue;
       }
+      const lastSigned = await this.db.manager.findOne(Visita, {
+        where: {
+          unidad: { id: mapping.unidadId },
+          workOrderType: WorkOrderType.CHECK,
+          workOrderStatus: WorkOrderStatus.COMPLETED,
+        },
+        order: { completedAt: 'DESC' },
+      });
+      if (lastSigned) {
+        const inspection = await this.db.manager.findOneBy(CheckInspection, {
+          visitaId: lastSigned.id,
+        });
+        if (
+          inspection?.snapshotHash &&
+          inspection.operationalDate === operationalDate &&
+          inspection.result !== 'UNFIT' &&
+          new Date() < inspection.dayEndInstant
+        ) {
+          const invalidated = await this.db.manager.count(CheckInvalidation, {
+            where: { checkId: lastSigned.id },
+          });
+          if (!invalidated) {
+            results.push({
+              unidadId: mapping.unidadId,
+              outcome: 'SKIPPED_VALID',
+              checkId: lastSigned.id,
+            });
+            continue;
+          }
+        }
+      }
       const prior = await this.db.manager.findOne(CheckGenerationLedger, {
+        // Ledger retains invocation identity; valid checks are reused below.
         where: { unidadId: mapping.unidadId, operationalDate },
       });
       if (prior) {
@@ -342,6 +386,142 @@ export class CanonicalOrdersService {
       }
     }
     return { facilityId, operationalDate, commandId, items: results };
+  }
+  private async generateDailyChecksInTransaction(
+    facilityId: string,
+    operationalDate: string,
+    commandId: string,
+    actor: TrustedActor,
+  ) {
+    if (!actor.facilityScopes.includes(facilityId))
+      throw new ForbiddenException('Facility fuera del scope del scheduler.');
+    if (!this.physicalState)
+      throw new BadRequestException('Fuente física no configurada.');
+    const mappings = await this.db.manager.find(VehicleFacility, {
+      where: { facilityId },
+    });
+    const items: Record<string, unknown>[] = [];
+    for (const mapping of mappings) {
+      items.push(
+        await this.db.transaction(async (manager) => {
+          await this.unitOperations.lock(manager, mapping.unidadId);
+          const {
+            unidad,
+            day,
+            mapping: calendarMapping,
+          } = await this.facility(manager, mapping.unidadId, actor);
+          if (day.operationalDate !== operationalDate)
+            throw new BadRequestException(
+              'La jornada del scheduler no corresponde al calendario actual.',
+            );
+          const physical = await this.physicalState!.read(unidad.id, manager);
+          if (
+            unidad.estado !== EstadoUnidad.ACTIVA ||
+            physical.physicalKnowledge !== 'KNOWN' ||
+            physical.physicalState !== 'EN_PATIO' ||
+            physical.operationalInconsistency
+          )
+            return { unidadId: unidad.id, outcome: 'SKIPPED_INELIGIBLE' };
+          const active = await this.findActiveIn(manager, unidad.id);
+          if (active)
+            return {
+              unidadId: unidad.id,
+              outcome: 'SKIPPED_ACTIVE',
+              checkId: active.id,
+            };
+          const last = await manager.findOne(Visita, {
+            where: {
+              unidad: { id: unidad.id },
+              workOrderType: WorkOrderType.CHECK,
+              workOrderStatus: WorkOrderStatus.COMPLETED,
+            },
+            order: { completedAt: 'DESC' },
+          });
+          const inspection = last
+            ? await manager.findOneBy(CheckInspection, { visitaId: last.id })
+            : null;
+          const invalidated = last
+            ? await manager.count(CheckInvalidation, {
+                where: { checkId: last.id },
+              })
+            : 0;
+          if (
+            inspection?.snapshotHash &&
+            new Date() < dailyCheckDeadline(inspection.dayEndInstant, new Date(inspection.validityPolicy?.reviewedAt ?? last?.completedAt ?? `${inspection.operationalDate}T12:00:00Z`)) &&
+            !invalidated
+          )
+            return {
+              unidadId: unidad.id,
+              outcome: 'SKIPPED_VALID',
+              checkId: last!.id,
+            };
+          const periodKey = `daily:${operationalDate}`;
+          const prior = await manager.findOne(ReadinessGeneration, { where: [
+            { unidadId: unidad.id, periodKey },
+            { unidadId: unidad.id, createdAt: Between(day.dayStartInstant, new Date(day.dayEndInstant.getTime()-1)) },
+          ] });
+          if (prior)
+            return {
+              unidadId: unidad.id,
+              outcome: 'ALREADY_GENERATED',
+              checkId: prior.checkId,
+            };
+          const visit = await manager.save(
+            Visita,
+            manager.create(Visita, {
+              unidad,
+              estado: null,
+              tipo: null,
+              km: null,
+              chofer: null,
+              workOrderType: WorkOrderType.CHECK,
+              workOrderStatus: WorkOrderStatus.PENDING,
+              legacyCompatDraft: false,
+              createdBy: actor.subject,
+              createdActorName: actor.displayName,
+              attributionLevel: actor.attributionLevel,
+            }),
+          );
+          await manager.save(CheckInspection, {
+            visitaId: visit.id,
+            source: CheckSource.DAILY_AUTOMATIC,
+            facilityId,
+            operationalDate,
+            timezone: day.timezone,
+            calendarVersion: calendarMapping.facility.version,
+            mappingVersion: calendarMapping.version,
+            dayEndInstant: day.dayEndInstant,
+          });
+          await manager.save(ReadinessGeneration, {
+            unidadId: unidad.id,
+            periodKey,
+            checkId: visit.id,
+            commandId,
+            createdAt: new Date(),
+          });
+          await this.audit(manager, visit, actor, CHECK_CREATED, {
+            source: CheckSource.DAILY_AUTOMATIC,
+            periodKey,
+            commandId,
+          });
+          if (this.outbox)
+            await this.outbox.enqueueAndDispatch(manager, CHECK_CREATED, {
+              eventId: randomUUID(),
+              eventType: CHECK_CREATED,
+              schemaVersion: 1,
+              occurredAt: new Date().toISOString(),
+              actorRef: actor.subject,
+              unidadId: unidad.id,
+              checkId: visit.id,
+              source: CheckSource.DAILY_AUTOMATIC,
+              operationalDate,
+              facilityId,
+            });
+          return { unidadId: unidad.id, outcome: 'CREATED', checkId: visit.id };
+        }),
+      );
+    }
+    return { facilityId, operationalDate, commandId, items };
   }
   async active(unidadId: string, actor: TrustedActor) {
     this.authorize(actor, [Rol.MECANICO, Rol.LOGISTICA, Rol.ADMIN_DIRECTIVO]);
@@ -856,6 +1036,9 @@ export class CanonicalOrdersService {
         calendarVersion: check.calendarVersion,
         mappingVersion: check.mappingVersion,
         source: check.source,
+        ...(check.validityPolicy
+          ? { validityPolicy: check.validityPolicy }
+          : {}),
       },
       condition: {
         revision: condition.revision,
@@ -931,6 +1114,24 @@ export class CanonicalOrdersService {
       });
       if (!check) throw new NotFoundException('No se encontró el CHECK.');
       const reviewedVersion = visita.version + 1;
+      if (this.readinessSettings) {
+        await this.readinessSettings.lock(manager, check.facilityId);
+        const effective = await this.readinessSettings.resolve(
+          manager,
+          visita.unidad,
+          check.facilityId,
+        );
+        const reviewedAt = new Date();
+        const dueAt = checkDueAt(reviewedAt, effective.interval);
+        check.validityPolicy = {
+          interval: effective.interval,
+          origin: effective.origin,
+          fingerprint: effective.fingerprint,
+          reviewedAt: reviewedAt.toISOString(),
+          dueAt: dueAt.toISOString(),
+        };
+        check.dayEndInstant = dueAt;
+      }
       const material = await this.reviewMaterial(
         manager,
         visita,
@@ -1112,6 +1313,21 @@ export class CanonicalOrdersService {
         actor,
         dto.reviewedVersion,
       );
+      if (this.readinessSettings && check.validityPolicy) {
+        await this.readinessSettings.lock(manager, check.facilityId);
+        const effective = await this.readinessSettings.resolve(
+          manager,
+          visita.unidad,
+          check.facilityId,
+        );
+        if (
+          effective.fingerprint !== check.validityPolicy.fingerprint ||
+          new Date() >= check.dayEndInstant
+        )
+          throw new ConflictException(
+            'La programación o vigencia cambió; vuelve a revisar antes de firmar.',
+          );
+      }
       if (current.hash !== dto.reviewedHash)
         throw new ConflictException({
           code: 'REVIEW_STALE',
@@ -1628,7 +1844,10 @@ export class CanonicalOrdersService {
             order: { createdAt: 'ASC' },
           })
         : [];
-    const expired = new Date() >= check.dayEndInstant;
+    const effectiveDeadline = visita.workOrderStatus === WorkOrderStatus.COMPLETED
+      ? dailyCheckDeadline(check.dayEndInstant, new Date(check.validityPolicy?.reviewedAt ?? visita.completedAt ?? `${check.operationalDate}T12:00:00Z`))
+      : check.dayEndInstant;
+    const expired = new Date() >= effectiveDeadline;
     const correctives =
       visita.workOrderStatus === WorkOrderStatus.COMPLETED
         ? await manager.find(Visita, {
@@ -1656,7 +1875,8 @@ export class CanonicalOrdersService {
       facilityId: check.facilityId,
       operationalDate: check.operationalDate,
       timezone: check.timezone,
-      dayEndInstant: check.dayEndInstant,
+      dayEndInstant: effectiveDeadline,
+      signedDayEndInstant: check.dayEndInstant,
       calendarVersion: check.calendarVersion,
       mappingVersion: check.mappingVersion,
       result: check.result,
@@ -1803,16 +2023,29 @@ export class CanonicalOrdersService {
   async openMaintenance(id: string, actor: TrustedActor) {
     this.authorize(actor, [Rol.MECANICO, Rol.SUPERVISOR]);
     return this.db.transaction(async (manager) => {
-      const initial = await manager.findOneBy(Visita, { id, workOrderType: In(maintenanceTypes) });
-      if (!initial) throw new NotFoundException('No se encontró la orden de mantenimiento.');
+      const initial = await manager.findOneBy(Visita, {
+        id,
+        workOrderType: In(maintenanceTypes),
+      });
+      if (!initial)
+        throw new NotFoundException(
+          'No se encontró la orden de mantenimiento.',
+        );
       await this.unitOperations.lock(manager, initial.unidad.id);
       await this.facility(manager, initial.unidad.id, actor);
-      const visit = await manager.getRepository(Visita).createQueryBuilder('v')
-        .leftJoinAndSelect('v.unidad', 'u').where('v.id=:id', { id })
-        .setLock('pessimistic_write', undefined, ['v']).getOneOrFail();
-      if (!activeStatuses.includes(visit.workOrderStatus)) throw new ConflictException('La orden ya no está activa.');
+      const visit = await manager
+        .getRepository(Visita)
+        .createQueryBuilder('v')
+        .leftJoinAndSelect('v.unidad', 'u')
+        .where('v.id=:id', { id })
+        .setLock('pessimistic_write', undefined, ['v'])
+        .getOneOrFail();
+      if (!activeStatuses.includes(visit.workOrderStatus))
+        throw new ConflictException('La orden ya no está activa.');
       if (!visit.openedAt) {
-        visit.openedAt = new Date(); visit.openedBy = actor.subject; visit.openedActorName = actor.displayName;
+        visit.openedAt = new Date();
+        visit.openedBy = actor.subject;
+        visit.openedActorName = actor.displayName;
         visit.legacyCompatDraft = false;
         await manager.save(visit);
       }
@@ -1851,9 +2084,19 @@ export class CanonicalOrdersService {
         )
       ) {
         if (query.cola === 'cerradas') {
-          qb.andWhere('v.work_order_status=:completed AND v.assigned_user_id=:subject', { completed: WorkOrderStatus.COMPLETED, subject: actor.subject });
+          qb.andWhere(
+            'v.work_order_status=:completed AND v.assigned_user_id=:subject',
+            { completed: WorkOrderStatus.COMPLETED, subject: actor.subject },
+          );
         } else {
-          qb.andWhere('v.work_order_status IN (:...activeStatuses) AND ((v.assigned_user_id IS NULL AND v.work_order_status IN (:...eligibleStatuses)) OR v.assigned_user_id=:subject)', { subject: actor.subject, eligibleStatuses: activeStatuses, activeStatuses });
+          qb.andWhere(
+            'v.work_order_status IN (:...activeStatuses) AND ((v.assigned_user_id IS NULL AND v.work_order_status IN (:...eligibleStatuses)) OR v.assigned_user_id=:subject)',
+            {
+              subject: actor.subject,
+              eligibleStatuses: activeStatuses,
+              activeStatuses,
+            },
+          );
         }
       }
     }

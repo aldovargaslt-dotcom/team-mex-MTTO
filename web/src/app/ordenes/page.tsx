@@ -6,6 +6,7 @@ import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import { CalendarCheck, ChevronLeft, ChevronRight, History, ClipboardCheck, List, Search, Wrench, type LucideIcon } from 'lucide-react';
 import { ReadStatus } from '@/components/ReadStatus';
 import { useReadResource } from '@/lib/use-read-resource';
+import { OrderSafetyControls } from '@/components/OrderSafetyControls';
 import { OrderIdentity } from '@/components/OrderIdentity';
 import { Badge } from '@/components/ui/badge';
 import { ListFilter } from '@/components/ListFilter';
@@ -494,6 +495,7 @@ function OrdenDetalle({
         detalle={detalle}
         onVisita={onVisita}
       />
+      <OrderSafetyControls key={detalle.id} unitId={detalle.unidadId} orderId={detalle.id} closed={detalle.estado === 'CERRADO'} />
       <div className="ordenes-status" aria-label="Estado de la orden">
         <span className="is-on">
           {detalle.estado === 'BORRADOR' ? (detalle.openedAt ? 'Abierta' : 'Borrador') : 'Cerrada'}

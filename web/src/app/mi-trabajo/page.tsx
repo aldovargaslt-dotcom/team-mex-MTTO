@@ -10,6 +10,7 @@ import {
   List,
   Wrench,
 } from "lucide-react";
+import { OrderSafetyControls } from '@/components/OrderSafetyControls';
 import { OrderIdentity } from "@/components/OrderIdentity";
 import { ListFilter } from "@/components/ListFilter";
 import { UnidadMarca } from "@/components/UnidadTipoMark";
@@ -395,6 +396,7 @@ function WorkQueue() {
               Consulta del registro en tu patio.
             </SheetDescription>
           </SheetHeader>
+          <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
           {detailError ? (
             <p role="alert" className="mt-4 px-4 text-sm text-destructive">
               {detailError}
@@ -404,6 +406,7 @@ function WorkQueue() {
           ) : (
             <div className="mt-4 space-y-3 px-4">
               <OrderIdentity id={detail.id} check={false} />
+              <OrderSafetyControls key={detail.id} unitId={detail.unidadId} orderId={detail.id} closed={detail.estado === "CERRADO"} />
               {openingError ? <p role="alert" className="text-sm text-destructive">{openingError}</p> : null}
               {selectedOrder && phase(selectedOrder) === "borradores" && detail.estado === "BORRADOR" && !detail.openedAt ? (
                 <Button className="w-full" disabled={busy === selectedOrder.id}
@@ -445,6 +448,7 @@ function WorkQueue() {
               ) : null}
             </div>
           )}
+          </div>
         </SheetContent>
       </Sheet>
     </>

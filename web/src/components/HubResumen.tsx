@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { AndonHubCard } from "@/components/AndonHubCard";
+import { UnitReadinessPanel } from "@/components/UnitReadinessPanel";
 import { Note } from "@/components/ui/field";
 import {
   etiquetaEstadoVisita,
@@ -70,6 +71,7 @@ export function HubResumen({
 
   return (
     <>
+      <UnitReadinessPanel unitId={ficha.id} />
       <AndonHubCard
         unidadId={ficha.id}
         tipoId={ficha.tipoId}

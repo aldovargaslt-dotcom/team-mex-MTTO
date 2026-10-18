@@ -10,6 +10,8 @@ import {
 } from "@/components/ui/dialog";
 
 import Link from "next/link";
+import { UnitCheckHistory } from '@/components/UnitCheckHistory';
+import { UnitReadinessPanel } from '@/components/UnitReadinessPanel';
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { ColumnDef } from "@tanstack/react-table";
@@ -29,6 +31,8 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
+import { useReadResource } from "@/lib/use-read-resource";
+import type { ReadinessSnapshot } from "@/lib/unit-readiness";
 import { api, HttpError } from "@/lib/api";
 import {
   etiquetaOrigenPieza,
@@ -66,6 +70,10 @@ function HubContent() {
   const vista = parseHubVista(searchParams.get("vista"));
   const returnTo = safeUnidadesReturnTo(searchParams.get("returnTo"));
   const { role, userId, isAdmin } = useRole();
+  const readinessRead = useReadResource<ReadinessSnapshot>(role ? JSON.stringify([role, userId, params.id, "header-readiness"]) : null, () => api(`/unit-readiness/${params.id}`, { role: role!, userId }));
+  const readiness = readinessRead.data?.items[0];
+  const pendingMaintenance = readiness?.orders.filter((o) => o.type !== "CHECK") ?? [];
+  const reviewId = readiness?.activeCheck?.checkId || (readiness?.checkState !== "VALID" ? readiness?.lastCheck?.checkId : null);
   const [hub, setHub] = useState<UnidadHub | null>(null);
   const [unidad, setUnidad] = useState<Unidad | null>(null);
   const [health, setHealth] = useState<UnidadHealth | null>(null);
@@ -205,7 +213,7 @@ function HubContent() {
           </Link>
         </Button>
       ) : null}
-      {borrador && !isAdmin ? (
+      {!isAdmin && reviewId ? <><Button asChild><Link href={`/checks/${reviewId}`}>Ver revisión ABC</Link></Button>{hub.puedeCrearVisita ? <Button variant="outline" ref={nuevaOrdenTriggerRef} onClick={() => setNuevaOrdenOpen(true)}>Nueva orden</Button> : null}</> : !isAdmin && pendingMaintenance.length ? <Button asChild><Link href={pendingMaintenance.length === 1 ? withUnidadesReturnTo(pendingMaintenance[0].href, returnTo) : `/unidades/${ficha.id}?${new URLSearchParams({ vista: 'mantenimiento', returnTo })}`}>{pendingMaintenance.length === 1 ? 'Abrir orden' : 'Revisar órdenes'}</Link></Button> : borrador && !isAdmin ? (
         <Button
           type="button"
           onClick={() => {
@@ -250,6 +258,7 @@ function HubContent() {
         vin={ficha.vin}
         updatedAt={unidad?.updatedAt}
         health={health}
+        healthAsReference
         healthState={healthState}
         onOpenHealth={() => setHealthOpen(true)}
         actions={actions}
@@ -321,6 +330,7 @@ function HubContent() {
 
           {vista === "mantenimiento" ? (
             <>
+              <UnitReadinessPanel unitId={ficha.id} />
               <AndonHubCard
                 unidadId={ficha.id}
                 tipoId={ficha.tipoId}
@@ -412,6 +422,7 @@ function HubContent() {
                   </button>
                 ))}
               </div>
+              {historySection !== "costos" ? <UnitCheckHistory unitId={ficha.id} /> : null}
               {historySection === "costos" ? (
                 <UnitRefactionCosts
                   unidadId={ficha.id}

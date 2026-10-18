@@ -1,5 +1,25 @@
 # Design system — primitivas Team Mex
 
+## Sidebar — estándar cerrado2026-10-18
+
+La sidebar nueva aprobada por el usuario es única para todos los módulos:
+[contrato canónico](APPLICATION_NAVIGATION.md). Estado activo navy/blanco,
+catálogo/renderer compartidos y estilos en workspace.css. No variantes por ruta
+ni estilos del shell dentro de features. Toda modificación de navegación debe
+seguir ese contrato y verificar varias secciones, no solo la pantalla intervenida.
+
+## Enmienda vigente — 2026-10-18
+
+[EWO-057](../engineering-work-orders/EWO-057.md), autorizado por el usuario,
+sustituye el shell superior por sidebar persistente ≥768 y Sheet móvil.
+Acción primaria: navy `#24284D`, texto blanco, hover `#363B67`; naranja conserva
+marca/ubicación. Tokens `--primary`, `--primary-foreground`, `--cta-hover` se
+aplican también a portales. El resto de escala, componentes y semántica permanece.
+Las menciones históricas de topbar/naranja primario/ancho 1040 abajo son
+sustituidas únicamente para este shell: contenido usa ancho restante, padding24
+escritorio y12 móvil, sidebar224 contraíble a72.
+
+
 Fuente de verdad de tokens: `web/src/app/globals.css`. Componentes: `web/src/components/ui/`. Briefs de producto: [`docs/design-system/`](../design-system/). ADR: [003](../adr/003-shadcn-tailwind.md).
 
 No añadir otro kit. No inventar decenas de tokens. Si falta un valor, reusa la escala de abajo o el token más cercano.

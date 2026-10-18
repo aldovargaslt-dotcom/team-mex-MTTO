@@ -1,5 +1,9 @@
 # ADR-017 — CHECK firmado y seam de salidas Flota/Logística
 
+> Enmienda posterior: [ADR028](028-configurable-abc-validity.md), 2026-10-17,
+> sustituye la vigencia diaria universal por intervalo configurable. Preservar
+> gates y evidencia; cálculo/calendario detallado aún Proposed. Cuerpo histórico abajo.
+
 > Partially superseded for the revised target by [ADR025](025-abc-utilization-downtime.md),
 > 2026-10-15: focused finding-scoped approval, required-active inspection gate,
 > downtime reasons, persistent safety holds and correlated Logistics/physical

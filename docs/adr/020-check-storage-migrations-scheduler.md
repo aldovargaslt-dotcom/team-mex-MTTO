@@ -1,5 +1,9 @@
 # ADR-020 — Storage privado, migraciones TypeORM y scheduler CHECK
 
+> [ADR028](028-configurable-abc-validity.md), 2026-10-17, adopta vigencia ABC
+> configurable. La extensión del scheduler/identidad de períodos requiere contrato;
+> la generación diaria descrita abajo no acredita soporte de otros intervalos.
+
 > Target amendment [ADR025](025-abc-utilization-downtime.md), 2026-10-15: remove PSI
 > provisioning as a future daily ABC prerequisite. Preserve historical signed PSI
 > records and unchanged storage, scheduler/calendar and migration safeguards.

@@ -273,3 +273,26 @@ Start with [Slice0 review](docs/engineering-work-orders/CHK-001-slice-0-review.m
 
 
 Approved owner update2026-10-01: R01–R05 adoptadas en [Slice0 package](docs/engineering-work-orders/CHK-001-slice-0-review.md). Mapping facility por vehículo; MexicoCity día local; daily ACTIVA+Flota EN_PATIO/sinCHECKactivo; hard blockers aceite/refrigerante crítico/fuga severa/llanta severa-ponchadura/PSIcriticalconfig; claim/assign/invalidation en authorizedfacility; physical source Flota enum4 y divergence explícita; retorno overdue<=2hAttention/>2hCritical configurables. Sin decisiones owner pendientes ni código implementado; EWO015 Ready técnico, ejecución retenida.
+
+## Unidades readiness — bounded implementation (2026-10-17)
+
+For the Unidades redesign, [EWO-056](docs/engineering-work-orders/EWO-056.md)
+records explicit build authorization and completed local verification.
+[ADR028](docs/adr/028-configurable-abc-validity.md) and the
+[execution contract](docs/contracts/UNIDADES-READINESS-001-contract.md) narrowly
+replace daily-only ABC validity with inherited intervals.
+[Evidence](docs/evidence/EWO-056.md) distinguishes implemented readiness/holds
+from the broader ABC/UTIL ledger and deployment, which remain separate.
+
+## Chequeo diario vigente — 2026-10-18
+
+[ADR029](docs/adr/029-daily-only-unit-checks.md) y
+[EWO-060](docs/engineering-work-orders/EWO-060.md) sustituyen Daily/Stock y
+periodicidad efectiva de ADR028 por chequeo diario universal. Settings y firmas
+históricas no se borran. Worker por jornada y elegibilidad previa conservada.
+
+## Sidebar — estándar único
+
+Antes de cambiar shell/nav, leer [APPLICATION_NAVIGATION](docs/design/APPLICATION_NAVIGATION.md).
+Usar AppShell + ApplicationNavigation + workspace.css; no clonar sidebar ni agregar
+variantes de navegación principal en CSS de features. Revisar varias rutas y roles.

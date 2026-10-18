@@ -1,5 +1,10 @@
 # SPEC-MTTO-UX-002 — Ficha de unidad legible, responsive y consulta de costos
 
+> Propuesta posterior 2026-10-17: [Unidades readiness](SPEC-UNIDADES-READINESS-001.md)
+> y [UX](../design-system/unidades-readiness-v1.md) desarrollan la revisión de turno
+> y jerarquía operativa. No sustituyen esta SPEC ni eliminan historial/costos;
+> integración y aprobación del nuevo incremento aún pendientes.
+
 ## Status
 
 **Execution authorized:** user request «Now work on the respective changes and build them … push a PR to github as you finish». Covers the consolidated specs and technical contract; no deployment or external migration execution inferred.

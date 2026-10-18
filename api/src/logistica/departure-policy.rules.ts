@@ -56,6 +56,7 @@ export function departureBlockReasons(input: {
   } else if (completed.result === 'UNFIT') {
     reasons.push('CHECK_UNFIT');
   }
+  if (input.check.activeCheck && !reasons.includes('CHECK_REQUIRED')) reasons.push('CHECK_REQUIRED');
   if (input.maintenanceBlocking) reasons.push('MAINTENANCE_BLOCKING');
   return reasons;
 }
