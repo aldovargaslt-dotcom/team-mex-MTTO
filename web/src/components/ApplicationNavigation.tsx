@@ -29,7 +29,7 @@ const ITEMS: NavigationItem[] = [
 ];
 
 export function applicationNavigation(role: Role | null) {
-  return ITEMS.filter((item) => role && item.roles.includes(role) && (item.href !== '/analisis-mantenimiento' || process.env.NEXT_PUBLIC_MAINTENANCE_ANALYSIS_ENABLED === 'true'));
+  return ITEMS.filter((item) => role && item.roles.includes(role) && (item.href !== '/analisis-mantenimiento' || process.env.NEXT_PUBLIC_MAINTENANCE_ANALYSIS_ENABLED !== 'false'));
 }
 export function applicationBottomNavigation(role: Role | null) {
   const destinations = (role === 'SUPERVISOR' || role === 'ADMIN_DIRECTIVO')

@@ -15,6 +15,9 @@ ENV NEXT_PUBLIC_API_BASE=/backend
 # (mismo nombre de ARG = variable de entorno del servicio).
 ARG API_URL=http://api:3001
 ENV API_URL=$API_URL
+# Next.js incorpora NEXT_PUBLIC_* al bundle durante el build, no al arrancar.
+ARG NEXT_PUBLIC_MAINTENANCE_ANALYSIS_ENABLED=true
+ENV NEXT_PUBLIC_MAINTENANCE_ANALYSIS_ENABLED=$NEXT_PUBLIC_MAINTENANCE_ANALYSIS_ENABLED
 RUN npm run build
 
 FROM node:20-alpine AS runner
