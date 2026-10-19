@@ -1,5 +1,14 @@
 # Mantenimiento / Visita — routing card
 
+## Propuesta de análisis — sin ejecución
+
+[SPEC-AN-MTTO-001](../../docs/specs/SPEC-AN-MTTO-001.md) y
+[contrato técnico](../../docs/contracts/AN-MTTO-001-technical.md) concretan servicios
+externos económicos, horarios y reportes. [ADR030 Proposed](../../docs/adr/030-maintenance-analysis-contracts.md)
+propone persistencia en el área existente, sin nuevo BC ni cambios desplegados.
+Actor Supervisor captura; Directivo configura horarios; Logística conserva
+liberación operativa. No inferir implementación o permisos nuevos desde esta nota.
+
 ## Current target vocabulary — 2026-10-15
 
 Abrir orden means withdrawal now; borrador means preparation. Downtime has active
@@ -78,3 +87,17 @@ Daily/Stock dejan de ser clases operativas; no alteran frecuencia ni elegibilida
 Un chequeo pendiente se conserva, sin duplicarlo; crear CHECK no es abrir
 mantenimiento. Viajes activos se conservan. [ADR029](../../docs/adr/029-daily-only-unit-checks.md)
 sustituye política configurable de ADR028.
+
+
+## Análisis de mantenimiento — EWO-063
+
+Implementación local autorizada de ADR030 y SPEC-AN-MTTO-001: módulo
+visitas/analysis, registro de servicio externo realizado por unidad, líneas de
+trabajo/costo y revisiones auditadas. Servicios externos reconocen gasto al
+concluir; refacciones conservan fuente/fecha de Inventario. Ninguna captura
+analítica abre/cierra parada, libera unidad o modifica stock. Lecturas de owners
+scoped, snapshots por actor y horarios esperados versionados; Admin configura.
+No existe todavía ledger completo de motivos/elegibilidad para esta consulta:
+porcentajes nulos y horas conocidas, sin inferencia de OT o ausencia de viaje.
+Flags apagados por defecto; migración/activación externa no ejecutada.
+[Evidencia](../../docs/evidence/EWO-063.md).

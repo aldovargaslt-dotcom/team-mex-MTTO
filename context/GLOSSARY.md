@@ -1,5 +1,27 @@
 # Ubiquitous Language / Glossary
 
+## Análisis de mantenimiento — alcance confirmado 2026-10-18
+
+Definiciones de producto acordadas durante discovery con GrillMe; no afirman
+captura implementada ni autorización de ejecución.
+
+| Término | Significado acordado |
+|---|---|
+| Costo de mantenimiento (alcance de análisis) | Refacciones consumidas más servicios externos, sin valorar mano de obra de mecánicos internos. Las refacciones incluidas en un servicio externo se cuentan una sola vez. |
+| Tendencias por sistema | Evolución de intervenciones y costos atribuibles a sistemas como frenos, llantas y suspensión. Las posibles causas operativas las interpreta el equipo, no el software. |
+| Servicio externo (captura acordada) | Servicio contratado cuyo registro corresponde al supervisor de mecánica; admite desglose por sistema y Sin desglose cuando no existe detalle. No equivale a compra externa de refacciones. |
+| Tiempo sin operar (análisis) | Distingue indisponibilidad por mantenimiento, retención por otra causa y tiempo disponible sin utilizarse; conserva Sin información donde falta evidencia. |
+| Utilización (análisis acordado) | Se mide contra el horario esperado de operación, configurable. Sin horario definido no se presenta un porcentaje definitivo. |
+| Intervención por sistema (análisis acordado) | Distingue revisión/ajuste, reparación y cambio de componente para comparar frecuencias y, con evidencia suficiente, km entre reparaciones o cambios. |
+| Conclusión económica de servicio externo | Día acreditado en que se concluyó el trabajo, usado para reconocer su costo incluso si cruzó meses. No es la liberación operativa de Logística ni la fecha de captura/pago. |
+| Cobertura temporal completa (utilización) | Evidencia suficiente de horario, elegibilidad y clasificación temporal para todo el alcance solicitado. Solo con cobertura completa y denominador positivo se muestra porcentaje. |
+
+Para el análisis de costos se acordó comparar sin IVA, mostrando impuestos y
+total por separado cuando se conocen; IVA desconocido no equivale a cero. Los
+servicios se atribuyen al periodo de conclusión; un costo pendiente no equivale
+a cero y completarlo conserva la fecha de captura. Directivo configura horarios;
+Supervisor consulta y solicita ajustes por el canal existente.
+
 ## Current ABC/utilization vocabulary — 2026-10-15
 
 These target meanings follow [ADR025](../docs/adr/025-abc-utilization-downtime.md);

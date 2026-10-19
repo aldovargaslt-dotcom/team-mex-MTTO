@@ -18,7 +18,7 @@ import { ListFilter } from "@/components/ListFilter";
 import { UnidadMarca } from "@/components/UnidadTipoMark";
 import { RoleGate } from "@/components/RoleGate";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { MaintenanceTypeBadge } from "@/components/MaintenanceTypeBadge";
 import { PageHeader } from "@/components/ui/field";
 import {
   Sheet,
@@ -43,16 +43,8 @@ type Order = {
   createdAt: string;
   openedAt: string | null;
 };
-const TYPE_LABEL = {
-  CHECK: "Revisión",
-  PREVENTIVE: "Preventivo",
-  CORRECTIVE: "Correctivo",
-};
-const TYPE_COLOR = {
-  CORRECTIVE: "danger",
-  PREVENTIVE: "info",
-  CHECK: "secondary",
-} as const;
+
+
 const ACTIVE = ["PENDING", "ASSIGNED", "IN_PROGRESS"];
 function phase(o: Order): Cola | null {
   return o.status === "COMPLETED"
@@ -347,7 +339,7 @@ function WorkQueue() {
                       <span className="block text-sm font-semibold text-navy">{o.unit.numeroInterno}</span>
                       <span className="mt-1 block text-xs text-muted-foreground">{o.unit.placas}</span>
                       <span className="mt-2 flex flex-wrap items-center gap-2">
-                        <Badge variant={TYPE_COLOR[o.type]}>{TYPE_LABEL[o.type]}</Badge>
+                        <MaintenanceTypeBadge type={o.type} />
                         <span className="text-xs text-muted-foreground">
                           {cola === "cerradas" ? o.type === "CHECK" ? "Concluida" : "Cerrada"
                             : cola === "borradores" ? "Borrador" : o.status === "IN_PROGRESS" ? "En curso" : "Abierta"}

@@ -7,6 +7,7 @@ import { NotificationsModule } from '../notifications/notifications.module';
 import { Unidad } from '../unidades/unidad.entity';
 import { UnidadesModule } from '../unidades/unidades.module';
 import { LogisticaController } from './logistica.controller';
+import { LogisticsAnalysisJourneyReadPort } from './analysis-journey-read.port';
 import { LogisticaService } from './logistica.service';
 import { ControlTowerService } from './control-tower.service';
 import { FlotaModule } from '../flota/flota.module';
@@ -44,6 +45,7 @@ import {
   controllers: [LogisticaController],
   providers: [
     LogisticaService,
+    LogisticsAnalysisJourneyReadPort,
     LogisticaJourneyService,
     ControlTowerService,
     DeparturePolicyService,
@@ -58,6 +60,7 @@ import {
     },
   ],
   exports: [
+    LogisticsAnalysisJourneyReadPort,
     LogisticaService,
     UNIDAD_CHOFER_ASSIGNMENT_PORT,
     DeparturePolicyPort,

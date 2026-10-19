@@ -1,4 +1,5 @@
 "use client";
+import { MaintenanceTypeBadge } from "@/components/MaintenanceTypeBadge";
 import { UnitRefactionCosts } from "@/components/UnitRefactionCosts";
 import { AndonHubCard } from "@/components/AndonHubCard";
 import {
@@ -36,7 +37,6 @@ import type { ReadinessSnapshot } from "@/lib/unit-readiness";
 import { api, HttpError } from "@/lib/api";
 import {
   etiquetaOrigenPieza,
-  etiquetaTipoVisita,
   etiquetaUom,
   formatFecha,
   formatKm,
@@ -352,7 +352,7 @@ function HubContent() {
                         {hub.borradores.map((visita) => (
                           <li key={visita.id}>
                             <div>
-                              <strong>{etiquetaTipoVisita(visita.tipo)}</strong>
+                              <strong><MaintenanceTypeBadge type={visita.tipo} /></strong>
                               <div className="muted">
                                 {formatKm(visita.km)}
                                 {visita.choferNombre
@@ -522,7 +522,7 @@ function HubContent() {
                     returnTo,
                   )}
                 >
-                  {etiquetaTipoVisita(v.tipo)} · {formatFecha(v.updatedAt)} ·
+                  <MaintenanceTypeBadge type={v.tipo} /> · {formatFecha(v.updatedAt)} ·
                   Borrador
                 </Link>
               </li>
@@ -621,7 +621,7 @@ function HistorialItem({
           <span>
             <strong>
               {formatFecha(visita.cerradoAt)} ·{" "}
-              {etiquetaTipoVisita(visita.tipo)}
+              <MaintenanceTypeBadge type={visita.tipo} />
             </strong>
             <span className="muted">
               {formatKm(visita.km)}

@@ -21,6 +21,8 @@
 }
 
 :root {
+  --maintenance-preventive: #2f5bb8;
+  --maintenance-corrective: #c45d23;
   --cta: #ea7515;
   --cta-hover: #363b67;
   --shell: #24284d;
@@ -3116,7 +3118,7 @@
 }
 
 .ordenes-tabs__filter.is-on {
-  color: #2563eb;
+  color: var(--maintenance-preventive);
 }
 
 .ordenes-filter-menu {
@@ -3156,7 +3158,7 @@
 
 .ordenes-filter-menu button.is-on {
   background: #eef4ff;
-  color: #2563eb;
+  color: var(--maintenance-preventive);
 }
 
 .ordenes-list {
@@ -3372,8 +3374,8 @@
 .history-mix h3 { margin: 0 0 8px; font-size: 13px; font-weight: 600; }
 .history-mix__bar { display: flex; height: 10px; overflow: hidden; border-radius: 4px; background: var(--surface); }
 .history-mix__bar span { min-width: 0; }
-.history-mix .is-preventivo { background: var(--navy); }
-.history-mix .is-correctivo { background: #c45d23; }
+.history-mix .is-preventivo { background: var(--maintenance-preventive); }
+.history-mix .is-correctivo { background: var(--maintenance-corrective); }
 .history-mix__labels { display: flex; flex-wrap: wrap; gap: 8px 20px; margin-top: 8px; font-size: 12px; }
 .history-mix__labels span { display: inline-flex; align-items: center; gap: 5px; }
 .history-mix__labels i { width: 9px; height: 9px; border-radius: 2px; }
@@ -3485,11 +3487,11 @@
 }
 
 .ordenes-tipo.is-correctivo {
-  color: #e11d48;
+  color: var(--maintenance-corrective);
 }
 
 .ordenes-tipo.is-predictivo {
-  color: #2563eb;
+  color: var(--maintenance-preventive);
 }
 
 .ordenes-row__sub,
@@ -3859,8 +3861,8 @@
 .inventory-cost-legend {display:flex;gap:16px;flex-wrap:wrap;margin:12px 0;font-size:12px;}
 .inventory-cost-legend span {display:flex;gap:6px;align-items:center;}
 .inventory-cost-legend i {width:10px;height:10px;display:inline-block;}
-.inventory-unit-costs .preventive {background:#24284d;}
-.inventory-unit-costs .corrective {background:#c45d23;}
+.inventory-unit-costs .preventive {background:var(--maintenance-preventive);}
+.inventory-unit-costs .corrective {background:var(--maintenance-corrective);}
 .inventory-months {display:grid;gap:8px;overflow-x:auto;padding:4px 4px 12px;}
 .inventory-months button {min-width:58px;min-height:44px;text-align:center;padding:8px 4px;border:1px solid transparent;border-radius:4px;display:flex;flex-direction:column;gap:8px;font-size:12px;}
 .inventory-months button:hover {background:var(--surface);}
@@ -4319,3 +4321,11 @@ body:has(.app--maintenance) :is([data-slot='sheet-content'], [data-slot='sheet-o
 @media (prefers-reduced-motion: reduce) {
   .app--maintenance *, body:has(.app--maintenance) :is([data-slot='sheet-content'], [data-slot='sheet-overlay'], [data-slot='dialog-content'], [data-slot='dialog-overlay']) { animation-duration: 0s !important; transition-duration: 0s !important; }
 }
+
+/* Shared type identity, independent of lifecycle/severity. */
+.maintenance-type { gap: 5px; border-color: transparent; text-transform: none; letter-spacing: normal; }
+.maintenance-type::before { content: ""; width: 7px; height: 7px; flex: 0 0 7px; border-radius: 2px; background: currentColor; }
+.maintenance-type--preventive { color: var(--maintenance-preventive); background: #e8f1ff; }
+.maintenance-type--corrective { color: #963e17; background: #fff1e7; }
+.maintenance-type--corrective::before { background: var(--maintenance-corrective); }
+.maintenance-type--unknown { color: var(--muted); background: var(--muted-bg); }

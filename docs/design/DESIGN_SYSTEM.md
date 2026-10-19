@@ -47,6 +47,33 @@ Decisiones del propietario confirmadas el 2026-10-17. Esta sección fija las reg
 
 ## Marca (no negociable)
 
+### Identidad global del tipo de mantenimiento — decisión posterior
+
+Confirmado por el propietario en la ronda GrillMe Q15, fecha cliente2026-10-18.
+Regla de diseño transversal; adopción en código pendiente. Esta actualización
+documental no implica autorización de implementación.
+
+| Tipo | Color canónico |
+|---|---|
+| Preventivo | Azul `#2F5BB8` |
+| Correctivo | Terracota `#C45D23` |
+
+Misma identidad en etiquetas, listados, fichas, historial, leyendas y series de
+gráficos donde se represente ese tipo. Texto visible siempre. Etiquetas pueden
+usar fondo suave y texto/icono del color canónico; gráficos usan la serie
+correspondiente. Verificar fondos/contrastes al implementar. Filtros conservan
+selección neutra, aunque identifiquen el tipo mediante texto/icono.
+
+Tipo y estado son independientes: Correctivo no significa crítico; Preventivo
+vencido conserva su identidad y muestra atraso aparte. No usar `danger` como
+identidad de tipo ni sustituir el naranja de CTA/ubicación. Refacciones/servicios
+externos son conceptos de costo, no equivalentes de esos tipos; evitar inducir
+esa equivalencia cromática. Revisión/CHECK no se convierte en mantenimiento.
+
+Sustituye únicamente paletas locales de tipo en [Órdenes](ux-orders-work-queue-v1.md),
+[ficha/historial](../design-system/ficha-unidad-v1.md) y variantes divergentes
+del detalle. No cambia reglas de negocio ni semántica de alertas.
+
 | Rol | Token | Valor |
 |-----|--------|--------|
 | CTA / subrayado de ubicación | `--cta` `--primary` `--ring` | `#EA7515` |

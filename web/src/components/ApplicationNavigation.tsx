@@ -1,10 +1,12 @@
 'use client';
 
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { ANALYSIS_NAV } from '@/lib/maintenance-analysis';
 import { useEffect, useId, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { INVENTORY_OPS, INVENTORY_CATALOG, isInventoryDestination } from '@/lib/inventory-navigation';
-import { ChevronDown, Boxes, ClipboardList, Home, Settings, Truck, Users, Wrench, type LucideIcon } from 'lucide-react';
+import { BarChart3, ChevronDown, Boxes, ClipboardList, Home, Settings, Truck, Users, Wrench, type LucideIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { Role } from '@/lib/types';
 
@@ -19,6 +21,7 @@ const ITEMS: NavigationItem[] = [
   { href: '/unidades', label: 'Unidades', icon: Truck, roles: ['SUPERVISOR', 'ADMIN_DIRECTIVO'] },
   { href: '/andon', label: 'Mantenimiento vencido', icon: Wrench, roles: ['SUPERVISOR', 'ADMIN_DIRECTIVO'] },
   { href: '/inventario', label: 'Inventario', icon: Boxes, roles: ['SUPERVISOR', 'ADMIN_DIRECTIVO'] },
+  { href: '/analisis-mantenimiento', label: 'Análisis', icon: BarChart3, roles: ['SUPERVISOR', 'ADMIN_DIRECTIVO'] },
   { href: '/choferes', label: 'Choferes', icon: Users, roles: ['ADMIN_DIRECTIVO'] },
   { href: '/configuracion/alertas', label: 'Configuración', icon: Settings, roles: ['SUPERVISOR', 'ADMIN_DIRECTIVO', 'LOGISTICA'] },
   { href: '/mi-trabajo', label: 'Mi trabajo', icon: Wrench, roles: ['MECANICO'] },
@@ -26,7 +29,7 @@ const ITEMS: NavigationItem[] = [
 ];
 
 export function applicationNavigation(role: Role | null) {
-  return ITEMS.filter((item) => role && item.roles.includes(role));
+  return ITEMS.filter((item) => role && item.roles.includes(role) && (item.href !== '/analisis-mantenimiento' || process.env.NEXT_PUBLIC_MAINTENANCE_ANALYSIS_ENABLED === 'true'));
 }
 export function applicationBottomNavigation(role: Role | null) {
   const destinations = (role === 'SUPERVISOR' || role === 'ADMIN_DIRECTIVO')
@@ -104,6 +107,11 @@ export function ApplicationNavigation({ items, pathname, mobile = false, collaps
   onNavigate?: () => void;
   onExpand?: () => void;
 }) {
+  const router = useRouter();
+  const analysisId = useId();
+  const [analysisOverride, setAnalysisOverride] = useState<{pathname:string;open:boolean}|null>(null);
+  const analysisActive = navigationIsActive(pathname, '/analisis-mantenimiento');
+  const analysisOpen = !collapsed && (analysisOverride?.pathname === pathname ? analysisOverride.open : analysisActive);
   const inventoryId = useId();
   const [override, setOverride] = useState<{pathname:string;open:boolean}|null>(null);
   const inventoryActive = navigationIsActive(pathname, '/inventario');
@@ -112,6 +120,18 @@ export function ApplicationNavigation({ items, pathname, mobile = false, collaps
     {items.map((item) => {
       const active = navigationIsActive(pathname, item.href);
       const Icon = item.icon;
+      if (!mobile && item.href === '/analisis-mantenimiento') return <div key={item.href} className="app-sidebar__module">
+        <SidebarDestination item={item} active={active} collapsed={collapsed} expanded={analysisOpen} controls={analysisId}
+          onOpen={() => { if (collapsed) onExpand?.(); setAnalysisOverride({ pathname, open: collapsed || !analysisOpen }); }} />
+        <div id={analysisId} hidden={!analysisOpen} className="app-sidebar__subnav">
+          {ANALYSIS_NAV.map(link => <Link key={link.href} href={link.href} className={cn('app-sidebar__sublink', pathname === link.href && 'is-active')}
+            aria-current={pathname === link.href ? 'page' : undefined} onClick={(event) => {
+              if (analysisActive && window.location.search && !event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey) {
+                event.preventDefault(); router.push(`${link.href}${window.location.search}`);
+              }
+            }}>{link.label}</Link>)}
+        </div>
+      </div>;
       if (!mobile && item.href === '/inventario') return <div key={item.href} className="app-sidebar__module">
         <SidebarDestination item={item} active={active} collapsed={collapsed} expanded={inventoryOpen} controls={inventoryId}
           onOpen={() => {if (collapsed) onExpand?.();setOverride({pathname,open:collapsed || !inventoryOpen});}} />

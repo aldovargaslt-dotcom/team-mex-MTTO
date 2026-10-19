@@ -1,5 +1,13 @@
 # SPEC-UTIL-INPUTS-001 — Operational inputs and utilization
 
+> Extensión de análisis propuesta, cliente2026-10-18:
+> [SPEC-AN-MTTO-001](SPEC-AN-MTTO-001.md) consolida las cuatro vistas, costos
+> externos y horarios configurables acordados en Q1–Q16. Su Utilización en
+> horario esperado es un indicador adicional propuesto, distinto del denominador
+> histórico de F6. No sustituye silenciosamente F6, ni aprueba contratos de
+> reporting/horarios, ni modifica las autoridades de motivos/liberación. Resolver
+> su contrato antes del slice de implementación correspondiente.
+
 ## Status
 
 Revised 2026-10-15. User-confirmed product rules, with technical contracts Proposed

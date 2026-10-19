@@ -15,6 +15,7 @@ import { andonNotifyProviders } from './notify/notify.providers';
 import { ANDON_ABIERTO_PORT, AVISO_INBOX_PORT } from './ports';
 import { StubWhatsAppAdapter } from './stub-whatsapp.adapter';
 import { TypeOrmAndonStore } from './typeorm-store';
+import { AndonAnalysisPlanningReadPort } from './analysis-planning-read.port';
 
 export const ANDON_ENTITIES = [
   AvisoEntity,
@@ -33,6 +34,7 @@ export const ANDON_ENTITIES = [
   controllers: [AndonController],
   providers: [
     TypeOrmAndonStore,
+    AndonAnalysisPlanningReadPort,
     StubWhatsAppAdapter,
     NestUnidadCatalog,
     ...andonNotifyProviders,
@@ -46,6 +48,6 @@ export const ANDON_ENTITIES = [
       useExisting: AndonService,
     },
   ],
-  exports: [AndonService, ANDON_ABIERTO_PORT, TypeOrmModule],
+  exports: [AndonService, ANDON_ABIERTO_PORT, TypeOrmModule, AndonAnalysisPlanningReadPort],
 })
 export class AndonModule {}

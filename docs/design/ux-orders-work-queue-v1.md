@@ -1,5 +1,11 @@
 # UX — prioridad operacional de Órdenes
 
+> Enmienda de color, cliente2026-10-18: la decisión global Q15 sustituye el uso
+> local de rojo/danger para Correctivo descrito abajo. Preventivo `#2F5BB8`,
+> Correctivo `#C45D23`, con estado independiente y filtros neutros. Ver
+> [contrato canónico](DESIGN_SYSTEM.md#identidad-global-del-tipo-de-mantenimiento--decisión-posterior).
+> Adopción en código pendiente; el resto del alcance se conserva.
+
 Petición de usuario (sesión2026-10-11 cliente): mecánico ve primero abiertas;
 borradores con jerarquía secundaria y cerradas por acceso discreto de historial.
 Tipos Correctivo/Preventivo/Revisión visibles como ListFilter de Inicio.

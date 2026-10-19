@@ -8,6 +8,7 @@ import { MovimientoFirmaEntity } from './entities/movimiento-firma.entity';
 import { SitioEntity } from './entities/sitio.entity';
 import { UnidadOperativaEntity } from './entities/unidad-operativa.entity';
 import { FlotaController } from './flota.controller';
+import { FleetAnalysisEvidenceReadPort } from './analysis-evidence-read.port';
 import { FlotaService } from './flota.service';
 import { TypeOrmFlotaStore } from './typeorm-flota-store';
 import { PhysicalStateReadPort } from './physical-state-read.port';
@@ -35,6 +36,7 @@ export const FLOTA_ENTITIES = [
   controllers: [FlotaController],
   providers: [
     TypeOrmFlotaStore,
+    FleetAnalysisEvidenceReadPort,
     FlotaService,
     PhysicalStateTransitionService,
     TypeOrmPhysicalStateReadAdapter,
@@ -43,6 +45,6 @@ export const FLOTA_ENTITIES = [
       useExisting: TypeOrmPhysicalStateReadAdapter,
     },
   ],
-  exports: [FlotaService, TypeOrmModule, PhysicalStateReadPort],
+  exports: [FlotaService, TypeOrmModule, PhysicalStateReadPort, FleetAnalysisEvidenceReadPort],
 })
 export class FlotaModule {}

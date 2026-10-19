@@ -24,6 +24,7 @@ import { AlertCatalogModule } from './alert-catalog/alert-catalog.module';
 import { SaludModule } from './salud/salud.module';
 import { VehicleDocumentsModule } from './vehicle-documents/vehicle-documents.module';
 import { UnitOperationModule } from './kernel/unit-operation.module';
+import { MaintenanceAnalysisModule } from './visitas/analysis/analysis.module';
 
 @Module({
   imports: [
@@ -52,6 +53,7 @@ import { UnitOperationModule } from './kernel/unit-operation.module';
     SaludModule,
     VehicleDocumentsModule,
     SeedModule,
+    MaintenanceAnalysisModule,
   ],
   controllers: [HealthController],
   providers: [

@@ -1,5 +1,6 @@
 import { Global, Injectable, Module } from '@nestjs/common';
 import { EntityManager } from 'typeorm';
+import { MaintenanceAnalysisScope } from './analysis-scope.service';
 
 /**
  * Serializes every writer that can change departure eligibility for a unit.
@@ -17,7 +18,7 @@ export class UnitOperationCoordinator {
 
 @Global()
 @Module({
-  providers: [UnitOperationCoordinator],
-  exports: [UnitOperationCoordinator],
+  providers: [UnitOperationCoordinator, MaintenanceAnalysisScope],
+  exports: [UnitOperationCoordinator, MaintenanceAnalysisScope],
 })
 export class UnitOperationModule {}

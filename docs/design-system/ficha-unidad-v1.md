@@ -1,5 +1,11 @@
 # UX spec — Ficha de unidad v1 y consulta de costos
 
+> Enmienda de color, cliente2026-10-18: Q15 sustituye la paleta local navy/
+> terracota descrita abajo por Preventivo `#2F5BB8` y Correctivo `#C45D23` en
+> etiquetas, historial y series. Tipo no implica urgencia. Ver el
+> [contrato canónico](../design/DESIGN_SYSTEM.md#identidad-global-del-tipo-de-mantenimiento--decisión-posterior).
+> Adopción en código pendiente; sin cambio del alcance funcional de esta ficha.
+
 Estado: **Proposed** para la especificación completa; dirección de A aceptada mediante «Sigamos con tus recomendaciones». Acompaña [SPEC-MTTO-UX-002](../specs/SPEC-MTTO-UX-002.md). Documentación solicitada, sin aprobación de ejecución. Los AC canónicos viven en esa SPEC.
 
 ## GrillMe — precisiones del recorrido

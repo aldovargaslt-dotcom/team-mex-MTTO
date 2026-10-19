@@ -71,3 +71,9 @@ not implementation or deployment approval.
 histórica, sustituida en política efectiva por
 [ADR029 — Chequeo diario universal](029-daily-only-unit-checks.md) por instrucción
 usuario2026-10-18. Daily/Stock e intervalos ya no gobiernan operación.
+
+[ADR030 — Análisis de mantenimiento](030-maintenance-analysis-contracts.md):
+**Accepted para construcción local EWO-063** por autorización posterior del propietario.
+Captura externa, horarios y snapshots implementados; evidencia y cobertura temporal
+pendiente de fuentes ABC/UTIL en EWO-063. Activación/migración externa y despliegue
+no ejecutados. Contrato técnico AN-MTTO-001 enlazado.

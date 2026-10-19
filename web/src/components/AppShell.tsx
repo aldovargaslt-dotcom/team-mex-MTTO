@@ -27,7 +27,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   const isHome = pathname === '/';
   const isCheckWorkflow = pathname?.startsWith('/checks/');
   const showChrome = Boolean(!isHome && ready && role);
-  const maintenanceVisual = Boolean(showChrome && !isCheckWorkflow && (((role === 'SUPERVISOR' || role === 'ADMIN_DIRECTIVO') && (pathname.startsWith('/ordenes') || pathname.startsWith('/unidades'))) || (role === 'MECANICO' && pathname.startsWith('/mi-trabajo'))));
+  const maintenanceVisual = Boolean(showChrome && !isCheckWorkflow && (((role === 'SUPERVISOR' || role === 'ADMIN_DIRECTIVO') && (pathname.startsWith('/ordenes') || pathname.startsWith('/unidades') || pathname.startsWith('/analisis-mantenimiento'))) || (role === 'MECANICO' && pathname.startsWith('/mi-trabajo'))));
   const [menuOpen, setMenuOpen] = useState(false);
   const menuTrigger = useRef<HTMLButtonElement>(null);
   const [logoutError, setLogoutError] = useState('');

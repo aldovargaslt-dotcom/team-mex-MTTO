@@ -9,6 +9,7 @@ import { VisitaPieza } from './visita-pieza.entity';
 import { VisitaTrabajo } from './visita-trabajo.entity';
 import { VisitasController } from './visitas.controller';
 import { VisitasService } from './visitas.service';
+import { MaintenanceOrderFactsReadPort } from './analysis/order-facts-read.port';
 import { VisitasInvariantService } from './visitas-invariant.service';
 import { AndonModule } from '../andon/andon.module';
 import {
@@ -95,6 +96,7 @@ import {
   ],
   providers: [
     VisitasService,
+    MaintenanceOrderFactsReadPort,
     VisitasInvariantService,
     CanonicalOrdersService,
     ReadinessSettingsService,
@@ -121,6 +123,7 @@ import {
     },
   ],
   exports: [
+    MaintenanceOrderFactsReadPort,
     TypeOrmModule,
     VisitasService,
     FacilityCalendarPort,

@@ -27,7 +27,10 @@
     "test:migrations": "jest --config ./test/jest-migrations.json --runInBand",
     "alerts:migration:up": "node dist/db/run-alert-migrations.js",
     "orders:migration:up": "node dist/db/run-orders-migrations.js",
-    "inventory:migration:up": "node dist/db/run-inventory-migrations.js"
+    "inventory:migration:up": "node dist/db/run-inventory-migrations.js",
+    "analysis:migration:inspect": "node dist/db/run-maintenance-analysis-migrations.js inspect",
+    "analysis:migration:up": "node dist/db/run-maintenance-analysis-migrations.js up",
+    "analysis:migration:down": "node dist/db/run-maintenance-analysis-migrations.js down"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",

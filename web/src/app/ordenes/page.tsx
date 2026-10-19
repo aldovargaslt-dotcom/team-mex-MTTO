@@ -10,7 +10,7 @@ import { OrderSafetyControls } from '@/components/OrderSafetyControls';
 import { OrderIdentity } from '@/components/OrderIdentity';
 import { OperationalToolbar } from '@/components/OperationalToolbar';
 import { OrderDocumentHeader } from '@/components/OrderDocumentHeader';
-import { Badge } from '@/components/ui/badge';
+import { MaintenanceTypeBadge } from '@/components/MaintenanceTypeBadge';
 import { ListFilter } from '@/components/ListFilter';
 import { CheckOrderReadOnly } from '@/components/CheckOrderReadOnly';
 import { CHECK_STATUS_LABEL, type CheckOrderStatus, type CheckOrderSummary, type CheckOrderDetail } from '@/lib/order-types';
@@ -33,7 +33,6 @@ import {
 import { api, HttpError } from '@/lib/api';
 import {
   etiquetaOrigenPieza,
-  etiquetaTipoVisita,
   etiquetaUom,
   formatFecha,
   formatTiempoCerrado,
@@ -354,9 +353,7 @@ function OrdenesContent() {
                           <span className="block text-sm font-semibold text-navy">{row.numeroInterno}</span>
                           <span className="mt-1 block text-xs text-muted-foreground">{row.placas}</span>
                           <span className="mt-2 flex flex-wrap items-center gap-2">
-                            <Badge variant={row.tipo === 'CORRECTIVO' ? 'danger' : row.tipo === 'CHECK' ? 'secondary' : 'info'}>
-                              {row.tipo === 'CHECK' ? 'Revisión' : etiquetaTipoVisita(row.tipo)}
-                            </Badge>
+                            <MaintenanceTypeBadge type={row.tipo} />
                             <span className="text-xs text-muted-foreground">{row.tipo === 'CHECK' && row.checkStatus ? CHECK_STATUS_LABEL[row.checkStatus] : cola === 'borradores' ? 'Borrador' : cola === 'abiertas' ? 'Abierta' : 'Cerrada'}</span>
                           </span>
                         </span>
@@ -512,10 +509,7 @@ function OrdenDetalle({
       </dl>
       <section className="ordenes-section">
         <h2>Tipo de mantenimiento</h2>
-        <p className={`ordenes-tipo ${detalle.tipo === 'CORRECTIVO' ? 'is-correctivo' : 'is-predictivo'}`}>
-          <span className="ordenes-dot" aria-hidden />
-          {etiquetaTipoVisita(detalle.tipo)}
-        </p>
+        <p className="ordenes-tipo"><MaintenanceTypeBadge type={detalle.tipo} /></p>
       </section>
       {detalle.trabajos.length > 0 ? (
         <section className="ordenes-section" aria-labelledby="orden-trabajos">

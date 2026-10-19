@@ -1,4 +1,5 @@
 import { InventoryCostsService } from './inventory-costs.service';
+import { InventoryMaintenanceCostReadPort } from './maintenance-cost-read.port';
 import { InventoryCostsController } from './inventory-costs.controller';
 import {
   CostOperation,
@@ -48,11 +49,12 @@ export const INVENTARIO_ENTITIES = [
   providers: [
     InventarioService,
     InventoryCostsService,
+    InventoryMaintenanceCostReadPort,
     {
       provide: STOCK_ALERT_PORT,
       useExisting: InventarioInboxAdapter,
     },
   ],
-  exports: [TypeOrmModule, InventarioService],
+  exports: [TypeOrmModule, InventarioService, InventoryMaintenanceCostReadPort],
 })
 export class InventarioModule {}
