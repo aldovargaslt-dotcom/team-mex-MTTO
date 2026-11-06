@@ -1,0 +1,15 @@
+name: Token usage
+
+on:
+  pull_request:
+    paths:
+      - 'web/src/**'
+      - 'script/check-token-usage.sh'
+
+jobs:
+  tokens:
+    name: no literal colors
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: bash script/check-token-usage.sh

@@ -131,7 +131,7 @@
 }
 @media (hover: hover) {
   .analysis-table-scroll tbody tr:hover {
-    background: #fafafb;
+    background: var(--surface-subtle);
   }
 }
 .analysis-table-scroll td {
@@ -344,7 +344,7 @@ button.analysis-link {
   width: 9px;
   height: 9px;
   margin-right: 5px;
-  background: #737589;
+  background: var(--maintenance-unknown);
   border-radius: 2px;
 }
 .analysis-type-dot.preventive {

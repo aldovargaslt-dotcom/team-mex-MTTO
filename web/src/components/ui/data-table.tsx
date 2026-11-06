@@ -49,7 +49,7 @@ export function DataTable<TData>({
       <Table>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id} className="hover:bg-[#fafafb]">
+            <TableRow key={headerGroup.id} className="hover:bg-surface-subtle">
               {headerGroup.headers.map((header) => (
                 <TableHead key={header.id} className={columnClassNames?.[header.column.id]}>
                   {header.isPlaceholder

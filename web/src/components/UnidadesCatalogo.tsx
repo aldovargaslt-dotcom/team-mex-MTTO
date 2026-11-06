@@ -675,7 +675,7 @@ export function UnidadesCatalogo({
                 <Button
                   size="compact"
                   variant="outline"
-                  className="mt-1 w-full border-navy bg-navy text-white hover:bg-[#1c2040] hover:text-white"
+                  className="mt-1 w-full border-navy bg-navy text-white hover:bg-navy-hover hover:text-white"
                   onClick={(event) => {
                     event.stopPropagation();
                     onOpenUnidad(unidad);

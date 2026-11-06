@@ -56,7 +56,7 @@ export function Note({
       className={cn(
         'mt-3 rounded-md px-3 py-2 text-[13px]',
         variant === 'warn'
-          ? 'bg-[#fff4e8] text-[#8a4b12]'
+          ? 'bg-status-warning-bg text-status-warning-fg'
           : 'bg-muted text-muted-foreground',
       )}
     >

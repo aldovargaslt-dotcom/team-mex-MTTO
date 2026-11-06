@@ -113,10 +113,10 @@ function AttentionGroup({ rows, critical = false }: { rows: ActiveAttention[]; c
     <section aria-labelledby={heading} className="grid gap-2">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h2 id={heading} className="flex items-center gap-2 text-[12px] font-semibold uppercase tracking-[0.02em] text-navy">
-          <span className={cn('size-2 shrink-0 rounded-full', critical ? 'bg-destructive' : 'bg-[#8a4b12]')} aria-hidden />
+          <span className={cn('size-2 shrink-0 rounded-full', critical ? 'bg-destructive' : 'bg-status-warning-fg')} aria-hidden />
           {critical ? 'Requiere atención inmediata' : 'Requiere seguimiento'} ({rows.length})
         </h2>
-        <span className={cn('rounded-sm px-2 py-0.5 text-[11px] font-medium uppercase', critical ? 'bg-[#fcecea] text-destructive' : 'bg-[#fff4e8] text-[#8a4b12]')}>{critical ? 'Crítico' : 'Pendiente'}</span>
+        <span className={cn('rounded-sm px-2 py-0.5 text-[11px] font-medium uppercase', critical ? 'bg-status-danger-bg text-destructive' : 'bg-status-warning-bg text-status-warning-fg')}>{critical ? 'Crítico' : 'Pendiente'}</span>
       </div>
       <ul className="grid gap-2">
         {rows.map((row, index) => (
@@ -129,7 +129,7 @@ function AttentionGroup({ rows, critical = false }: { rows: ActiveAttention[]; c
               <div className="min-w-0">
                 <h3 className="break-words text-[14px] font-semibold text-navy">{row.title}</h3>
                 {row.reference ? <p className="text-[11px] text-muted-foreground">{row.reference}</p> : null}
-                <p className={cn('mt-1 flex items-start gap-1.5 text-[13px]', critical ? 'text-destructive' : 'text-[#8a4b12]')}><AlertTriangle aria-hidden className="mt-0.5 size-3.5 shrink-0" /><span>{row.detail}</span></p>
+                <p className={cn('mt-1 flex items-start gap-1.5 text-[13px]', critical ? 'text-destructive' : 'text-status-warning-fg')}><AlertTriangle aria-hidden className="mt-0.5 size-3.5 shrink-0" /><span>{row.detail}</span></p>
               </div>
             </div>
             <Button asChild variant={critical && index === 0 ? 'default' : 'outline'} className="mt-3 w-full sm:mt-0 sm:w-56">

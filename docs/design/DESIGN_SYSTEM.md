@@ -22,6 +22,8 @@ escritorio y12 móvil, sidebar224 contraíble a72.
 
 Fuente de verdad de tokens: `web/src/app/globals.css`. Componentes: `web/src/components/ui/`. Briefs de producto: [`docs/design-system/`](../design-system/). ADR: [003](../adr/003-shadcn-tailwind.md).
 
+**Colores semánticos (EWO-065):** estados usan `--status-{success,muted,warning,danger,info}-{bg,fg}` (+ `-border`), superficies sutiles `--surface-subtle`, deshabilitado `--disabled*`. Prohibido hex literal o clases de paleta Tailwind (`orange-*`, `emerald-*`…) en `web/src`; lo verifica `script/check-token-usage.sh` (CI). Excepciones: gráficas, `maintenance-type.ts`, `SignaturePad`. Nota: `--cta-hover` conserva su nombre pero hoy es el hover navy de la acción primaria.
+
 No añadir otro kit. No inventar decenas de tokens. Si falta un valor, reusa la escala de abajo o el token más cercano.
 
 ---

@@ -47,6 +47,7 @@ Fail inmediato:
 - Copy en inglés de chrome (`Choose File`) o jerga SQL.
 - Cortes visual only con diff en `api/src`.
 - Hits &lt;44px en WO `<768` (brief 44px).
+- Color literal (hex o clase de paleta Tailwind) fuera de tokens; `script/check-token-usage.sh` debe pasar.
 - Inicio/Flota con KPIs o gráficas.
 - Diff que instala ui-ux-pro-max / Impeccable / Taste Skill, o menú recortado en el shot.
 

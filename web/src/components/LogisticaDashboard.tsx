@@ -344,7 +344,7 @@ export function LogisticaDashboard() {
         <p
           role="status"
           aria-live="polite"
-          className="rounded-md border border-emerald-200 bg-emerald-50 px-3 py-3 text-sm text-emerald-900"
+          className="rounded-md border border-status-success-border bg-status-success-bg px-3 py-3 text-sm text-status-success-fg"
         >
           {notice}
         </p>
@@ -408,8 +408,8 @@ export function LogisticaDashboard() {
                     <span
                       className={
                         entrada
-                          ? "flex size-10 shrink-0 items-center justify-center rounded-full bg-emerald-50 text-emerald-700"
-                          : "flex size-10 shrink-0 items-center justify-center rounded-full bg-sky-50 text-sky-700"
+                          ? "flex size-10 shrink-0 items-center justify-center rounded-full bg-status-success-bg text-status-success-fg"
+                          : "flex size-10 shrink-0 items-center justify-center rounded-full bg-status-info-bg text-status-info-fg"
                       }
                       aria-hidden
                     >
@@ -462,7 +462,7 @@ export function LogisticaDashboard() {
               </SheetDescription>
             </SheetHeader>
             <div className="grid gap-4 px-4 pb-4">
-              <div className="rounded-lg border bg-blue-50 p-4 text-sm text-blue-950">
+              <div className="rounded-lg border bg-status-info-bg p-4 text-sm text-status-info-fg">
                 <p className="font-semibold">Movimientos de flota</p>
                 <p className="mt-1">
                   Selecciona una unidad y un chofer disponibles.

@@ -23,6 +23,7 @@
 :root {
   --maintenance-preventive: #2f5bb8;
   --maintenance-corrective: #c45d23;
+  --maintenance-unknown: #737589;
   --cta: #ea7515;
   --cta-hover: #363b67;
   --shell: #24284d;
@@ -78,6 +79,26 @@
   --btn-danger-soft-border: #f5b5b3;
   --btn-danger-soft-hover: #fbd4d2;
 
+  /* Status tokens: single source for semantic status colors (see DESIGN_SYSTEM). */
+  --status-success-bg: #e8f6ee;
+  --status-success-fg: #1f7a4d;
+  --status-success-border: #bfe3cf;
+  --status-muted-bg: #ececef;
+  --status-muted-fg: #5a5a64;
+  --status-warning-bg: #fff4e8;
+  --status-warning-fg: #8a4b12;
+  --status-warning-border: #fdba74;
+  --status-warning-border-soft: #fed7aa;
+  --status-danger-bg: #fdecea;
+  --status-danger-fg: #b42318;
+  --status-danger-border: #f0c7c3;
+  --status-info-bg: #e8f1ff;
+  --status-info-fg: #2f5bb8;
+  --disabled: #d8d8de;
+  --disabled-fg: #5c5c66;
+  --surface-subtle: #fafafb;
+  --navy-hover: #1c2040;
+
   --health-excellent: #1f7a4d;
   --health-excellent-bg: #e8f6ee;
   --health-good: #1f7a4d;
@@ -120,6 +141,24 @@
   --color-shell: var(--shell);
   --color-warning: var(--warning-fg);
   --color-warning-foreground: var(--warning-fg);
+  --color-status-success-bg: var(--status-success-bg);
+  --color-status-success-fg: var(--status-success-fg);
+  --color-status-success-border: var(--status-success-border);
+  --color-status-muted-bg: var(--status-muted-bg);
+  --color-status-muted-fg: var(--status-muted-fg);
+  --color-status-warning-bg: var(--status-warning-bg);
+  --color-status-warning-fg: var(--status-warning-fg);
+  --color-status-warning-border: var(--status-warning-border);
+  --color-status-warning-border-soft: var(--status-warning-border-soft);
+  --color-status-danger-bg: var(--status-danger-bg);
+  --color-status-danger-fg: var(--status-danger-fg);
+  --color-status-danger-border: var(--status-danger-border);
+  --color-status-info-bg: var(--status-info-bg);
+  --color-status-info-fg: var(--status-info-fg);
+  --color-disabled: var(--disabled);
+  --color-disabled-foreground: var(--disabled-fg);
+  --color-surface-subtle: var(--surface-subtle);
+  --color-navy-hover: var(--navy-hover);
   --color-btn-entrada: var(--btn-entrada);
   --color-btn-entrada-foreground: var(--btn-entrada-fg);
   --color-btn-entrada-border: var(--btn-entrada-border);
