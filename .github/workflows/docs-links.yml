@@ -1,0 +1,15 @@
+name: Docs links
+
+on:
+  pull_request:
+    paths:
+      - '**/*.md'
+      - 'script/check-doc-links.py'
+
+jobs:
+  links:
+    name: relative markdown links
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 -I script/check-doc-links.py

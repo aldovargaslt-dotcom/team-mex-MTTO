@@ -5,9 +5,9 @@ description: Prove Team Mex UI cortes with click-through screenshots (no Playwri
 
 # proof-ui
 
-Heurísticas recuperadas de agentes internos de verificación. **No** es un framework de tests. Web no tiene Jest/Playwright; la prueba es el flujo clickeado + `docs/screenshots/`. Viewports y catálogo: [SCREENSHOT_WORKFLOW.md](../../../docs/design/SCREENSHOT_WORKFLOW.md).
+Heurísticas recuperadas de agentes internos de verificación. **No** es un framework de tests. Web no tiene Jest/Playwright; la prueba es el flujo clickeado + `docs/screenshots/`. Viewports y catálogo: [SCREENSHOT_WORKFLOW.md](docs/design/SCREENSHOT_WORKFLOW.md).
 
-Briefs: [anti-generic](../../../docs/design-system/ui-polish-anti-generic-v0.md), [44px](../../../docs/design-system/ui-touch-targets-mobile-v0.md), [pasteles](../../../docs/design-system/ui-semantic-button-pastels-v0.md), [nav vs filtro vs Inicio](../../../docs/design-system/ui-nav-filter-action-inicio-v0.md), [UX operacional](../../../docs/design-system/ux-operacional-cortes-v0.md), [ADR-003](../../../docs/adr/003-shadcn-tailwind.md). Sistema: [docs/design/README.md](../../../docs/design/README.md), [OPERATE_CRAFT.md](../../../docs/design/OPERATE_CRAFT.md).
+Briefs: [anti-generic](docs/design-system/ui-polish-anti-generic-v0.md), [44px](docs/design-system/ui-touch-targets-mobile-v0.md), [pasteles](docs/design-system/ui-semantic-button-pastels-v0.md), [nav vs filtro vs Inicio](docs/design-system/ui-nav-filter-action-inicio-v0.md), [UX operacional](docs/design-system/ux-operacional-cortes-v0.md), [ADR-003](docs/adr/003-shadcn-tailwind.md). Sistema: [docs/design/README.md](docs/design/README.md), [OPERATE_CRAFT.md](docs/design/OPERATE_CRAFT.md).
 
 ## Cómo entrar y qué clickear
 
@@ -30,4 +30,4 @@ Guardar PNG en `docs/screenshots/` (o artefactos del agente): `{corte}_{pantalla
 
 ## Relación
 
-Posición en la cadena: [WORKFLOW — UI review chain](../../../docs/WORKFLOW.md#ui-review-chain); `proof-ui` aporta evidencia, no veredicto. Implementa con `ui-implementer`. `ux-auditor` hace Visual QA (otro pase; no edita). `verify-api` cubre el backend. No añadir Playwright a `web/`.
+Posición en la cadena: [WORKFLOW — UI review chain](docs/WORKFLOW.md#ui-review-chain); `proof-ui` aporta evidencia, no veredicto. Implementa con `ui-implementer`. `ux-auditor` hace Visual QA (otro pase; no edita). `verify-api` cubre el backend. No añadir Playwright a `web/`.

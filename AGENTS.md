@@ -1,5 +1,17 @@
 # AGENTS
 
+## Estado vigente (resumen; el detalle está en cada sección)
+
+Las secciones fechadas más abajo se conservan sin cambios. Si dos se contradicen, gana la más reciente que nombre explícitamente a la otra; si no la nombra, escalar según ICM. Este resumen solo enruta, no autoriza nada.
+
+| Área | Estado | Fuente |
+|---|---|---|
+| Chequeo diario de unidad | Vigente: diario universal (2026-10-18), sustituye Daily/Stock y periodicidad de ADR028 | [ADR029](docs/adr/029-daily-only-unit-checks.md), [EWO-060](docs/engineering-work-orders/EWO-060.md) |
+| Unidades readiness | Construcción acotada autorizada y verificada localmente (2026-10-17) | [EWO-056](docs/engineering-work-orders/EWO-056.md), [evidencia](docs/evidence/EWO-056.md) |
+| ABC / utilización | Solo documentación; contrato Propuesto, sin aprobación de ejecución (2026-10-15) | [ADR025](docs/adr/025-abc-utilization-downtime.md) |
+| CHECK (EWO015–022) | Objetivo aprobado, ejecución retenida; solo documentación (2026-10-01) | [Slice0](docs/engineering-work-orders/CHK-001-slice-0-review.md) |
+| Flujo de trabajo y revisión UI | Vigente | [WORKFLOW](docs/WORKFLOW.md) |
+
 ## Current target amendment — ABC/utilization (2026-10-15)
 
 [ADR025](docs/adr/025-abc-utilization-downtime.md) explicitly amends older CHECK/
