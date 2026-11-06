@@ -4,7 +4,7 @@ Herramientas de apoyo; no son fuentes de reglas de negocio ni autorización para
 
 | Skill | Uso | Fuente y revisión |
 |---|---|---|
-| [better-ui](../../.agents/skills/better-ui/SKILL.md) | Gate estándar de revisión y pulido tras implementar; no generador de pantallas | [jakubkrehel/skills](https://github.com/jakubkrehel/skills), `skills/better-ui`; hash del instalador `6f69968c0d1ed034753d64aa22f2bf4332f1471164f110db720d05faf76c3551` |
+| [better-ui](../../.agents/skills/better-ui/SKILL.md) | Gate estándar de revisión y pulido tras implementar; no generador de pantallas | [jakubkrehel/skills](https://github.com/jakubkrehel/skills), `skills/better-ui`; reinstalada 2026-11-06 con `npx skills add`; hash en [`skills-lock.json`](../../skills-lock.json) (`8a21f243…`, fuente de verdad de procedencia). Sustituye al hash anterior del instalador (`6f69968c…`); el único cambio fue de redacción upstream (descripción y un encabezado). |
 | [Impeccable](../../.agents/skills/impeccable/SKILL.md) | Pase estándar Operate antes de generar UI de tarea; auditoría/pulido adicional opcional | [pbakaus/impeccable](https://github.com/pbakaus/impeccable), `9d715cc4f5564a990ca8345abfdd5df6dc9b41c8`, `plugin/skills/impeccable` |
 | [UX Heuristics](../../.agents/skills/ux-heuristics/SKILL.md) | Usabilidad, navegación y formularios | [wondelai/skills](https://github.com/wondelai/skills), `c172996495bed0fcd26896a9416b2093fd7073f0`, `ux-heuristics` |
 | [Refactoring UI](../../.agents/skills/refactoring-ui/SKILL.md) | Jerarquía, espaciado y consistencia visual | Misma revisión de Wondel, `refactoring-ui` |

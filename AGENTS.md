@@ -92,7 +92,7 @@ README / [PRODUCT.md](context/PRODUCT.md): multi-almacén, lotes, costeo, OC for
 ## Verificación
 
 - API: skill [`verify-api`](.cursor/skills/verify-api/SKILL.md) o [`script/verify.sh`](script/verify.sh) (`cd api` / `cd web`; no hay `package.json` raíz).
-- UI: [Impeccable Operate](docs/design/EXTERNAL_SKILLS.md#impeccable-operate--estándar-antes-de-generar-ui) (dirección antes de JSX) → skill [`ui-implementer`](.cursor/skills/ui-implementer/SKILL.md) → revisión/pulido [`better-ui`](.agents/skills/better-ui/SKILL.md) ([alcance y precedencia](docs/design/EXTERNAL_SKILLS.md#better-ui--gate-estándar-de-pulido)) → skill [`proof-ui`](.cursor/skills/proof-ui/SKILL.md) (click-through + screenshots; **sin** Playwright) → subagente `ux-auditor` (Visual QA; **otro pase**).
+- UI: cadena, autoridad de veredictos, revisión independiente y fast lane en [WORKFLOW — UI review chain](docs/WORKFLOW.md#ui-review-chain). Skills: [`ui-implementer`](.cursor/skills/ui-implementer/SKILL.md), [`better-ui`](.agents/skills/better-ui/SKILL.md), [`proof-ui`](.cursor/skills/proof-ui/SKILL.md) (**sin** Playwright), subagente `ux-auditor`.
 - CI: [`.github/workflows/verify.yml`](.github/workflows/verify.yml) — Jest unit+e2e y web lint+build. No correr `api` `lint --fix`.
 - Humanos: Postgres con `docker compose` (README). Cloud Agents: [`.cursor/environment.json`](.cursor/environment.json) (Postgres nativo). No inventar un tercer camino.
 

@@ -32,6 +32,15 @@ Do not write **WO-xxx** here. WO is the visit wizard.
 
 Evidence:
 
+## UI review (UI changes only; see [WORKFLOW](../WORKFLOW.md#ui-review-chain))
+
+| Pass | Result | Findings / link |
+|---|---|---|
+| Operate note | DONE / SKIPPED (reason) | |
+| `better-ui` | Block / Approve / No actionable findings / SKIPPED | severity, `file:line`, before/after, fix |
+| `proof-ui` | screenshots | paths under `docs/screenshots/` |
+| `ux-auditor` (independent) | OK / no OK / SKIPPED | reviewer, P0–P2 findings, re-captured shots |
+
 ## Domain Consistency
 
 ## Architecture / ADR Consistency

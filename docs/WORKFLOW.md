@@ -37,7 +37,50 @@ These smaller paths do not exempt non-trivial work from an approved spec and EWO
 - Implement: follow existing domain rules/engines and module ownership; do not put authoritative business rules only in UI. Domain cards remain provisional, not confirmed DDD bounded contexts. No unrelated refactors or runtime changes; documentation-only work stays documentation-only.
 - Test: follow [testing strategy](testing/TESTING_STRATEGY.md) and ADR-004. Map AC IDs to tests or manual checks. Add a failing regression test for a reproducible bug where practical, then verify the fix.
 - Verify: report each command/check as `PASS`, `FAIL`, or `SKIPPED`, with reasons and evidence. Not applicable checks are `SKIPPED` with that reason. Exit code zero from `verify.sh` does not establish full verification if E2E was skipped.
-- Review: unmet AC or failed/skipped required checks remain visible as incomplete verification; do not claim done or fully verified. UI changes follow approved UX spec → [Impeccable Operate direction](design/EXTERNAL_SKILLS.md#impeccable-operate--estándar-antes-de-generar-ui) → implementation and interaction checks → [better-ui review and polish](design/EXTERNAL_SKILLS.md#better-ui--gate-estándar-de-pulido) → fixes → proof-ui click-through/screenshots → independent ux-auditor review. Local design rules prevail; applicable HIGH interaction/accessibility findings block, aesthetic recommendations remain advisory. Record unverified coverage explicitly; better-ui approval does not replace functional or visual acceptance.
+- Review: unmet AC or failed/skipped required checks remain visible as incomplete verification; do not claim done or fully verified. UI changes follow [UI review chain](#ui-review-chain). Record unverified coverage explicitly.
+
+## Roles and escalation
+
+| Decision / action | Who | Where recorded |
+|---|---|---|
+| Approve an EWO to move to Ready/In Progress | Project Owner (named in the EWO with an approval reference; status alone is not approval) | EWO `Status` + approval line |
+| Accept or supersede an ADR | Project Owner | ADR status; [ADR index](adr/README.md) |
+| Spec/ADR conflict, out-of-v0, ownership, notify unification | Escalate to Project Owner; do not decide silently | EWO `Deviations` or evidence `New Decisions Discovered`, plus a note in the PR |
+| Visual OK before merge on UI changes | SD / visual OK (PR template) | PR `Visual QA` |
+
+The repository does not name the people holding these roles. The Owner should confirm them here once; until then, ask rather than assume.
+
+## UI review chain
+
+Single source for the order; other docs link here instead of restating it.
+
+1. Approved UX spec (when layout, hierarchy or actions change).
+2. [Impeccable Operate](design/EXTERNAL_SKILLS.md#impeccable-operate--estándar-antes-de-generar-ui) note, before JSX.
+3. Implementation and interaction checks.
+4. [`better-ui`](design/EXTERNAL_SKILLS.md#better-ui--gate-estándar-de-pulido) review, then fixes.
+5. `proof-ui` click-through and screenshots (evidence only; it does not issue a verdict).
+6. Independent [`ux-auditor`](design/VISUAL_QA.md) Visual QA.
+
+**Severity and authority**
+
+| Pass | Verdict vocabulary | Effect |
+|---|---|---|
+| `better-ui` | `Block` / `Approve` / "No actionable UI-polish findings"; HIGH/MEDIUM/LOW | An applicable HIGH (broken interaction, accessibility) blocks until fixed and re-verified. MEDIUM/LOW are advisory. |
+| `proof-ui` | Evidence only | Supplies screenshots for the next pass. |
+| `ux-auditor` | `OK` / `no OK`; P0–P2 | A "fail inmediato" item is `no OK`. P-levels order the fixes. |
+
+If passes disagree, the stricter blocking finding stands until it is fixed or the Owner waives it in the PR. Local design rules (ADR-003, `docs/design/*`) override upstream skill recipes. `better-ui` approval never replaces functional or visual acceptance.
+
+**Independent review.** The `ux-auditor` pass must be run by a reviewer who did not write the diff: a separate agent session, or a human. If only the implementing session is available, record the pass as `SKIPPED (no independent reviewer)` in evidence; this leaves verification incomplete.
+
+**Handoffs.** Each pass writes its result into the evidence record (see its *UI review* section), not into a separate log. After a blocking finding is fixed, the pass that raised it re-checks the affected surface and re-captures the screenshots that changed.
+
+**Trivial UI fast lane.** Copy-only changes, or changes with no layout, hierarchy, action, state, motion or color effect: issue note or focused EWO with criteria, and one screenshot. Operate note, `better-ui` and `ux-auditor` are recorded as `SKIPPED (not applicable: <reason>)`. Anything beyond that uses the full chain.
+
+## Verification in agent sessions
+
+`script/verify.sh` requires an explicitly disposable PostgreSQL target (`EWO_DISPOSABLE_DB=true`). An agent session may set it only after confirming the target is disposable (for example a local Postgres created for this session as in the README, or CI). Otherwise record the API test and E2E commands as `SKIPPED (no disposable database)`, which keeps verification incomplete.
+
 
 ## Sessions and handoff
 

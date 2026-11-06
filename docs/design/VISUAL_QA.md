@@ -2,7 +2,7 @@
 
 Crítica del **UI renderizado**, no del spec. Primer pase **solo lectura**: no parchear `web/src`.
 
-Quién: subagente `ux-auditor`. No el mismo razonamiento que implementó. Tras 3–5 hallazgos acordados, el **implementer** corrige y vuelve a capturar.
+Quién: subagente `ux-auditor`, en una sesión distinta a la que implementó, o una persona (definición en [WORKFLOW](../WORKFLOW.md#ui-review-chain)). Sin revisor independiente: registrar `SKIPPED (no independent reviewer)` en evidencia. Tras 3–5 hallazgos acordados, el **implementer** corrige y vuelve a capturar.
 
 ---
 
