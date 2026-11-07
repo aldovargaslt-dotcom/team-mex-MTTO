@@ -21,6 +21,7 @@ export function HubIdentityHeader({
   tipoIcono,
   fotoDataUrl,
   placas,
+  sucursalNombre,
   vin,
   updatedAt,
   health,
@@ -41,6 +42,8 @@ export function HubIdentityHeader({
   tipoIcono?: string | null;
   fotoDataUrl?: string | null;
   placas: string;
+  /** undefined: no se muestra; null: unidad sin sucursal asignada. */
+  sucursalNombre?: string | null;
   vin: string | null;
   updatedAt?: string | null;
   health: UnidadHealth | null;
@@ -99,6 +102,16 @@ export function HubIdentityHeader({
                 <dt>Placas</dt>
                 <dd>{placas}</dd>
               </div>
+              {sucursalNombre !== undefined ? (
+                <div>
+                  <dt>Sucursal</dt>
+                  <dd>
+                    {sucursalNombre ?? (
+                      <span className="muted">Sin sucursal asignada</span>
+                    )}
+                  </dd>
+                </div>
+              ) : null}
               {vin ? (
                 <div>
                   <dt>VIN</dt>

@@ -66,6 +66,7 @@ describe('EWO032 maintenance opening and mechanic queue', () => {
         .post('/unidades')
         .set('X-Role', 'ADMIN_DIRECTIVO')
         .send({
+          sucursalId: 'mex',
           numeroInterno: `OPEN-${++n}`,
           placas: `OPEN-${n}`,
           tipoId: type,

@@ -73,6 +73,7 @@ describe('EWO-022 shared departure policy (e2e)', () => {
       .post('/unidades')
       .set(LEGACY_ADMIN)
       .send({
+        sucursalId: 'departure-mex',
         numeroInterno: `DEP-${suffix}`,
         placas: `D-${suffix}`,
         tipoId: typeId,

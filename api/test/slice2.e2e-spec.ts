@@ -12,6 +12,7 @@ import {
   UNIDAD_ANDON_DEMO,
   UNIDAD_SEGUNDA_DEMO,
 } from '../src/seed/catalogo-demo';
+import { TEST_SUCURSAL, ensureTestSucursal } from './fixtures/sucursal';
 
 const SUPERVISOR = { 'X-Role': 'SUPERVISOR', 'X-User-Id': 'sup-1' };
 const ADMIN = { 'X-Role': 'ADMIN_DIRECTIVO', 'X-User-Id': 'adm-1' };
@@ -30,6 +31,7 @@ describe('Slice 2 visitas y choferes (e2e)', () => {
     app = moduleFixture.createNestApplication();
     configureApp(app);
     await app.init();
+    await ensureTestSucursal(app);
     server = app.getHttpServer();
   });
 
@@ -325,6 +327,7 @@ describe('Slice 2 visitas y choferes (e2e)', () => {
       .post('/unidades')
       .set(ADMIN)
       .send({
+        sucursalId: TEST_SUCURSAL,
         numeroInterno: 'U-INACT-V',
         placas: 'TEST-INACT-V',
         tipoId: tipos.body[0].id,
@@ -502,6 +505,7 @@ describe('Slice 2 visitas y choferes (e2e)', () => {
       .post('/unidades')
       .set(ADMIN)
       .send({
+        sucursalId: TEST_SUCURSAL,
         numeroInterno: 'U-CONCURRENT-DRAFT',
         placas: 'TEST-DRAFT-1',
         tipoId: base.tipo.id,

@@ -119,6 +119,7 @@ describe('EWO-015 canonical CHECK / maintenance APIs', () => {
       .post('/unidades')
       .set('X-Role', 'ADMIN_DIRECTIVO')
       .send({
+        sucursalId: 'mex',
         numeroInterno: `CHK-${++fixtureNumber}`,
         placas: `CHK-${fixtureNumber}`,
         tipoId: type,

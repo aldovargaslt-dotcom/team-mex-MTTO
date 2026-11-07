@@ -2,7 +2,9 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsEnum,
   IsInt,
+  IsNotEmpty,
   IsOptional,
+  IsString,
   IsUUID,
   Max,
   MaxLength,
@@ -30,6 +32,15 @@ export class CreateUnidadDto {
   @ApiProperty({ format: 'uuid' })
   @IsUUID()
   tipoId: string;
+
+  @ApiProperty({
+    example: 'monterrey',
+    description:
+      'Sucursal de la unidad (id del facility). Decide qué personal puede operarla. EWO-067.',
+  })
+  @IsString({ message: 'Seleccione una sucursal.' })
+  @IsNotEmpty({ message: 'Seleccione una sucursal.' })
+  sucursalId: string;
 
   @ApiPropertyOptional({ enum: EstadoUnidad, default: EstadoUnidad.ACTIVA })
   @IsOptional()

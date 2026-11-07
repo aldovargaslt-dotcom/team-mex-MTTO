@@ -255,6 +255,7 @@ function HubContent() {
         tipoIcono={unidad?.tipo.icono}
         fotoDataUrl={unidad?.fotoDataUrl}
         placas={ficha.placas}
+        sucursalNombre={ficha.sucursalNombre}
         vin={ficha.vin}
         updatedAt={unidad?.updatedAt}
         health={health}

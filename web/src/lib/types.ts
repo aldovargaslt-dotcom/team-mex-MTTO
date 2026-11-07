@@ -52,7 +52,11 @@ export type Unidad = {
   anio: number | null;
   updatedAt?: string;
   fotoDataUrl?: string | null;
+  sucursalId?: string | null;
+  sucursalNombre?: string | null;
 };
+
+export type Sucursal = { id: string; name: string };
 
 export type OpsChofer = "DISPONIBLE" | "EN_RUTA";
 
@@ -324,6 +328,8 @@ export type UnidadHub = {
     tipoNombre: string;
     marcaModelo: string | null;
     anio: number | null;
+    sucursalId: string | null;
+    sucursalNombre: string | null;
     ultimoKm: number | null;
   };
   borradores: VisitaResumen[];

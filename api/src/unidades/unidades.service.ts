@@ -4,7 +4,14 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, Repository, In, Not, IsNull } from 'typeorm';
+import {
+  DataSource,
+  EntityManager,
+  Repository,
+  In,
+  Not,
+  IsNull,
+} from 'typeorm';
 import { UnitOperationCoordinator } from '../kernel/unit-operation.module';
 import { CurrentUser } from '../auth/current-user';
 import { Rol } from '../auth/roles.enum';
@@ -17,6 +24,7 @@ import { EstadoChofer } from '../choferes/estado-chofer.enum';
 import { TiposVehiculoService } from './tipos-vehiculo.service';
 import { EstadoVisita } from '../visitas/enums';
 import { Visita } from '../visitas/visita.entity';
+import { Facility, VehicleFacility } from '../visitas/checks/facility.entity';
 import { maintenanceTypes } from '../visitas/work-order';
 import { CreateUnidadDto } from './dto/create-unidad.dto';
 import { FiltrarUnidadesDto } from './dto/filtrar-unidades.dto';
@@ -105,36 +113,82 @@ export class UnidadesService {
     return unidad;
   }
 
+  /** Catálogo de sucursales para el formulario de unidad (EWO-067). */
+  sucursales() {
+    return this.dataSource.getRepository(Facility).find({
+      select: { id: true, name: true },
+      order: { name: 'ASC' },
+    });
+  }
+
+  /** Unidad con su sucursal (null si aún no tiene; unidades anteriores al backfill). */
+  async findOneConSucursal(id: string) {
+    return this.conSucursal(await this.findOne(id));
+  }
+
+  private async sucursalDe(unidadId: string, manager?: EntityManager) {
+    const mapping = await (manager ?? this.dataSource.manager).findOne(
+      VehicleFacility,
+      { where: { unidadId }, relations: { facility: true } },
+    );
+    return {
+      sucursalId: mapping?.facilityId ?? null,
+      sucursalNombre: mapping?.facility.name ?? null,
+    };
+  }
+
+  private async conSucursal(unidad: Unidad, manager?: EntityManager) {
+    return { ...unidad, ...(await this.sucursalDe(unidad.id, manager)) };
+  }
+
+  private async requireSucursal(manager: EntityManager, sucursalId: string) {
+    const facility = await manager.findOneBy(Facility, { id: sucursalId });
+    if (!facility)
+      throw new BadRequestException('La sucursal indicada no es válida.');
+    return facility;
+  }
+
   async create(dto: CreateUnidadDto) {
     const tipo = await this.tipos.findOne(dto.tipoId);
-    const unidad = this.repo.create({
-      numeroInterno: requireTrimmed(
-        dto.numeroInterno,
-        'El número interno no puede estar vacío.',
-      ),
-      placas: requireTrimmed(
-        dto.placas,
-        'Las placas no pueden estar vacías.',
-      ).toUpperCase(),
-      vin: this.normalizeVin(dto.vin),
-      tipo,
-      estado: dto.estado,
-      motivoInactivacion: null,
-      choferId: null,
-      ambito: AmbitoUnidad.LOCAL,
-      destino: null,
-      opsEstado: OpsEstadoUnidad.DISPONIBLE,
-      salidaAt: null,
-      marcaModelo: dto.marcaModelo?.trim() || null,
-      anio: dto.anio ?? null,
-      fotoDataUrl: this.normalizeFoto(dto.fotoDataUrl),
+    return this.dataSource.transaction(async (manager) => {
+      await this.requireSucursal(manager, dto.sucursalId);
+      const unidad = manager.create(Unidad, {
+        numeroInterno: requireTrimmed(
+          dto.numeroInterno,
+          'El número interno no puede estar vacío.',
+        ),
+        placas: requireTrimmed(
+          dto.placas,
+          'Las placas no pueden estar vacías.',
+        ).toUpperCase(),
+        vin: this.normalizeVin(dto.vin),
+        tipo,
+        estado: dto.estado,
+        motivoInactivacion: null,
+        choferId: null,
+        ambito: AmbitoUnidad.LOCAL,
+        destino: null,
+        opsEstado: OpsEstadoUnidad.DISPONIBLE,
+        salidaAt: null,
+        marcaModelo: dto.marcaModelo?.trim() || null,
+        anio: dto.anio ?? null,
+        fotoDataUrl: this.normalizeFoto(dto.fotoDataUrl),
+      });
+      const saved = await manager.save(unidad);
+      await manager.insert(VehicleFacility, {
+        unidadId: saved.id,
+        facilityId: dto.sucursalId,
+        version: 1,
+      });
+      return this.conSucursal(saved, manager);
     });
-    return this.repo.save(unidad);
   }
 
   async update(id: string, dto: UpdateUnidadDto) {
-    return this.patchUnit(id, async () => {
+    return this.patchUnit(id, async (manager) => {
       const patch: Partial<Unidad> = {};
+      if (dto.sucursalId !== undefined)
+        await this.cambiarSucursal(manager, id, dto.sucursalId);
       if (dto.tipoId) patch.tipo = await this.tipos.findOne(dto.tipoId);
       if (dto.numeroInterno !== undefined)
         patch.numeroInterno = requireTrimmed(
@@ -160,14 +214,42 @@ export class UnidadesService {
     });
   }
 
-  private async patchUnit(id: string, build: () => Promise<Partial<Unidad>>) {
+  private async cambiarSucursal(
+    manager: EntityManager,
+    unidadId: string,
+    sucursalId: string,
+  ) {
+    await this.requireSucursal(manager, sucursalId);
+    const current = await manager.findOneBy(VehicleFacility, { unidadId });
+    if (!current) {
+      await manager.insert(VehicleFacility, {
+        unidadId,
+        facilityId: sucursalId,
+        version: 1,
+      });
+    } else if (current.facilityId !== sucursalId) {
+      await manager.update(
+        VehicleFacility,
+        { unidadId },
+        { facilityId: sucursalId, version: current.version + 1 },
+      );
+    }
+  }
+
+  private async patchUnit(
+    id: string,
+    build: (manager: EntityManager) => Promise<Partial<Unidad>>,
+  ) {
     return this.dataSource.transaction(async (manager) => {
       await this.unitOperations.lock(manager, id);
       const unit = await manager.findOneBy(Unidad, { id });
       if (!unit) throw new NotFoundException('No se encontró la unidad.');
-      const patch = await build();
+      const patch = await build(manager);
       if (Object.keys(patch).length) await manager.update(Unidad, id, patch);
-      return manager.findOneByOrFail(Unidad, { id });
+      return this.conSucursal(
+        await manager.findOneByOrFail(Unidad, { id }),
+        manager,
+      );
     });
   }
 
@@ -210,6 +292,7 @@ export class UnidadesService {
 
   async hub(id: string, user: CurrentUser): Promise<UnidadHubDto> {
     const unidad = await this.findOne(id);
+    const sucursal = await this.sucursalDe(id);
     const [ultimoCerrado, hayChoferesActivos, visitas] = await Promise.all([
       this.visitas.findOne({
         where: {
@@ -283,6 +366,7 @@ export class UnidadesService {
         tipoNombre: unidad.tipo.nombre,
         marcaModelo: unidad.marcaModelo,
         anio: unidad.anio,
+        ...sucursal,
         ultimoKm: ultimoCerrado?.km ?? null,
       },
       borradores,
