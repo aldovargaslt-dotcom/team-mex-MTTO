@@ -56,7 +56,7 @@ Se calla: id técnico del facility (`monterrey`, `nuevo-laredo`…), zona horari
 
 - **loading** (catálogo de sucursales): `p.muted` en una línea, `Cargando sucursales…`; el select permanece deshabilitado.
 - **empty** (el catálogo vino vacío): `No hay sucursales configuradas. Avise al administrador del sistema.` Se explica por qué no se puede guardar. Sin CTA, porque no existe pantalla para crearlas (YAGNI, EWO-067).
-- **error** (falló la lectura del catálogo): `FormAlert` con `No se pudieron cargar las sucursales.` y botón `Reintentar` (`secondary`). El envío queda deshabilitado hasta que cargue.
+- **error** (falló la lectura del catálogo): `FormAlert` con `No se pudieron cargar las sucursales.` y botón `Reintentar` (el componente compartido `ReadStatus`, variante outline). El envío queda deshabilitado hasta que cargue.
 - **error** (falló el guardado): el mensaje del API en `FormAlert`, como hoy. Para sucursal inválida: `La sucursal indicada no es válida.`
 - **normal:** select con la sucursal elegida, sin tinte.
 - **warning** (edición, el valor cambió respecto al guardado): `Note warn` bajo el campo: `Al cambiar la sucursal, solo el personal de la nueva sucursal podrá operar esta unidad.` Informativo; no bloquea el guardado. No se inventan reglas sobre órdenes en curso (EWO-067).
@@ -96,11 +96,6 @@ Se calla: id técnico del facility (`monterrey`, `nuevo-laredo`…), zona horari
 
 ## Proof
 
-PNG en `docs/screenshots/` con viewports 1440 y 390, vía [SCREENSHOT_WORKFLOW](../design/SCREENSHOT_WORKFLOW.md) y `proof-ui`. Capturados el 2026-11-07; ver [evidencia](../evidence/EWO-067.md):
-
-- `unidad-sucursal_nueva_vacio_d1440.png`, `unidad-sucursal_nueva_seleccionada_d1440.png`, `unidad-sucursal_nueva_vacio_m390.png`
-- `unidad-sucursal_editar_sin_cambio_d1440.png`, `unidad-sucursal_editar_cambio_aviso_d1440.png` (aviso de cambio)
-- `unidad-sucursal_ficha_con_sucursal_d1440.png`, `unidad-sucursal_ficha_sin_asignar_d1440.png`
-- `unidad-sucursal_error_catalogo_d1440.png`
+PNG en `docs/screenshots/` con viewports 1440 y 390, vía [SCREENSHOT_WORKFLOW](../design/SCREENSHOT_WORKFLOW.md) y `proof-ui`. Capturados el 2026-11-07 y repetidos tras la primera revisión independiente; lista completa (16 imágenes, prefijo `unidad-sucursal_`) en la [evidencia](../evidence/EWO-067.md#visual-evidence). Camino real de clics para llegar al alta: Unidades → Administrar catálogo → Nueva unidad.
 
 Revisión independiente según [WORKFLOW — UI review chain](../WORKFLOW.md#ui-review-chain).

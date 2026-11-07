@@ -27,6 +27,7 @@
     "test:migrations": "jest --config ./test/jest-migrations.json --runInBand",
     "alerts:migration:up": "node dist/db/run-alert-migrations.js",
     "orders:migration:up": "node dist/db/run-orders-migrations.js",
+    "sucursal:backfill": "node dist/db/run-unit-sucursal-backfill.js",
     "inventory:migration:up": "node dist/db/run-inventory-migrations.js",
     "analysis:migration:inspect": "node dist/db/run-maintenance-analysis-migrations.js inspect",
     "analysis:migration:up": "node dist/db/run-maintenance-analysis-migrations.js up",
