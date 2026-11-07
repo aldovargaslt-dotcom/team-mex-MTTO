@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import { cloneElement, isValidElement, type ReactElement, type ReactNode } from 'react';
 import { Hint } from '@/components/ui/hint';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
@@ -10,6 +10,7 @@ export function Field({
   className,
   hint,
   help,
+  error,
 }: {
   label: string;
   htmlFor?: string;
@@ -17,7 +18,17 @@ export function Field({
   className?: string;
   hint?: ReactNode;
   help?: string;
+  /** Inline blocking message; marks the control invalid and describes it. */
+  error?: string | null;
 }) {
+  const errorId = htmlFor ? `${htmlFor}-error` : undefined;
+  const control =
+    error && errorId && isValidElement(children)
+      ? cloneElement(children as ReactElement<Record<string, unknown>>, {
+          'aria-invalid': true,
+          'aria-describedby': errorId,
+        })
+      : children;
   return (
     <div className={cn('flex flex-col gap-1', className)}>
       {help ? (
@@ -28,7 +39,13 @@ export function Field({
       ) : (
         <Label htmlFor={htmlFor}>{label}</Label>
       )}
-      {children}
+      {control}
+      {error ? (
+        <p id={errorId} className="text-[12px] font-medium text-destructive">
+          <span aria-hidden="true">⚠ </span>
+          {error}
+        </p>
+      ) : null}
       {hint}
     </div>
   );

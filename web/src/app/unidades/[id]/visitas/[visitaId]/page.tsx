@@ -1,5 +1,6 @@
 'use client';
 
+import { Skeleton } from '@/components/ui/skeleton';
 import { OrderDocumentHeader } from '@/components/OrderDocumentHeader';
 import Link from 'next/link';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
@@ -85,6 +86,7 @@ function VisitaContent() {
   const setVisita = read.setData;
   const unavailable = read.error instanceof HttpError && read.error.status === 404;
   if (!visita) return <>
+    {read.loading ? <div aria-hidden="true" className="grid gap-3"><Skeleton className="h-10 w-full" /><Skeleton className="h-44 w-full" /></div> : null}
     <ReadStatus loading={read.loading} error={read.error} loadingText="Cargando visita…"
       errorText={unavailable ? 'La visita no está disponible para este acceso.' : 'No se pudo abrir la visita.'} retry={read.retry} />
     {unavailable ? <p className="muted">ID: {params.visitaId}</p> : null}
@@ -273,6 +275,7 @@ function VisitWizard({
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [closeAttempted, setCloseAttempted] = useState(false);
   useEffect(() => {
     if (!piecesRead.data) return;
     const metadata = new Map(piecesRead.data.map((line) => [line.itemId, line]));
@@ -669,7 +672,12 @@ function VisitWizard({
               {piezas.length === 0 ? 'Ninguna' : resumenOrigenPiezas(piezas)}
             </dd>
           </dl>
-          {faltantes.length ? (
+          {faltantes.length && closeAttempted ? (
+            <div id="wizard-faltantes" role="alert" tabIndex={-1} className="mt-3 rounded-md border border-destructive bg-card px-3 py-2 text-[13px] text-destructive focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+              <strong>No se puede cerrar todavía. Faltan {faltantes.length} {faltantes.length === 1 ? 'dato' : 'datos'}:</strong>
+              <ul className="mt-1 list-disc pl-5">{faltantes.map((item) => <li key={item}>{item}</li>)}</ul>
+            </div>
+          ) : faltantes.length ? (
             <Note variant="warn">Falta para cerrar: {faltantes.join('; ')}.</Note>
           ) : (
             <Note>La visita está lista para cerrarse.</Note>
@@ -706,8 +714,15 @@ function VisitWizard({
         ) : (
           <Button
             type="button"
-            disabled={saving || !relacionesListas || faltantes.length > 0}
-            onClick={() => setConfirmOpen(true)}
+            disabled={saving || !relacionesListas}
+            onClick={() => {
+              if (faltantes.length) {
+                setCloseAttempted(true);
+                requestAnimationFrame(() => document.getElementById('wizard-faltantes')?.focus());
+                return;
+              }
+              setConfirmOpen(true);
+            }}
           >
             {saving ? 'Cerrando…' : 'Cerrar visita'}
           </Button>
