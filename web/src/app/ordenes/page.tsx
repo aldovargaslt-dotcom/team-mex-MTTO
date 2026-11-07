@@ -5,6 +5,7 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import { CalendarCheck, ChevronLeft, ChevronRight, History, ClipboardCheck, List, Search, Wrench, type LucideIcon } from 'lucide-react';
 import { ReadStatus } from '@/components/ReadStatus';
+import { LoadingRegion, Skeleton, SkeletonRows } from '@/components/ui/skeleton';
 import { useReadResource } from '@/lib/use-read-resource';
 import { OrderSafetyControls } from '@/components/OrderSafetyControls';
 import { OrderIdentity } from '@/components/OrderIdentity';
@@ -82,7 +83,7 @@ function parseTipo(value: string | null): TipoFiltro {
 export default function OrdenesPage() {
   return (
     <RoleGate allow={['SUPERVISOR', 'ADMIN_DIRECTIVO']}>
-      <Suspense fallback={<p className="muted">Cargando órdenes…</p>}>
+      <Suspense fallback={<LoadingRegion label="Cargando órdenes…"><SkeletonRows rows={5} /></LoadingRegion>}>
         <OrdenesContent />
       </Suspense>
     </RoleGate>
@@ -305,6 +306,12 @@ function OrdenesContent() {
           setParams({ cola: null, orden: detalle.id });
         } catch (err) { setError(err instanceof HttpError ? err.message : 'No se pudo abrir la orden.'); }
       }}>Abrir orden</Button> : null}
+      {rows == null && list.loading ? (
+        <div className="ordenes-desk" aria-hidden="true">
+          <div className="ordenes-list"><div className="grid gap-2 p-3"><SkeletonRows rows={5} /></div></div>
+          <div className="ordenes-detail"><div className="grid gap-3 p-4"><Skeleton className="h-8 w-1/3" /><Skeleton className="h-24 w-full" /><Skeleton className="h-40 w-full" /></div></div>
+        </div>
+      ) : null}
       {rows == null ? null : (
         <div className={soloDetalle ? 'ordenes-desk has-mobile-detail is-detail' : 'ordenes-desk'}>
           <div className="ordenes-list">
@@ -375,6 +382,9 @@ function OrdenesContent() {
           <div className="ordenes-detail">
             {ordenId && filtered.length > 0 ? <ReadStatus key={ordenId} loading={detailRead.loading} error={detailRead.error}
               loadingText="Cargando la orden…" errorText="No se pudo abrir la orden." retry={detailRead.retry} /> : null}
+            {ordenId && filtered.length > 0 && detailRead.loading && !detalle && !checkDetail ? (
+              <div className="grid gap-3 p-4" aria-hidden="true"><Skeleton className="h-8 w-1/3" /><Skeleton className="h-16 w-full" /><Skeleton className="h-32 w-full" /></div>
+            ) : null}
             {filtered.length === 0 ? null : checkDetail && checkDetail.id === ordenId ? (
               <CheckOrderReadOnly detail={checkDetail} mobile={mobileMode === true} />
             ) : detalle && detalle.id === ordenId ? (
@@ -491,7 +501,7 @@ function OrdenDetalle({
         </div>
       </div>
       <OrdenCaptura
-        key={detalle.id}
+        key={`captura-${detalle.id}`}
         onCaptura={setCapturando}
         role={role}
         userId={userId}
@@ -499,7 +509,7 @@ function OrdenDetalle({
         detalle={detalle}
         onVisita={onVisita}
       />
-      <OrderSafetyControls key={detalle.id} unitId={detalle.unidadId} orderId={detalle.id} closed={detalle.estado === 'CERRADO'} />
+      <OrderSafetyControls key={`seguridad-${detalle.id}`} unitId={detalle.unidadId} orderId={detalle.id} closed={detalle.estado === 'CERRADO'} />
       <dl className="ordenes-facts">
         <div>
           <dt>Fecha de creación</dt>

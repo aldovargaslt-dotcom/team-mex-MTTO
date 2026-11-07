@@ -1,4 +1,5 @@
 "use client";
+import { LoadingRegion, Skeleton } from '@/components/ui/skeleton';
 import { MaintenanceTypeBadge } from "@/components/MaintenanceTypeBadge";
 import { UnitRefactionCosts } from "@/components/UnitRefactionCosts";
 import { AndonHubCard } from "@/components/AndonHubCard";
@@ -187,7 +188,13 @@ function HubContent() {
   }
 
   if (!hub) {
-    return <p className="muted">Cargando ficha de la unidad…</p>;
+    return (
+      <LoadingRegion label="Cargando unidad…">
+        <div className="flex items-center gap-3"><Skeleton className="h-[84px] w-28" /><Skeleton className="h-8 w-1/2" /></div>
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4"><Skeleton className="h-11" /><Skeleton className="h-11" /><Skeleton className="h-11" /><Skeleton className="h-11" /></div>
+        <Skeleton className="h-32 w-full" /><Skeleton className="h-48 w-full" />
+      </LoadingRegion>
+    );
   }
 
   const ficha = hub.fichaCorta;

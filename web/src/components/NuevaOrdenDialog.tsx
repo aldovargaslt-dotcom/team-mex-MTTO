@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/dialog';
 import { Field, FormAlert } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
+import { SkeletonRows } from '@/components/ui/skeleton';
 import {
   Sheet,
   SheetContent,
@@ -61,6 +62,7 @@ export function NuevaOrdenDialog({
   const [acknowledged, setAcknowledged] = useState('');
   const [request, setRequest] = useState<{ body: string; key: string } | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [attempted, setAttempted] = useState(false);
   const opts = useMemo(() => ({ role, userId }), [role, userId]);
   const unitRead = useReadResource(open ? JSON.stringify([role, userId, 'units']) : null,
     () => api<Unidad[]>('/unidades?estado=ACTIVA', opts));
@@ -73,7 +75,7 @@ export function NuevaOrdenDialog({
   const existing = checkRead.data?.items[0]?.orders ?? [];
   const gateIdentity = `${unitId}:${existing.map((o) => o.id).sort().join(',')}`;
   const requiresGate = existing.length > 0 && acknowledged !== gateIdentity;
-  const checking = checkRead.loading;
+  const checking = Boolean(unitId) && checkRead.loading;
   function restoreFocus(event: Event) {
     if (returnFocusRef.current?.isConnected) {
       event.preventDefault();
@@ -83,7 +85,7 @@ export function NuevaOrdenDialog({
 
 
 
-  useEffect(() => { if (open) { setAcknowledged(''); setRequest(null); } }, [open]);
+  useEffect(() => { if (open) { setAcknowledged(''); setRequest(null); setAttempted(false); } }, [open]);
 
   useEffect(() => {
     const mq = window.matchMedia('(max-width: 767px)');
@@ -100,8 +102,24 @@ export function NuevaOrdenDialog({
     return `${unit.numeroInterno} ${unit.placas} ${unit.tipo.nombre}`.toLowerCase().includes(needle);
   });
 
+  // Blocking gaps are only reported after the first attempt (EWO-014).
+  const kmNumber = km.trim() === '' ? null : Number(km);
+  const gaps: { id: string; label: string; message: string }[] = [];
+  if (!unitId) gaps.push({ id: 'nueva-orden-buscar', label: 'unidad', message: 'Selecciona una unidad.' });
+  else {
+    if (!driverId) gaps.push({ id: 'nueva-orden-chofer', label: 'chofer', message: 'Selecciona un chofer.' });
+    if (kmNumber === null) gaps.push({ id: 'nueva-orden-km', label: 'kilometraje', message: 'Captura el kilometraje.' });
+    else if (!Number.isFinite(kmNumber) || kmNumber < 0) gaps.push({ id: 'nueva-orden-km', label: 'kilometraje', message: 'El kilometraje debe ser 0 o mayor.' });
+  }
+  const gapFor = (id: string) => (attempted ? gaps.find((gap) => gap.id === id)?.message ?? null : null);
+
   async function submit() {
-    if (!unitId || !driverId || km === '' || checkRead.data === null || unitRead.data === null || driverRead.data === null || checking) return;
+    if (checkRead.data === null && unitId || unitRead.data === null || driverRead.data === null || checking) return;
+    if (gaps.length) {
+      setAttempted(true);
+      document.getElementById(gaps[0].id)?.focus();
+      return;
+    }
     if (requiresGate) return;
     const payload = { choferId: driverId, km: Number(km), type: tipo === 'PREDICTIVO' ? 'PREVENTIVE' : 'CORRECTIVE', blocksOperation: false };
     const body = JSON.stringify({ unitId, ...payload });
@@ -127,9 +145,17 @@ export function NuevaOrdenDialog({
     <div className="nueva-orden-body">
       <ReadStatus loading={unitRead.loading} error={unitRead.error} loadingText="Cargando unidades activas…" errorText="No se pudieron cargar las unidades." retry={unitRead.retry} />
       <ReadStatus loading={driverRead.loading} error={driverRead.error} loadingText="Cargando choferes activos…" errorText="No se pudieron cargar los choferes." retry={driverRead.retry} />
+      {!preselectedUnitId && unitRead.loading && unitRead.data === null ? (
+        <div aria-hidden="true" className="grid gap-2"><SkeletonRows rows={4} className="h-14" /></div>
+      ) : null}
+      {attempted && gaps.length ? (
+        <FormAlert>{`Faltan ${gaps.length} ${gaps.length === 1 ? 'dato' : 'datos'} para continuar: ${gaps.map((gap) => gap.label).join(', ')}.`}</FormAlert>
+      ) : null}
       {!preselectedUnitId && unitRead.data !== null ? (
         <>
-          <Input value={q} onChange={(event) => setQ(event.target.value)} placeholder="Buscar número, placas o tipo" aria-label="Buscar unidad activa" />
+          <Input id="nueva-orden-buscar" value={q} onChange={(event) => setQ(event.target.value)} placeholder="Buscar número, placas o tipo" aria-label="Buscar unidad activa"
+            aria-invalid={gapFor('nueva-orden-buscar') ? true : undefined} aria-describedby={gapFor('nueva-orden-buscar') ? 'nueva-orden-buscar-error' : undefined} />
+          {gapFor('nueva-orden-buscar') ? <p id="nueva-orden-buscar-error" className="text-[12px] font-medium text-destructive"><span aria-hidden="true">⚠ </span>{gapFor('nueva-orden-buscar')}</p> : null}
           <div className="nueva-orden-units" role="listbox" aria-label="Unidades activas">
             {filtered.length === 0 ? <p className="muted">{q.trim() && units.length > 0 ? 'Sin coincidencias con estos filtros.' : 'No hay unidades activas.'}</p> : filtered.map((unit) => (
               <button key={unit.id} type="button" role="option" aria-selected={unit.id === unitId} className={unit.id === unitId ? 'is-selected' : ''} onClick={() => setUnitId(unit.id)}>
@@ -157,14 +183,14 @@ export function NuevaOrdenDialog({
         </div>
       ) : selected && checkRead.data !== null && driverRead.data !== null ? (
         <div className="nueva-orden-form">
-          <Field label="Chofer" htmlFor="nueva-orden-chofer">
+          <Field label="Chofer" htmlFor="nueva-orden-chofer" error={gapFor('nueva-orden-chofer')}>
             <select id="nueva-orden-chofer" value={driverId} onChange={(event) => setDriverId(event.target.value)}>
               <option value="">Selecciona un chofer activo</option>
               {drivers.map((driver) => <option key={driver.id} value={driver.id}>{driver.nombre}</option>)}
             </select>
           </Field>
           {drivers.length === 0 ? <p className="muted">No hay choferes activos disponibles. Activa un chofer antes de crear la orden.</p> : null}
-          <Field label="Kilometraje" htmlFor="nueva-orden-km">
+          <Field label="Kilometraje" htmlFor="nueva-orden-km" error={gapFor('nueva-orden-km')}>
             <Input id="nueva-orden-km" type="number" min={0} value={km} onChange={(event) => setKm(event.target.value)} />
           </Field>
           <Field label="Tipo" htmlFor="nueva-orden-tipo">
@@ -182,7 +208,7 @@ export function NuevaOrdenDialog({
   const footer = requiresGate ? <Button type="button" variant="secondary" onClick={() => onOpenChange(false)}>Cancelar</Button> : (
     <>
       <Button type="button" variant="secondary" onClick={() => onOpenChange(false)}>Cancelar</Button>
-      <Button type="button" disabled={!selected || !driverId || km === '' || busy || drivers.length === 0 || checking || checkRead.data === null || unitRead.data === null || driverRead.data === null} onClick={() => void submit()}>
+      <Button type="button" disabled={busy || (Boolean(unitId) && drivers.length === 0) || checking || (Boolean(unitId) && checkRead.data === null) || unitRead.data === null || driverRead.data === null} onClick={() => void submit()}>
         {busy ? 'Creando…' : 'Crear y continuar'}
       </Button>
     </>
