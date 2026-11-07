@@ -2,7 +2,7 @@
 
 Spec UX de [EWO-067](../engineering-work-orders/EWO-067.md). Complementa el EWO; no autoriza ejecución. Plantilla: [UX_SPEC_TEMPLATE](../design/UX_SPEC_TEMPLATE.md). Contrato visual: [DESIGN_SYSTEM](../design/DESIGN_SYSTEM.md#contrato-visual-vigente--lectura-obligatoria-para-agentes).
 
-Estado: **Propuesta** (2026-11-07), pendiente de revisión del propietario.
+Estado: **Aprobada por el propietario** (2026-11-07, "Se ve bien, adelante"); implementada en [EWO-067](../engineering-work-orders/EWO-067.md). Pendiente la revisión visual independiente.
 
 ## Screen purpose
 
@@ -96,11 +96,11 @@ Se calla: id técnico del facility (`monterrey`, `nuevo-laredo`…), zona horari
 
 ## Proof
 
-PNG en `docs/screenshots/` con viewports 1440 y 390, vía [SCREENSHOT_WORKFLOW](../design/SCREENSHOT_WORKFLOW.md) y `proof-ui` (sin Playwright):
+PNG en `docs/screenshots/` con viewports 1440 y 390, vía [SCREENSHOT_WORKFLOW](../design/SCREENSHOT_WORKFLOW.md) y `proof-ui`. Capturados el 2026-11-07; ver [evidencia](../evidence/EWO-067.md):
 
-- `unidad-sucursal-nueva-1440.png`, `unidad-sucursal-nueva-390.png`
-- `unidad-sucursal-editar-cambio-1440.png` (con el aviso de cambio)
-- `unidad-sucursal-ficha-1440.png`, `unidad-sucursal-ficha-sin-asignar-1440.png`
-- `unidad-sucursal-error-catalogo-1440.png`
+- `unidad-sucursal_nueva_vacio_d1440.png`, `unidad-sucursal_nueva_seleccionada_d1440.png`, `unidad-sucursal_nueva_vacio_m390.png`
+- `unidad-sucursal_editar_sin_cambio_d1440.png`, `unidad-sucursal_editar_cambio_aviso_d1440.png` (aviso de cambio)
+- `unidad-sucursal_ficha_con_sucursal_d1440.png`, `unidad-sucursal_ficha_sin_asignar_d1440.png`
+- `unidad-sucursal_error_catalogo_d1440.png`
 
 Revisión independiente según [WORKFLOW — UI review chain](../WORKFLOW.md#ui-review-chain).
