@@ -2,7 +2,7 @@
 
 ## Status
 
-**Proposed**, 2026-11-07. Documentación solamente: no autoriza código, esquema, migraciones ni cambios de acceso. Implementa la dirección de [ADR-032](../adr/032-permisos-configurables-por-rol.md) (Accepted). Extiende [SPEC-AUTH-002](SPEC-AUTH-002.md) (administración de usuarios); no modifica [SPEC-AUTH-001](SPEC-AUTH-001.md). Shaping: [roles-permisos-configurables-v0](../../workspace/shaping/roles-permisos-configurables-v0.md). No es Ready: falta aprobar el catálogo (OQ-1) y un EWO.
+**Proposed**, 2026-11-07. Documentación solamente: no autoriza código, esquema, migraciones ni cambios de acceso. Implementa la dirección de [ADR-032](../adr/032-permisos-configurables-por-rol.md) (Accepted). Extiende [SPEC-AUTH-002](SPEC-AUTH-002.md) (administración de usuarios); no modifica [SPEC-AUTH-001](SPEC-AUTH-001.md). Shaping: [roles-permisos-configurables-v0](../../workspace/shaping/roles-permisos-configurables-v0.md). OQ-1…OQ-5 resueltas (2026-11-07). Siguiente: [EWO-067](../engineering-work-orders/EWO-067.md) (Draft, sin aprobación de ejecución).
 
 ## Problem
 
@@ -105,12 +105,14 @@ ADR-032 (Accepted), ADR-021, ADR-000, ADR-002 (matriz dentro de `auth`; sin FKs 
 
 ## Open Questions
 
-| ID | Decisión necesaria | Propuesta |
+Resueltas el 2026-11-07: el dueño respondió «Let's go with your recommendations» a OQ-1…OQ-5. Quedan **adoptadas las propuestas** de la tabla; el catálogo de OQ-1 puede refinarse al generar el inventario por endpoint (cambios de nombres/granularidad se registran en el EWO, sin reabrir la decisión).
+
+| ID | Decisión | Resolución |
 |---|---|---|
-| OQ-1 | Catálogo inicial de permisos | Derivado del inventario: `usuarios.administrar`, `catalogos.administrar` (choferes/unidades/tipos), `visitas.ver`, `visitas.escribir`, `visitas.cerrar`, `inventario.ver`, `inventario.operar`, `inventario.kits.editar`, `costos.ver`, `costos.capturar`, `costos.completar`, `costos.corregir`, `andon.ver`, `andon.operar`, `salud.ver`, `salud.configurar`, `flota.operar`, `logistica.operar`, `alertas.ver`, `alertas.editar`, `documentos.vehiculo`, `notificaciones.ver`, `analisis.ver`, `check.operar`. Granularidad mínima que aún distingue lo que hoy se distingue; revisar con el dueño. |
-| OQ-2 | Permisos por servicio con roles internos (`SYSTEM`) | `SYSTEM` queda fuera de la matriz (no es un rol de usuario). |
-| OQ-3 | ¿Qué hacer con checks combinados rol+patio+estado? | El permiso sustituye solo la parte de rol (AC-P10). |
-| OQ-4 | ¿Pantalla de administración en este corte o solo API? | Propuesta: API + prueba primero; pantalla en corte aparte con UX spec. |
+| OQ-1 | Catálogo inicial de permisos | Adoptado: `usuarios.administrar`, `catalogos.administrar`, `visitas.ver`, `visitas.escribir`, `visitas.cerrar`, `inventario.ver`, `inventario.operar`, `inventario.kits.editar`, `costos.ver`, `costos.capturar`, `costos.completar`, `costos.corregir`, `andon.ver`, `andon.operar`, `salud.ver`, `salud.configurar`, `flota.operar`, `logistica.operar`, `alertas.ver`, `alertas.editar`, `documentos.vehiculo`, `notificaciones.ver`, `analisis.ver`, `check.operar`. |
+| OQ-2 | Roles internos (`SYSTEM`) | Fuera de la matriz; no es un rol de usuario. |
+| OQ-3 | Checks combinados rol+patio+estado | El permiso sustituye solo la parte de rol (AC-P10). |
+| OQ-4 | Pantalla de administración | Este corte: API + pruebas. Pantalla en corte aparte con UX spec. |
 | OQ-5 | Mínimo seguro si la matriz no carga | Denegar todo salvo `usuarios.administrar` para ADMIN. |
 
 ## Risks and assumptions
