@@ -80,3 +80,6 @@ no ejecutados. Contrato técnico AN-MTTO-001 enlazado.
 
 [ADR031 — Kits de piezas por tipo de unidad](031-inventario-kits-por-tipo.md):
 **Proposed**. Inventario como dueño del kit (plantilla, no stock); documentación solamente.
+
+[ADR032 — Permisos configurables por rol](032-permisos-configurables-por-rol.md):
+**Proposed**. Fase 1: catálogo de permisos y matriz rol→permisos con siembra equivalente a hoy; sin cambio de acceso.

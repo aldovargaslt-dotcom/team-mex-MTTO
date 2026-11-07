@@ -44,6 +44,12 @@ Con roles fijos, «Mecánico sin costos» obliga a editar código cada vez que c
 - **Kits** (ADR-031): «Supervisor y Admin editan kits» se expresa como `inventario.kits.editar`; el Mecánico puede aplicar kits sin poder editarlos.
 - No cambia el envelope `VisitaCerrada` ni la propiedad de datos entre schemas (ADR-002).
 
+## Decisiones del dueño (2026-11-07)
+
+- R-1 resuelta: Fase 1 primero.
+- No construir ahora la configuración del Mecánico: en esta ubicación solo existe Supervisor. Dejar la capacidad lista para configurarla después. R-2/R-3 se definen cuando el rol opere.
+- ADR redactado: [ADR-032](../../docs/adr/032-permisos-configurables-por-rol.md) (Proposed).
+
 ## Preguntas abiertas
 
 | ID | Pregunta | Propuesta |
