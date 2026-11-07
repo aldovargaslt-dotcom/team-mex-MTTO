@@ -27,7 +27,7 @@ Administración, y se ordena por grupo. El encabezado (11px, mayúsculas, `--mut
 aparece al cambiar de grupo solo si el rol ve más de un grupo; contraída, se
 reduce a un separador. Móvil usa el mismo catálogo (`shell-menu-group`). Un
 destino nuevo debe declarar grupo, si es catálogo u operación, y con qué se
-fusionaría; Choferes está en Flota (decisión provisional, revisable por el Owner).
+fusionaría. En móvil la barra inferior es la navegación principal; el menú del header (Sheet) queda solo como desborde para los destinos que no caben en ella y conserva los encabezados de grupo (confirmado por el Owner, 2026-11-07). Choferes está en Flota (decisión provisional, revisable por el Owner).
 
 ## Contrato visual
 
