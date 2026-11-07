@@ -2,7 +2,7 @@
 
 ## Status
 
-Proposed — pendiente de aprobación del owner. No autoriza implementación.
+Accepted para construcción local — el owner aprobó seguir con la implementación el 2026-11-07 ("go ahead"). Alcance acotado a órdenes de mantenimiento; ver Decision. Sin despliegue.
 
 ## Context
 
@@ -14,10 +14,11 @@ Reglas que la lectura debe conservar: el Supervisor ve borradores y cerradas; Ad
 
 Añadir en el módulo Visitas (sin nuevo Bounded Context ni schema) una lectura de solo lectura:
 
-- `GET /ordenes?cola=abiertas|borradores|cerradas&q=&unidadId=&cursor=&limit=` — mantenimiento y CHECK en una sola lista ordenada por `updatedAt` desc con cursor estable; `limit` máx. 100.
+- `GET /ordenes?cola=abiertas|borradores|cerradas&q=&cursor=&limit=` — **solo órdenes de mantenimiento**, ordenadas por `updatedAt` desc con cursor keyset (`updatedAt` a milisegundos + `id`); `limit` máx. 100.
+- Los CHECK **no** entran: usan otro modelo de autenticación (actor confiable con alcance por instalación) y su lectura `GET /checks` ya es paginada. La página sigue combinando ambas listas en el cliente.
 - `GET /ordenes/resumen` — conteos por cola (para el resumen de Inicio).
-- Mismos permisos y filtros por rol que hoy; sin escritura, sin nuevos estados, sin costeo.
-- La respuesta incluye lo que la fila de la cola usa hoy (unidad, placas, tipo, foto, chofer, trabajosCount, estado); el detalle sigue en `GET /visitas/:id` y `GET /checks/:id`.
+- Mismos permisos y filtros por rol que `GET /unidades/:id/visitas` (Admin/Directivo solo cerradas; Mecánico rechazado); sin escritura, sin nuevos estados, sin costeo.
+- La respuesta incluye lo que la fila de la cola usa hoy (unidad, placas, tipo, chofer, trabajosCount, estado). La foto no se repite por fila: el cliente la toma de `/unidades`, que ya consulta una vez; el detalle sigue en `GET /visitas/:id` y `GET /checks/:id`.
 - El cliente reemplaza el fan-out por esta lectura; Inicio consume `/ordenes/resumen`.
 
 ## Alternatives Considered
@@ -42,7 +43,7 @@ Más rápida, pero introduce una segunda fuente de verdad; excesivo para el tama
 ## Risks
 
 - Divergencia de reglas de visibilidad entre la lectura nueva y las existentes; mitigación: pruebas de paridad por rol.
-- Orden mixto mantenimiento+CHECK con cursor: definir desempate por `id`.
+- Unificar CHECK en la misma lista queda como trabajo futuro (requiere reconciliar los dos modelos de autenticación).
 
 ## Follow-up
 
@@ -57,5 +58,5 @@ Previous ADR: [ADR-001](001-visita-cerrada-outbox.md), [ADR-002](002-schema-per-
 ## Ownership
 
 Date: 2026-11-07
-Owner: pendiente
-Approval / decision reference: pendiente
+Owner: Aldo Vargas (aprobación en sesión)
+Approval / decision reference: sesión de desarrollo 2026-11-07; evidencia en docs/evidence/EWO-070.md

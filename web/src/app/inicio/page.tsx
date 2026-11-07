@@ -43,6 +43,10 @@ function InicioContent() {
   const read = useReadResource(role ? JSON.stringify([role, userId, reload, 'active-alerts']) : null,
     () => api<AttentionResponse>('/configuracion/alertas/activas', { role: role!, userId }), true);
   const data = read.data;
+  // ADR-031: cheap count for the Supervisor; Admin never sees open orders.
+  const ordersRead = useReadResource(role === 'SUPERVISOR' ? JSON.stringify([role, userId, reload, 'orders-summary']) : null,
+    () => api<{ abiertas: number; borradores: number; cerradas: number }>('/ordenes/resumen', { role: role!, userId }), true);
+  const openOrders = ordersRead.data?.abiertas ?? 0;
   useEffect(() => { setSaludo(saludoAhora()); }, []);
 
   useEffect(() => {
@@ -88,6 +92,13 @@ function InicioContent() {
           {failed.length ? <p role="alert" className="text-[13px] text-destructive">No se pudo cargar {failed.map((source) => source.name).join(', ')}. Los conteos incluyen sólo las fuentes disponibles.</p> : null}
           <Button variant="outline" onClick={read.retry}>Reintentar</Button>
         </div>
+      ) : null}
+      {openOrders > 0 ? (
+        <p className="mb-4 text-[13px]">
+          <Link href="/ordenes" className="inline-flex items-center gap-1 font-semibold text-navy">
+            {openOrders} {openOrders === 1 ? 'orden abierta' : 'órdenes abiertas'}<ArrowRight aria-hidden className="size-3.5" />
+          </Link>
+        </p>
       ) : null}
       {data && !allFailed ? (
         <>

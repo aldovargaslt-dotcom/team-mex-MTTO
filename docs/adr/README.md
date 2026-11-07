@@ -78,4 +78,4 @@ Captura externa, horarios y snapshots implementados; evidencia y cobertura tempo
 pendiente de fuentes ABC/UTIL en EWO-063. Activación/migración externa y despliegue
 no ejecutados. Contrato técnico AN-MTTO-001 enlazado.
 
-[ADR031 — Lectura paginada de la cola de órdenes](031-orders-queue-read-model.md): **Proposed**. Lectura de solo lectura `/ordenes` + resumen para Inicio; sin implementación aprobada. Ver EWO-070 (Draft).
+[ADR031 — Lectura paginada de la cola de órdenes](031-orders-queue-read-model.md): **Accepted (construcción local)**. Lectura paginada `/ordenes` de órdenes de mantenimiento + resumen para Inicio; sin despliegue. Ver EWO-070.

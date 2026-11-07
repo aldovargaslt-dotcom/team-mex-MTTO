@@ -9,6 +9,7 @@ import {
   ParseUUIDPipe,
   Patch,
   Post,
+  Query,
   Res,
 } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
@@ -20,6 +21,7 @@ import { Rol } from '../auth/roles.enum';
 import { CATALOGO_TRABAJOS } from './trabajos-catalogo';
 import { UpdateVisitaDto } from './dto/update-visita.dto';
 import { CreateVisitaDto } from './dto/create-visita.dto';
+import { OrdersQueueQuery } from './dto/orders-queue.query';
 import { VisitasService } from './visitas.service';
 
 @ApiTags('visitas')
@@ -58,6 +60,23 @@ export class VisitasController {
     @CurrentUserParam() user: CurrentUser,
   ) {
     return this.service.listByUnidad(unidadId, user);
+  }
+
+  @Get('ordenes')
+  @ApiOperation({
+    summary: 'Cola de órdenes de mantenimiento paginada (ADR-031)',
+  })
+  queue(
+    @Query() query: OrdersQueueQuery,
+    @CurrentUserParam() user: CurrentUser,
+  ) {
+    return this.service.listOrdenes(user, query);
+  }
+
+  @Get('ordenes/resumen')
+  @ApiOperation({ summary: 'Conteo de órdenes por cola (ADR-031)' })
+  queueSummary(@CurrentUserParam() user: CurrentUser) {
+    return this.service.ordenesResumen(user);
   }
 
   @Get('visitas/:id')

@@ -39,7 +39,7 @@ Do not add speculative EWOs. An EWO is created when there is approved work to ex
 | [EWO-037](EWO-037.md) | Abiertas primero, borradores e historial para Mecánico | Verification |
 | [EWO-041](EWO-041.md) | Historial durable de viajes/regresos Logística, retries y protección de writers/seed | Verification |
 | [EWO-014](EWO-014.md) | Feedback de incompletitud y estados de carga | Proposed |
-| [EWO-070](EWO-070.md) | Lectura paginada de la cola de órdenes y resumen en Inicio | Draft — pendiente ADR-031 |
+| [EWO-070](EWO-070.md) | Lectura paginada de la cola de órdenes y resumen en Inicio | Verification — implementación local; evidencia en EWO-070 |
 
 
 ## CHECK — breakdown solicitado en Slice 0

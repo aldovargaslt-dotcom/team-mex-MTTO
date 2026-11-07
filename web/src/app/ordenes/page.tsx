@@ -55,6 +55,8 @@ type OrdenRow = Omit<VisitaResumen, 'tipo' | 'estado'> & {
   tipoIcono: string | null;
 };
 
+type QueueOrder = Omit<OrdenRow, 'fotoDataUrl'>;
+
 const COLAS: { id: Cola; label: string }[] = [
   { id: 'abiertas', label: 'Abiertas' },
   { id: 'borradores', label: 'Borradores' },
@@ -121,15 +123,26 @@ function OrdenesContent() {
   }
 
   const opts = { role: role!, userId };
-  const successful = useRef<{ key: string; units: Unidad[]; rows: Map<string, OrdenRow[]>; checks: OrdenRow[]; failed: string[] } | null>(null);
+  const successful = useRef<{ key: string; units: Unidad[]; maintenance: OrdenRow[]; checks: OrdenRow[]; failed: string[] } | null>(null);
   const listKey = role ? JSON.stringify([role, userId, 'ordenes']) : null;
+  // ADR-031: one paged read for maintenance orders (no request per unit).
   const list = useReadResource(listKey, async () => {
     const cached = successful.current?.key === listKey ? successful.current : null;
-    const retryPartial = Boolean(cached?.failed.length);
-    const units = retryPartial ? cached!.units : await api<Unidad[]>('/unidades', opts);
-    const targets = retryPartial ? units.filter((unit) => cached!.failed.includes(unit.id)) : units;
-    const loaded = retryPartial ? new Map(cached!.rows) : new Map<string, OrdenRow[]>();
-    const shouldReadChecks = !retryPartial || cached!.failed.includes('CHECK');
+    const retryChecks = Boolean(cached?.failed.length);
+    const units = retryChecks ? cached!.units : await api<Unidad[]>('/unidades', opts);
+    const unitById = new Map(units.map((unit) => [unit.id, unit]));
+    const maintenanceRequest = async (): Promise<OrdenRow[]> => {
+      const items: QueueOrder[] = [];
+      let cursor: string | null = null;
+      const seen = new Set<string>();
+      do {
+        const page: { items: QueueOrder[]; nextCursor: string | null } = await api(`/ordenes?limit=100${cursor ? `&cursor=${encodeURIComponent(cursor)}` : ''}`, opts);
+        items.push(...page.items); cursor = page.nextCursor;
+        if (cursor && seen.has(cursor)) throw new Error('Cursor repetido');
+        if (cursor) seen.add(cursor);
+      } while (cursor);
+      return items.map((row) => ({ ...row, fotoDataUrl: unitById.get(row.unidadId)?.fotoDataUrl ?? null }));
+    };
     const checksRequest = async (): Promise<OrdenRow[]> => {
       const items: CheckOrderSummary[] = [];
       const seen = new Set<string>();
@@ -141,7 +154,7 @@ function OrdenesContent() {
         if (cursor) seen.add(cursor);
       } while (cursor);
       return items.map((check) => {
-        const unit = units.find((item) => item.id === check.unidadId);
+        const unit = unitById.get(check.unidadId);
         return { id: check.id, tipo: 'CHECK', estado: null, checkStatus: check.status,
           unidadId: check.unidadId, numeroInterno: check.unit.numeroInterno, placas: check.unit.placas,
           fotoDataUrl: unit?.fotoDataUrl ?? null, tipoNombre: unit?.tipo?.nombre ?? '', tipoIcono: unit?.tipo?.icono ?? null,
@@ -149,23 +162,18 @@ function OrdenesContent() {
           km: null, choferId: null, choferNombre: null, createdBy: null, trabajosCount: 0 };
       });
     };
-    const [maintenance, checkResult] = await Promise.all([
-      Promise.allSettled(targets.map(async (unit) => {
-        const visits = await api<VisitaResumen[]>(`/unidades/${unit.id}/visitas`, opts);
-        return visits.map((visit) => ({ ...visit, unidadId: unit.id, numeroInterno: unit.numeroInterno, placas: unit.placas,
-          fotoDataUrl: unit.fotoDataUrl ?? null, tipoNombre: unit.tipo?.nombre ?? '', tipoIcono: unit.tipo?.icono ?? null }));
-      })),
-      Promise.allSettled([shouldReadChecks ? checksRequest() : Promise.resolve(cached!.checks)]),
+    const [maintenanceResult, checkResult] = await Promise.allSettled([
+      retryChecks ? Promise.resolve(cached!.maintenance) : maintenanceRequest(),
+      checksRequest(),
     ]);
-    maintenance.forEach((result, index) => { if (result.status === 'fulfilled') loaded.set(targets[index].id, result.value); });
-    const failed = maintenance.flatMap((result, index) => result.status === 'rejected' ? [targets[index].id] : []);
-    const checks = checkResult[0].status === 'fulfilled' ? checkResult[0].value : cached?.checks ?? [];
-    if (checkResult[0].status === 'rejected') failed.push('CHECK');
-    successful.current = { key: listKey!, units, rows: loaded, checks, failed };
-    if (failed.length === units.length + 1) throw new Error('No se pudieron cargar las órdenes.');
-    const rows = [...loaded.values()].flat().concat(checks);
+    if (maintenanceResult.status === 'rejected') throw new Error('No se pudieron cargar las órdenes.');
+    const maintenance = maintenanceResult.value;
+    const checks = checkResult.status === 'fulfilled' ? checkResult.value : cached?.checks ?? [];
+    const failed = checkResult.status === 'rejected' ? ['CHECK'] : [];
+    successful.current = { key: listKey!, units, maintenance, checks, failed };
+    const rows = [...maintenance, ...checks];
     rows.sort((a, b) => Date.parse(b.updatedAt) - Date.parse(a.updatedAt));
-    return { rows, failed: failed.map((id) => id === 'CHECK' ? 'revisiones' : units.find((unit) => unit.id === id)?.numeroInterno ?? 'mantenimiento') };
+    return { rows, failed: failed.map(() => 'revisiones') };
   }, true);
   const rows = list.data?.rows ?? null;
   const selectedCheck = rows?.find((row) => row.id === ordenId)?.tipo === 'CHECK';
@@ -291,8 +299,7 @@ function OrdenesContent() {
         try {
           const opened = await api<{ openedAt: string; openedBy: string }>(`/mantenimiento-ordenes/${detalle.id}/abrir`, { role: role!, userId, method: 'POST' });
           if (successful.current?.key === listKey) {
-            successful.current.rows.forEach((items, key) => successful.current!.rows.set(key,
-              items.map((row) => row.id === detalle.id ? { ...row, ...opened } : row)));
+            successful.current.maintenance = successful.current.maintenance.map((row) => row.id === detalle.id ? { ...row, ...opened } : row);
           }
           setDetalle({ ...detalle, ...opened }); list.setData((current) => current ? { ...current, rows: current.rows.map((row) => row.id === detalle.id ? { ...row, ...opened } : row) } : null);
           setParams({ cola: null, orden: detalle.id });

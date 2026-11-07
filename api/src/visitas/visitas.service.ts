@@ -31,6 +31,11 @@ import { erroresCierre, mensajeKmInvalido } from './close-rules';
 import { EstadoVisita, TipoFirma } from './enums';
 import { CreateVisitaDto } from './dto/create-visita.dto';
 import { UpdateVisitaDto } from './dto/update-visita.dto';
+import {
+  ORDER_QUEUES as ORDER_QUEUE_LIST,
+  OrderQueue,
+  OrdersQueueQuery,
+} from './dto/orders-queue.query';
 import { esTrabajoCatalogo } from './trabajos-catalogo';
 import { Visita } from './visita.entity';
 import {
@@ -238,6 +243,90 @@ export class VisitasService {
         ? visitas.filter((v) => v.estado === EstadoVisita.CERRADO)
         : visitas;
     return visibles.map((v) => this.toResumen(v));
+  }
+
+  /** Visible maintenance orders for the role, across units (ADR-031). */
+  private ordersQueueBase(user: CurrentUser, cola?: OrderQueue) {
+    const qb = this.repo
+      .createQueryBuilder('v')
+      .innerJoinAndSelect('v.unidad', 'u')
+      .leftJoinAndSelect('u.tipo', 't')
+      .leftJoinAndSelect('v.chofer', 'c')
+      .where('v.workOrderType IN (:...types)', { types: maintenanceTypes })
+      .andWhere('v.estado IS NOT NULL');
+    // Same visibility as listByUnidad: Admin/Directivo only sees closed orders.
+    if (user.rol === Rol.ADMIN_DIRECTIVO)
+      qb.andWhere('v.estado = :cerrado', { cerrado: EstadoVisita.CERRADO });
+    if (cola === 'cerradas')
+      qb.andWhere('v.estado = :cerrado', { cerrado: EstadoVisita.CERRADO });
+    else if (cola) {
+      qb.andWhere('v.estado = :borrador', { borrador: EstadoVisita.BORRADOR });
+      qb.andWhere(
+        cola === 'abiertas' ? 'v.openedAt IS NOT NULL' : 'v.openedAt IS NULL',
+      );
+    }
+    return qb;
+  }
+
+  async listOrdenes(user: CurrentUser, query: OrdersQueueQuery) {
+    const limit = query.limit ?? 100;
+    const qb = this.ordersQueueBase(user, query.cola);
+    const needle = query.q?.trim();
+    if (needle) {
+      qb.andWhere(
+        "(u.numeroInterno ILIKE :needle OR u.placas ILIKE :needle OR COALESCE(c.nombre, '') ILIKE :needle)",
+        { needle: `%${needle.replace(/[\\%_]/g, '\\$&')}%` },
+      );
+    }
+    // updated_at is compared at millisecond precision so the cursor (a JS
+    // ISO string) can never skip or repeat a row.
+    const ts = "date_trunc('milliseconds', v.updated_at)";
+    if (query.cursor) {
+      const [at, id] = query.cursor.split('|');
+      qb.andWhere(`(${ts}, v.id) < (:at::timestamptz, :id::uuid)`, { at, id });
+    }
+    qb.addSelect(ts, 'ord_ts')
+      .orderBy('ord_ts', 'DESC')
+      .addOrderBy('v.id', 'DESC')
+      .limit(limit + 1);
+    const found = await qb.getMany();
+    const page = found.slice(0, limit);
+    const last = page[page.length - 1];
+    const counts = new Map<string, number>();
+    if (page.length) {
+      const grouped = await this.trabajos
+        .createQueryBuilder('t')
+        .select('t.visita_id', 'visitaId')
+        .addSelect('COUNT(*)', 'total')
+        .where('t.visita_id IN (:...ids)', { ids: page.map((v) => v.id) })
+        .groupBy('t.visita_id')
+        .getRawMany<{ visitaId: string; total: string }>();
+      for (const row of grouped) counts.set(row.visitaId, Number(row.total));
+    }
+    return {
+      items: page.map((v) => ({
+        ...this.toResumen(v),
+        trabajosCount: counts.get(v.id) ?? 0,
+        unidadId: v.unidad.id,
+        numeroInterno: v.unidad.numeroInterno,
+        placas: v.unidad.placas,
+        tipoNombre: v.unidad.tipo?.nombre ?? '',
+        tipoIcono: v.unidad.tipo?.icono ?? null,
+      })),
+      nextCursor:
+        found.length > limit && last
+          ? `${last.updatedAt.toISOString()}|${last.id}`
+          : null,
+    };
+  }
+
+  async ordenesResumen(user: CurrentUser) {
+    const [abiertas, borradores, cerradas] = await Promise.all(
+      ORDER_QUEUE_LIST.map((cola) =>
+        this.ordersQueueBase(user, cola).getCount(),
+      ),
+    );
+    return { abiertas, borradores, cerradas };
   }
 
   async updateDraft(id: string, dto: UpdateVisitaDto, _user: CurrentUser) {
