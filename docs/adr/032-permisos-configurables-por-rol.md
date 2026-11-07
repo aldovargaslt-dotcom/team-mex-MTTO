@@ -51,7 +51,7 @@ Aceptación del dueño; SPEC con criterios de aceptación y matriz inicial por e
 
 ## Related Artifacts
 
-SPEC: pendiente.
+SPEC: [SPEC-AUTH-003](../specs/SPEC-AUTH-003.md) (Proposed).
 Shaping: [roles-permisos-configurables-v0](../../workspace/shaping/roles-permisos-configurables-v0.md).
 Engineering Work Orders (`EWO-xxx`): ninguno.
 Previous ADR: [ADR-000](000-thin-kernel.md), [ADR-021](021-user-access-directory.md), [ADR-026](026-inventario-costos-historicos.md), [ADR-031](031-inventario-kits-por-tipo.md).
