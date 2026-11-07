@@ -2,6 +2,7 @@ import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, In, Repository } from 'typeorm';
 import { UnitOperationCoordinator } from '../kernel/unit-operation.module';
+import { devFacilitiesEnabled, seedDevFacilities } from './dev-facilities';
 import { LogisticaJourney } from '../logistica/journey.entity';
 import { LogisticaJourneyReceipt } from '../logistica/journey-receipt.entity';
 import { LogisticaJourneyCapture } from '../logistica/journey-capture.entity';
@@ -73,6 +74,12 @@ export class SeedService implements OnModuleInit {
 
   async seed() {
     await this.seedCatalogo();
+    if (devFacilitiesEnabled(process.env)) {
+      await seedDevFacilities(this.dataSource.manager);
+      this.logger.log(
+        'Sucursales de desarrollo listas (solo NODE_ENV=development).',
+      );
+    }
     await this.seedInventario();
     await this.seedAndonDemo();
 

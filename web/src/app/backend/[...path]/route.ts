@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { authConfig, legacyDevelopment, sameOrigin, sessionToken, SESSION_COOKIE, cookieOptions, noStore } from '@/lib/server/auth';
+import { authConfig, developmentToken, legacyDevelopment, sameOrigin, sessionToken, SESSION_COOKIE, cookieOptions, noStore } from '@/lib/server/auth';
 export const runtime = 'nodejs';
 async function proxy(request: NextRequest, context: { params: Promise<{ path: string[] }> }) {
   try {
@@ -17,6 +17,8 @@ async function proxy(request: NextRequest, context: { params: Promise<{ path: st
         const value = request.headers.get(name);
         if (value) headers.set(name, value);
       }
+      const devToken = developmentToken(request.headers.get('x-role'));
+      if (devToken && !headers.has('authorization')) headers.set('authorization', `Bearer ${devToken}`);
     } else {
       if (!['GET', 'HEAD'].includes(request.method) && !sameOrigin(request))
         return NextResponse.json({ message: 'Solicitud no autorizada.' }, { status: 403, headers: noStore });

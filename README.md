@@ -19,6 +19,8 @@ Arquitectura: [ADR-000](docs/adr/000-thin-kernel.md), [ADR-001](docs/adr/001-vis
 
 ## Cómo correrlo
 
+Atajo (desarrollo local, mismos pasos de abajo): con Postgres arriba, `bash script/dev-local.sh` levanta la API y la UI juntas con una identidad de prueba por rol, para que Órdenes, preparación de unidad y revisiones funcionen sin 401. También `api` o `web` por separado. Solo desarrollo: fija `NODE_ENV=development`; la API rechaza ese modo en producción. El seed de desarrollo crea las 10 sucursales y liga las unidades de demostración a `monterrey` ([EWO-069](docs/engineering-work-orders/EWO-069.md)).
+
 Desarrollo con Node en el host (solo Postgres en Docker):
 
 ```bash

@@ -11,6 +11,19 @@ export const cookieOptions = {
 export const noStore = { 'Cache-Control': 'private, no-store' };
 export const legacyDevelopment = () => process.env.NODE_ENV === 'development' && process.env.WEB_AUTH_MODE !== 'OIDC';
 
+const DEV_TOKEN_ROLES = ['SUPERVISOR', 'ADMIN_DIRECTIVO', 'LOGISTICA', 'MECANICO'];
+/**
+ * EWO-069. Local development only: the API's DEVELOPMENT_STUB maps bearer tokens
+ * to server-configured actors, so the proxy sends `<WEB_DEV_TOKEN_PREFIX><role>`
+ * for the role picked in the UI. The prefix comes from server-side env only.
+ * Never returns a token outside NODE_ENV=development or in OIDC mode.
+ */
+export function developmentToken(role: string | null): string | null {
+  const prefix = process.env.WEB_DEV_TOKEN_PREFIX?.trim();
+  if (!legacyDevelopment() || !prefix || !role || !DEV_TOKEN_ROLES.includes(role)) return null;
+  return `${prefix}${role}`;
+}
+
 export function authConfig() {
   const required = (name: string) => {
     const value = process.env[name]?.trim();

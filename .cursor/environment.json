@@ -5,17 +5,23 @@
   "terminals": [
     {
       "name": "API",
-      "command": "bash .cursor/wait-for-db.sh && cd api && npm run start:dev",
+      "command": "bash .cursor/wait-for-db.sh && bash script/dev-local.sh api",
       "description": "NestJS API on http://localhost:3001 (Swagger at /docs)."
     },
     {
       "name": "Web",
-      "command": "cd web && API_URL=http://localhost:3001 npm run dev",
+      "command": "bash script/dev-local.sh web",
       "description": "Next.js UI on http://localhost:3000 (proxies /backend to the API)."
     }
   ],
   "ports": [
-    { "name": "web", "port": 3000 },
-    { "name": "api", "port": 3001 }
+    {
+      "name": "web",
+      "port": 3000
+    },
+    {
+      "name": "api",
+      "port": 3001
+    }
   ]
 }
