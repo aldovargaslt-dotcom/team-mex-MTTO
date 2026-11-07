@@ -1,5 +1,21 @@
 [
   {
+    "controller": "auth/permissions-admin.controller.ts#PermissionsAdminController.read",
+    "method": "GET",
+    "route": "/admin/permissions/",
+    "roles": [
+      "ADMIN_DIRECTIVO"
+    ]
+  },
+  {
+    "controller": "auth/permissions-admin.controller.ts#PermissionsAdminController.update",
+    "method": "PUT",
+    "route": "/admin/permissions/roles/:rol",
+    "roles": [
+      "ADMIN_DIRECTIVO"
+    ]
+  },
+  {
     "controller": "auth/users.controller.ts#UsersController.audit",
     "method": "GET",
     "route": "/admin/users/:id/audit",

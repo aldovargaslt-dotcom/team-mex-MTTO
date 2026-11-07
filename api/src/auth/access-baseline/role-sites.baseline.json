@@ -110,6 +110,51 @@
     "code": "roles: entry?.roles,"
   },
   {
+    "file": "auth/permission-matrix.rules.ts",
+    "member": "if",
+    "code": "rol === (Rol.ADMIN_DIRECTIVO as string) &&"
+  },
+  {
+    "file": "auth/permission-matrix.service.ts",
+    "member": "assertAdmin",
+    "code": "!user?.roles.includes(Rol.ADMIN_DIRECTIVO)"
+  },
+  {
+    "file": "auth/permission-matrix.service.ts",
+    "member": "update",
+    "code": "{ role: next.rol },"
+  },
+  {
+    "file": "auth/permission-matrix.service.ts",
+    "member": "update",
+    "code": "await manager.delete(RolePermission, { role: next.rol });"
+  },
+  {
+    "file": "auth/permission-matrix.service.ts",
+    "member": "update",
+    "code": "const current = (await this.load(manager))[next.rol];"
+  },
+  {
+    "file": "auth/permission-matrix.service.ts",
+    "member": "update",
+    "code": "rol: next.rol,"
+  },
+  {
+    "file": "auth/permission-matrix.service.ts",
+    "member": "update",
+    "code": "rol: next.rol,"
+  },
+  {
+    "file": "auth/permission-matrix.service.ts",
+    "member": "update",
+    "code": "role: next.rol,"
+  },
+  {
+    "file": "auth/permission-matrix.service.ts",
+    "member": "update",
+    "code": "role: next.rol,"
+  },
+  {
     "file": "auth/roles.guard.ts",
     "member": "canActivate",
     "code": "if (!user || !required.includes(user.rol)) {"

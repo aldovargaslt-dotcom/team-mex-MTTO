@@ -211,6 +211,8 @@ export const PERMISO_POR_ENDPOINT: Record<string, Permiso> = {
   'SaludController.updateConfig': 'salud.configurar',
   'SaludController.getHealth': 'salud.ver',
   'UnidadesController.hub': 'unidades.hub.ver',
+  'PermissionsAdminController.read': 'usuarios.administrar',
+  'PermissionsAdminController.update': 'usuarios.administrar',
   'UsersController.audit': 'usuarios.administrar',
   'UsersController.create': 'usuarios.administrar',
   'UsersController.list': 'usuarios.administrar',
