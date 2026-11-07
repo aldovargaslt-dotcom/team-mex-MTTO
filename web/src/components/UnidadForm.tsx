@@ -3,10 +3,12 @@
 import { FormEvent, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { api } from '@/lib/api';
-import type { EstadoUnidad, TipoVehiculo, Unidad } from '@/lib/types';
+import type { EstadoUnidad, Sucursal, TipoVehiculo, Unidad } from '@/lib/types';
+import { ReadStatus } from '@/components/ReadStatus';
+import { useReadResource } from '@/lib/use-read-resource';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Field, FormAlert } from '@/components/ui/field';
+import { Field, FormAlert, Note } from '@/components/ui/field';
 import { Input, NativeSelect } from '@/components/ui/input';
 import { ImageDropzone } from '@/components/ImageDropzone';
 import { UnitPhotoCropEditor } from '@/components/UnitPhotoCropEditor';
@@ -17,6 +19,7 @@ export type UnidadFormValues = {
   placas: string;
   vin: string;
   tipoId: string;
+  sucursalId: string;
   estado: EstadoUnidad;
   marcaModelo: string;
   anio: string;
@@ -46,11 +49,19 @@ export function UnidadForm({
     placas: initial?.placas ?? '',
     vin: initial?.vin ?? '',
     tipoId: initial?.tipo?.id ?? defaultTipoId ?? '',
+    sucursalId: initial?.sucursalId ?? '',
     estado: initial?.estado ?? 'ACTIVA',
     marcaModelo: initial?.marcaModelo ?? '',
     anio: initial?.anio != null ? String(initial.anio) : '',
     fotoDataUrl: initial?.fotoDataUrl ?? '',
   });
+  const sucursalesRead = useReadResource(
+    JSON.stringify([role, userId, 'sucursales']),
+    () => api<Sucursal[]>('/unidades/sucursales', { role, userId }),
+  );
+  const sucursales = sucursalesRead.data ?? [];
+  const sucursalesListas =
+    sucursalesRead.data !== null && sucursalesRead.data.length > 0;
   const [saving, setSaving] = useState(false);
   const [fotoError, setFotoError] = useState<string | null>(null);
   const [fotoPendiente, setFotoPendiente] = useState<File | null>(null);
@@ -69,6 +80,7 @@ export function UnidadForm({
       placas: initial.placas ?? '',
       vin: initial.vin ?? '',
       tipoId: initial.tipo?.id ?? defaultTipoId ?? '',
+      sucursalId: initial.sucursalId ?? '',
       estado: initial.estado ?? 'ACTIVA',
       marcaModelo: initial.marcaModelo ?? '',
       anio: initial.anio != null ? String(initial.anio) : '',
@@ -185,6 +197,42 @@ export function UnidadForm({
           ))}
         </NativeSelect>
       </Field>
+      <Field label="Sucursal" htmlFor="sucursalId">
+        <NativeSelect
+          id="sucursalId"
+          required
+          disabled={!sucursalesListas}
+          value={values.sucursalId}
+          onChange={(e) => set('sucursalId', e.target.value)}
+        >
+          <option value="">Seleccione una sucursal</option>
+          {sucursales.map((sucursal) => (
+            <option key={sucursal.id} value={sucursal.id}>
+              {sucursal.name}
+            </option>
+          ))}
+        </NativeSelect>
+        <ReadStatus
+          loading={sucursalesRead.loading}
+          error={sucursalesRead.error}
+          loadingText="Cargando sucursales…"
+          errorText="No se pudieron cargar las sucursales."
+          retry={sucursalesRead.retry}
+        />
+        {sucursalesRead.data?.length === 0 ? (
+          <p className="muted text-xs">
+            No hay sucursales configuradas. Avise al administrador del sistema.
+          </p>
+        ) : null}
+        {initial?.sucursalId &&
+        values.sucursalId &&
+        values.sucursalId !== initial.sucursalId ? (
+          <Note variant="warn">
+            Al cambiar la sucursal, solo el personal de la nueva sucursal podrá
+            operar esta unidad.
+          </Note>
+        ) : null}
+      </Field>
       <Field label="Estado" htmlFor="estado">
         <NativeSelect
           id="estado"
@@ -219,7 +267,7 @@ export function UnidadForm({
         </div>
       ) : null}
       <div className="flex gap-2 sm:col-span-2">
-        <Button type="submit" disabled={saving}>
+        <Button type="submit" disabled={saving || !sucursalesListas}>
           {saving ? 'Guardando…' : submitLabel}
         </Button>
         <Button asChild variant="secondary">
@@ -237,6 +285,7 @@ export function toPayload(values: UnidadFormValues) {
     placas: values.placas.trim(),
     vin: values.vin.trim() || undefined,
     tipoId: values.tipoId,
+    sucursalId: values.sucursalId,
     estado: values.estado,
     marcaModelo: values.marcaModelo.trim() || undefined,
     anio: values.anio ? Number(values.anio) : undefined,

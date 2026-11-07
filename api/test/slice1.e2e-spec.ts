@@ -12,6 +12,7 @@ import {
   UNIDAD_SEGUNDA_DEMO,
   UNIDADES_DEMO,
 } from '../src/seed/catalogo-demo';
+import { TEST_SUCURSAL, ensureTestSucursal } from './fixtures/sucursal';
 
 const SUPERVISOR = { 'X-Role': 'SUPERVISOR', 'X-User-Id': 'sup-1' };
 const ADMIN = { 'X-Role': 'ADMIN_DIRECTIVO', 'X-User-Id': 'adm-1' };
@@ -28,6 +29,7 @@ describe('Slice 1 (e2e)', () => {
     app = moduleFixture.createNestApplication();
     configureApp(app);
     await app.init();
+    await ensureTestSucursal(app);
     server = app.getHttpServer();
   });
 
@@ -142,6 +144,7 @@ describe('Slice 1 (e2e)', () => {
       .post('/unidades')
       .set(ADMIN)
       .send({
+        sucursalId: TEST_SUCURSAL,
         numeroInterno: 'U-INACT-Q',
         placas: 'TEST-INACT-Q',
         tipoId: tipos.body[0].id,
@@ -180,6 +183,7 @@ describe('Slice 1 (e2e)', () => {
       .post('/unidades')
       .set(SUPERVISOR)
       .send({
+        sucursalId: TEST_SUCURSAL,
         numeroInterno: 'U-199',
         placas: 'TMX-199-Z',
         tipoId,
@@ -261,6 +265,7 @@ describe('Slice 1 (e2e)', () => {
       .post('/unidades')
       .set(ADMIN)
       .send({
+        sucursalId: TEST_SUCURSAL,
         numeroInterno: 'U-104',
         placas: 'TMX-104-D',
         tipoId,
@@ -290,6 +295,7 @@ describe('Slice 1 (e2e)', () => {
       .post('/unidades')
       .set(ADMIN)
       .send({
+        sucursalId: TEST_SUCURSAL,
         numeroInterno: UNIDAD_ANDON_DEMO,
         placas: 'TMX-NEW-1',
         tipoId,
@@ -301,6 +307,7 @@ describe('Slice 1 (e2e)', () => {
       .post('/unidades')
       .set(ADMIN)
       .send({
+        sucursalId: TEST_SUCURSAL,
         numeroInterno: 'U-198',
         placas: PLACAS_ANDON_DEMO,
         tipoId,
@@ -345,6 +352,7 @@ describe('Slice 1 (e2e)', () => {
       .post('/unidades')
       .set(ADMIN)
       .send({
+        sucursalId: TEST_SUCURSAL,
         numeroInterno: 'U-INACT-H',
         placas: 'TEST-INACT-H',
         tipoId: tipos.body[0].id,
@@ -386,6 +394,7 @@ describe('Slice 1 (e2e)', () => {
       .post('/unidades')
       .set(ADMIN)
       .send({
+        sucursalId: TEST_SUCURSAL,
         numeroInterno: 'U-180',
         placas: 'TMX-180-A',
         tipoId,
@@ -397,6 +406,7 @@ describe('Slice 1 (e2e)', () => {
       .post('/unidades')
       .set(ADMIN)
       .send({
+        sucursalId: TEST_SUCURSAL,
         numeroInterno: 'U-181',
         placas: 'TMX-181-A',
         tipoId,
@@ -409,6 +419,7 @@ describe('Slice 1 (e2e)', () => {
       .post('/unidades')
       .set(ADMIN)
       .send({
+        sucursalId: TEST_SUCURSAL,
         numeroInterno: 'U-182',
         placas: 'TMX-182-A',
         tipoId,
@@ -420,6 +431,7 @@ describe('Slice 1 (e2e)', () => {
       .post('/unidades')
       .set(ADMIN)
       .send({
+        sucursalId: TEST_SUCURSAL,
         numeroInterno: 'U-183',
         placas: 'TMX-183-A',
         tipoId,
@@ -438,6 +450,7 @@ describe('Slice 1 (e2e)', () => {
       .post('/unidades')
       .set(ADMIN)
       .send({
+        sucursalId: TEST_SUCURSAL,
         numeroInterno: '   ',
         placas: 'TMX-190-A',
         tipoId,
@@ -449,6 +462,7 @@ describe('Slice 1 (e2e)', () => {
       .post('/unidades')
       .set(ADMIN)
       .send({
+        sucursalId: TEST_SUCURSAL,
         numeroInterno: 'U-191',
         placas: '\t  ',
         tipoId,

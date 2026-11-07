@@ -39,6 +39,12 @@ export class FichaCortaDto {
   @ApiProperty({ nullable: true, type: Number })
   anio: number | null;
 
+  @ApiProperty({ nullable: true, type: String })
+  sucursalId: string | null;
+
+  @ApiProperty({ nullable: true, type: String })
+  sucursalNombre: string | null;
+
   @ApiPropertyOptional({
     nullable: true,
     type: Number,

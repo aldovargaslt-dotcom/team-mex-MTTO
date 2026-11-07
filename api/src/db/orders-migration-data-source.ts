@@ -6,6 +6,7 @@ import {
 } from './postgres-options';
 import { MaintenanceOrderOpening1791763200001 } from './migrations/1791763200001-MaintenanceOrderOpening';
 import { UnitReadiness1792195200001 } from './migrations/1792195200001-UnitReadiness';
+import { UnitSucursales1792368000001 } from './migrations/1792368000001-UnitSucursales';
 
 export function createOrdersMigrationDataSource(
   connection?: PostgresConnectionOptions,
@@ -21,6 +22,10 @@ export function createOrdersMigrationDataSource(
     migrationsRun: false,
     migrationsTableName: 'orders_opening_schema_migrations',
     migrationsTransactionMode: 'all',
-    migrations: [MaintenanceOrderOpening1791763200001, UnitReadiness1792195200001],
+    migrations: [
+      MaintenanceOrderOpening1791763200001,
+      UnitReadiness1792195200001,
+      UnitSucursales1792368000001,
+    ],
   });
 }

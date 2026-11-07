@@ -90,6 +90,7 @@ describe('EWO-021 vehicle documents and Control Tower (e2e)', () => {
       .post('/unidades')
       .set(LEGACY_ADMIN)
       .send({
+        sucursalId: 'tower-mex',
         numeroInterno: `TWR-${Date.now()}`,
         placas: `TW-${String(Date.now()).slice(-6)}`,
         tipoId: type,

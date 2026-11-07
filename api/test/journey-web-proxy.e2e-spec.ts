@@ -20,6 +20,7 @@ import {
 } from './journey-test-fixture';
 import { LogisticaJourneyService } from '../src/logistica/journey.service';
 import type { JourneyBinding } from '../../web/src/lib/journey-commands';
+import { TEST_SUCURSAL, ensureTestSucursal } from './fixtures/sucursal';
 
 // Existing TypeScript compiler + Node Fetch, no browser framework. Execute the
 // actual BFF and browser helper code; only session-cookie decoding is a fixture.
@@ -125,6 +126,7 @@ describe('LJ-07/09 browser storage -> actual BFF -> HTTP API -> PostgreSQL', () 
     app = m.createNestApplication();
     configureApp(app);
     await app.init();
+    await ensureTestSucursal(app);
     await app.listen(0, '127.0.0.1');
     db = app.get(DataSource);
     await initializeJourneyFixture(db);
@@ -163,6 +165,7 @@ describe('LJ-07/09 browser storage -> actual BFF -> HTTP API -> PostgreSQL', () 
       .post('/unidades')
       .set('X-Role', 'ADMIN_DIRECTIVO')
       .send({
+        sucursalId: TEST_SUCURSAL,
         numeroInterno: 'WEB-' + suffix,
         placas: 'WEB-' + suffix,
         tipoId: type,

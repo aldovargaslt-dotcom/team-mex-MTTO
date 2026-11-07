@@ -31,6 +31,7 @@ import {
   prepareDepartureFixture,
   trustedTestActor,
 } from './departure-test-fixture';
+import { TEST_SUCURSAL, ensureTestSucursal } from './fixtures/sucursal';
 
 describe('EWO-038 durable Logistics journeys (real PostgreSQL)', () => {
   let app: INestApplication, db: DataSource, id: string;
@@ -61,6 +62,7 @@ describe('EWO-038 durable Logistics journeys (real PostgreSQL)', () => {
     app = module.createNestApplication();
     configureApp(app);
     await app.init();
+    await ensureTestSucursal(app);
     db = app.get(DataSource);
     await initializeJourneyFixture(db);
   });
@@ -75,6 +77,7 @@ describe('EWO-038 durable Logistics journeys (real PostgreSQL)', () => {
       .post('/unidades')
       .set(admin)
       .send({
+        sucursalId: TEST_SUCURSAL,
         numeroInterno: 'J-' + suffix,
         placas: 'J-' + suffix,
         tipoId: type,

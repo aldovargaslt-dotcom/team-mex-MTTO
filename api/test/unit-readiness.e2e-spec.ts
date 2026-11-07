@@ -144,6 +144,7 @@ describe('EWO056 readiness scope, settings, gates and signed repair verification
         .post('/unidades')
         .set('X-Role', 'ADMIN_DIRECTIVO')
         .send({
+          sucursalId: 'mex',
           numeroInterno: 'READINESS-001',
           placas: 'READINESS-001',
           tipoId: category,

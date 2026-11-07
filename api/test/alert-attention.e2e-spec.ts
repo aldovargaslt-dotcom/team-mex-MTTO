@@ -15,6 +15,7 @@ import { ThresholdChangeEntity } from '../src/alert-catalog/entities/threshold-c
 import { AlertAttentionPriority1791676800001 } from '../src/db/migrations/1791676800001-AlertAttentionPriority';
 import { EstadoPendiente } from '../src/inventario/enums';
 import type { AttentionResponse } from '../src/alert-catalog/attention.types';
+import { TEST_SUCURSAL, ensureTestSucursal } from './fixtures/sucursal';
 
 const SUP = { 'X-Role': 'SUPERVISOR', 'X-User-Id': 'attention-supervisor' };
 const ADMIN = { 'X-Role': 'ADMIN_DIRECTIVO', 'X-User-Id': 'attention-admin' };
@@ -45,6 +46,7 @@ describe('Inicio por condiciones activas — AC01–06', () => {
     app = module.createNestApplication();
     configureApp(app);
     await app.init();
+    await ensureTestSucursal(app);
     server = app.getHttpServer();
     db = app.get(DataSource);
     // Ensayar migración aditiva desde forma legacy en esta base descartable.
@@ -90,6 +92,7 @@ describe('Inicio por condiciones activas — AC01–06', () => {
       .post('/unidades')
       .set(ADMIN)
       .send({
+        sucursalId: TEST_SUCURSAL,
         numeroInterno: 'ATT-001',
         placas: 'ATT-001',
         tipoId: typeId,

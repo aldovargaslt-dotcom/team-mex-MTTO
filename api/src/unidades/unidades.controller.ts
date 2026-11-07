@@ -29,6 +29,15 @@ export class UnidadesController {
     return this.service.findAll(filtros);
   }
 
+  @Get('sucursales')
+  @Roles(Rol.ADMIN_DIRECTIVO)
+  @ApiOperation({
+    summary: 'Catálogo de sucursales para el formulario de unidad (admin)',
+  })
+  sucursales() {
+    return this.service.sucursales();
+  }
+
   @Get(':id/hub')
   @Roles(Rol.SUPERVISOR, Rol.ADMIN_DIRECTIVO)
   @ApiOperation({
@@ -44,7 +53,7 @@ export class UnidadesController {
   @Get(':id')
   @ApiOperation({ summary: 'Obtener una unidad' })
   findOne(@Param('id', ParseUUIDPipe) id: string) {
-    return this.service.findOne(id);
+    return this.service.findOneConSucursal(id);
   }
 
   @Post()
@@ -57,10 +66,7 @@ export class UnidadesController {
   @Patch(':id')
   @Roles(Rol.ADMIN_DIRECTIVO)
   @ApiOperation({ summary: 'Actualizar unidad (admin)' })
-  update(
-    @Param('id', ParseUUIDPipe) id: string,
-    @Body() dto: UpdateUnidadDto,
-  ) {
+  update(@Param('id', ParseUUIDPipe) id: string, @Body() dto: UpdateUnidadDto) {
     return this.service.update(id, dto);
   }
 }
