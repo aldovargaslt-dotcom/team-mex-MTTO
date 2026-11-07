@@ -5,6 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthGuard } from './auth/auth.guard';
 import { TrustedAuthModule } from './auth/trusted-auth.module';
 import { UserAdministrationModule } from './auth/user-administration.module';
+import { PermissionsShadowGuard } from './auth/permissions-shadow.guard';
 import { RolesGuard } from './auth/roles.guard';
 import { HealthController } from './health.controller';
 import { ChoferesModule } from './choferes/choferes.module';
@@ -58,6 +59,8 @@ import { MaintenanceAnalysisModule } from './visitas/analysis/analysis.module';
   controllers: [HealthController],
   providers: [
     { provide: APP_GUARD, useClass: AuthGuard },
+    // EWO-069: solo observa (PERMISSIONS_SHADOW=off por defecto); debe ir antes de RolesGuard.
+    { provide: APP_GUARD, useClass: PermissionsShadowGuard },
     { provide: APP_GUARD, useClass: RolesGuard },
   ],
 })

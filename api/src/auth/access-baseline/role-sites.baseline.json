@@ -155,6 +155,41 @@
     "code": "role: next.rol,"
   },
   {
+    "file": "auth/permissions-shadow.guard.ts",
+    "member": "compare",
+    "code": ": [user.rol];"
+  },
+  {
+    "file": "auth/permissions-shadow.guard.ts",
+    "member": "compare",
+    "code": "? [...request.actor.roles]"
+  },
+  {
+    "file": "auth/permissions-shadow.guard.ts",
+    "member": "compare",
+    "code": "const actorRoles = request?.actor?.roles?.length"
+  },
+  {
+    "file": "auth/permissions-shadow.guard.ts",
+    "member": "compare",
+    "code": "const byRole = roleDecision(required, user.rol);"
+  },
+  {
+    "file": "auth/permissions-shadow.guard.ts",
+    "member": "compare",
+    "code": "Object.entries(view.roles).map(([rol, v]) => [rol, v.permissions]),"
+  },
+  {
+    "file": "auth/permissions-shadow.guard.ts",
+    "member": "compare",
+    "code": "roles: [user.rol],"
+  },
+  {
+    "file": "auth/permissions-shadow.rules.ts",
+    "member": "record",
+    "code": "const roles = [...entry.roles].sort();"
+  },
+  {
     "file": "auth/roles.guard.ts",
     "member": "canActivate",
     "code": "if (!user || !required.includes(user.rol)) {"

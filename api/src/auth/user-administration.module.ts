@@ -35,6 +35,11 @@ import { PermissionsAdminController } from './permissions-admin.controller';
     { provide: ActorDirectoryPort, useExisting: UserAccessService },
     { provide: MaintenanceAssigneesPort, useExisting: UserAccessService },
   ],
-  exports: [ActorDirectoryPort, MaintenanceAssigneesPort, UserAccessService],
+  exports: [
+    ActorDirectoryPort,
+    MaintenanceAssigneesPort,
+    UserAccessService,
+    PermissionMatrixService,
+  ],
 })
 export class UserAdministrationModule {}

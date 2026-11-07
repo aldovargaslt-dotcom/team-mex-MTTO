@@ -44,6 +44,8 @@ Resumen por controlador a partir de `@Roles(...)`; el EWO debe generar el invent
 | Andon | base: SUP, ADMIN · algunas acciones: SUP · otras: ADMIN, SUP |
 | Salud | lectura: SUP, ADMIN · configuración: ADMIN |
 
+Estado de implementación (2026-11-07): [EWO-067](../engineering-work-orders/EWO-067.md) (línea base y catálogo), [EWO-068](../engineering-work-orders/EWO-068.md) (matriz en `auth`, sombra) y [EWO-069](../engineering-work-orders/EWO-069.md) (guard sombra) implementados y verificados localmente; **ningún endpoint decide aún por permisos** (enforcement pendiente).
+
 Línea base ejecutable (EWO-067): 163 endpoints, de los cuales 121 con `@Roles` y 42 sin `@Roles` (autenticados; su control, si existe, vive en servicios), más 135 sitios de comprobación de rol dentro de servicios. Ver `api/src/auth/access-baseline/` y [evidencia](../evidence/EWO-067.md).
 
 **Autorización dentro de servicios (también debe cubrirse):** órdenes canónicas/CHECK (`canonical-orders.service`: combinaciones MEC/LOG/ADMIN/SUP y `SYSTEM`), costos de inventario (`inventory-costs.service.authorize`, con variante admin para correcciones), alcance de análisis (`analysis-scope`), retenciones de readiness (autorización por patio) y política de salida de Flota. Algunas de estas mezclan **rol** con **alcance por patio o estado del dominio**; el permiso sustituye solo la parte de rol, nunca la regla de patio/estado.
