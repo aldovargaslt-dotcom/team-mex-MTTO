@@ -17,8 +17,8 @@ import type { InboxItem } from '@/lib/types';
 import { cn } from '@/lib/utils';
 
 const FILTROS: { id: 'unread' | 'all'; label: string }[] = [
+  { id: 'all', label: 'Abiertas' },
   { id: 'unread', label: 'No leídas' },
-  { id: 'all', label: 'Todas' },
 ];
 
 export default function NotificacionesPage() {
@@ -32,7 +32,7 @@ export default function NotificacionesPage() {
 function InboxContent() {
   const router = useRouter();
   const { role, userId } = useRole();
-  const [filtro, setFiltro] = useState<'unread' | 'all'>('unread');
+  const [filtro, setFiltro] = useState<'unread' | 'all'>('all');
   const read = useReadResource(role ? JSON.stringify([role, userId, filtro]) : null,
     () => api<InboxItem[]>(`/notifications${filtro === 'all' ? '?filter=all' : ''}`, { role: role!, userId }));
   const items = read.data;
