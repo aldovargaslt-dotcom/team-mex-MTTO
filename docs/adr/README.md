@@ -77,3 +77,5 @@ usuario2026-10-18. Daily/Stock e intervalos ya no gobiernan operación.
 Captura externa, horarios y snapshots implementados; evidencia y cobertura temporal
 pendiente de fuentes ABC/UTIL en EWO-063. Activación/migración externa y despliegue
 no ejecutados. Contrato técnico AN-MTTO-001 enlazado.
+
+[ADR031 — Lectura paginada de la cola de órdenes](031-orders-queue-read-model.md): **Proposed**. Lectura de solo lectura `/ordenes` + resumen para Inicio; sin implementación aprobada. Ver EWO-070 (Draft).
