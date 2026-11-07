@@ -1,0 +1,1329 @@
+[
+  {
+    "controller": "auth/users.controller.ts#UsersController.audit",
+    "method": "GET",
+    "route": "/admin/users/:id/audit",
+    "roles": [
+      "ADMIN_DIRECTIVO"
+    ]
+  },
+  {
+    "controller": "auth/users.controller.ts#UsersController.update",
+    "method": "PATCH",
+    "route": "/admin/users/:id",
+    "roles": [
+      "ADMIN_DIRECTIVO"
+    ]
+  },
+  {
+    "controller": "auth/users.controller.ts#UsersController.list",
+    "method": "GET",
+    "route": "/admin/users/",
+    "roles": [
+      "ADMIN_DIRECTIVO"
+    ]
+  },
+  {
+    "controller": "auth/users.controller.ts#UsersController.options",
+    "method": "GET",
+    "route": "/admin/users/options",
+    "roles": [
+      "ADMIN_DIRECTIVO"
+    ]
+  },
+  {
+    "controller": "auth/users.controller.ts#UsersController.create",
+    "method": "POST",
+    "route": "/admin/users/",
+    "roles": [
+      "ADMIN_DIRECTIVO"
+    ]
+  },
+  {
+    "controller": "visitas/analysis/analysis.controller.ts#MaintenanceAnalysisController.catalogueVersion",
+    "method": "POST",
+    "route": "/analisis-mantenimiento/catalogo-trabajos/:code/vigencias",
+    "roles": [
+      "ADMIN_DIRECTIVO",
+      "SUPERVISOR"
+    ]
+  },
+  {
+    "controller": "visitas/analysis/analysis.controller.ts#MaintenanceAnalysisController.catalogue",
+    "method": "GET",
+    "route": "/analisis-mantenimiento/catalogo-trabajos",
+    "roles": [
+      "ADMIN_DIRECTIVO",
+      "SUPERVISOR"
+    ]
+  },
+  {
+    "controller": "visitas/analysis/analysis.controller.ts#MaintenanceAnalysisController.classificationRevision",
+    "method": "POST",
+    "route": "/analisis-mantenimiento/clasificaciones-costos/:id/revisiones",
+    "roles": [
+      "ADMIN_DIRECTIVO",
+      "SUPERVISOR"
+    ]
+  },
+  {
+    "controller": "visitas/analysis/analysis.controller.ts#MaintenanceAnalysisController.classify",
+    "method": "POST",
+    "route": "/analisis-mantenimiento/clasificaciones-costos",
+    "roles": [
+      "ADMIN_DIRECTIVO",
+      "SUPERVISOR"
+    ]
+  },
+  {
+    "controller": "visitas/analysis/analysis.controller.ts#MaintenanceAnalysisController.receipt",
+    "method": "GET",
+    "route": "/analisis-mantenimiento/comandos/:id",
+    "roles": [
+      "ADMIN_DIRECTIVO",
+      "SUPERVISOR"
+    ]
+  },
+  {
+    "controller": "visitas/analysis/analysis.controller.ts#MaintenanceAnalysisController.costs",
+    "method": "GET",
+    "route": "/analisis-mantenimiento/consultas/:id/costos",
+    "roles": [
+      "ADMIN_DIRECTIVO",
+      "SUPERVISOR"
+    ]
+  },
+  {
+    "controller": "visitas/analysis/analysis.controller.ts#MaintenanceAnalysisController.records",
+    "method": "GET",
+    "route": "/analisis-mantenimiento/consultas/:id/registros",
+    "roles": [
+      "ADMIN_DIRECTIVO",
+      "SUPERVISOR"
+    ]
+  },
+  {
+    "controller": "visitas/analysis/analysis.controller.ts#MaintenanceAnalysisController.summary",
+    "method": "GET",
+    "route": "/analisis-mantenimiento/consultas/:id/resumen",
+    "roles": [
+      "ADMIN_DIRECTIVO",
+      "SUPERVISOR"
+    ]
+  },
+  {
+    "controller": "visitas/analysis/analysis.controller.ts#MaintenanceAnalysisController.trends",
+    "method": "GET",
+    "route": "/analisis-mantenimiento/consultas/:id/tendencias",
+    "roles": [
+      "ADMIN_DIRECTIVO",
+      "SUPERVISOR"
+    ]
+  },
+  {
+    "controller": "visitas/analysis/analysis.controller.ts#MaintenanceAnalysisController.utilization",
+    "method": "GET",
+    "route": "/analisis-mantenimiento/consultas/:id/utilizacion",
+    "roles": [
+      "ADMIN_DIRECTIVO",
+      "SUPERVISOR"
+    ]
+  },
+  {
+    "controller": "visitas/analysis/analysis.controller.ts#MaintenanceAnalysisController.query",
+    "method": "POST",
+    "route": "/analisis-mantenimiento/consultas",
+    "roles": [
+      "ADMIN_DIRECTIVO",
+      "SUPERVISOR"
+    ]
+  },
+  {
+    "controller": "visitas/analysis/analysis.controller.ts#MaintenanceAnalysisController.part",
+    "method": "GET",
+    "route": "/analisis-mantenimiento/costos-refacciones/:id",
+    "roles": [
+      "ADMIN_DIRECTIVO",
+      "SUPERVISOR"
+    ]
+  },
+  {
+    "controller": "visitas/analysis/analysis.controller.ts#MaintenanceAnalysisController.documentRevision",
+    "method": "POST",
+    "route": "/analisis-mantenimiento/grupos-documentales/:id/revisiones",
+    "roles": [
+      "ADMIN_DIRECTIVO",
+      "SUPERVISOR"
+    ]
+  },
+  {
+    "controller": "visitas/analysis/analysis.controller.ts#MaintenanceAnalysisController.document",
+    "method": "POST",
+    "route": "/analisis-mantenimiento/grupos-documentales",
+    "roles": [
+      "ADMIN_DIRECTIVO",
+      "SUPERVISOR"
+    ]
+  },
+  {
+    "controller": "visitas/analysis/analysis.controller.ts#MaintenanceAnalysisController.schedules",
+    "method": "GET",
+    "route": "/analisis-mantenimiento/horarios",
+    "roles": [
+      "ADMIN_DIRECTIVO",
+      "SUPERVISOR"
+    ]
+  },
+  {
+    "controller": "visitas/analysis/analysis.controller.ts#MaintenanceAnalysisController.schedule",
+    "method": "POST",
+    "route": "/analisis-mantenimiento/horarios",
+    "roles": [
+      "ADMIN_DIRECTIVO",
+      "SUPERVISOR"
+    ]
+  },
+  {
+    "controller": "visitas/analysis/analysis.controller.ts#MaintenanceAnalysisController.documentOptions",
+    "method": "GET",
+    "route": "/analisis-mantenimiento/lineas-documentales",
+    "roles": [
+      "ADMIN_DIRECTIVO",
+      "SUPERVISOR"
+    ]
+  },
+  {
+    "controller": "visitas/analysis/analysis.controller.ts#MaintenanceAnalysisController.options",
+    "method": "GET",
+    "route": "/analisis-mantenimiento/opciones",
+    "roles": [
+      "ADMIN_DIRECTIVO",
+      "SUPERVISOR"
+    ]
+  },
+  {
+    "controller": "visitas/analysis/analysis.controller.ts#MaintenanceAnalysisController.link",
+    "method": "GET",
+    "route": "/analisis-mantenimiento/servicios-externos/:id/adjuntos/:attachmentId/enlace",
+    "roles": [
+      "ADMIN_DIRECTIVO",
+      "SUPERVISOR"
+    ]
+  },
+  {
+    "controller": "visitas/analysis/analysis.controller.ts#MaintenanceAnalysisController.attachment",
+    "method": "GET",
+    "route": "/analisis-mantenimiento/servicios-externos/:id/adjuntos/:attachmentId",
+    "roles": [
+      "ADMIN_DIRECTIVO",
+      "SUPERVISOR"
+    ]
+  },
+  {
+    "controller": "visitas/analysis/analysis.controller.ts#MaintenanceAnalysisController.attach",
+    "method": "POST",
+    "route": "/analisis-mantenimiento/servicios-externos/:id/adjuntos",
+    "roles": [
+      "ADMIN_DIRECTIVO",
+      "SUPERVISOR"
+    ]
+  },
+  {
+    "controller": "visitas/analysis/analysis.controller.ts#MaintenanceAnalysisController.complete",
+    "method": "POST",
+    "route": "/analisis-mantenimiento/servicios-externos/:id/completar-costo",
+    "roles": [
+      "ADMIN_DIRECTIVO",
+      "SUPERVISOR"
+    ]
+  },
+  {
+    "controller": "visitas/analysis/analysis.controller.ts#MaintenanceAnalysisController.correct",
+    "method": "POST",
+    "route": "/analisis-mantenimiento/servicios-externos/:id/corregir",
+    "roles": [
+      "ADMIN_DIRECTIVO",
+      "SUPERVISOR"
+    ]
+  },
+  {
+    "controller": "visitas/analysis/analysis.controller.ts#MaintenanceAnalysisController.preview",
+    "method": "POST",
+    "route": "/analisis-mantenimiento/servicios-externos/:id/previsualizar-correccion",
+    "roles": [
+      "ADMIN_DIRECTIVO",
+      "SUPERVISOR"
+    ]
+  },
+  {
+    "controller": "visitas/analysis/analysis.controller.ts#MaintenanceAnalysisController.service",
+    "method": "GET",
+    "route": "/analisis-mantenimiento/servicios-externos/:id",
+    "roles": [
+      "ADMIN_DIRECTIVO",
+      "SUPERVISOR"
+    ]
+  },
+  {
+    "controller": "visitas/analysis/analysis.controller.ts#MaintenanceAnalysisController.createService",
+    "method": "POST",
+    "route": "/analisis-mantenimiento/servicios-externos",
+    "roles": [
+      "ADMIN_DIRECTIVO",
+      "SUPERVISOR"
+    ]
+  },
+  {
+    "controller": "visitas/analysis/analysis.controller.ts#MaintenanceAnalysisController.context",
+    "method": "GET",
+    "route": "/analisis-mantenimiento/unidades/:id/contexto",
+    "roles": [
+      "ADMIN_DIRECTIVO",
+      "SUPERVISOR"
+    ]
+  },
+  {
+    "controller": "andon/andon.controller.ts#AndonController.enterado",
+    "method": "POST",
+    "route": "/andon/avisos/:id/enterado",
+    "roles": [
+      "SUPERVISOR"
+    ]
+  },
+  {
+    "controller": "andon/andon.controller.ts#AndonController.list",
+    "method": "GET",
+    "route": "/andon/avisos",
+    "roles": [
+      "ADMIN_DIRECTIVO",
+      "SUPERVISOR"
+    ]
+  },
+  {
+    "controller": "andon/andon.controller.ts#AndonController.updateUmbral",
+    "method": "PATCH",
+    "route": "/andon/umbrales/:tipoVehiculoId",
+    "roles": [
+      "ADMIN_DIRECTIVO",
+      "SUPERVISOR"
+    ]
+  },
+  {
+    "controller": "andon/andon.controller.ts#AndonController.listUmbrales",
+    "method": "GET",
+    "route": "/andon/umbrales",
+    "roles": [
+      "ADMIN_DIRECTIVO",
+      "SUPERVISOR"
+    ]
+  },
+  {
+    "controller": "auth/identity.controller.ts#IdentityController.me",
+    "method": "GET",
+    "route": "/auth/me",
+    "roles": null
+  },
+  {
+    "controller": "visitas/visitas.controller.ts#VisitasController.catalogo",
+    "method": "GET",
+    "route": "/catalogo/trabajos",
+    "roles": [
+      "ADMIN_DIRECTIVO",
+      "SUPERVISOR"
+    ]
+  },
+  {
+    "controller": "visitas/checks/canonical-orders.controller.ts#CanonicalOrdersController.assign",
+    "method": "POST",
+    "route": "/checks/:id/assign",
+    "roles": null
+  },
+  {
+    "controller": "visitas/checks/canonical-orders.controller.ts#CanonicalOrdersController.claim",
+    "method": "POST",
+    "route": "/checks/:id/claim",
+    "roles": null
+  },
+  {
+    "controller": "visitas/checks/canonical-orders.controller.ts#CanonicalOrdersController.complete",
+    "method": "POST",
+    "route": "/checks/:id/complete",
+    "roles": null
+  },
+  {
+    "controller": "visitas/checks/canonical-orders.controller.ts#CanonicalOrdersController.conditionConfig",
+    "method": "GET",
+    "route": "/checks/:id/condition-config",
+    "roles": null
+  },
+  {
+    "controller": "visitas/checks/canonical-orders.controller.ts#CanonicalOrdersController.conditionDetail",
+    "method": "GET",
+    "route": "/checks/:id/condition",
+    "roles": null
+  },
+  {
+    "controller": "visitas/checks/canonical-orders.controller.ts#CanonicalOrdersController.condition",
+    "method": "PATCH",
+    "route": "/checks/:id/condition",
+    "roles": null
+  },
+  {
+    "controller": "visitas/checks/canonical-orders.controller.ts#CanonicalOrdersController.evidenceContent",
+    "method": "GET",
+    "route": "/checks/:id/evidence/:evidenceId/content",
+    "roles": null
+  },
+  {
+    "controller": "visitas/checks/canonical-orders.controller.ts#CanonicalOrdersController.deleteEvidence",
+    "method": "DELETE",
+    "route": "/checks/:id/evidence/:evidenceId",
+    "roles": null
+  },
+  {
+    "controller": "visitas/checks/canonical-orders.controller.ts#CanonicalOrdersController.reserveEvidence",
+    "method": "POST",
+    "route": "/checks/:id/evidence/uploads",
+    "roles": null
+  },
+  {
+    "controller": "visitas/checks/canonical-orders.controller.ts#CanonicalOrdersController.evidence",
+    "method": "GET",
+    "route": "/checks/:id/evidence",
+    "roles": null
+  },
+  {
+    "controller": "visitas/checks/canonical-orders.controller.ts#CanonicalOrdersController.registerEvidence",
+    "method": "POST",
+    "route": "/checks/:id/evidence",
+    "roles": null
+  },
+  {
+    "controller": "visitas/checks/canonical-orders.controller.ts#CanonicalOrdersController.classifyFinding",
+    "method": "PATCH",
+    "route": "/checks/:id/findings/:findingId",
+    "roles": null
+  },
+  {
+    "controller": "visitas/checks/canonical-orders.controller.ts#CanonicalOrdersController.findings",
+    "method": "GET",
+    "route": "/checks/:id/findings",
+    "roles": null
+  },
+  {
+    "controller": "visitas/checks/canonical-orders.controller.ts#CanonicalOrdersController.invalidate",
+    "method": "POST",
+    "route": "/checks/:id/invalidations",
+    "roles": null
+  },
+  {
+    "controller": "visitas/checks/canonical-orders.controller.ts#CanonicalOrdersController.review",
+    "method": "POST",
+    "route": "/checks/:id/review",
+    "roles": null
+  },
+  {
+    "controller": "visitas/checks/canonical-orders.controller.ts#CanonicalOrdersController.signatureContent",
+    "method": "GET",
+    "route": "/checks/:id/signature/content",
+    "roles": null
+  },
+  {
+    "controller": "visitas/checks/canonical-orders.controller.ts#CanonicalOrdersController.start",
+    "method": "POST",
+    "route": "/checks/:id/start",
+    "roles": null
+  },
+  {
+    "controller": "visitas/checks/canonical-orders.controller.ts#CanonicalOrdersController.detail",
+    "method": "GET",
+    "route": "/checks/:id",
+    "roles": null
+  },
+  {
+    "controller": "visitas/checks/canonical-orders.controller.ts#CanonicalOrdersController.checks",
+    "method": "GET",
+    "route": "/checks",
+    "roles": null
+  },
+  {
+    "controller": "choferes/choferes.controller.ts#ChoferesController.remove",
+    "method": "DELETE",
+    "route": "/choferes/:id",
+    "roles": [
+      "ADMIN_DIRECTIVO"
+    ]
+  },
+  {
+    "controller": "choferes/choferes.controller.ts#ChoferesController.findOne",
+    "method": "GET",
+    "route": "/choferes/:id",
+    "roles": null
+  },
+  {
+    "controller": "choferes/choferes.controller.ts#ChoferesController.update",
+    "method": "PATCH",
+    "route": "/choferes/:id",
+    "roles": [
+      "ADMIN_DIRECTIVO"
+    ]
+  },
+  {
+    "controller": "choferes/choferes.controller.ts#ChoferesController.findAll",
+    "method": "GET",
+    "route": "/choferes/",
+    "roles": null
+  },
+  {
+    "controller": "choferes/choferes.controller.ts#ChoferesController.create",
+    "method": "POST",
+    "route": "/choferes/",
+    "roles": [
+      "ADMIN_DIRECTIVO"
+    ]
+  },
+  {
+    "controller": "alert-catalog/alert-catalog.controller.ts#AlertCatalogController.preview",
+    "method": "POST",
+    "route": "/configuracion/alertas/:code/umbrales/preview",
+    "roles": [
+      "ADMIN_DIRECTIVO",
+      "LOGISTICA",
+      "SUPERVISOR"
+    ]
+  },
+  {
+    "controller": "alert-catalog/alert-catalog.controller.ts#AlertCatalogController.getUmbrales",
+    "method": "GET",
+    "route": "/configuracion/alertas/:code/umbrales",
+    "roles": [
+      "ADMIN_DIRECTIVO",
+      "LOGISTICA",
+      "SUPERVISOR"
+    ]
+  },
+  {
+    "controller": "alert-catalog/alert-catalog.controller.ts#AlertCatalogController.patchUmbrales",
+    "method": "PATCH",
+    "route": "/configuracion/alertas/:code/umbrales",
+    "roles": [
+      "ADMIN_DIRECTIVO",
+      "LOGISTICA",
+      "SUPERVISOR"
+    ]
+  },
+  {
+    "controller": "alert-catalog/alert-catalog.controller.ts#AlertCatalogController.getOne",
+    "method": "GET",
+    "route": "/configuracion/alertas/:code",
+    "roles": [
+      "ADMIN_DIRECTIVO",
+      "LOGISTICA",
+      "SUPERVISOR"
+    ]
+  },
+  {
+    "controller": "alert-catalog/alert-catalog.controller.ts#AlertCatalogController.setActive",
+    "method": "PATCH",
+    "route": "/configuracion/alertas/:code",
+    "roles": [
+      "ADMIN_DIRECTIVO"
+    ]
+  },
+  {
+    "controller": "alert-catalog/alert-catalog.controller.ts#AlertCatalogController.attention",
+    "method": "GET",
+    "route": "/configuracion/alertas/activas",
+    "roles": [
+      "ADMIN_DIRECTIVO",
+      "SUPERVISOR"
+    ]
+  },
+  {
+    "controller": "alert-catalog/alert-catalog.controller.ts#AlertCatalogController.list",
+    "method": "GET",
+    "route": "/configuracion/alertas/",
+    "roles": [
+      "ADMIN_DIRECTIVO",
+      "LOGISTICA",
+      "SUPERVISOR"
+    ]
+  },
+  {
+    "controller": "alert-catalog/alert-catalog.controller.ts#AlertCatalogController.create",
+    "method": "POST",
+    "route": "/configuracion/alertas/",
+    "roles": [
+      "ADMIN_DIRECTIVO"
+    ]
+  },
+  {
+    "controller": "flota/flota.controller.ts#FlotaController.movimientosDeHoy",
+    "method": "GET",
+    "route": "/flota/movimientos/hoy",
+    "roles": [
+      "ADMIN_DIRECTIVO",
+      "LOGISTICA"
+    ]
+  },
+  {
+    "controller": "flota/flota.controller.ts#FlotaController.registrar",
+    "method": "POST",
+    "route": "/flota/movimientos",
+    "roles": [
+      "ADMIN_DIRECTIVO",
+      "LOGISTICA"
+    ]
+  },
+  {
+    "controller": "flota/flota.controller.ts#FlotaController.updateSitio",
+    "method": "PATCH",
+    "route": "/flota/sitios/:id",
+    "roles": [
+      "ADMIN_DIRECTIVO",
+      "LOGISTICA"
+    ]
+  },
+  {
+    "controller": "flota/flota.controller.ts#FlotaController.sitios",
+    "method": "GET",
+    "route": "/flota/sitios",
+    "roles": [
+      "ADMIN_DIRECTIVO",
+      "LOGISTICA"
+    ]
+  },
+  {
+    "controller": "flota/flota.controller.ts#FlotaController.createSitio",
+    "method": "POST",
+    "route": "/flota/sitios",
+    "roles": [
+      "ADMIN_DIRECTIVO",
+      "LOGISTICA"
+    ]
+  },
+  {
+    "controller": "flota/flota.controller.ts#FlotaController.tablero",
+    "method": "GET",
+    "route": "/flota/tablero",
+    "roles": [
+      "ADMIN_DIRECTIVO",
+      "LOGISTICA"
+    ]
+  },
+  {
+    "controller": "flota/flota.controller.ts#FlotaController.envioEspecial",
+    "method": "POST",
+    "route": "/flota/unidades/:unidadId/envio-especial",
+    "roles": [
+      "ADMIN_DIRECTIVO",
+      "LOGISTICA"
+    ]
+  },
+  {
+    "controller": "flota/flota.controller.ts#FlotaController.recordPhysicalState",
+    "method": "POST",
+    "route": "/flota/unidades/:unidadId/estado-fisico",
+    "roles": [
+      "ADMIN_DIRECTIVO",
+      "LOGISTICA"
+    ]
+  },
+  {
+    "controller": "flota/flota.controller.ts#FlotaController.reactivar",
+    "method": "POST",
+    "route": "/flota/unidades/:unidadId/reactivar",
+    "roles": [
+      "ADMIN_DIRECTIVO",
+      "LOGISTICA"
+    ]
+  },
+  {
+    "controller": "flota/flota.controller.ts#FlotaController.detalle",
+    "method": "GET",
+    "route": "/flota/unidades/:unidadId",
+    "roles": [
+      "ADMIN_DIRECTIVO",
+      "LOGISTICA"
+    ]
+  },
+  {
+    "controller": "health.controller.ts#HealthController.check",
+    "method": "GET",
+    "route": "/health/",
+    "roles": null
+  },
+  {
+    "controller": "health.controller.ts#HealthController.ready",
+    "method": "GET",
+    "route": "/health/ready",
+    "roles": null
+  },
+  {
+    "controller": "inventario/inventory-costs.controller.ts#InventoryCostsController.complete",
+    "method": "POST",
+    "route": "/inventario/costos/:id/completar",
+    "roles": [
+      "ADMIN_DIRECTIVO",
+      "SUPERVISOR"
+    ]
+  },
+  {
+    "controller": "inventario/inventory-costs.controller.ts#InventoryCostsController.correct",
+    "method": "POST",
+    "route": "/inventario/costos/:id/corregir",
+    "roles": [
+      "ADMIN_DIRECTIVO",
+      "SUPERVISOR"
+    ]
+  },
+  {
+    "controller": "inventario/inventory-costs.controller.ts#InventoryCostsController.returns",
+    "method": "POST",
+    "route": "/inventario/costos/:id/retornos",
+    "roles": [
+      "ADMIN_DIRECTIVO",
+      "SUPERVISOR"
+    ]
+  },
+  {
+    "controller": "inventario/inventory-costs.controller.ts#InventoryCostsController.adjust",
+    "method": "POST",
+    "route": "/inventario/costos/ajustes",
+    "roles": [
+      "ADMIN_DIRECTIVO",
+      "SUPERVISOR"
+    ]
+  },
+  {
+    "controller": "inventario/inventory-costs.controller.ts#InventoryCostsController.consumptions",
+    "method": "GET",
+    "route": "/inventario/costos/consumos",
+    "roles": [
+      "ADMIN_DIRECTIVO",
+      "SUPERVISOR"
+    ]
+  },
+  {
+    "controller": "inventario/inventario.controller.ts#InventarioController.updateFamilia",
+    "method": "PATCH",
+    "route": "/inventario/familias/:id",
+    "roles": [
+      "ADMIN_DIRECTIVO",
+      "SUPERVISOR"
+    ]
+  },
+  {
+    "controller": "inventario/inventario.controller.ts#InventarioController.listFamilias",
+    "method": "GET",
+    "route": "/inventario/familias",
+    "roles": [
+      "ADMIN_DIRECTIVO",
+      "SUPERVISOR"
+    ]
+  },
+  {
+    "controller": "inventario/inventario.controller.ts#InventarioController.createFamilia",
+    "method": "POST",
+    "route": "/inventario/familias",
+    "roles": [
+      "ADMIN_DIRECTIVO",
+      "SUPERVISOR"
+    ]
+  },
+  {
+    "controller": "inventario/inventario.controller.ts#InventarioController.removeItemProveedor",
+    "method": "DELETE",
+    "route": "/inventario/item-proveedores/:id",
+    "roles": [
+      "ADMIN_DIRECTIVO",
+      "SUPERVISOR"
+    ]
+  },
+  {
+    "controller": "inventario/inventario.controller.ts#InventarioController.updateItemProveedor",
+    "method": "PATCH",
+    "route": "/inventario/item-proveedores/:id",
+    "roles": [
+      "ADMIN_DIRECTIVO",
+      "SUPERVISOR"
+    ]
+  },
+  {
+    "controller": "inventario/inventario.controller.ts#InventarioController.removeCompat",
+    "method": "DELETE",
+    "route": "/inventario/items/:id/compatibilidad/:tipoVehiculoId",
+    "roles": [
+      "ADMIN_DIRECTIVO",
+      "SUPERVISOR"
+    ]
+  },
+  {
+    "controller": "inventario/inventario.controller.ts#InventarioController.addCompat",
+    "method": "POST",
+    "route": "/inventario/items/:id/compatibilidad",
+    "roles": [
+      "ADMIN_DIRECTIVO",
+      "SUPERVISOR"
+    ]
+  },
+  {
+    "controller": "inventario/inventory-costs.controller.ts#InventoryCostsController.detail",
+    "method": "GET",
+    "route": "/inventario/items/:id/costos",
+    "roles": [
+      "ADMIN_DIRECTIVO",
+      "SUPERVISOR"
+    ]
+  },
+  {
+    "controller": "inventario/inventario.controller.ts#InventarioController.addItemProveedor",
+    "method": "POST",
+    "route": "/inventario/items/:id/proveedores",
+    "roles": [
+      "ADMIN_DIRECTIVO",
+      "SUPERVISOR"
+    ]
+  },
+  {
+    "controller": "inventario/inventory-costs.controller.ts#InventoryCostsController.opening",
+    "method": "POST",
+    "route": "/inventario/items/:id/valoraciones/aperturas",
+    "roles": [
+      "ADMIN_DIRECTIVO",
+      "SUPERVISOR"
+    ]
+  },
+  {
+    "controller": "inventario/inventario.controller.ts#InventarioController.findItem",
+    "method": "GET",
+    "route": "/inventario/items/:id",
+    "roles": [
+      "ADMIN_DIRECTIVO",
+      "SUPERVISOR"
+    ]
+  },
+  {
+    "controller": "inventario/inventario.controller.ts#InventarioController.updateItem",
+    "method": "PATCH",
+    "route": "/inventario/items/:id",
+    "roles": [
+      "ADMIN_DIRECTIVO",
+      "SUPERVISOR"
+    ]
+  },
+  {
+    "controller": "inventario/inventario.controller.ts#InventarioController.listItems",
+    "method": "GET",
+    "route": "/inventario/items",
+    "roles": [
+      "ADMIN_DIRECTIVO",
+      "SUPERVISOR"
+    ]
+  },
+  {
+    "controller": "inventario/inventario.controller.ts#InventarioController.createItem",
+    "method": "POST",
+    "route": "/inventario/items",
+    "roles": [
+      "ADMIN_DIRECTIVO",
+      "SUPERVISOR"
+    ]
+  },
+  {
+    "controller": "inventario/inventario.controller.ts#InventarioController.ajuste",
+    "method": "POST",
+    "route": "/inventario/movimientos/ajuste",
+    "roles": [
+      "ADMIN_DIRECTIVO",
+      "SUPERVISOR"
+    ]
+  },
+  {
+    "controller": "inventario/inventario.controller.ts#InventarioController.entrada",
+    "method": "POST",
+    "route": "/inventario/movimientos/entrada",
+    "roles": [
+      "ADMIN_DIRECTIVO",
+      "SUPERVISOR"
+    ]
+  },
+  {
+    "controller": "inventario/inventario.controller.ts#InventarioController.listMovimientos",
+    "method": "GET",
+    "route": "/inventario/movimientos",
+    "roles": [
+      "ADMIN_DIRECTIVO",
+      "SUPERVISOR"
+    ]
+  },
+  {
+    "controller": "inventario/inventario.controller.ts#InventarioController.marcarRecibida",
+    "method": "POST",
+    "route": "/inventario/pendientes-comprobante/:id/recibir",
+    "roles": [
+      "ADMIN_DIRECTIVO",
+      "SUPERVISOR"
+    ]
+  },
+  {
+    "controller": "inventario/inventario.controller.ts#InventarioController.adjuntarTicket",
+    "method": "POST",
+    "route": "/inventario/pendientes-comprobante/:id/ticket",
+    "roles": [
+      "ADMIN_DIRECTIVO",
+      "SUPERVISOR"
+    ]
+  },
+  {
+    "controller": "inventario/inventario.controller.ts#InventarioController.listPendientes",
+    "method": "GET",
+    "route": "/inventario/pendientes-comprobante",
+    "roles": [
+      "ADMIN_DIRECTIVO",
+      "SUPERVISOR"
+    ]
+  },
+  {
+    "controller": "inventario/inventario.controller.ts#InventarioController.updateProveedor",
+    "method": "PATCH",
+    "route": "/inventario/proveedores/:id",
+    "roles": [
+      "ADMIN_DIRECTIVO",
+      "SUPERVISOR"
+    ]
+  },
+  {
+    "controller": "inventario/inventario.controller.ts#InventarioController.listProveedores",
+    "method": "GET",
+    "route": "/inventario/proveedores",
+    "roles": [
+      "ADMIN_DIRECTIVO",
+      "SUPERVISOR"
+    ]
+  },
+  {
+    "controller": "inventario/inventario.controller.ts#InventarioController.createProveedor",
+    "method": "POST",
+    "route": "/inventario/proveedores",
+    "roles": [
+      "ADMIN_DIRECTIVO",
+      "SUPERVISOR"
+    ]
+  },
+  {
+    "controller": "inventario/inventory-costs.controller.ts#InventoryCostsController.receive",
+    "method": "POST",
+    "route": "/inventario/recepciones",
+    "roles": [
+      "ADMIN_DIRECTIVO",
+      "SUPERVISOR"
+    ]
+  },
+  {
+    "controller": "inventario/inventario.controller.ts#InventarioController.skus",
+    "method": "GET",
+    "route": "/inventario/skus",
+    "roles": [
+      "ADMIN_DIRECTIVO",
+      "SUPERVISOR"
+    ]
+  },
+  {
+    "controller": "inventario/inventario.controller.ts#InventarioController.listStock",
+    "method": "GET",
+    "route": "/inventario/stock",
+    "roles": [
+      "ADMIN_DIRECTIVO",
+      "SUPERVISOR"
+    ]
+  },
+  {
+    "controller": "logistica/logistica.controller.ts#LogisticaController.getAlertasSinRegreso",
+    "method": "GET",
+    "route": "/logistica/alertas/sin-regreso",
+    "roles": [
+      "ADMIN_DIRECTIVO",
+      "LOGISTICA"
+    ]
+  },
+  {
+    "controller": "logistica/logistica.controller.ts#LogisticaController.patchAlertasSinRegreso",
+    "method": "PATCH",
+    "route": "/logistica/alertas/sin-regreso",
+    "roles": [
+      "ADMIN_DIRECTIVO",
+      "LOGISTICA"
+    ]
+  },
+  {
+    "controller": "logistica/logistica.controller.ts#LogisticaController.unassign",
+    "method": "DELETE",
+    "route": "/logistica/asignaciones/:unidadId",
+    "roles": [
+      "ADMIN_DIRECTIVO",
+      "LOGISTICA"
+    ]
+  },
+  {
+    "controller": "logistica/logistica.controller.ts#LogisticaController.assign",
+    "method": "POST",
+    "route": "/logistica/asignaciones",
+    "roles": [
+      "ADMIN_DIRECTIVO",
+      "LOGISTICA"
+    ]
+  },
+  {
+    "controller": "logistica/logistica.controller.ts#LogisticaController.list",
+    "method": "GET",
+    "route": "/logistica/choferes",
+    "roles": [
+      "ADMIN_DIRECTIVO",
+      "LOGISTICA"
+    ]
+  },
+  {
+    "controller": "logistica/logistica.controller.ts#LogisticaController.registrarRegreso",
+    "method": "POST",
+    "route": "/logistica/regresos/:unidadId",
+    "roles": [
+      "ADMIN_DIRECTIVO",
+      "LOGISTICA"
+    ]
+  },
+  {
+    "controller": "logistica/logistica.controller.ts#LogisticaController.registrarSalida",
+    "method": "POST",
+    "route": "/logistica/salidas/:unidadId",
+    "roles": [
+      "ADMIN_DIRECTIVO",
+      "LOGISTICA"
+    ]
+  },
+  {
+    "controller": "logistica/logistica.controller.ts#LogisticaController.controlTower",
+    "method": "GET",
+    "route": "/logistica/torre-control",
+    "roles": [
+      "ADMIN_DIRECTIVO",
+      "LOGISTICA"
+    ]
+  },
+  {
+    "controller": "logistica/logistica.controller.ts#LogisticaController.journeyContext",
+    "method": "GET",
+    "route": "/logistica/unidades/:unidadId/journey-context",
+    "roles": [
+      "ADMIN_DIRECTIVO",
+      "LOGISTICA"
+    ]
+  },
+  {
+    "controller": "logistica/logistica.controller.ts#LogisticaController.listUnidades",
+    "method": "GET",
+    "route": "/logistica/unidades",
+    "roles": [
+      "ADMIN_DIRECTIVO",
+      "LOGISTICA"
+    ]
+  },
+  {
+    "controller": "visitas/checks/canonical-orders.controller.ts#CanonicalOrdersController.openMaintenance",
+    "method": "POST",
+    "route": "/mantenimiento-ordenes/:id/abrir",
+    "roles": null
+  },
+  {
+    "controller": "visitas/checks/canonical-orders.controller.ts#CanonicalOrdersController.maintenanceDetail",
+    "method": "GET",
+    "route": "/mantenimiento-ordenes/:id",
+    "roles": null
+  },
+  {
+    "controller": "visitas/checks/canonical-orders.controller.ts#CanonicalOrdersController.list",
+    "method": "GET",
+    "route": "/mantenimiento-ordenes",
+    "roles": null
+  },
+  {
+    "controller": "notifications/notifications.controller.ts#NotificationsController.read",
+    "method": "POST",
+    "route": "/notifications/:id/read",
+    "roles": [
+      "ADMIN_DIRECTIVO",
+      "LOGISTICA",
+      "SUPERVISOR"
+    ]
+  },
+  {
+    "controller": "notifications/notifications.controller.ts#NotificationsController.badge",
+    "method": "GET",
+    "route": "/notifications/badge",
+    "roles": [
+      "ADMIN_DIRECTIVO",
+      "LOGISTICA",
+      "SUPERVISOR"
+    ]
+  },
+  {
+    "controller": "notifications/notifications.controller.ts#NotificationsController.list",
+    "method": "GET",
+    "route": "/notifications/",
+    "roles": [
+      "ADMIN_DIRECTIVO",
+      "LOGISTICA",
+      "SUPERVISOR"
+    ]
+  },
+  {
+    "controller": "notifications/notifications.controller.ts#NotificationsController.readAll",
+    "method": "POST",
+    "route": "/notifications/read-all",
+    "roles": [
+      "ADMIN_DIRECTIVO",
+      "LOGISTICA",
+      "SUPERVISOR"
+    ]
+  },
+  {
+    "controller": "salud/salud.controller.ts#SaludController.listVersions",
+    "method": "GET",
+    "route": "/salud/config/versions",
+    "roles": [
+      "ADMIN_DIRECTIVO"
+    ]
+  },
+  {
+    "controller": "salud/salud.controller.ts#SaludController.getConfig",
+    "method": "GET",
+    "route": "/salud/config",
+    "roles": [
+      "ADMIN_DIRECTIVO"
+    ]
+  },
+  {
+    "controller": "salud/salud.controller.ts#SaludController.updateConfig",
+    "method": "PUT",
+    "route": "/salud/config",
+    "roles": [
+      "ADMIN_DIRECTIVO"
+    ]
+  },
+  {
+    "controller": "salud/salud.controller.ts#SaludController.getHealth",
+    "method": "GET",
+    "route": "/unidades/:id/health",
+    "roles": [
+      "ADMIN_DIRECTIVO",
+      "SUPERVISOR"
+    ]
+  },
+  {
+    "controller": "unidades/unidades.controller.ts#UnidadesController.hub",
+    "method": "GET",
+    "route": "/unidades/:id/hub",
+    "roles": [
+      "ADMIN_DIRECTIVO",
+      "SUPERVISOR"
+    ]
+  },
+  {
+    "controller": "unidades/unidades.controller.ts#UnidadesController.findOne",
+    "method": "GET",
+    "route": "/unidades/:id",
+    "roles": null
+  },
+  {
+    "controller": "unidades/unidades.controller.ts#UnidadesController.update",
+    "method": "PATCH",
+    "route": "/unidades/:id",
+    "roles": [
+      "ADMIN_DIRECTIVO"
+    ]
+  },
+  {
+    "controller": "visitas/checks/canonical-orders.controller.ts#CanonicalOrdersController.active",
+    "method": "GET",
+    "route": "/unidades/:unidadId/checks/active",
+    "roles": null
+  },
+  {
+    "controller": "visitas/checks/canonical-orders.controller.ts#CanonicalOrdersController.create",
+    "method": "POST",
+    "route": "/unidades/:unidadId/checks",
+    "roles": null
+  },
+  {
+    "controller": "vehicle-documents/vehicle-documents.controller.ts#VehicleDocumentsController.current",
+    "method": "GET",
+    "route": "/unidades/:unidadId/documentos/poliza-seguro/",
+    "roles": [
+      "ADMIN_DIRECTIVO",
+      "LOGISTICA",
+      "MECANICO"
+    ]
+  },
+  {
+    "controller": "vehicle-documents/vehicle-documents.controller.ts#VehicleDocumentsController.create",
+    "method": "POST",
+    "route": "/unidades/:unidadId/documentos/poliza-seguro/versions",
+    "roles": [
+      "ADMIN_DIRECTIVO"
+    ]
+  },
+  {
+    "controller": "visitas/checks/canonical-orders.controller.ts#CanonicalOrdersController.maintenance",
+    "method": "POST",
+    "route": "/unidades/:unidadId/mantenimiento-ordenes",
+    "roles": null
+  },
+  {
+    "controller": "visitas/visitas.controller.ts#VisitasController.list",
+    "method": "GET",
+    "route": "/unidades/:unidadId/visitas",
+    "roles": [
+      "ADMIN_DIRECTIVO",
+      "SUPERVISOR"
+    ]
+  },
+  {
+    "controller": "visitas/visitas.controller.ts#VisitasController.create",
+    "method": "POST",
+    "route": "/unidades/:unidadId/visitas",
+    "roles": [
+      "SUPERVISOR"
+    ]
+  },
+  {
+    "controller": "unidades/unidades.controller.ts#UnidadesController.findAll",
+    "method": "GET",
+    "route": "/unidades/",
+    "roles": null
+  },
+  {
+    "controller": "unidades/unidades.controller.ts#UnidadesController.create",
+    "method": "POST",
+    "route": "/unidades/",
+    "roles": [
+      "ADMIN_DIRECTIVO"
+    ]
+  },
+  {
+    "controller": "unidades/tipos-vehiculo.controller.ts#TiposVehiculoController.remove",
+    "method": "DELETE",
+    "route": "/unidades/tipos/:id",
+    "roles": [
+      "ADMIN_DIRECTIVO"
+    ]
+  },
+  {
+    "controller": "unidades/tipos-vehiculo.controller.ts#TiposVehiculoController.findOne",
+    "method": "GET",
+    "route": "/unidades/tipos/:id",
+    "roles": null
+  },
+  {
+    "controller": "unidades/tipos-vehiculo.controller.ts#TiposVehiculoController.update",
+    "method": "PATCH",
+    "route": "/unidades/tipos/:id",
+    "roles": [
+      "ADMIN_DIRECTIVO"
+    ]
+  },
+  {
+    "controller": "unidades/tipos-vehiculo.controller.ts#TiposVehiculoController.findAll",
+    "method": "GET",
+    "route": "/unidades/tipos/",
+    "roles": null
+  },
+  {
+    "controller": "unidades/tipos-vehiculo.controller.ts#TiposVehiculoController.create",
+    "method": "POST",
+    "route": "/unidades/tipos/",
+    "roles": [
+      "ADMIN_DIRECTIVO"
+    ]
+  },
+  {
+    "controller": "visitas/checks/unit-readiness.controller.ts#UnitReadinessController.assignees",
+    "method": "GET",
+    "route": "/unit-readiness/:id/assignees",
+    "roles": null
+  },
+  {
+    "controller": "visitas/checks/unit-readiness.controller.ts#UnitReadinessController.history",
+    "method": "GET",
+    "route": "/unit-readiness/:id/history",
+    "roles": null
+  },
+  {
+    "controller": "visitas/checks/unit-readiness.controller.ts#UnitReadinessController.hold",
+    "method": "POST",
+    "route": "/unit-readiness/:id/holds",
+    "roles": null
+  },
+  {
+    "controller": "visitas/checks/unit-readiness.controller.ts#UnitReadinessController.assign",
+    "method": "POST",
+    "route": "/unit-readiness/:id/orders/:orderId/assign",
+    "roles": null
+  },
+  {
+    "controller": "visitas/checks/unit-readiness.controller.ts#UnitReadinessController.verify",
+    "method": "POST",
+    "route": "/unit-readiness/:id/verifications",
+    "roles": null
+  },
+  {
+    "controller": "visitas/checks/unit-readiness.controller.ts#UnitReadinessController.detail",
+    "method": "GET",
+    "route": "/unit-readiness/:id",
+    "roles": null
+  },
+  {
+    "controller": "visitas/checks/unit-readiness.controller.ts#UnitReadinessController.list",
+    "method": "GET",
+    "route": "/unit-readiness/",
+    "roles": null
+  },
+  {
+    "controller": "visitas/checks/unit-readiness.controller.ts#UnitReadinessController.update",
+    "method": "PUT",
+    "route": "/unit-readiness/settings",
+    "roles": null
+  },
+  {
+    "controller": "visitas/visitas.controller.ts#VisitasController.close",
+    "method": "POST",
+    "route": "/visitas/:id/cerrar",
+    "roles": [
+      "SUPERVISOR"
+    ]
+  },
+  {
+    "controller": "visitas/visitas.controller.ts#VisitasController.remove",
+    "method": "DELETE",
+    "route": "/visitas/:id",
+    "roles": [
+      "SUPERVISOR"
+    ]
+  },
+  {
+    "controller": "visitas/visitas.controller.ts#VisitasController.findOne",
+    "method": "GET",
+    "route": "/visitas/:id",
+    "roles": [
+      "ADMIN_DIRECTIVO",
+      "SUPERVISOR"
+    ]
+  },
+  {
+    "controller": "visitas/visitas.controller.ts#VisitasController.update",
+    "method": "PATCH",
+    "route": "/visitas/:id",
+    "roles": [
+      "SUPERVISOR"
+    ]
+  }
+]

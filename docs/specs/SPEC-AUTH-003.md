@@ -29,8 +29,8 @@ Resumen por controlador a partir de `@Roles(...)`; el EWO debe generar el invent
 | Área (controlador) | Roles hoy |
 |---|---|
 | Usuarios (`auth/users`) | ADMIN |
-| Catálogo de alertas | lectura: SUP, ADMIN, LOG · edición: SUP, ADMIN (un tramo) · resto: ADMIN |
-| Documentos de vehículo | alta/consulta: ADMIN, LOG, MEC · resto: ADMIN |
+| Catálogo de alertas | ver, editar umbrales y vista previa: SUP, ADMIN, LOG · alertas activas: SUP, ADMIN · crear/activar: ADMIN |
+| Documentos de vehículo | consulta póliza vigente: ADMIN, LOG, MEC · alta de versión: ADMIN |
 | Choferes | ADMIN |
 | Logística | LOG, ADMIN |
 | Flota | LOG, ADMIN |
@@ -43,6 +43,8 @@ Resumen por controlador a partir de `@Roles(...)`; el EWO debe generar el invent
 | Tipos de vehículo | ADMIN |
 | Andon | base: SUP, ADMIN · algunas acciones: SUP · otras: ADMIN, SUP |
 | Salud | lectura: SUP, ADMIN · configuración: ADMIN |
+
+Línea base ejecutable (EWO-067): 163 endpoints, de los cuales 121 con `@Roles` y 42 sin `@Roles` (autenticados; su control, si existe, vive en servicios), más 135 sitios de comprobación de rol dentro de servicios. Ver `api/src/auth/access-baseline/` y [evidencia](../evidence/EWO-067.md).
 
 **Autorización dentro de servicios (también debe cubrirse):** órdenes canónicas/CHECK (`canonical-orders.service`: combinaciones MEC/LOG/ADMIN/SUP y `SYSTEM`), costos de inventario (`inventory-costs.service.authorize`, con variante admin para correcciones), alcance de análisis (`analysis-scope`), retenciones de readiness (autorización por patio) y política de salida de Flota. Algunas de estas mezclan **rol** con **alcance por patio o estado del dominio**; el permiso sustituye solo la parte de rol, nunca la regla de patio/estado.
 

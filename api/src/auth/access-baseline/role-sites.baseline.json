@@ -1,0 +1,677 @@
+[
+  {
+    "file": "alert-catalog/alert-catalog.rules.ts",
+    "member": "canMutateTypes",
+    "code": "return rol === Rol.ADMIN_DIRECTIVO;"
+  },
+  {
+    "file": "alert-catalog/alert-catalog.rules.ts",
+    "member": "if",
+    "code": "if (rol === Rol.ADMIN_DIRECTIVO) return true;"
+  },
+  {
+    "file": "alert-catalog/alert-catalog.rules.ts",
+    "member": "if",
+    "code": "if (rol === Rol.ADMIN_DIRECTIVO) return true;"
+  },
+  {
+    "file": "alert-catalog/alert-catalog.rules.ts",
+    "member": "if",
+    "code": "if (rol === Rol.LOGISTICA) return family === AlertFamily.FLOTA;"
+  },
+  {
+    "file": "alert-catalog/alert-catalog.rules.ts",
+    "member": "if",
+    "code": "if (rol === Rol.LOGISTICA) return family === AlertFamily.FLOTA;"
+  },
+  {
+    "file": "alert-catalog/alert-catalog.rules.ts",
+    "member": "if",
+    "code": "if (rol === Rol.SUPERVISOR) return family === AlertFamily.MTTO;"
+  },
+  {
+    "file": "alert-catalog/alert-catalog.rules.ts",
+    "member": "if",
+    "code": "if (rol === Rol.SUPERVISOR) return family === AlertFamily.MTTO;"
+  },
+  {
+    "file": "alert-catalog/alert-catalog.rules.ts",
+    "member": "listVisibleTypes",
+    "code": "if (!row.active && rol !== Rol.ADMIN_DIRECTIVO) return false;"
+  },
+  {
+    "file": "alert-catalog/alert-catalog.service.ts",
+    "member": "getUmbrales",
+    "code": "if (!canEditThresholds(type.family, rol) && rol !== Rol.ADMIN_DIRECTIVO) {"
+  },
+  {
+    "file": "alert-catalog/alert-catalog.service.ts",
+    "member": "getVisible",
+    "code": "(!row.active && rol !== Rol.ADMIN_DIRECTIVO)"
+  },
+  {
+    "file": "alert-catalog/alert-catalog.service.ts",
+    "member": "patchUmbrales",
+    "code": "if (!canEditThresholds(type.family, user.rol)) {"
+  },
+  {
+    "file": "alert-catalog/alert-catalog.service.ts",
+    "member": "previewUmbrales",
+    "code": "const type = await this.getVisible(code, user.rol);"
+  },
+  {
+    "file": "alert-catalog/alert-catalog.service.ts",
+    "member": "previewUmbrales",
+    "code": "if (!canEditThresholds(type.family, user.rol))"
+  },
+  {
+    "file": "alert-catalog/alert-catalog.service.ts",
+    "member": "saveAttentionThresholds",
+    "code": "actorRole: user.rol,"
+  },
+  {
+    "file": "andon/andon-engine.ts",
+    "member": "enterado",
+    "code": "if (actor.rol !== Rol.SUPERVISOR) {"
+  },
+  {
+    "file": "andon/andon.service.ts",
+    "member": "enterado",
+    "code": "rol: user.rol,"
+  },
+  {
+    "file": "auth/auth.guard.ts",
+    "member": "canActivate",
+    "code": "(actor.roles.find("
+  },
+  {
+    "file": "auth/auth.guard.ts",
+    "member": "canActivate",
+    "code": "actor.roles.includes(preferred) &&"
+  },
+  {
+    "file": "auth/auth.guard.ts",
+    "member": "canActivate",
+    "code": "rol: role ?? (actor.roles[0] as Rol),"
+  },
+  {
+    "file": "auth/oidc-authentication.ts",
+    "member": "authenticate",
+    "code": "roles: [...actor.roles],"
+  },
+  {
+    "file": "auth/oidc-authentication.ts",
+    "member": "for",
+    "code": "if (actor.roles.includes('SYSTEM'))"
+  },
+  {
+    "file": "auth/oidc-authentication.ts",
+    "member": "for",
+    "code": "roles: entry?.roles,"
+  },
+  {
+    "file": "auth/roles.guard.ts",
+    "member": "canActivate",
+    "code": "if (!user || !required.includes(user.rol)) {"
+  },
+  {
+    "file": "auth/roles.guard.ts",
+    "member": "canActivate",
+    "code": "throw new ForbiddenException(mensajeSinPermiso(user?.rol));"
+  },
+  {
+    "file": "auth/roles.guard.ts",
+    "member": "if",
+    "code": "if (rol === Rol.ADMIN_DIRECTIVO) {"
+  },
+  {
+    "file": "auth/roles.guard.ts",
+    "member": "if",
+    "code": "if (rol === Rol.LOGISTICA) {"
+  },
+  {
+    "file": "auth/trusted-actor.ts",
+    "member": "validateActor",
+    "code": "actor.roles.every((r) => r === 'SYSTEM' || ROLES_VALIDOS.includes(r)) &&"
+  },
+  {
+    "file": "auth/trusted-actor.ts",
+    "member": "validateActor",
+    "code": "goodList(actor.roles) &&"
+  },
+  {
+    "file": "auth/user-access.service.ts",
+    "member": "assertAdmin",
+    "code": "!user?.roles.includes(Rol.ADMIN_DIRECTIVO)"
+  },
+  {
+    "file": "auth/user-access.service.ts",
+    "member": "fields",
+    "code": "!Array.isArray(input.roles) ||"
+  },
+  {
+    "file": "auth/user-access.service.ts",
+    "member": "fields",
+    "code": "if (actor.roles.includes('SYSTEM'))"
+  },
+  {
+    "file": "auth/user-access.service.ts",
+    "member": "fields",
+    "code": "roles: [...new Set(input.roles)],"
+  },
+  {
+    "file": "auth/user-access.service.ts",
+    "member": "fields",
+    "code": "roles: input.roles,"
+  },
+  {
+    "file": "auth/user-access.service.ts",
+    "member": "maintenanceAssignees",
+    "code": "return actors.filter((a) => a.roles.includes(Rol.MECANICO) && a.facilityScopes.includes(facilityId)).map(({ subject, displayName }) => ({ subject, displayName }));"
+  },
+  {
+    "file": "auth/user-access.service.ts",
+    "member": "maintenanceAssignees",
+    "code": "return users.filter((u) => u.roles.includes(Rol.MECANICO) && u.facilityScopes.includes(facilityId)).map(({ subject, displayName }) => ({ subject, displayName }));"
+  },
+  {
+    "file": "auth/user-access.service.ts",
+    "member": "onModuleInit",
+    "code": "if (!actors.some((a) => a.roles.includes(Rol.ADMIN_DIRECTIVO)))"
+  },
+  {
+    "file": "auth/user-access.service.ts",
+    "member": "onModuleInit",
+    "code": "roles: actor.roles as Rol[],"
+  },
+  {
+    "file": "auth/user-access.service.ts",
+    "member": "resolve",
+    "code": "roles: user.roles,"
+  },
+  {
+    "file": "auth/user-access.service.ts",
+    "member": "snapshot",
+    "code": "roles: [...user.roles],"
+  },
+  {
+    "file": "auth/user-access.service.ts",
+    "member": "update",
+    "code": "(!fields.active || !fields.roles.includes(Rol.ADMIN_DIRECTIVO))"
+  },
+  {
+    "file": "auth/user-access.service.ts",
+    "member": "update",
+    "code": "admins.filter((u) => u.roles.includes(Rol.ADMIN_DIRECTIVO)).length <="
+  },
+  {
+    "file": "auth/user-access.service.ts",
+    "member": "update",
+    "code": "user.roles.includes(Rol.ADMIN_DIRECTIVO) &&"
+  },
+  {
+    "file": "common/hub-policy.ts",
+    "member": "if",
+    "code": "if (rol === Rol.ADMIN_DIRECTIVO) {"
+  },
+  {
+    "file": "common/hub-policy.ts",
+    "member": "if",
+    "code": "if (rol === Rol.LOGISTICA) {"
+  },
+  {
+    "file": "common/hub-policy.ts",
+    "member": "puedeCrearVisita",
+    "code": "return rol === Rol.SUPERVISOR && estado === EstadoUnidad.ACTIVA;"
+  },
+  {
+    "file": "flota/flota.service.ts",
+    "member": "registrar",
+    "code": "? await this.departurePolicy.authorize(dto.unidadId, actor, manager)"
+  },
+  {
+    "file": "flota/flota.service.ts",
+    "member": "registrar",
+    "code": "avalRol: user.rol,"
+  },
+  {
+    "file": "flota/physical-state-transition.service.ts",
+    "member": "record",
+    "code": "actorId: actor.userId ?? actor.rol,"
+  },
+  {
+    "file": "inventario/inventory-costs.service.ts",
+    "member": "authorize",
+    "code": "!actor.roles.some("
+  },
+  {
+    "file": "inventario/inventory-costs.service.ts",
+    "member": "authorize",
+    "code": "(r) => r === Rol.ADMIN_DIRECTIVO || (!admin && r === Rol.SUPERVISOR),"
+  },
+  {
+    "file": "inventario/inventory-costs.service.ts",
+    "member": "authorize",
+    "code": "authorize(actor: TrustedActor, admin = false) {"
+  },
+  {
+    "file": "inventario/inventory-costs.service.ts",
+    "member": "command",
+    "code": "this.authorize(actor, admin);"
+  },
+  {
+    "file": "inventario/inventory-costs.service.ts",
+    "member": "consumptions",
+    "code": "this.authorize(actor);"
+  },
+  {
+    "file": "inventario/inventory-costs.service.ts",
+    "member": "detail",
+    "code": "this.authorize(actor);"
+  },
+  {
+    "file": "inventario/maintenance-cost-read.port.ts",
+    "member": "references",
+    "code": "this.scope.authorize(actor);"
+  },
+  {
+    "file": "kernel/analysis-scope.service.ts",
+    "member": "authorize",
+    "code": "!actor.roles.some("
+  },
+  {
+    "file": "kernel/analysis-scope.service.ts",
+    "member": "authorize",
+    "code": "(r) => r === Rol.ADMIN_DIRECTIVO || (!admin && r === Rol.SUPERVISOR),"
+  },
+  {
+    "file": "kernel/analysis-scope.service.ts",
+    "member": "authorize",
+    "code": "authorize(actor: TrustedActor, admin = false) {"
+  },
+  {
+    "file": "kernel/analysis-scope.service.ts",
+    "member": "units",
+    "code": "this.authorize(actor);"
+  },
+  {
+    "file": "logistica/departure-policy.port.ts",
+    "member": "<module>",
+    "code": "abstract authorize("
+  },
+  {
+    "file": "logistica/departure-policy.service.ts",
+    "member": "authorize",
+    "code": "async authorize("
+  },
+  {
+    "file": "logistica/journey.service.ts",
+    "member": "execute",
+    "code": "const authorization = await this.policy.authorize("
+  },
+  {
+    "file": "logistica/journey.service.ts",
+    "member": "scope",
+    "code": "!actor.roles.some((r) => r === Rol.LOGISTICA || r === Rol.ADMIN_DIRECTIVO)"
+  },
+  {
+    "file": "seed/seed.service.ts",
+    "member": "createAndCloseSeedVisit",
+    "code": "const user = { rol: Rol.SUPERVISOR, userId: 'seed' };"
+  },
+  {
+    "file": "seed/seed.service.ts",
+    "member": "seedInventario",
+    "code": "const seedUser = { rol: Rol.SUPERVISOR, userId: 'seed' };"
+  },
+  {
+    "file": "unidades/unidades.service.ts",
+    "member": "hub",
+    "code": "puedeCrearVisita: puedeCrearVisita(user.rol, unidad.estado),"
+  },
+  {
+    "file": "unidades/unidades.service.ts",
+    "member": "hub",
+    "code": "user.rol === Rol.ADMIN_DIRECTIVO"
+  },
+  {
+    "file": "unidades/unidades.service.ts",
+    "member": "hub",
+    "code": "user.rol,"
+  },
+  {
+    "file": "visitas/analysis/analysis-report.service.ts",
+    "member": "options",
+    "code": "configureSchedules: actor.roles.includes(Rol.ADMIN_DIRECTIVO),"
+  },
+  {
+    "file": "visitas/analysis/analysis-report.service.ts",
+    "member": "options",
+    "code": "correctCosts: actor.roles.includes(Rol.ADMIN_DIRECTIVO),"
+  },
+  {
+    "file": "visitas/analysis/analysis.service.ts",
+    "member": "activeCatalogue",
+    "code": "this.scope.authorize(actor);"
+  },
+  {
+    "file": "visitas/analysis/analysis.service.ts",
+    "member": "classify",
+    "code": "if (current) this.scope.authorize(actor, true);"
+  },
+  {
+    "file": "visitas/analysis/analysis.service.ts",
+    "member": "command",
+    "code": "this.scope.authorize(actor, admin);"
+  },
+  {
+    "file": "visitas/analysis/analysis.service.ts",
+    "member": "documentGroup",
+    "code": "if (id) this.scope.authorize(actor, true);"
+  },
+  {
+    "file": "visitas/analysis/analysis.service.ts",
+    "member": "previewCorrection",
+    "code": "this.scope.authorize(actor, true);"
+  },
+  {
+    "file": "visitas/analysis/analysis.service.ts",
+    "member": "ready",
+    "code": "this.scope.authorize(actor);"
+  },
+  {
+    "file": "visitas/analysis/analysis.service.ts",
+    "member": "service",
+    "code": "this.scope.authorize(actor);"
+  },
+  {
+    "file": "visitas/checks/canonical-orders.service.ts",
+    "member": "active",
+    "code": "this.authorize(actor, [Rol.MECANICO, Rol.LOGISTICA, Rol.ADMIN_DIRECTIVO]);"
+  },
+  {
+    "file": "visitas/checks/canonical-orders.service.ts",
+    "member": "assign",
+    "code": "!actor.roles.some((role) =>"
+  },
+  {
+    "file": "visitas/checks/canonical-orders.service.ts",
+    "member": "assign",
+    "code": "[Rol.LOGISTICA, Rol.ADMIN_DIRECTIVO].includes(role as Rol),"
+  },
+  {
+    "file": "visitas/checks/canonical-orders.service.ts",
+    "member": "authorize",
+    "code": "if (!actor.roles.some((r) => roles.includes(r)))"
+  },
+  {
+    "file": "visitas/checks/canonical-orders.service.ts",
+    "member": "authorize",
+    "code": "private authorize(actor: TrustedActor, roles: (Rol | 'SYSTEM')[]) {"
+  },
+  {
+    "file": "visitas/checks/canonical-orders.service.ts",
+    "member": "claim",
+    "code": "this.authorize(actor, [Rol.MECANICO]);"
+  },
+  {
+    "file": "visitas/checks/canonical-orders.service.ts",
+    "member": "classifyFinding",
+    "code": "this.authorize(actor, [Rol.MECANICO]);"
+  },
+  {
+    "file": "visitas/checks/canonical-orders.service.ts",
+    "member": "complete",
+    "code": "this.authorize(actor, [Rol.MECANICO]);"
+  },
+  {
+    "file": "visitas/checks/canonical-orders.service.ts",
+    "member": "conditionConfig",
+    "code": "this.authorize(actor, [Rol.MECANICO]);"
+  },
+  {
+    "file": "visitas/checks/canonical-orders.service.ts",
+    "member": "conditionDetail",
+    "code": "this.authorize(actor, [Rol.MECANICO]);"
+  },
+  {
+    "file": "visitas/checks/canonical-orders.service.ts",
+    "member": "condition",
+    "code": "this.authorize(actor, [Rol.MECANICO]);"
+  },
+  {
+    "file": "visitas/checks/canonical-orders.service.ts",
+    "member": "createCheck",
+    "code": ": [Rol.LOGISTICA, Rol.ADMIN_DIRECTIVO],"
+  },
+  {
+    "file": "visitas/checks/canonical-orders.service.ts",
+    "member": "createCheck",
+    "code": "this.authorize("
+  },
+  {
+    "file": "visitas/checks/canonical-orders.service.ts",
+    "member": "createMaintenance",
+    "code": "{ rol: Rol.SUPERVISOR, userId: actor.subject },"
+  },
+  {
+    "file": "visitas/checks/canonical-orders.service.ts",
+    "member": "createMaintenance",
+    "code": "this.authorize(actor, [Rol.SUPERVISOR]);"
+  },
+  {
+    "file": "visitas/checks/canonical-orders.service.ts",
+    "member": "detail",
+    "code": "!actor.roles.some((r) =>"
+  },
+  {
+    "file": "visitas/checks/canonical-orders.service.ts",
+    "member": "detail",
+    "code": "...(allowSupervisorRead ? [Rol.SUPERVISOR] : []),"
+  },
+  {
+    "file": "visitas/checks/canonical-orders.service.ts",
+    "member": "detail",
+    "code": "...(allowSupervisorRead ? [Rol.SUPERVISOR] : []),"
+  },
+  {
+    "file": "visitas/checks/canonical-orders.service.ts",
+    "member": "detail",
+    "code": "actor.roles.includes(Rol.MECANICO) &&"
+  },
+  {
+    "file": "visitas/checks/canonical-orders.service.ts",
+    "member": "detail",
+    "code": "Rol.ADMIN_DIRECTIVO,"
+  },
+  {
+    "file": "visitas/checks/canonical-orders.service.ts",
+    "member": "detail",
+    "code": "Rol.ADMIN_DIRECTIVO,"
+  },
+  {
+    "file": "visitas/checks/canonical-orders.service.ts",
+    "member": "detail",
+    "code": "Rol.LOGISTICA,"
+  },
+  {
+    "file": "visitas/checks/canonical-orders.service.ts",
+    "member": "detail",
+    "code": "Rol.LOGISTICA,"
+  },
+  {
+    "file": "visitas/checks/canonical-orders.service.ts",
+    "member": "detail",
+    "code": "Rol.MECANICO,"
+  },
+  {
+    "file": "visitas/checks/canonical-orders.service.ts",
+    "member": "detail",
+    "code": "this.authorize(actor, ["
+  },
+  {
+    "file": "visitas/checks/canonical-orders.service.ts",
+    "member": "evidenceWriter",
+    "code": "this.authorize(actor, [Rol.MECANICO]);"
+  },
+  {
+    "file": "visitas/checks/canonical-orders.service.ts",
+    "member": "generateDailyVehicleChecks",
+    "code": "this.authorize(actor, ['SYSTEM']);"
+  },
+  {
+    "file": "visitas/checks/canonical-orders.service.ts",
+    "member": "invalidate",
+    "code": "const logistics = actor.roles.includes(Rol.LOGISTICA);"
+  },
+  {
+    "file": "visitas/checks/canonical-orders.service.ts",
+    "member": "invalidate",
+    "code": "const mechanic = actor.roles.includes(Rol.MECANICO);"
+  },
+  {
+    "file": "visitas/checks/canonical-orders.service.ts",
+    "member": "invalidate",
+    "code": "this.authorize(actor, [Rol.MECANICO, Rol.LOGISTICA]);"
+  },
+  {
+    "file": "visitas/checks/canonical-orders.service.ts",
+    "member": "list",
+    "code": ": [Rol.MECANICO, Rol.SUPERVISOR, Rol.ADMIN_DIRECTIVO],"
+  },
+  {
+    "file": "visitas/checks/canonical-orders.service.ts",
+    "member": "list",
+    "code": "!actor.roles.some((r) =>"
+  },
+  {
+    "file": "visitas/checks/canonical-orders.service.ts",
+    "member": "list",
+    "code": "? [Rol.MECANICO, Rol.LOGISTICA, Rol.SUPERVISOR, Rol.ADMIN_DIRECTIVO]"
+  },
+  {
+    "file": "visitas/checks/canonical-orders.service.ts",
+    "member": "list",
+    "code": "[Rol.LOGISTICA, Rol.SUPERVISOR, Rol.ADMIN_DIRECTIVO].includes("
+  },
+  {
+    "file": "visitas/checks/canonical-orders.service.ts",
+    "member": "list",
+    "code": "actor.roles.includes(Rol.MECANICO) &&"
+  },
+  {
+    "file": "visitas/checks/canonical-orders.service.ts",
+    "member": "list",
+    "code": "this.authorize("
+  },
+  {
+    "file": "visitas/checks/canonical-orders.service.ts",
+    "member": "maintenanceDetail",
+    "code": "this.authorize(actor, [Rol.MECANICO, Rol.SUPERVISOR, Rol.ADMIN_DIRECTIVO]);"
+  },
+  {
+    "file": "visitas/checks/canonical-orders.service.ts",
+    "member": "openMaintenance",
+    "code": "this.authorize(actor, [Rol.MECANICO, Rol.SUPERVISOR]);"
+  },
+  {
+    "file": "visitas/checks/canonical-orders.service.ts",
+    "member": "review",
+    "code": "this.authorize(actor, [Rol.MECANICO]);"
+  },
+  {
+    "file": "visitas/checks/canonical-orders.service.ts",
+    "member": "start",
+    "code": "this.authorize(actor, [Rol.MECANICO]);"
+  },
+  {
+    "file": "visitas/checks/canonical-orders.service.ts",
+    "member": "writableCheck",
+    "code": "this.authorize(actor, [Rol.MECANICO, Rol.LOGISTICA, Rol.ADMIN_DIRECTIVO]);"
+  },
+  {
+    "file": "visitas/checks/readiness-holds.service.ts",
+    "member": "assign",
+    "code": "await this.authorize(manager, unidadId, actor);"
+  },
+  {
+    "file": "visitas/checks/readiness-holds.service.ts",
+    "member": "assignees",
+    "code": "await this.authorize(this.db.manager, unidadId, actor);"
+  },
+  {
+    "file": "visitas/checks/readiness-holds.service.ts",
+    "member": "assignees",
+    "code": "if (!actor.roles.includes(Rol.SUPERVISOR))"
+  },
+  {
+    "file": "visitas/checks/readiness-holds.service.ts",
+    "member": "assign",
+    "code": "if (!actor.roles.includes(Rol.SUPERVISOR))"
+  },
+  {
+    "file": "visitas/checks/readiness-holds.service.ts",
+    "member": "authorize",
+    "code": "async authorize("
+  },
+  {
+    "file": "visitas/checks/readiness-holds.service.ts",
+    "member": "create",
+    "code": "!actor.roles.some((r) => [Rol.MECANICO, Rol.LOGISTICA].includes(r as Rol))"
+  },
+  {
+    "file": "visitas/checks/readiness-holds.service.ts",
+    "member": "create",
+    "code": "await this.authorize(manager, unidadId, actor);"
+  },
+  {
+    "file": "visitas/checks/readiness-holds.service.ts",
+    "member": "verify",
+    "code": "await this.authorize(manager, unidadId, actor);"
+  },
+  {
+    "file": "visitas/checks/readiness-holds.service.ts",
+    "member": "verify",
+    "code": "if (!actor.roles.includes(Rol.MECANICO))"
+  },
+  {
+    "file": "visitas/checks/readiness-settings.service.ts",
+    "member": "update",
+    "code": "!actor.roles.includes(Rol.ADMIN_DIRECTIVO) ||"
+  },
+  {
+    "file": "visitas/checks/unit-readiness.service.ts",
+    "member": "snapshot",
+    "code": ": [Rol.SUPERVISOR, Rol.ADMIN_DIRECTIVO];"
+  },
+  {
+    "file": "visitas/checks/unit-readiness.service.ts",
+    "member": "snapshot",
+    "code": "? [Rol.SUPERVISOR, Rol.ADMIN_DIRECTIVO, Rol.LOGISTICA, Rol.MECANICO]"
+  },
+  {
+    "file": "visitas/checks/unit-readiness.service.ts",
+    "member": "snapshot",
+    "code": "if (!actor.roles.some((r) => allowed.includes(r as Rol)))"
+  },
+  {
+    "file": "visitas/checks/unit-readiness.service.ts",
+    "member": "snapshot",
+    "code": "settings: actor.roles.includes(Rol.ADMIN_DIRECTIVO) ? settings : [],"
+  },
+  {
+    "file": "visitas/visitas.service.ts",
+    "member": "close",
+    "code": "const actorId = user.userId ?? `legacy:${user.rol}`;"
+  },
+  {
+    "file": "visitas/visitas.service.ts",
+    "member": "findDetalle",
+    "code": "user.rol === Rol.ADMIN_DIRECTIVO &&"
+  },
+  {
+    "file": "visitas/visitas.service.ts",
+    "member": "listByUnidad",
+    "code": "user.rol === Rol.ADMIN_DIRECTIVO"
+  }
+]
