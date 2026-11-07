@@ -20,6 +20,15 @@ edita el catálogo, respetando permisos de servidor. No crear otro sidebar, men�
 catálogo local ni reglas `.app-sidebar` en CSS de features. La selección nunca
 se condiciona a `/unidades` u otro módulo. Subnav/tabs de objetos no son sidebar.
 
+## Agrupación por dominio — EWO-066
+
+Cada ítem del catálogo declara `group`: Operación, Flota, Inventario y análisis o
+Administración, y se ordena por grupo. El encabezado (11px, mayúsculas, `--muted`)
+aparece al cambiar de grupo solo si el rol ve más de un grupo; contraída, se
+reduce a un separador. Móvil usa el mismo catálogo (`shell-menu-group`). Un
+destino nuevo debe declarar grupo, si es catálogo u operación, y con qué se
+fusionaría; Choferes está en Flota (decisión provisional, revisable por el Owner).
+
 ## Contrato visual
 
 - Desktop≥768: riel blanco224px, contraído72px; borde de sistema, radio6px,

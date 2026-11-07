@@ -3,29 +3,32 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ANALYSIS_NAV } from '@/lib/maintenance-analysis';
-import { useEffect, useId, useRef, useState } from 'react';
+import { Fragment, useEffect, useId, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { INVENTORY_OPS, INVENTORY_CATALOG, isInventoryDestination } from '@/lib/inventory-navigation';
 import { BarChart3, ChevronDown, Boxes, ClipboardList, Home, Settings, Truck, Users, Wrench, type LucideIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { Role } from '@/lib/types';
 
-type NavigationItem = { href: string; label: string; icon: LucideIcon; roles: Role[] };
+type NavigationGroup = 'Operación' | 'Flota' | 'Inventario y análisis' | 'Administración';
+type NavigationItem = { href: string; label: string; icon: LucideIcon; roles: Role[]; group: NavigationGroup };
 
 // Shared catalog: presentation never grants access to a route.
+// Items are ordered by group; a heading renders when the group changes and the
+// role sees more than one group.
 const ITEMS: NavigationItem[] = [
-  { href: '/inicio', label: 'Inicio', icon: Home, roles: ['SUPERVISOR', 'ADMIN_DIRECTIVO'] },
-  { href: '/ordenes', label: 'Órdenes', icon: ClipboardList, roles: ['SUPERVISOR', 'ADMIN_DIRECTIVO'] },
-  { href: '/logistica', label: 'Inicio', icon: Home, roles: ['LOGISTICA'] },
-  { href: '/flota', label: 'Movimientos', icon: Truck, roles: ['LOGISTICA', 'ADMIN_DIRECTIVO'] },
-  { href: '/unidades', label: 'Unidades', icon: Truck, roles: ['SUPERVISOR', 'ADMIN_DIRECTIVO'] },
-  { href: '/andon', label: 'Mantenimiento vencido', icon: Wrench, roles: ['SUPERVISOR', 'ADMIN_DIRECTIVO'] },
-  { href: '/inventario', label: 'Inventario', icon: Boxes, roles: ['SUPERVISOR', 'ADMIN_DIRECTIVO'] },
-  { href: '/analisis-mantenimiento', label: 'Análisis', icon: BarChart3, roles: ['SUPERVISOR', 'ADMIN_DIRECTIVO'] },
-  { href: '/choferes', label: 'Choferes', icon: Users, roles: ['ADMIN_DIRECTIVO'] },
-  { href: '/configuracion/alertas', label: 'Configuración', icon: Settings, roles: ['SUPERVISOR', 'ADMIN_DIRECTIVO', 'LOGISTICA'] },
-  { href: '/mi-trabajo', label: 'Mi trabajo', icon: Wrench, roles: ['MECANICO'] },
-  { href: '/configuracion/usuarios', label: 'Usuarios', icon: Users, roles: ['ADMIN_DIRECTIVO'] },
+  { href: '/inicio', label: 'Inicio', icon: Home, roles: ['SUPERVISOR', 'ADMIN_DIRECTIVO'], group: 'Operación' },
+  { href: '/ordenes', label: 'Órdenes', icon: ClipboardList, roles: ['SUPERVISOR', 'ADMIN_DIRECTIVO'], group: 'Operación' },
+  { href: '/logistica', label: 'Inicio', icon: Home, roles: ['LOGISTICA'], group: 'Operación' },
+  { href: '/flota', label: 'Movimientos', icon: Truck, roles: ['LOGISTICA', 'ADMIN_DIRECTIVO'], group: 'Operación' },
+  { href: '/mi-trabajo', label: 'Mi trabajo', icon: Wrench, roles: ['MECANICO'], group: 'Operación' },
+  { href: '/unidades', label: 'Unidades', icon: Truck, roles: ['SUPERVISOR', 'ADMIN_DIRECTIVO'], group: 'Flota' },
+  { href: '/choferes', label: 'Choferes', icon: Users, roles: ['ADMIN_DIRECTIVO'], group: 'Flota' },
+  { href: '/andon', label: 'Mantenimiento vencido', icon: Wrench, roles: ['SUPERVISOR', 'ADMIN_DIRECTIVO'], group: 'Flota' },
+  { href: '/inventario', label: 'Inventario', icon: Boxes, roles: ['SUPERVISOR', 'ADMIN_DIRECTIVO'], group: 'Inventario y análisis' },
+  { href: '/analisis-mantenimiento', label: 'Análisis', icon: BarChart3, roles: ['SUPERVISOR', 'ADMIN_DIRECTIVO'], group: 'Inventario y análisis' },
+  { href: '/configuracion/alertas', label: 'Configuración', icon: Settings, roles: ['SUPERVISOR', 'ADMIN_DIRECTIVO', 'LOGISTICA'], group: 'Administración' },
+  { href: '/configuracion/usuarios', label: 'Usuarios', icon: Users, roles: ['ADMIN_DIRECTIVO'], group: 'Administración' },
 ];
 
 export function applicationNavigation(role: Role | null) {
@@ -116,8 +119,12 @@ export function ApplicationNavigation({ items, pathname, mobile = false, collaps
   const [override, setOverride] = useState<{pathname:string;open:boolean}|null>(null);
   const inventoryActive = navigationIsActive(pathname, '/inventario');
   const inventoryOpen = !collapsed && (override?.pathname === pathname ? override.open : inventoryActive);
+  const showGroups = new Set(items.map((item) => item.group)).size > 1;
   return <nav className={mobile ? 'shell-menu-nav' : 'app-sidebar__nav'} aria-label="Principal">
-    {items.map((item) => {
+    {items.map((item, index) => {
+      const heading = showGroups && (index === 0 || items[index - 1].group !== item.group)
+        ? <p className={mobile ? 'shell-menu-group' : 'app-sidebar__group'}>{item.group}</p> : null;
+      const node = (() => {
       const active = navigationIsActive(pathname, item.href);
       const Icon = item.icon;
       if (!mobile && item.href === '/analisis-mantenimiento') return <div key={item.href} className="app-sidebar__module">
@@ -148,6 +155,8 @@ export function ApplicationNavigation({ items, pathname, mobile = false, collaps
         className={cn('shell-menu-link',active && 'active')} aria-current={active?'page':undefined} aria-label={item.label} onClick={onNavigate}>
         <Icon aria-hidden className="size-4 shrink-0" /><span>{item.label}</span>
       </Link>;
+      })();
+      return <Fragment key={item.href}>{heading}{node}</Fragment>;
     })}
   </nav>;
 }
