@@ -2,7 +2,7 @@
 
 ## Status
 
-**Proposed**, 2026-11-07. Documentación solamente. No autoriza código, migraciones ni permisos. Complementa [SPEC-INV-001](SPEC-INV-001.md) sin modificarla. Origen: [shaping](../../workspace/shaping/inventario-kits-por-tipo-v0.md). Ownership: [ADR-031](../adr/031-inventario-kits-por-tipo.md) (Proposed); no es Ready hasta su aceptación. K-1 resuelta: Supervisor y Admin crean/editan kits.
+**Proposed**, 2026-11-07. Documentación solamente. No autoriza código, migraciones ni permisos. Complementa [SPEC-INV-001](SPEC-INV-001.md) sin modificarla. Origen: [shaping](../../workspace/shaping/inventario-kits-por-tipo-v0.md). Ownership: [ADR-031](../adr/031-inventario-kits-por-tipo.md) (Accepted 2026-11-07); la SPEC sigue Proposed y no es Ready hasta resolver K-2…K-5 y aprobar EWO. K-1 resuelta: Supervisor y Admin crean/editan kits.
 
 ## Problem
 

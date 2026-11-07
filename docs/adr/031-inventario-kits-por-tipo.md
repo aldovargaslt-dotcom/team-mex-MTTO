@@ -2,7 +2,7 @@
 
 ## Status
 
-Proposed. Documentación solamente: no autoriza código, esquema, migraciones ni permisos. Requiere aceptación del dueño antes de cualquier EWO.
+Accepted (2026-11-07, aceptación explícita del dueño en el chat). La aceptación cubre la dirección arquitectónica; **no** autoriza código, esquema, migraciones ni cambios de acceso. Falta SPEC aprobada y EWO.
 
 ## Context
 
@@ -58,5 +58,5 @@ Previous ADR: [ADR-001](001-visita-cerrada-outbox.md), [ADR-002](002-schema-per-
 ## Ownership
 
 Date (YYYY-MM-DD): 2026-11-07
-Owner: dueño del producto (pendiente de aceptación)
-Approval / decision reference: respuestas del chat 2026-11-07 (kits por tipo; Supervisor y Admin editan; ADR solicitado). La aceptación de esta arquitectura **no** está registrada.
+Owner: dueño del producto
+Approval / decision reference: respuestas del chat 2026-11-07 (kits por tipo; Supervisor y Admin editan; ADR solicitado). Aceptación: «yes i accept them», chat 2026-11-07.

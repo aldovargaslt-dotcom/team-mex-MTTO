@@ -79,7 +79,7 @@ pendiente de fuentes ABC/UTIL en EWO-063. Activación/migración externa y despl
 no ejecutados. Contrato técnico AN-MTTO-001 enlazado.
 
 [ADR031 — Kits de piezas por tipo de unidad](031-inventario-kits-por-tipo.md):
-**Proposed**. Inventario como dueño del kit (plantilla, no stock); documentación solamente.
+**Accepted** (2026-11-07). Inventario como dueño del kit (plantilla, no stock). Sin SPEC aprobada ni EWO: no autoriza construcción.
 
 [ADR032 — Permisos configurables por rol](032-permisos-configurables-por-rol.md):
-**Proposed**. Fase 1: catálogo de permisos y matriz rol→permisos con siembra equivalente a hoy; sin cambio de acceso.
+**Accepted** (2026-11-07). Fase 1: catálogo de permisos y matriz rol→permisos con siembra equivalente a hoy; sin cambio de acceso. Sin SPEC aprobada ni EWO: no autoriza construcción.

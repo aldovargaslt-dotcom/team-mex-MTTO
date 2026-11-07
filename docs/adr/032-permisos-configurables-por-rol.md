@@ -2,7 +2,7 @@
 
 ## Status
 
-Proposed. Documentación solamente: no autoriza código, esquema, migraciones ni cambios de acceso. Requiere aceptación del dueño antes de cualquier SPEC/EWO. Toca Kernel/Auth.
+Accepted (2026-11-07, aceptación explícita del dueño en el chat). La aceptación cubre la dirección arquitectónica; **no** autoriza código, esquema, migraciones ni cambios de acceso. Falta SPEC aprobada y EWO. Toca Kernel/Auth.
 
 ## Context
 
@@ -59,5 +59,5 @@ Previous ADR: [ADR-000](000-thin-kernel.md), [ADR-021](021-user-access-directory
 ## Ownership
 
 Date (YYYY-MM-DD): 2026-11-07
-Owner: dueño del producto (pendiente de aceptación)
-Approval / decision reference: respuestas del chat 2026-11-07 (Fase 1 primero; no construir ahora la configuración del Mecánico; solo hay Supervisor en esta ubicación; ADR solicitado). La aceptación de esta arquitectura **no** está registrada.
+Owner: dueño del producto
+Approval / decision reference: respuestas del chat 2026-11-07 (Fase 1 primero; no construir ahora la configuración del Mecánico; solo hay Supervisor en esta ubicación; ADR solicitado). Aceptación: «yes i accept them», chat 2026-11-07.
