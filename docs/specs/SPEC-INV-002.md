@@ -2,7 +2,7 @@
 
 ## Status
 
-**Proposed**, 2026-11-07. Documentación solamente. No autoriza código, migraciones ni permisos. Complementa [SPEC-INV-001](SPEC-INV-001.md) sin modificarla. Origen: [shaping](../../workspace/shaping/inventario-kits-por-tipo-v0.md). Ownership (K-6) sujeto a ADR; no es Ready.
+**Proposed**, 2026-11-07. Documentación solamente. No autoriza código, migraciones ni permisos. Complementa [SPEC-INV-001](SPEC-INV-001.md) sin modificarla. Origen: [shaping](../../workspace/shaping/inventario-kits-por-tipo-v0.md). Ownership: [ADR-031](../adr/031-inventario-kits-por-tipo.md) (Proposed); no es Ready hasta su aceptación. K-1 resuelta: Supervisor y Admin crean/editan kits.
 
 ## Problem
 
@@ -36,7 +36,7 @@ Se consumen únicamente las líneas confirmadas. Aplican la validación de stock
 La visita conserva una referencia al kit usado (opcional) y las líneas finales. Cambiar o inactivar el kit después no altera visitas cerradas.
 
 ### F-05 · Costo estimado (informativo)
-Mostrar suma cantidad × costo promedio vigente cuando exista; piezas sin costo se marcan «costo desconocido». Nunca cero ni total completo con faltantes. Depende de la parte B de SPEC-INV-001.
+Mostrar suma cantidad × costo promedio vigente cuando exista; piezas sin costo se marcan «costo desconocido». Nunca cero ni total completo con faltantes. Depende del costeo de SPEC-INV-001 parte B: construido y con liberación autorizada según [ADR-026](../adr/026-inventario-costos-historicos.md) (2026-10-15); la activación efectiva en producción no está verificada en este repositorio. Los kits no dependen de que el costo esté activo.
 
 ### F-06 · Consulta
 Uso y costo de refacciones por unidad y por kit/tipo, etiquetado «Costo de refacciones», con cobertura de costo explícita.

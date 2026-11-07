@@ -29,13 +29,13 @@ Contrato de `VisitaCerrada`, enums `DESDE_STOCK` / `COMPRA_EXTERNA`, ADR-002 (si
 
 | ID | Pregunta | Propuesta mientras tanto |
 |---|---|---|
-| K-1 | ¿Quién crea/edita kits: Supervisor, Admin o ambos? | Ambos; Admin audita. Pendiente de confirmar. |
+| K-1 | ¿Quién crea/edita kits? | **Resuelta (dueño, 2026-11-07): Supervisor y Admin.** Admin audita. |
 | K-2 | ¿Un kit puede aplicar a varios tipos? | Sí, lista de tipos. Si no, uno por tipo. |
 | K-3 | ¿Kits solo de almacén o también COMPRA_EXTERNA? | El origen se elige por línea al aplicar el kit, no se guarda en el kit. |
 | K-4 | ¿Se registra qué kit originó las líneas? | Sí, como referencia de trazabilidad en la visita (análisis de uso), sin afectar costo. |
 | K-5 | ¿Kit con pieza inactiva o incompatible con el tipo? | Se muestra advertencia; la línea no se agrega sin revisión. |
-| K-6 | ¿Ownership de Inventario o Mantenimiento? | **Escalar.** Es concepto de dominio nuevo; requiere ADR antes de ejecución (ver ICM). |
-| K-7 | Dependencia con SPEC-INV-001 parte B (costos) | Los kits funcionan sin costo; el costo estimado se activa cuando B esté disponible. |
+| K-6 | ¿Ownership de Inventario o Mantenimiento? | ADR redactado: [ADR-031](../../docs/adr/031-inventario-kits-por-tipo.md) (Proposed, propone Inventario). Pendiente de aceptación. |
+| K-7 | Dependencia con costos (SPEC-INV-001 B) | Corregido: B está construido y con liberación autorizada (ADR-026, 2026-10-15); falta verificar activación en producción. Los kits no dependen de ello. |
 
 ## Secuencia sugerida
 
