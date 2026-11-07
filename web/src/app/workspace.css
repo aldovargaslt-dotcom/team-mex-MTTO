@@ -78,6 +78,7 @@
 .app-sidebar__subnav[hidden] { display: none; }
 .app-sidebar__group, .shell-menu-group { margin: 12px 0 2px; padding: 0 12px; color: var(--muted); font-size: 11px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; }
 .app-sidebar__nav > .app-sidebar__group:first-child, .shell-menu-nav > .shell-menu-group:first-child { margin-top: 4px; }
+.app-workspace--collapsed .app-sidebar__nav > .app-sidebar__group:first-child { display: none; }
 .app-workspace--collapsed .app-sidebar__group { font-size: 0; height: 1px; margin: 8px 12px; padding: 0; background: var(--line); }
 .app-sidebar__subheading { margin: 8px 0 4px; color: var(--muted); font-size: 12px; }
 .app-sidebar__sublink { display: flex; align-items: center; min-height: 44px; padding: 8px; border-radius: 6px; color: var(--muted); font-size: 13px; }
